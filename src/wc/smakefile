@@ -1,0 +1,31 @@
+# Compiler and linker settings
+CC = sc
+LD = slink
+RM = delete
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib lib:small.lib BATCH NOICONS
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include:
+
+# Object files for wc
+OBJS = wc.o
+
+# Main target
+all: wc
+
+# Link rule
+wc: $(OBJS)
+	$(LD) $(CFLAGS) FROM sc:lib/c.o $(OBJS) TO wc
+
+# Compilation rules
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+wc.o: wc.c wc.h
+
+# Clean target
+clean: 
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) wc QUIET
+
+# Install target
+install: wc
+	copy wc //SDK/C/wc
