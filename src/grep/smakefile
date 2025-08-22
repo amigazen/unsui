@@ -1,0 +1,32 @@
+# Compiler and linker settings
+CC = sc
+LD = slink
+RM = delete
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib lib:small.lib BATCH NOICONS
+SCOPTIONS = DATA=FAR CODE=FAR NOSTACKCHECK COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include:
+
+# Object files for unified grep
+OBJS = grep.o regex.o
+
+# Main target
+all: grep
+
+# Link rule
+grep: $(OBJS)
+	$(LD) $(CFLAGS) FROM sc:lib/c.o $(OBJS) TO grep
+
+# Compilation rules
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+grep.o: grep.c regex.h
+regex.o: regex.c regex.h
+
+# Clean target
+clean: 
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) QUIET
+
+# Install target
+install: grep
+	copy grep //SDK/C/grep
