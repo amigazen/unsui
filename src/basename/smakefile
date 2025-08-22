@@ -24,7 +24,7 @@ basename.o: basename.c basename.h
 
 # Clean target
 clean: 
-	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) basename QUIET
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) basename
 
 # Install target
 install: basename

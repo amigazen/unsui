@@ -15,7 +15,7 @@
 #include "basename.h"
 
 /* Version tag for Amiga */
-static const char *verstag = "$VER: basename 1.0 (22/08/25)\n";
+static const char *verstag = "$VER: basename 2.0 (22/08/25)\n";
 
 /* Main function */
 int main(int argc, char **argv)
