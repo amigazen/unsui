@@ -116,8 +116,16 @@ char *my_basename(char *path)
  */
 void usage(char *program)
 {
-	fprintf(stderr, "Usage: %s string [suffix]\n", program);
+	fprintf(stderr, "usage: %s [OPTIONS] NAME [SUFFIX]\n", program);
+	fprintf(stderr, "OPTIONS:\n");
+	fprintf(stderr, "  -V          display version information\n");
+	fprintf(stderr, "  -h          display this help message\n");
+	fprintf(stderr, "DESCRIPTION:\n");
 	fprintf(stderr, "  Print NAME with any leading directory components removed.\n");
-	fprintf(stderr, "  If specified, also remove a trailing SUFFIX.\n");
+	fprintf(stderr, "  If SUFFIX is specified, also remove a trailing SUFFIX.\n");
+	fprintf(stderr, "EXAMPLES:\n");
+	fprintf(stderr, "  %s /usr/bin/ls          -> ls\n", program);
+	fprintf(stderr, "  %s /usr/bin/ls .exe     -> ls\n", program);
+	fprintf(stderr, "  %s Work:Documents:file  -> file\n", program);
 	exit(1);
 }

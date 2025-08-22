@@ -132,7 +132,16 @@ char *my_basename(char *path)
  */
 void usage(char *program)
 {
-	fprintf(stderr, "Usage: %s path\n", program);
+	fprintf(stderr, "usage: %s [OPTIONS] PATH\n", program);
+	fprintf(stderr, "OPTIONS:\n");
+	fprintf(stderr, "  -V          display version information\n");
+	fprintf(stderr, "  -h          display this help message\n");
+	fprintf(stderr, "DESCRIPTION:\n");
 	fprintf(stderr, "  Print the directory portion of a pathname.\n");
 	fprintf(stderr, "  Handles both Unix (/) and Amiga (:) path separators.\n");
+	fprintf(stderr, "EXAMPLES:\n");
+	fprintf(stderr, "  %s /usr/bin/ls          -> /usr/bin\n", program);
+	fprintf(stderr, "  %s /usr/bin/            -> /usr/bin\n", program);
+	fprintf(stderr, "  %s Work:Documents:file  -> Work:Documents\n", program);
+	exit(1);
 }
