@@ -1,0 +1,31 @@
+# Compiler and linker settings
+CC = sc
+LD = slink
+RM = delete
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib lib:small.lib BATCH NOICONS
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include:
+
+# Object files for dirname
+OBJS = dirname.o
+
+# Main target
+all: dirname
+
+# Link rule
+dirname: $(OBJS)
+	$(LD) $(CFLAGS) FROM sc:lib/c.o $(OBJS) TO dirname
+
+# Compilation rules
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+dirname.o: dirname.c dirname.h
+
+# Clean target
+clean: 
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) dirname
+
+# Install target
+install: dirname
+	copy dirname //SDK/C/dirname
