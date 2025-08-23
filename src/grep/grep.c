@@ -4,6 +4,9 @@
  * Copyright (c) 2025 amigazen project. All rights reserved.
  * Based on bgrep by Arnold Robbins and Roy Mongiovi, and Henry Spencer's regex.
  * 
+ * This version integrates AmigaDOS ReadArgs and standard POSIX getopt
+ * for command-line parsing.
+ * 
  * SPDX-License-Identifier: BSD-2-Clause
  * See LICENSE.md for full license text.
  * 
@@ -13,7 +16,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <exec/types.h>
+#include <dos/dos.h>
+#include <exec/memory.h>
+#include <clib/dos_protos.h>
+#include <clib/exec_protos.h>
 #include "regex.h"
+
+/* Amiga-specific includes */
+#include <proto/dos.h>
+#include <dos/rdargs.h>
+
+/* Common utilities and getopt */
+#include "/common/common.h"
+#include "/common/getopt.h"
 
 /* Version tag for Amiga */
 static const char *verstag = "$VER: grep 2.1 (22/08/25)\n";
@@ -23,6 +39,27 @@ static const char *verstag = "$VER: grep 2.1 (22/08/25)\n";
 
 #define MAXPATS	60		/* Maximum number of patterns (reduced for NEAR) */
 #define MAXLINE	(128 + 1)       /* Reduced for NEAR memory constraints */
+
+/* For ReadArgs template */
+enum {
+    ARG_PATTERN,
+    ARG_FILE,
+    ARG_COUNT_LINES,
+    ARG_LIST_NAMES,
+    ARG_NUMBER_LINES,
+    ARG_IGNORE_CASE,
+    ARG_INVERT_MATCH,
+    ARG_EXACT_MATCH,
+    ARG_SILENT,
+    ARG_EXTENDED_REGEX,
+    ARG_QUIET,
+    ARG_ALWAYS_FILENAME,
+    ARG_NEVER_FILENAME,
+    ARG_LIST_NO_MATCH,
+    ARG_MAX_MATCHES,
+    ARG_POSIX,
+    ARG_COUNT
+};
 
 /* Command line options */
 int Allbut = FALSE;		/* Print lines that don't match pattern */
@@ -79,39 +116,393 @@ void initialize_boyer_moore();
 void setpats();
 void patfromfile();
 void process();
-void parse_args();
+void parse_getopt_args();
+void parse_readargs();
+void check_argument_conflicts();
 void mapdown();
-char *my_basename();
 void usage();
 char *my_index();
+int run_grep_logic(int file_count, char **files);
 
 /* External function declarations for system functions */
 extern int regcomp(regex_t *preg, const char *pattern, int cflags);
 extern int regexec(const regex_t *preg, const char *string, size_t nmatch, regmatch_t *pmatch, int eflags);
 extern void regfree(regex_t *preg);
 
-/* Main function */
+/* Main function: dispatcher for parsing style */
 int main(int argc, char **argv)
 {
 	int i;
-	int flags;
-	char *my_index();
+	char **files = NULL;
+	int file_count = 0;
+	
+	/* ReadArgs Path Variables */
+	const char *template = "PATTERN/K,FILE/M,COUNTLINES/S,LISTNAMES/S,NUMBERLINES/S,IGNORECASE/S,INVERTMATCH/S,EXACTMATCH/S,SILENT/S,REGEX/S,QUIET/S,ALWAYSFILENAME/S,NEVERFILENAME/S,LISTNOMATCH/S,MAXMATCHES/K/N,POSIX/K/F";
+	LONG arg_array[ARG_COUNT] = {0};
+	struct RDArgs *rdargs = NULL;
+	char *cmd_string = NULL;
+	int ret_code = 0;
+	BOOL interactive_help = FALSE;
+	
+	/* POSIX/F Path Variables */
+	char *posix_str;
+	int new_argc;
+	char *new_argv[MAX_TEMPLATE_ITEMS];
+	char initial_args_str[256];
+	char user_input_buf[256];
+	char *temp_str;
+	size_t combined_len;
 
+	if (argc < 1) {
+		exit(1);
+	}
+	
 	Program = my_basename(argv[0]);
 	Argc = argc;
 	Argv = argv;
 
-	parse_args();		/* Deal with command line */
-
-	if (Pattern[0][0] == '\0')	/* Not from -f or -e */
-	{
-		if (Argv[0] == NULL)	/* No string given */
-			usage();
-		setpats(Argv[0]);
-		Argc--;
-		Argv++;
+	if (argc == 1) {
+		/* No arguments, show usage */
+		usage();
 	}
 
+	/* --- Logic to decide which parser to use --- */
+	if (is_getopt_style(argc, argv)) {
+		/* --- GETOPTS PATH --- */
+		parse_getopt_args(argc, argv);
+		
+		/* Handle pattern from remaining arguments */
+		if (Pattern[0][0] == '\0')	/* Not from -f or -e */
+		{
+			if (Argv[0] == NULL)	/* No string given */
+				usage();
+			setpats(Argv[0]);
+			Argc--;
+			Argv++;
+		}
+		
+		/* Get files from remaining arguments */
+		if (Argc > 0) {
+			files = Argv;
+			file_count = Argc;
+		}
+		ret_code = run_grep_logic(file_count, files);
+		
+	} else {
+		/* --- READARGS PATH --- */
+		for (i = 1; i < argc; i++) {
+			if (strcmp(argv[i], "?") == 0) {
+				interactive_help = TRUE;
+				break;
+			}
+		}
+
+		rdargs = AllocDosObject(DOS_RDARGS, NULL);
+		if (!rdargs) {
+			fprintf(stderr, "%s: out of memory for RDArgs\n", Program);
+			return 1;
+		}
+
+		if (interactive_help) {
+			/* Initialize buffers */
+			initial_args_str[0] = '\0';
+			user_input_buf[0] = '\0';
+
+			/* Build a string from any args that are NOT '?' */
+			temp_str = build_command_string(argc, argv, "?");
+			if (temp_str) {
+				strncpy(initial_args_str, temp_str, 255);
+				free(temp_str);
+			}
+
+			/* Print template and prompt for more input */
+			printf("%s: ", template);
+			fflush(stdout);
+			if (fgets(user_input_buf, sizeof(user_input_buf), stdin)) {
+				/* Combine initial args with the new user input */
+				combined_len = strlen(initial_args_str) + strlen(user_input_buf) + 2;
+				cmd_string = malloc(combined_len);
+				if (cmd_string) {
+					strcpy(cmd_string, initial_args_str);
+					if (initial_args_str[0] != '\0' && user_input_buf[0] != '\n') {
+						strcat(cmd_string, " ");
+					}
+					strcat(cmd_string, user_input_buf);
+				}
+			} else {
+				cmd_string = strdup(initial_args_str);
+				if (cmd_string) strcat(cmd_string, "\n");
+			}
+		} else {
+			/* Standard case: build command string from all args */
+			cmd_string = build_command_string(argc, argv, NULL);
+		}
+
+		if (!cmd_string) {
+			fprintf(stderr, "%s: out of memory for command string\n", Program);
+			FreeDosObject(DOS_RDARGS, rdargs);
+			return 1;
+		}
+
+		/* Set up ReadArgs to parse from our string */
+		rdargs->RDA_Source.CS_Buffer = cmd_string;
+		rdargs->RDA_Source.CS_Length = strlen(cmd_string);
+		rdargs->RDA_Source.CS_CurChr = 0;
+		rdargs->RDA_Flags |= RDAF_NOPROMPT;
+
+		if (!ReadArgs(template, arg_array, rdargs)) {
+			PrintFault(IoErr(), Program);
+			ret_code = 1;
+		} else {
+			/* Check for POSIX/F override first */
+			if (arg_array[ARG_POSIX]) {
+				posix_str = (char *)arg_array[ARG_POSIX];
+
+				/* Tokenize the string and build a new argv for getopt */
+				new_argv[0] = Program;
+				new_argc = tokenize_string(posix_str, &new_argv[1], MAX_TEMPLATE_ITEMS - 1) + 1;
+
+				parse_getopt_args(new_argc, new_argv);
+				/* Get files from remaining arguments */
+				if (Argc > 0) {
+					files = Argv;
+					file_count = Argc;
+				}
+				ret_code = run_grep_logic(file_count, files);
+
+			} else {
+				/* Standard ReadArgs processing */
+				parse_readargs(arg_array);
+				
+				/* Get pattern from ReadArgs */
+				if (arg_array[ARG_PATTERN]) {
+					setpats((char *)arg_array[ARG_PATTERN]);
+				} else {
+					/* No pattern specified */
+					usage();
+				}
+				
+				/* Get files from ReadArgs */
+				if (arg_array[ARG_FILE]) {
+					/* Count files and allocate array */
+					file_count = 0;
+					while (((char **)arg_array[ARG_FILE])[file_count] != NULL) {
+						file_count++;
+					}
+					
+					files = (char **)arg_array[ARG_FILE];
+					ret_code = run_grep_logic(file_count, files);
+				} else {
+					/* No files specified, use stdin */
+					files = NULL;
+					file_count = 0;
+					ret_code = run_grep_logic(file_count, files);
+				}
+			}
+		}
+
+		/* Clean up */
+		FreeDosObject(DOS_RDARGS, rdargs);
+		free(cmd_string);
+	}
+
+	return ret_code;
+}
+
+/**
+ * @brief Parse arguments using getopt (POSIX style)
+ * @param argc Argument count
+ * @param argv Argument vector
+ */
+void parse_getopt_args(argc, argv)
+int argc;
+char **argv;
+{
+	int c;
+	
+	reset_getopt();
+	
+	while ((c = getopt(argc, argv, "cEef:hHiIlLm:nqsvxyV")) != -1) {
+		switch (c) {
+		case 'c':
+			Countlines = TRUE;
+			break;
+
+		case 'E':
+			Extended = TRUE;
+			break;
+
+		case 'e':
+			strcpy(Pattern[0], optarg);
+			Pattern[0][sizeof Pattern[0] - 1] = '\0';
+			break;
+
+		case 'f':
+			patfromfile(optarg);
+			break;
+
+		case 'h':
+			Never_filename = TRUE;
+			break;
+
+		case 'H':
+			Always_filename = TRUE;
+			break;
+
+		case 'i':
+		case 'y':
+			Monocase = TRUE;
+			break;
+
+		case 'l':
+			Listnames = TRUE;
+			break;
+
+		case 'L':
+			List_no_match = TRUE;
+			break;
+
+		case 'm':
+			Max_matches = atoi(optarg);
+			if (Max_matches <= 0) {
+				fprintf(stderr, "%s: invalid max count: %s\n", Program, optarg);
+				usage();
+			}
+			break;
+
+		case 'n':
+			Numberlines = TRUE;
+			break;
+
+		case 'q':
+			Quiet = TRUE;
+			break;
+
+		case 's':
+			Silent = TRUE;
+			break;
+
+		case 'v':
+			Allbut = TRUE;
+			break;
+
+		case 'x':
+			Exact = TRUE;
+			break;
+
+		case 'V':
+			printf("%s", verstag);
+			exit(0);
+			break;
+
+		case '?':
+			usage();
+			break;
+		}
+	}
+	
+	/* Update Argc and Argv to point to remaining arguments */
+	Argc = argc - optind;
+	Argv = &argv[optind];
+	
+	/* Check for argument conflicts */
+	check_argument_conflicts();
+}
+
+/**
+ * @brief Parse arguments using ReadArgs (Amiga style)
+ * @param arg_array Array of parsed ReadArgs values
+ */
+void parse_readargs(arg_array)
+LONG *arg_array;
+{
+	/* Set flags based on ReadArgs results */
+	if (arg_array[ARG_COUNT_LINES]) {
+		Countlines = TRUE;
+	}
+	if (arg_array[ARG_LIST_NAMES]) {
+		Listnames = TRUE;
+	}
+	if (arg_array[ARG_NUMBER_LINES]) {
+		Numberlines = TRUE;
+	}
+	if (arg_array[ARG_IGNORE_CASE]) {
+		Monocase = TRUE;
+	}
+	if (arg_array[ARG_INVERT_MATCH]) {
+		Allbut = TRUE;
+	}
+	if (arg_array[ARG_EXACT_MATCH]) {
+		Exact = TRUE;
+	}
+	if (arg_array[ARG_SILENT]) {
+		Silent = TRUE;
+	}
+	if (arg_array[ARG_EXTENDED_REGEX]) {
+		Extended = TRUE;
+	}
+	if (arg_array[ARG_QUIET]) {
+		Quiet = TRUE;
+	}
+	if (arg_array[ARG_ALWAYS_FILENAME]) {
+		Always_filename = TRUE;
+	}
+	if (arg_array[ARG_NEVER_FILENAME]) {
+		Never_filename = TRUE;
+	}
+	if (arg_array[ARG_LIST_NO_MATCH]) {
+		List_no_match = TRUE;
+	}
+	if (arg_array[ARG_MAX_MATCHES]) {
+		Max_matches = *(LONG *)arg_array[ARG_MAX_MATCHES];
+		if (Max_matches <= 0) {
+			fprintf(stderr, "%s: invalid max count: %ld\n", Program, Max_matches);
+			usage();
+		}
+	}
+	
+	/* Check for argument conflicts */
+	check_argument_conflicts();
+}
+
+/**
+ * @brief Check for argument conflicts
+ */
+void check_argument_conflicts()
+{
+	if (
+		(Silent &&
+			(Allbut || Exact || Countlines || Listnames ||
+				Numberlines))
+		||
+		(Allbut && Exact)
+		||
+		(Countlines && Listnames)
+		||
+		(Listnames && List_no_match)
+		||
+		(Always_filename && Never_filename)
+	)
+	{
+		fprintf(stderr, "%s: argument conflict -- see the man page\n",
+			Program);
+		usage();	/* Will exit */
+	}
+}
+
+/**
+ * @brief Core grep logic separated from argument parsing
+ * @param file_count Number of files to process
+ * @param files Array of file names
+ * @return Exit code
+ */
+int run_grep_logic(file_count, files)
+int file_count;
+char **files;
+{
+	int i;
+	int flags;
+	
 	/* Process each pattern */
 	for (Curpat = 0; Curpat <= Numpats; Curpat++)
 	{
@@ -137,13 +528,13 @@ int main(int argc, char **argv)
 		}
 	}
 
-	Lotsafiles = (Argc > 1);	/* More than one file left */
+	Lotsafiles = (file_count > 1);	/* More than one file left */
 
-	if (Argc == 0)		/* Search stdin */
+	if (file_count == 0)		/* Search stdin */
 		process("-");
 	else
-		for (i = 0; Argv[i] != NULL; i++)
-			process(Argv[i]);
+		for (i = 0; i < file_count; i++)
+			process(files[i]);
 	
 	if (!Silent && Countlines)
 		printf("%ld\n", Lines_matched);
@@ -161,11 +552,11 @@ int main(int argc, char **argv)
 	}
 
 	if (Lines_matched == 0)
-		exit(1);
+		return 1;
 	else if (Couldnt_open_files)
-		exit(2);
+		return 2;
 	else
-		exit(0);
+		return 0;
 }
 
 /* Process files */
@@ -260,135 +651,7 @@ char *infile;
 	}
 }
 
-/* Parse command line arguments */
-void parse_args()
-{
-	int j;
 
-	if (Argc == 1)
-		usage();
-
-	for (Argc--, Argv++; Argv[0] != NULL && Argv[0][0] == '-'; Argc--, Argv++)
-	{
-		int cheat = FALSE;
-
-		for (j = 1; Argv[0][j] != '\0'; j++)
-		{
-			switch (Argv[0][j]) {
-			case 'c':
-				Countlines = TRUE;
-				break;
-
-			case 'e':
-				strcpy(Pattern[0], Argv[1]);
-				Pattern[0][sizeof Pattern[0] - 1] = '\0';
-				cheat = TRUE;
-				continue;
-
-			case 'f':
-				patfromfile(Argv[1]);
-				cheat = TRUE;
-				continue;
-
-			case 'h':
-				Never_filename = TRUE;
-				break;
-
-			case 'H':
-				Always_filename = TRUE;
-				break;
-
-			case 'i':
-			case 'y':
-				Monocase = TRUE;
-				break;
-
-			case 'l':
-				Listnames = TRUE;
-				break;
-
-			case 'L':
-				List_no_match = TRUE;
-				break;
-
-			case 'm':
-				/* Handle -m num option */
-				if (Argv[0][j+1] == '\0' && Argv[1] != NULL) {
-					Max_matches = atoi(Argv[1]);
-					if (Max_matches <= 0) {
-						fprintf(stderr, "%s: invalid max count: %s\n", Program, Argv[1]);
-						usage();
-					}
-					cheat = TRUE;
-				} else {
-					fprintf(stderr, "%s: -m requires a number\n", Program);
-					usage();
-				}
-				continue;
-
-			case 'n':
-				Numberlines = TRUE;
-				break;
-
-			case 'q':
-				Quiet = TRUE;
-				break;
-
-			case 's':
-				Silent = TRUE;
-				break;
-
-			case 'v':
-				Allbut = TRUE;
-				break;
-
-			case 'x':
-				Exact = TRUE;
-				break;
-
-			case 'E':
-				Extended = TRUE;
-				break;
-
-			case 'V':
-				printf("%s\n", verstag);
-				exit(0);
-				break;
-
-			default:
-				usage();
-                        break;
-                }
-        }
-		if (cheat)
-		{
-			cheat = FALSE;
-			Argc--;
-			Argv++;
-			/* Boy is this stuff a kludge! */
-		}
-	}
-
-	/* Check for argument conflicts */
-	if (
-		(Silent &&
-			(Allbut || Exact || Countlines || Listnames ||
-				Numberlines))
-		||
-		(Allbut && Exact)
-		||
-		(Countlines && Listnames)
-		||
-		(Listnames && List_no_match)
-		||
-		(Always_filename && Never_filename)
-	)
-	{
-		fprintf(stderr, "%s: argument conflict -- see the man page\n",
-			Program);
-		usage();	/* Will exit */
-	}
-}
 
 /* Map string to lowercase */
 void mapdown(str)
@@ -401,27 +664,15 @@ char *str;
 			str[i] = tolower(str[i]);
 }
 
-/* Return basename part of a pathname */
-char *my_basename(str)
-char *str;
-{
-	int i = 0;
-	int j = 0;
 
-	for (; str[i] != '\0'; i++)
-		if (str[i] == '/')
-			j = i;
-	
-	if (j != 0)
-		return (&str[++j]);
-	else
-		return (str);
-}
 
 /* Print usage message and exit */
 void usage()
 {
-	fprintf(stderr, "usage: %s [OPTIONS] [PATTERN] [FILE...]\n", Program);
+	fprintf(stderr, "Version: %s", &verstag[6]);
+	fprintf(stderr, "Usage (POSIX): %s [OPTIONS] [PATTERN] [FILE...]\n", Program);
+	fprintf(stderr, "Usage (Amiga): %s PATTERN/K [FILE/M] [COUNTLINES/S] [LISTNAMES/S] [NUMBERLINES/S] [IGNORECASE/S] [INVERTMATCH/S] [EXACTMATCH/S] [SILENT/S] [REGEX/S] [QUIET/S] [ALWAYSFILENAME/S] [NEVERFILENAME/S] [LISTNOMATCH/S] [MAXMATCHES/K/N]\n", Program);
+	fprintf(stderr, "               %s ? for template\n", Program);
 	fprintf(stderr, "OPTIONS:\n");
 	fprintf(stderr, "  -c          print only a count of matching lines\n");
 	fprintf(stderr, "  -E          PATTERN is an extended regular expression\n");
@@ -440,6 +691,10 @@ void usage()
 	fprintf(stderr, "  -x          match whole lines only\n");
 	fprintf(stderr, "  -y          ignore case (obsolete, use -i)\n");
 	fprintf(stderr, "  -V          display version information\n");
+	fprintf(stderr, "DESCRIPTION:\n");
+	fprintf(stderr, "  Search for PATTERN in each FILE or standard input.\n");
+	fprintf(stderr, "  PATTERN is, by default, a basic regular expression (BRE).\n");
+	fprintf(stderr, "  Example: %s -i 'hello world' menu.h main.c\n", Program);
 	exit(2);
 }
 

@@ -1,19 +1,25 @@
+# SMakefile for unified grep - Amiga POSIX grep command
+# Combines Boyer-Moore speed with full regex support
+# Based on bgrep (Boyer-Moore) and clean regex (Henry Spencer style)
+# Now supports both ReadArgs and getopt parsing styles
+
 # Compiler and linker settings
 CC = sc
 LD = slink
 RM = delete
-CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib lib:small.lib BATCH NOICONS
-SCOPTIONS = DATA=FAR CODE=FAR NOSTACKCHECK COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include:
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS
+LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib 
+SCOPTIONS = DATA=FAR CODE=FAR NOSTACKCHECK COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
 
 # Object files for unified grep
-OBJS = grep.o regex.o
+OBJS = sc:lib/c.o grep.o regex.o /common/common.o /common/getopt.o
 
 # Main target
 all: grep
 
 # Link rule
 grep: $(OBJS)
-	$(LD) $(CFLAGS) FROM sc:lib/c.o $(OBJS) TO grep
+	$(LD) $(LDFLAGS) FROM $(OBJS) TO grep
 
 # Compilation rules
 .c.o:
@@ -25,7 +31,7 @@ regex.o: regex.c regex.h
 
 # Clean target
 clean: 
-	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) QUIET
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) grep
 
 # Install target
 install: grep
