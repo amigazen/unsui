@@ -10,8 +10,9 @@
 #define BASENAME_H
 
 /* Function prototypes */
-char *my_basename(char *path);
 void usage(char *program);
+int run_basename_logic(char *name, char *suffix, const char *program);
+void parse_getopt_args(int argc, char **argv, char **name, char **suffix, int *file_start, const char *program);
 
 /* Constants */
 #define TRUE	1

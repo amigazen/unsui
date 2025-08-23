@@ -1,29 +1,32 @@
-# Compiler and linker settings
+# Dirname command SMakefile for Unsui POSIX runtime
+
+# Tools
 CC = sc
 LD = slink
 RM = delete
-CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib lib:small.lib BATCH NOICONS
-SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include:
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS
+LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib 
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
 
 # Object files for dirname
-OBJS = dirname.o
+OBJS = sc:lib/cres.o dirname.o /common/common.o /common/getopt.o
 
 # Main target
 all: dirname
 
-# Link rule
+# Build dirname command
 dirname: $(OBJS)
-	$(LD) $(CFLAGS) FROM sc:lib/c.o $(OBJS) TO dirname
+	$(LD) $(LDFLAGS) FROM $(OBJS) TO dirname
 
-# Compilation rules
+# Compile source files
 .c.o:
 	$(CC) $(SCOPTIONS) $< TO $@
 
 # Header dependencies
-dirname.o: dirname.c dirname.h
+dirname.o: dirname.c dirname.h /common/common.h /common/getopt.h
 
 # Clean target
-clean: 
+clean:
 	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) dirname
 
 # Install target

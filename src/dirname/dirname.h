@@ -10,10 +10,11 @@
 #define DIRNAME_H
 
 /* Function prototypes */
-char *my_basename(char *path);
 int test_part(char p);
 int test_absolute(char *p);
 void usage(char *program);
+int run_dirname_logic(char *path, const char *program);
+void parse_getopt_args(int argc, char **argv, char **path, int *file_start, const char *program);
 
 /* Constants */
 #define TRUE	1
