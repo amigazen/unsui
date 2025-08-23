@@ -10,18 +10,17 @@
 #define WC_H
 
 /* Function prototypes */
-char *my_basename(char *path);
 void count(FILE *f);
 void usage(char *program);
 void reset_counters(void);
+int run_wc_logic(int lflag, int wflag, int cflag, int file_count, char **files, const char *program);
+void parse_getopt_args(int argc, char **argv, int *lflag, int *wflag, int *cflag, int *file_start, const char *program);
 
 /* Constants */
 #define TRUE	1
 #define FALSE	0
 
 /* Global variables (extern declarations) */
-extern int lflag, wflag, cflag;
 extern long lcount, wcount, ccount;
-extern long ltotal, wtotal, ctotal;
 
 #endif /* WC_H */

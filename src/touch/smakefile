@@ -1,4 +1,4 @@
-# WC command SMakefile for Unsui POSIX runtime
+# Touch command SMakefile for Unsui POSIX runtime
 
 # Tools
 CC = sc
@@ -8,27 +8,27 @@ CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS
 LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib NOICONS
 SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
 
-# Object files for wc
-OBJS = sc:lib/cres.o wc.o /common/common.o /common/getopt.o
+# Object files for touch
+OBJS = sc:lib/cres.o touch.o /common/common.o /common/getopt.o
 
 # Main target
-all: wc
+all: touch
 
-# Build wc command
-wc: $(OBJS)
-	$(LD) $(LDFLAGS) FROM $(OBJS) TO wc
+# Build touch command
+touch: $(OBJS)
+	$(LD) $(LDFLAGS) FROM $(OBJS) TO touch
 
 # Compile source files
 .c.o:
 	$(CC) $(SCOPTIONS) $< TO $@
 
 # Header dependencies
-wc.o: wc.c wc.h /common/common.h /common/getopt.h
+touch.o: touch.c touch.h /common/common.h /common/getopt.h
 
 # Clean target
 clean:
-	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) wc
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) touch
 
 # Install target
-install: wc
-	copy wc //SDK/C/wc
+install: touch
+	copy touch //SDK/C/touch
