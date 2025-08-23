@@ -1,0 +1,23 @@
+# Common library SMakefile for Unsui POSIX runtime
+# This folder provides shared object files for hybrid argument parsing
+
+# Compiler
+CC = sc
+
+# Compiler flags
+CFLAGS = STRIPDEBUG NODEBUG IDIR=include:
+
+# Source files
+SOURCES = common.c getopt.c
+OBJECTS = common.o getopt.o
+
+# Default target
+all: $(OBJECTS)
+
+# Compile source files
+.c.o:
+	$(CC) $(CFLAGS) $< TO $@
+
+# Clean up
+clean:
+	Delete $(OBJECTS)
