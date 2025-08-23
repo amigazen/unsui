@@ -422,24 +422,24 @@ char *str;
 void usage()
 {
 	fprintf(stderr, "usage: %s [OPTIONS] [PATTERN] [FILE...]\n", Program);
-	fprintf(stderr, "OPTIONS:\n");
-	fprintf(stderr, "  -c          print only a count of matching lines\n");
-	fprintf(stderr, "  -E          PATTERN is an extended regular expression\n");
-	fprintf(stderr, "  -e PATTERN  use PATTERN for matching\n");
-	fprintf(stderr, "  -f FILE     obtain PATTERN from FILE\n");
-	fprintf(stderr, "  -h          never print filenames with output lines\n");
-	fprintf(stderr, "  -H          always print filenames with output lines\n");
-	fprintf(stderr, "  -i          ignore case distinctions\n");
-	fprintf(stderr, "  -l          print only names of files with matches\n");
-	fprintf(stderr, "  -L          print only names of files without matches\n");
-	fprintf(stderr, "  -m NUM      stop after NUM matches\n");
-	fprintf(stderr, "  -n          print line number with output lines\n");
-	fprintf(stderr, "  -q          suppress all normal output\n");
-	fprintf(stderr, "  -s          suppress error messages\n");
-	fprintf(stderr, "  -v          select non-matching lines\n");
-	fprintf(stderr, "  -x          match whole lines only\n");
-	fprintf(stderr, "  -y          ignore case (obsolete, use -i)\n");
-	fprintf(stderr, "  -V          display version information\n");
+	fprintf(stderr, "OPTIONS:\n"
+					"  -c          print only a count of matching lines\n"
+					"  -E          PATTERN is an extended regular expression\n"
+					"  -e PATTERN  use PATTERN for matching\n"
+					"  -f FILE     obtain PATTERN from FILE\n"
+					"  -h          never print filenames with output lines\n"
+					"  -H          always print filenames with output lines\n"
+					"  -i          ignore case distinctions\n"
+					"  -l          print only names of files with matches\n"
+					"  -L          print only names of files without matches\n"
+					"  -m NUM      stop after NUM matches\n"
+					"  -n          print line number with output lines\n"
+					"  -q          suppress all normal output\n"
+					"  -s          suppress error messages\n"
+					"  -v          select non-matching lines\n"
+					"  -x          match whole lines only\n"
+					"  -y          ignore case (obsolete, use -i)\n"
+					"  -V          display version information\n");
 	exit(2);
 }
 
