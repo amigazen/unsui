@@ -1,0 +1,34 @@
+# Head command SMakefile for Unsui POSIX runtime
+
+# Tools
+CC = sc
+LD = slink
+RM = delete
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS
+LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib 
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
+
+# Object files for head
+OBJS = sc:lib/cres.o head.o /common/common.o /common/getopt.o
+
+# Main target
+all: head
+
+# Build head command
+head: $(OBJS)
+	$(LD) $(LDFLAGS) FROM $(OBJS) TO head
+
+# Compile source files
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+head.o: head.c head.h /common/common.h /common/getopt.h
+
+# Clean target
+clean:
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) head
+
+# Install target
+install: head
+	copy head //SDK/C/head
