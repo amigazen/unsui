@@ -1,0 +1,33 @@
+# Compiler and linker settings
+CC = sc
+LD = slink
+RM = delete
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS
+LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib 
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
+
+# Object files for tail
+OBJS = sc:lib/cres.o tail.o /common/common.o /common/getopt.o
+
+# Main target
+all: tail
+
+# Link rule
+tail: $(OBJS)
+	$(LD) $(LDFLAGS) FROM $(OBJS) TO tail
+
+# Compilation rules
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+tail.o: tail.c tail.h /common/common.h /common/getopt.h
+
+# Clean target
+clean: 
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) tail QUIET
+
+# Install target
+install: tail
+	copy tail //SDK/C/tail
+	
