@@ -1,0 +1,37 @@
+# SMakefile for uniq command
+# Builds uniq utility for Unsui POSIX runtime
+
+CC = sc
+LINK = slink
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib lib:small.lib BATCH
+
+# Object files
+OBJS = uniq.o /common/common.o /common/getopt.o
+
+# Target
+TARGET = uniq
+
+# Default target
+all: $(TARGET)
+
+# Link rule
+$(TARGET): $(OBJS)
+	$(LINK) $(CFLAGS) TO $(TARGET) FROM sc:lib/cres.o $(OBJS)
+
+# Compile rule
+.c.o:
+	$(CC) $< OBJNAME $@
+
+# Clean rule
+clean:
+	Delete $(OBJS) $(TARGET) $(TARGET).map
+
+# Install rule
+install: $(TARGET)
+	Copy $(TARGET) TO //SDK/C/$(TARGET)
+
+# Dependencies
+uniq.o: uniq.c uniq.h /common/common.h
+
+# Phony targets
+.PHONY: all clean install
