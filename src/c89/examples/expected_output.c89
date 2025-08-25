@@ -1,0 +1,111 @@
+/*
+ * Expected C89 output from C99 to C89 conversion
+ * This shows how the C99 examples should be transformed
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct point {
+    int x;
+    int y;
+};
+
+struct rectangle {
+    struct point top_left;
+    struct point bottom_right;
+    int width;
+    int height;
+};
+
+int main() {
+    /* C99: Compound literal for struct - converted to C89 */
+    struct point p;
+    {
+        struct point temp_1 = {10, 20};
+        p = temp_1;
+    }
+    printf("Point: (%d, %d)\n", p.x, p.y);
+    
+    /* C99: Compound literal in function call - converted to C89 */
+    {
+        struct point temp_2 = {0, 0};
+        struct point temp_3 = {3, 4};
+        printf("Distance: %d\n", calculate_distance(temp_2, temp_3));
+    }
+    
+    /* C99: Compound literal in assignment - converted to C89 */
+    struct rectangle rect;
+    {
+        struct point temp_4 = {0, 0};
+        struct point temp_5 = {100, 100};
+        rect.top_left = temp_4;
+        rect.bottom_right = temp_5;
+        rect.width = 100;
+        rect.height = 100;
+    }
+    
+    /* C99: Compound literal in return statement - converted to C89 */
+    {
+        struct point temp_6 = {5, 5};
+        return create_point(temp_6);
+    }
+}
+
+int calculate_distance(struct point p1, struct point p2) {
+    int dx = p2.x - p1.x;
+    int dy = p2.y - p1.y;
+    return dx * dx + dy * dy;
+}
+
+struct point* create_point(struct point p) {
+    struct point* new_point = malloc(sizeof(struct point));
+    if (new_point) {
+        *new_point = p;
+    }
+    return new_point;
+}
+
+/* Example of for loop conversion */
+void example_for_loop_conversion() {
+    /* C99: for (int i = 0; i < 10; i++) - converted to C89 */
+    {
+        int i;
+        for (i = 0; i < 10; i++) {
+            printf("i = %d\n", i);
+        }
+    }
+    
+    /* C99: for (int i = 0, j = 10; i < j; i++, j--) - converted to C89 */
+    {
+        int i, j;
+        for (i = 0, j = 10; i < j; i++, j--) {
+            printf("i = %d, j = %d\n", i, j);
+        }
+    }
+}
+
+/* Example of VLA conversion */
+void example_vla_conversion(int size) {
+    /* C99: int array[size]; - converted to C89 */
+    int* array = malloc(size * sizeof(int));
+    if (array) {
+        /* Use array as normal */
+        for (int i = 0; i < size; i++) {
+            array[i] = i * 2;
+        }
+        
+        /* Don't forget to free */
+        free(array);
+    }
+}
+
+/* Example of designated initializer conversion */
+void example_designated_init_conversion() {
+    /* C99: struct person john = {.name = "John", .age = 35}; - converted to C89 */
+    struct person john;
+    strcpy(john.name, "John");
+    john.age = 35;
+    /* Other fields are zero-initialized by default */
+}

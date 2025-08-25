@@ -1,0 +1,174 @@
+# C99 to C89 Converter SMakefile
+# Converts C99 code to C89-compatible code for SAS/C compilation
+#
+# Copyright (c) 2025 amigazen project. All rights reserved.
+
+# Source and object directories
+SRC = .
+OBJ = Obj/
+
+# Compiler and flags
+CC = SC
+CFLAGS = includedir=include: includedir=src: includedir=src/common: includedir=src/flex: includedir=src/bison:
+LDFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib lib:small.lib BATCH
+
+# Compiler definitions
+DEFS = DEF=C99C89_VERSION=\"1.0.0\" DEF=AMIGA_OS DEF=SAS_C_COMPILER
+
+# Generated files from Flex and Bison
+LEX_FILE = c99c89.l
+YACC_FILE = c99c89.y
+GENERATED_C = lex.yy.c c99c89.tab.c
+GENERATED_H = c99c89.tab.h
+
+# Object files
+OBJECTS = $(OBJ)main.o           $(OBJ)ast.o           $(OBJ)transform.o    \
+          $(OBJ)generator.o      $(OBJ)lex.yy.o        $(OBJ)c99c89.tab.o  \
+          $(OBJ)utils.o          $(OBJ)file_utils.o    $(OBJ)string_utils.o \
+          $(OBJ)config.o         $(OBJ)logging.o       $(OBJ)stats.o
+
+# Main target
+all: $(OBJ) c99c89
+
+# Create object directory
+$(OBJ):
+	@MakeDir $(OBJ)
+
+# Generate Flex lexer
+lex.yy.c: $(LEX_FILE)
+	@Echo "Generating Flex lexer..."
+	@Flex $(LEX_FILE)
+
+# Generate Bison parser
+c99c89.tab.c c99c89.tab.h: $(YACC_FILE)
+	@Echo "Generating Bison parser..."
+	@Bison -d $(YACC_FILE)
+
+# Main executable
+c99c89: $(OBJECTS)
+	@Echo "Linking c99c89..."
+	@SLink $(LDFLAGS) $(OBJECTS) TO $@
+	@Echo "Build complete: c99c89"
+
+# Object file compilation rules
+$(OBJ)main.o: main.c main.h ast.h transform.h generator.h
+	@Echo "Compiling main.c..."
+	@$(CC) $(CFLAGS) $(DEFS) main.c OBJNAME $@
+
+$(OBJ)ast.o: ast.c ast.h main.h
+	@Echo "Compiling ast.c..."
+	@$(CC) $(CFLAGS) $(DEFS) ast.c OBJNAME $@
+
+$(OBJ)transform.o: transform.c transform.h ast.h main.h
+	@Echo "Compiling transform.c..."
+	@$(CC) $(CFLAGS) $(DEFS) transform.c OBJNAME $@
+
+$(OBJ)generator.o: generator.c generator.h ast.h main.h
+	@Echo "Compiling generator.c..."
+	@$(CC) $(CFLAGS) $(DEFS) generator.c OBJNAME $@
+
+$(OBJ)lex.yy.o: lex.yy.c main.h ast.h
+	@Echo "Compiling lex.yy.c..."
+	@$(CC) $(CFLAGS) $(DEFS) lex.yy.c OBJNAME $@
+
+$(OBJ)c99c89.tab.o: c99c89.tab.c c99c89.tab.h main.h ast.h
+	@Echo "Compiling c99c89.tab.c..."
+	@$(CC) $(CFLAGS) $(DEFS) c99c89.tab.c OBJNAME $@
+
+$(OBJ)utils.o: utils.c main.h
+	@Echo "Compiling utils.c..."
+	@$(CC) $(CFLAGS) $(DEFS) utils.c OBJNAME $@
+
+$(OBJ)file_utils.o: file_utils.c main.h
+	@Echo "Compiling file_utils.c..."
+	@$(CC) $(CFLAGS) $(DEFS) file_utils.c OBJNAME $@
+
+$(OBJ)string_utils.o: string_utils.c main.h
+	@Echo "Compiling string_utils.c..."
+	@$(CC) $(CFLAGS) $(DEFS) string_utils.c OBJNAME $@
+
+$(OBJ)config.o: config.c main.h
+	@Echo "Compiling config.c..."
+	@$(CC) $(CFLAGS) $(DEFS) config.c OBJNAME $@
+
+$(OBJ)logging.o: logging.c main.h
+	@Echo "Compiling logging.c..."
+	@$(CC) $(CFLAGS) $(DEFS) logging.c OBJNAME $@
+
+$(OBJ)stats.o: stats.c main.h
+	@Echo "Compiling stats.c..."
+	@$(CC) $(CFLAGS) $(DEFS) stats.c OBJNAME $@
+
+# Clean target
+clean:
+	@Echo "Cleaning c99c89 project..."
+	@Delete $(OBJ) #o
+	@Delete c99c89
+	@Delete lex.yy.c
+	@Delete c99c89.tab.c
+	@Delete c99c89.tab.h
+	@Echo "Clean complete"
+
+# Install target
+install: all
+	@Echo "Installing c99c89 to C:..."
+	@Copy c99c89 C:
+	@Echo "Installation complete"
+
+# Test target
+test: all
+	@Echo "Running c99c89 tests..."
+	@Echo "Testing C99 to C89 conversion..."
+	@c99c89 --test
+	@Echo "Tests complete"
+
+# Help target
+help:
+	@Echo "Available targets:"
+	@Echo "  all      - Build c99c89 executable"
+	@Echo "  clean    - Remove object files and executable"
+	@Echo "  install  - Install to C: directory"
+	@Echo "  test     - Run test suite"
+	@Echo "  help     - Show this help message"
+	@Echo ""
+	@Echo "Usage: c99c89 [OPTIONS] INPUT_FILE [OUTPUT_FILE]"
+	@Echo "  -h, --help     Display help information"
+	@Echo "  -v, --verbose  Be verbose about transformations"
+	@Echo "  -V, --version  Display version information"
+	@Echo "  -o FILE        Specify output file name"
+	@Echo "  -t, --test     Run in test mode"
+
+# Dependencies
+depend: $(GENERATED_H)
+	@Echo "Dependencies up to date"
+
+# Debug target
+debug: CFLAGS += DEF=DEBUG
+debug: all
+
+# Release target
+release: CFLAGS += DEF=NDEBUG
+release: all
+
+# Profile target
+profile: CFLAGS += DEF=PROFILE
+profile: all
+
+# Documentation target
+docs:
+	@Echo "Generating documentation..."
+	@Echo "Documentation generation not yet implemented"
+
+# Package target
+package: all
+	@Echo "Creating package..."
+	@MakeDir c99c89_package
+	@Copy c99c89 c99c89_package/
+	@Copy README.md c99c89_package/
+	@Copy LICENSE.md c99c89_package/
+	@Copy examples/ c99c89_package/
+	@Copy tests/ c99c89_package/
+	@Echo "Package created in c99c89_package/"
+
+# Phony targets
+.PHONY: all clean install test help depend debug release profile docs package

@@ -1,0 +1,32 @@
+/*
+ * Example C99 code demonstrating for loop variable declarations
+ * This will be converted to C89-compatible code
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    // C99: Variable declaration in for loop initialization
+    for (int i = 0; i < 10; i++) {
+        printf("i = %d\n", i);
+    }
+    
+    // C99: Multiple variable declarations in for loop
+    for (int i = 0, j = 10; i < j; i++, j--) {
+        printf("i = %d, j = %d\n", i, j);
+    }
+    
+    // C99: Variable declaration with different types
+    for (int i = 0, double sum = 0.0; i < 5; i++) {
+        sum += i * 2.5;
+        printf("sum = %.2f\n", sum);
+    }
+    
+    // C99: Variable declaration with initialization
+    for (int* ptr = malloc(100 * sizeof(int)); ptr != NULL; ptr++) {
+        *ptr = 42;
+    }
+    
+    return 0;
+}

@@ -1,0 +1,76 @@
+/*
+ * Example C99 code demonstrating variable length arrays (VLAs)
+ * This will be converted to C89-compatible code using dynamic allocation
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main() {
+    int size;
+    printf("Enter array size: ");
+    scanf("%d", &size);
+    
+    // C99: Variable length array declaration
+    int array[size];
+    
+    // Initialize the array
+    for (int i = 0; i < size; i++) {
+        array[i] = i * 2;
+    }
+    
+    // Print the array
+    printf("Array contents:\n");
+    for (int i = 0; i < size; i++) {
+        printf("array[%d] = %d\n", i, array[i]);
+    }
+    
+    // C99: 2D variable length array
+    int rows, cols;
+    printf("Enter matrix dimensions (rows cols): ");
+    scanf("%d %d", &rows, &cols);
+    
+    int matrix[rows][cols];
+    
+    // Initialize matrix
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            matrix[i][j] = i * cols + j;
+        }
+    }
+    
+    // Print matrix
+    printf("Matrix:\n");
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            printf("%3d ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+    
+    // C99: Variable length array in function parameter
+    int sum = calculate_sum(size, array);
+    printf("Sum of array elements: %d\n", sum);
+    
+    return 0;
+}
+
+// C99: Function with variable length array parameter
+int calculate_sum(int size, int array[size]) {
+    int total = 0;
+    for (int i = 0; i < size; i++) {
+        total += array[i];
+    }
+    return total;
+}
+
+// C99: Function with 2D variable length array parameter
+void print_matrix(int rows, int cols, int matrix[rows][cols]) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            printf("%3d ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+}

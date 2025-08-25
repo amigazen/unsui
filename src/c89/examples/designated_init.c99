@@ -1,0 +1,77 @@
+/*
+ * Example C99 code demonstrating designated initializers
+ * This will be converted to C89-compatible code
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct person {
+    char name[50];
+    int age;
+    char occupation[50];
+    double salary;
+    int years_experience;
+};
+
+struct company {
+    char name[100];
+    char industry[50];
+    int employee_count;
+    double revenue;
+    struct person ceo;
+    struct person cto;
+};
+
+int main() {
+    // C99: Designated initializers for struct
+    struct person john = {
+        .name = "John Doe",
+        .age = 35,
+        .occupation = "Software Engineer",
+        .salary = 75000.0,
+        .years_experience = 8
+    };
+    
+    // C99: Designated initializers with nested structs
+    struct company tech_corp = {
+        .name = "TechCorp Inc.",
+        .industry = "Technology",
+        .employee_count = 500,
+        .revenue = 10000000.0,
+        .ceo = {
+            .name = "Jane Smith",
+            .age = 42,
+            .occupation = "CEO",
+            .salary = 200000.0,
+            .years_experience = 15
+        },
+        .cto = {
+            .name = "Bob Johnson",
+            .age = 38,
+            .occupation = "CTO",
+            .salary = 180000.0,
+            .years_experience = 12
+        }
+    };
+    
+    // C99: Partial designated initializers
+    struct person intern = {
+        .name = "Alice Brown",
+        .age = 22
+        // Other fields will be zero-initialized
+    };
+    
+    // C99: Array designated initializers
+    int scores[5] = {
+        [0] = 95,
+        [2] = 87,
+        [4] = 92
+        // [1] and [3] will be zero-initialized
+    };
+    
+    printf("Company: %s\n", tech_corp.name);
+    printf("CEO: %s (%d years experience)\n", tech_corp.ceo.name, tech_corp.ceo.years_experience);
+    
+    return 0;
+}

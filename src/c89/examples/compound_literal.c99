@@ -1,0 +1,54 @@
+/*
+ * Example C99 code demonstrating compound literals
+ * This will be converted to C89-compatible code
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct point {
+    int x;
+    int y;
+};
+
+struct rectangle {
+    struct point top_left;
+    struct point bottom_right;
+    int width;
+    int height;
+};
+
+int main() {
+    // C99: Compound literal for struct
+    struct point p = (struct point){10, 20};
+    printf("Point: (%d, %d)\n", p.x, p.y);
+    
+    // C99: Compound literal in function call
+    printf("Distance: %d\n", calculate_distance((struct point){0, 0}, (struct point){3, 4}));
+    
+    // C99: Compound literal in assignment
+    struct rectangle rect = (struct rectangle){
+        .top_left = (struct point){0, 0},
+        .bottom_right = (struct point){100, 100},
+        .width = 100,
+        .height = 100
+    };
+    
+    // C99: Compound literal in return statement
+    return create_point((struct point){5, 5});
+}
+
+int calculate_distance(struct point p1, struct point p2) {
+    int dx = p2.x - p1.x;
+    int dy = p2.y - p1.y;
+    return dx * dx + dy * dy;
+}
+
+struct point* create_point(struct point p) {
+    struct point* new_point = malloc(sizeof(struct point));
+    if (new_point) {
+        *new_point = p;
+    }
+    return new_point;
+}
