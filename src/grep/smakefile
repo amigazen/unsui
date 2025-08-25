@@ -19,7 +19,7 @@ all: grep
 
 # Link rule
 grep: $(OBJS)
-	$(LD) $(LDFLAGS) FROM $(OBJS) TO grep
+	$(LD) $(LDFLAGS) FROM $(OBJS) TO $@
 
 # Compilation rules
 .c.o:
