@@ -1,0 +1,83 @@
+SRC = Src/
+OBJ = Obj/
+
+# Possible values for DEFS:
+#
+# For flex to always generate 8-bit scanners, add "-DDEFAULT_CSIZE=256"
+# to DEFS.
+
+DEFS = DEFINE=YYBISON=1 DEFINE=YY_NEVER_INTERACTIVE=1
+LIBS =
+
+# You can define this to be "lex" if you want to replace lex at your site.
+FLEX = Flex
+
+YACC = Bison -y
+CC = SC
+AR = Oml
+
+# You normally do not need to modify anything below this point.
+# ------------------------------------------------------------
+
+.c.o:
+	@$(CC) $(DEFS) $< OBJNAME=$@
+
+HEADERS = $(SRC)flexdef.h $(SRC)version.h
+
+OBJECTS = $(OBJ)ccl.o    $(OBJ)dfa.o    $(OBJ)ecs.o    $(OBJ)gen.o     $(OBJ)main.o \
+		  $(OBJ)misc.o   $(OBJ)nfa.o    $(OBJ)parse.o  $(OBJ)skel.o    $(OBJ)sym.o  \
+		  $(OBJ)tblcmp.o $(OBJ)yylex.o  $(OBJ)alloca.o
+
+LIBOBJS = $(OBJ)libmain.o $(OBJ)libyywrap.o
+
+# which "flex" to use to generate scan.c from scan.l
+FLEX_EXEC = Flex
+FLEX_FLAGS = -t $(PERF_REPORT)
+COMPRESSION =
+PERF_REPORT = -p
+
+FLEXLIB = fl.lib
+
+all: $(FLEX)
+
+$(FLEX): $(OBJECTS) $(FLEXLIB) $(OBJ)scan.o
+	@$(CC) LINK TO $(FLEX) $(OBJECTS) $(OBJ)scan.o $(FLEXLIB) $(LIBS)
+
+bootflex: $(OBJECTS) $(FLEXLIB) $(OBJ)initscan.o
+	@$(CC) LINK TO $(FLEX) $(OBJECTS) $(OBJ)initscan.o $(FLEXLIB) $(LIBS)
+
+$(SRC)parse.c: $(SRC)parse.y
+	$(YACC) -d --no-line $(SRC)parse.y
+	@Rename y.tab.c $(SRC)parse.c
+	@Rename y.tab.h $(SRC)parse.h
+
+$(SRC)parse.h: $(SRC)parse.c
+
+$(SRC)scan.c: $(SRC)scan.l
+	@$(FLEX_EXEC) $(FLEX_FLAGS) $(COMPRESSION) $(SRC)scan.l >$(SRC)scan.c
+
+$(OBJ)scan.o     : $(SRC)scan.c     $(SRC)parse.h $(SRC)flexdef.h $(SRC)config.h
+$(OBJ)initscan.o : $(SRC)initscan.c $(SRC)parse.h $(SRC)flexdef.h $(SRC)config.h
+$(OBJ)yylex.o    : $(SRC)yylex.c    $(SRC)parse.h $(SRC)flexdef.h $(SRC)config.h
+
+$(OBJ)main.o   : $(SRC)main.c   $(SRC)flexdef.h $(SRC)config.h $(SRC)version.h
+$(OBJ)ccl.o    : $(SRC)ccl.c    $(SRC)flexdef.h $(SRC)config.h
+$(OBJ)dfa.o    : $(SRC)dfa.c    $(SRC)flexdef.h $(SRC)config.h
+$(OBJ)ecs.o    : $(SRC)ecs.c    $(SRC)flexdef.h $(SRC)config.h
+$(OBJ)gen.o    : $(SRC)gen.c    $(SRC)flexdef.h $(SRC)config.h
+$(OBJ)misc.o   : $(SRC)misc.c   $(SRC)flexdef.h $(SRC)config.h
+$(OBJ)nfa.o    : $(SRC)nfa.c    $(SRC)flexdef.h $(SRC)config.h
+$(OBJ)parse.o  : $(SRC)parse.c  $(SRC)flexdef.h $(SRC)config.h
+$(OBJ)skel.o   : $(SRC)skel.c   $(SRC)flexdef.h $(SRC)config.h
+$(OBJ)sym.o    : $(SRC)sym.c    $(SRC)flexdef.h $(SRC)config.h
+$(OBJ)tblcmp.o : $(SRC)tblcmp.c $(SRC)flexdef.h $(SRC)config.h
+
+$(OBJ)libmain.o   : $(SRC)libmain.c   $(SRC)flexdef.h $(SRC)config.h
+$(OBJ)libyywrap.o : $(SRC)libyywrap.c $(SRC)flexdef.h $(SRC)config.h
+
+$(OBJ)alloca.o : $(SRC)alloca.c
+	@$(CC) DEFINE=xmalloc=yy_flex_xmalloc $(SRC)alloca.c OBJNAME=$(OBJ)alloca.o
+
+$(FLEXLIB): $(LIBOBJS)
+	@$(AR) $(FLEXLIB) R $(LIBOBJS)
+
