@@ -1,0 +1,173 @@
+# Makefile for GNU fileutils programs.
+# Do not use this makefile directly, but only from `../Makefile'.
+# Copyright (C) 1990, 1991, 1992 Free Software Foundation, Inc.
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+bindir = bin:
+
+CFLAGS=-dSTDC_HEADERS -dVOID_CLOSEDIR -dSTRERROR_MISSING -i/lib/ -isrc:unix/include/ -O
+
+SOURCES = chmod.c chgrp.c chown.c cp-aux.c cp-hash.c cp.c \
+dd.c df.c du.c install.c ln.c ls.c mkdir.c mkfifo.c mknod.c mv.c mvdir.c \
+rm.c rmdir.c touch.c version.c
+
+DISTFILES = Makefile.in cp.h $(SOURCES)
+
+PROGS = chgrp chown chmod cp dd du ginstall ln dir vdir ls mkdir \
+mkfifo mknod mv rm rmdir touch
+AMIGAPROGS = dd ls mkdir chmod dir vdir mv rm rmdir touch ln
+all: $(AMIGAPROGS)
+problems: du
+work: cp
+
+TAGS: $(SOURCES)
+	etags $(SOURCES)
+
+relink:
+	-delete force $(PROGS)
+	lmk all
+
+mostlyclean:
+	-delete force $(PROGS) $(LIBPROGS) *.o
+
+clean: mostlyclean
+	-delete force tags TAGS dir.c vdir.c
+
+install: all
+	copy $(AMIGAPROGS) $(bindir)
+	-delete $(bindir)d $(bindir)v force
+	makelink $(bindir)d $(bindir)dir
+	makelink $(bindir)v $(bindir)vdir
+
+# Linking rules.
+
+chmod: chmod.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+chgrp: chgrp.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+chown: chown.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+cp: cp.o cp-hash.o cp-aux.o version.o
+	blink from lib:c.o $*.o cp-hash.o cp-aux.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch nd
+
+dd: dd.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+df: df.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+dir: dir.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+du: du.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+ginstall: install.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+ln: ln.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+ls: ls.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+mkdir: mkdir.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+mkfifo: mkfifo.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+mknod: mknod.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+mv: mv.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+mvdir: mvdir.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+rm: rm.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+rmdir: rmdir.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+touch: touch.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+vdir: vdir.o version.o
+	blink from lib:c.o $*.o version.o to $@ \
+	lib src:unix/src/unix.lib /lib/fu.lib lib:lc.lib lib:amiga.lib sc sd batch
+
+# Compilation rules. version.o
+
+# These rules are workarounds for C compilers that don't accept -c and
+# -o at the same time.
+dir.c:	ls.c
+	copy ls.c $@
+
+dir.o:		dir.c
+	lc $(CFLAGS) -DMULTI_COL dir.c
+
+vdir.c:	ls.c
+	copy ls.c $@
+
+vdir.o:		vdir.c
+	lc $(CFLAGS) -DLONG_FORMAT vdir.c
+
+chgrp.o: chgrp.c /lib/system.h
+chmod.o: chmod.c /lib/modechange.h /lib/system.h
+chown.o: chown.c /lib/system.h
+cp-aux.o: cp-aux.c cp.h /lib/system.h
+cp-hash.o: cp-hash.c cp.h /lib/system.h
+cp.o: cp.c /lib/backupfile.h cp.h /lib/system.h
+dd.o: dd.c /lib/system.h
+df.o: df.c /lib/mountlist.h /lib/fsusage.h /lib/system.h
+du.o: du.c /lib/system.h
+install.o: install.c /lib/modechange.h /lib/system.h
+ln.o: ln.c /lib/backupfile.h /lib/system.h
+ls.o: ls.c /lib/system.h
+mkdir.o: mkdir.c /lib/modechange.h /lib/system.h
+mkfifo.o: mkfifo.c /lib/modechange.h /lib/system.h
+mknod.o: mknod.c /lib/modechange.h /lib/system.h
+mv.o: mv.c /lib/backupfile.h /lib/system.h
+mvdir.o: mvdir.c /lib/system.h
+rm.o: rm.c /lib/system.h
+rmdir.o: rmdir.c /lib/system.h
+touch.o: touch.c /lib/system.h
+version.o: version.c

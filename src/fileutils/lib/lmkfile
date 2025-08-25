@@ -1,0 +1,99 @@
+# Makefile for library files used by GNU fileutils.
+# Do not use this makefile directly, but only from `../Makefile'.
+# Copyright (C) 1990, 1991, 1992 Free Software Foundation, Inc.
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+CSWITCH=-dSTDC_HEADERS -dVOID_CLOSEDIR -dSTRERROR_MISSING -i/lib/ -isrc:unix/include/
+OPTSWITCH=-O
+CFLAGS= $(CSWITCH) $(OPTSWITCH)
+
+SOURCES = argmatch.c backupfile.c basename.c dirname.c eaccess.c \
+error.c filemode.c fsusage.c getopt.c getopt1.c \
+getversion.c idcache.c isdir.c makepath.c \
+modechange.c mountlist.c savedir.c \
+stripslash.c xgetcwd.c xmalloc.c xstrdup.c yesno.c \
+getdate.y posixtm.y \
+fileblocks.c fnmatch.c ftruncate.c mkdir.c mktime.c rename.c stpcpy.c \
+strdup.c strstr.c
+
+OBJECTS = argmatch.o backupfile.o basename.o dirname.o eaccess.o \
+error.o filemode.o getopt.o getopt1.o \
+getversion.o idcache.o isdir.o makepath.o \
+modechange.o savedir.o \
+stripslash.o xgetcwd.o xmalloc.o xstrdup.o yesno.o \
+getdate.o posixtm.o \
+fnmatch.o mktime.o strstr.o alloca.o
+
+DISTFILES = Makefile.in backupfile.h getopt.h modechange.h \
+fnmatch.h fsusage.h mountlist.h system.h $(SOURCES)
+
+all: fu.lib
+
+TAGS: $(SOURCES)
+	etags $(SOURCES)
+
+fu.lib: $(OBJECTS)
+	-delete fu.lib
+	oml fu.lib r <@<
+$(OBJECTS)
+<
+
+getdate.c: getdate.y
+	@echo expect 9 shift/reduce conflicts
+	-bison -o getdate.c getdate.y
+
+# Make the rename atomic, in case sed is interrupted and later rerun.
+posixtm.c: posixtm.y
+	-bison -o posixtm.tab.c posixtm.y
+	sed -e s/yy/zz/g posixtm.tab.c > tposixtm.c
+	copy tposixtm.c posixtm.c
+	delete force tposixtm.c posixtm.tab.c
+
+alloca.o: alloca.c
+amiga.o: amiga.c
+argmatch.o: argmatch.c
+backupfile.o: backupfile.c backupfile.h
+basename.o: basename.c
+dirname.o: dirname.c
+eaccess.o: eaccess.c
+error.o: error.c
+fileblocks.o: fileblocks.c
+filemode.o: filemode.c
+fnmatch.o: fnmatch.c
+fsusage.o: fsusage.c fsusage.h
+ftruncate.o: ftruncate.c
+getopt.o: getopt.c getopt.h
+getopt1.o: getopt1.c getopt.h
+getversion.o: getversion.c backupfile.h
+idcache.o: idcache.c
+isdir.o: isdir.c
+makepath.o: makepath.c
+mkdir.o: mkdir.c
+mktime.o: mktime.c
+modechange.o: modechange.c modechange.h
+mountlist.o: mountlist.c mountlist.h
+rename.o: rename.c
+savedir.o: savedir.c
+stpcpy.o: stpcpy.c
+strdup.o: strdup.c
+stripslash.o: stripslash.c
+strstr.o: strstr.c
+xgetcwd.o: xgetcwd.c
+xmalloc.o: xmalloc.c
+xstrdup.o: xstrdup.c
+yesno.o: yesno.c
+getdate.o: getdate.c
+posixtm.o: posixtm.c

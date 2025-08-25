@@ -1,0 +1,37 @@
+These file utilities are compiled with SAS C 5.10b and my unix library
+(available at an ftp site near you :-)). The executables are in the c
+directory, formatted man pages (suitable for viewing with more) are in
+cat. They require AmigaDOS 2.04 or later.
+
+The ls program displays unix-like protection flags by default, these
+bear a complex relation to the Amiga ones (see the unix library
+documentation for details). To obviate this problem, ls accepts a
+--amiga option which displays Amiga flags instead. You probably want
+to make this the default by defining an appropriate alias for ls. The
+user name displayed is the contents of the environment variable USER, or
+"user" by default. The group is always wheel.
+
+Not all the programs of the file utilities are compiled for the Amiga:
+
+- du needs more work.
+- cp works but has intrinsic performance problems (ie it is horribly slow
+and can't be made faster without heavy hacking).
+- chown and chgrp make no sense on the Amiga.
+
+Bugs should be reported to me. If I find that the problem is with the
+GNU source, and not my changes, I will forward the report to the Free
+Software Foundation.
+
+To recompile the programs:
+
+a) Make sure that my unix library is installed. The main directory must
+be reachable as src:unix (but you can always change the makefiles if you
+want to).
+
+b) Compile the library in lib by running lmk.
+
+c) Compile the programs in src by running lmk.
+
+David Gay
+dgay@di.epfl.ch
+Ecole Polytechnique Federale de Lausanne, Switzerland
