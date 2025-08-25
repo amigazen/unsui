@@ -1,0 +1,51 @@
+#
+#   SMakefile for top
+#
+# Gary Duncan (gduncan@werple.net.au)
+#
+#
+
+INC=Proto
+
+C_INCS = top.h typedefs.h
+
+# debug stuff ; enable SF
+#
+##SF=debug=sf
+SF= 
+
+O=O/
+
+SO=ObjectName=$(O) noIcons
+
+PROTO	= $(INC)/top_protos.h
+
+TOP	= top
+
+OBJS	= $(O)top.o $(O)top_stub.o
+
+all:	$(TOP) 
+
+$(TOP) : $(PROTO) $(OBJS)
+	slink  FROM lib:c.o  $(OBJS) TO $(TOP)  \
+		LIB lib:sc.lib  lib:amiga.lib noIcons quiet  
+
+#
+# NEEEED nostackcheck below to prevent _XCEXIT link errors!!
+#
+$(O)top.o   : top.c $(C_INCS) 
+	sc $(SF) nover nostackcheck  $(SO) top
+	
+	
+$(O)top_stub.o       : top_stub.asm
+        asm -o$(O) top_stub.asm
+  
+protos:
+	sc novers genprotos GenProtoFile=$(INC)/top_protos.h top.c
+        @Delete $(INC)/\#?.info >nil:
+
+indent:
+	indent -gnu top.c
+
+clean:
+	Delete  $(OBJS) $(TOP)  >nil: 
