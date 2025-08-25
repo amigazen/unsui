@@ -81,3 +81,7 @@ help:
 	@Echo "  clean    - Remove object files and executable"
 	@Echo "  install  - Install to C: directory"
 	@Echo "  help     - Show this help message"
+	@Echo ""
+	@Echo "Usage: bison [OPTIONS] GRAMMAR_FILE"
+	@Echo "  -h, --help     Display help information"
+	@Echo "  -V, --version  Display version information"

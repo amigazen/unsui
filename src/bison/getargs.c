@@ -64,12 +64,26 @@ usage (stream)
      FILE *stream;
 {
   fprintf (stream, "\
-Usage: %s [-dhklntvyV] [-b file-prefix] [-o outfile] [-p name-prefix]\n\
-       [--debug] [--defines] [--fixed-output-files] [--no-lines]\n\
-       [--verbose] [--version] [--help] [--yacc]\n\
-       [--no-parser] [--token-table]\n\
-       [--file-prefix=prefix] [--name-prefix=prefix]\n\
-       [--output=outfile] grammar-file\n",
+Usage: %s [OPTIONS] GRAMMAR_FILE\n\
+\n\
+OPTIONS:\n\
+  -b, --file-prefix=PREFIX    use PREFIX for output files\n\
+  -d, --defines               also produce a header file\n\
+  -h, --help                  display this help and exit\n\
+  -k, --token-table           also produce a token table\n\
+  -l, --no-lines              don't generate #line directives\n\
+  -n, --no-parser             don't generate parser code\n\
+  -o, --output=FILE           write output to FILE\n\
+  -p, --name-prefix=PREFIX    use PREFIX for external symbols\n\
+  -r, --raw                   output raw parser tables\n\
+  -t, --debug                 produce debugging output\n\
+  -v, --verbose               be verbose\n\
+  -V, --version               display version information and exit\n\
+  -y, --yacc                  imitate POSIX yacc\n\
+\n\
+OPERANDS:\n\
+  GRAMMAR_FILE                input grammar file (.y)\n\
+",
 	   program_name);
 }
 
