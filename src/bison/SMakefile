@@ -1,0 +1,83 @@
+# Bison 1.25 SMakefile
+# GNU Compiler Compiler for Amiga 
+
+# Source and object directories
+SRC = 
+OBJ = build-sasc/
+
+# Compiler and flags
+CC = SC
+CFLAGS = includedir=include:
+LDFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib lib:small.lib BATCH
+
+# Compiler definitions
+DEFS = DEF=STDC_HEADERS DEF=HAVE_STRERROR
+
+# Parser files
+PFILE = Bison.simple
+PFILE1 = Bison.hairy
+PFILES = DEFINE XPFILE="PROGDIR:$(PFILE)" DEFINE XPFILE1="PROGDIR:$(PFILE1)"
+
+# Object files
+OBJECTS = $(OBJ)LR0.o     $(OBJ)allocate.o $(OBJ)closure.o $(OBJ)conflicts.o \
+          $(OBJ)derives.o  $(OBJ)files.o    $(OBJ)getargs.o $(OBJ)gram.o      \
+          $(OBJ)lalr.o     $(OBJ)lex.o      $(OBJ)main.o    $(OBJ)nullable.o  \
+          $(OBJ)output.o   $(OBJ)print.o    $(OBJ)reader.o  $(OBJ)reduce.o    \
+          $(OBJ)symtab.o   $(OBJ)warshall.o $(OBJ)getopt.o  $(OBJ)getopt1.o   \
+          $(OBJ)version.o  $(OBJ)alloca.o
+
+# Default target
+all: bison
+
+# Main executable
+bison: $(OBJECTS)
+	@$(CC) $(LDFLAGS) LINK TO $@ $(OBJECTS) $(LIBS)
+
+# Special rule for files.o to pass parser file names
+$(OBJ)files.o: $(SRC)files.c
+	@$(CC) $(PFILES) $(DEFS) $(CFLAGS) $(SRC)files.c OBJNAME=$@
+
+# Standard compilation rules
+$(OBJ)alloca.o:    $(SRC)alloca.c
+$(OBJ)allocate.o:  $(SRC)allocate.c
+$(OBJ)closure.o:   $(SRC)closure.c
+$(OBJ)conflicts.o: $(SRC)conflicts.c
+$(OBJ)derives.o:   $(SRC)derives.c
+$(OBJ)LR0.o:       $(SRC)LR0.c
+$(OBJ)getargs.o:   $(SRC)getargs.c
+$(OBJ)gram.o:      $(SRC)gram.c
+$(OBJ)lalr.o:      $(SRC)lalr.c
+$(OBJ)lex.o:       $(SRC)lex.c
+$(OBJ)main.o:      $(SRC)main.c
+$(OBJ)nullable.o:  $(SRC)nullable.c
+$(OBJ)output.o:    $(SRC)output.c
+$(OBJ)print.o:     $(SRC)print.c
+$(OBJ)reader.o:    $(SRC)reader.c
+$(OBJ)symtab.o:    $(SRC)symtab.c
+$(OBJ)warshall.o:  $(SRC)warshall.c
+$(OBJ)getopt.o:    $(SRC)getopt.c
+$(OBJ)getopt1.o:   $(SRC)getopt1.c
+$(OBJ)reduce.o:    $(SRC)reduce.c
+$(OBJ)version.o:   $(SRC)version.c
+
+# Generic compilation rule
+.c.o:
+	@$(CC) $(DEFS) $(CFLAGS) $< OBJNAME=$@
+
+# Clean target
+clean:
+	-Delete $(OBJ)*.o bison
+
+# Install target
+install: bison
+	Copy bison //SDK/C/ 
+	Copy $(PFILE) //SDK/C/ 
+	Copy $(PFILE1) //SDK/C/ 
+
+# Help target
+help:
+	@Echo "Available targets:"
+	@Echo "  all      - Build bison executable"
+	@Echo "  clean    - Remove object files and executable"
+	@Echo "  install  - Install to C: directory"
+	@Echo "  help     - Show this help message"
