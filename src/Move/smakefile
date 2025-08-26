@@ -1,19 +1,19 @@
 .c.o:
-    lctosc -v -cqs -O $(*).c
+	sc $(CFLAGS) $(SCOPTIONS) $(*).c
 
-.c.i:
-    lctosc -pr -cq -o$(*).i $(*).c
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS 
+LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib NOICONS 
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: 
 
-OFILES= move.o list.o
+OBJS= move.o list.o
 
-IFILES= move.i list.i
+move: $(OBJS)
+	slink $(LDFLAGS) from sc:lib/cres.o $(OBJS) to move
 
-move:       $(OFILES)
-    lntoslink from lib:cres.o $(OFILES) to move lib lib:lc.lib lib:amiga2.0.lib nd sd sc
-    copy move dh0:utils/ clone
-    resi -d move
-    resi dh0:utils/move
+# Clean target
+clean:
+	-delete \#?.(lib|o|do|nbo|dnbo|gst|lst|map) move
 
-funcs.h:    $(IFILES)
-    join $(IFILES) as funcs.h
-    zapfunc funcs.h
+# Install target
+install: move
+	copy move //SDK/C/Move CLONE

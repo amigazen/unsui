@@ -13,6 +13,7 @@
 #include <proto/exec.h>
 #include <proto/dos.h>
 
+#include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
 
@@ -56,8 +57,8 @@ long    cbsize;
 ANCHS   asub[MAXSUB];
 int     sub = -1;
 
-char    v[] = "\0$VER: move 1.0d (JJB "__DATE__")";
-
+static const char *version_tag = "$VER: Move 47.1 (26/08/25)\n";
+static const char *stack_cookie = "$STACK: 4096";
 
 void    mprintf(char *cp,...) /*=========================================*/
 {
@@ -574,13 +575,13 @@ struct FileInfoBlock __aligned fib;
     }
 }
 
-void    _main() /*=======================================================*/
+void    main() /*=======================================================*/
 {
 char    **from;
 
     if (DOSBase->dl_lib.lib_Version < 37) {
         Write(Output(),"move: requires KS2.0\n",21);
-        XCEXIT(1);
+        exit(1);
     }
 
     argh = ReadArgs(ARGT,args,NULL);
@@ -639,5 +640,5 @@ int     i;
     if (inmatch) MatchEnd(&anch);
     if (argh) FreeArgs(argh);
 
-    XCEXIT( (cp)? 1: 0 );
+    exit( (cp)? 1: 0 );
 }
