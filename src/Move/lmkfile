@@ -1,0 +1,19 @@
+.c.o:
+    lctosc -v -cqs -O $(*).c
+
+.c.i:
+    lctosc -pr -cq -o$(*).i $(*).c
+
+OFILES= move.o list.o
+
+IFILES= move.i list.i
+
+move:       $(OFILES)
+    lntoslink from lib:cres.o $(OFILES) to move lib lib:lc.lib lib:amiga2.0.lib nd sd sc
+    copy move dh0:utils/ clone
+    resi -d move
+    resi dh0:utils/move
+
+funcs.h:    $(IFILES)
+    join $(IFILES) as funcs.h
+    zapfunc funcs.h

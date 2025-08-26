@@ -1,0 +1,73 @@
+
+
+
+    MOVE 1.0d                                                 26.06.92
+
+
+
+    ABOUT
+
+    This is a residentable MOVE command for AmigaDOS 2.0. I don't have
+    very complex requirements for such a thing, so please don't
+    consider this as fully tested.
+
+
+    PARAMETERS
+
+    The command template is:
+
+        FROM/M,TO/A,ALL/S,BUF=BUFFER/K/N,CLONE/S,QUIET/S,TEST/S
+
+    where:
+
+        FROM    Parameters can be patterns, directories or files.
+
+        TO      Can be a directory or filename, but not a pattern.
+
+        ALL     Will recurse into directories if FROM is a pattern.
+
+        BUFFER  When copying files, MOVE defaults to using a buffer
+                that is the same size as the file to be moved. If you
+                are short of RAM, this option can be used to set a
+                smaller buffer. The minimum size allowed is 1KB.
+
+        CLONE   If specified, MOVE will attempt to preserve file
+                dates, comments and protection bits. Otherwise it
+                doesn't care. Using the CLONE option requires more
+                work. Directory stuff may not be cloned, depending
+                on various things.
+
+        QUIET   Suppresses all but the most fatal of messages.
+
+        TEST    Displays the source list information, and doesn't
+                move anything.
+
+
+    RANDOM NOTES
+
+    MOVE is written by John Bickers using SAS C 5.10a.
+
+    This program is freely distributable.
+
+    I can be reached at:
+
+        John Bickers
+        214 Rata St
+        Naenae 6301
+        New Zealand
+
+    Or: jbickers@templar.actrix.gen.nz
+
+
+    HISTORY
+
+    17.06.92: 1.0
+    20.06.92: 1.0b
+        copyit() checks Close() result
+        maketoname() uses AddPart()
+    21.06.92: 1.0c
+        added TEST keyword
+        forcedir() now does samevol dirs too
+    26.06.92: 1.0d
+        fixed bug where "move 0 0" would just delete 0, noticed by
+        Matthias Scheler
