@@ -63,9 +63,20 @@ static const char *stack_cookie = "$STACK: 4096";
 void    mprintf(char *cp,...) /*=========================================*/
 {
 va_list vararg;
+    if (!cp) return;  /* NULL pointer check */
+    
     va_start(vararg,cp);
-    vsprintf(buf,cp,vararg);
-    PutStr(buf);
+    /* Limit output to buffer size to prevent overflow */
+    if (strlen(cp) < sizeof(buf) - 100) {  /* Leave room for formatting */
+        vsprintf(buf,cp,vararg);
+        PutStr(buf);
+    } else {
+        /* Truncate message if too long */
+        strncpy(buf, "move: message too long", sizeof(buf) - 1);
+        buf[sizeof(buf) - 1] = '\0';
+        PutStr(buf);
+    }
+    va_end(vararg);
 }
 
 LONG    getvol(name) /*==================================================*/
@@ -76,6 +87,8 @@ BPTR    lock;
 LONG    ret;
 char    c;
 
+    if (!name) return 0;  /* NULL pointer check */
+
     for (cp = name; *cp && *cp != ':'; cp++) ;
     if (!*cp) lock = Lock(":",ACCESS_READ);
     else {
@@ -85,7 +98,10 @@ char    c;
         lock = Lock(name,ACCESS_READ);
         *cp = c;
     }
-    if (!lock) cleanup("move: getvol(%s) Lock() failed\n",name);
+    if (!lock) {
+        mprintf("move: getvol(%s) Lock() failed\n", name ? name : "NULL");
+        return 0;
+    }
 
     ret = (LONG)((struct FileHandle *)(lock << 2))->fh_Port;
     UnLock(lock);
@@ -97,6 +113,8 @@ char    *from;
 {
 char    *cp;
 int     s;
+
+    if (!from) return;  /* NULL pointer check */
 
     strcpy(base,from);
     while (1) {
@@ -117,7 +135,10 @@ int     s;
             strcpy(cp,"/");     /* Restore trailing slash */
             break;
         }
-        if (s == -1) cleanup("move: ParsePattern error\n");
+        if (s == -1) {
+            mprintf("move: ParsePattern error\n");
+            return;  /* Return instead of calling cleanup */
+        }
     }
     samevol = (getvol(base) == destvol);
 }
@@ -127,6 +148,8 @@ char    *name;
 {
 char    *cp;
 BPTR    lock;
+
+    if (!name) return;  /* NULL pointer check */
 
     cp = name;
     while (1) {
@@ -142,7 +165,10 @@ BPTR    lock;
         }
 
         lock = CreateDir(name);
-        if (!lock) cleanup("move: failed to create directory %s\n",name);
+        if (!lock) {
+            mprintf("move: failed to create directory %s\n",name);
+            return;  /* Return instead of calling cleanup */
+        }
         UnLock(lock);
         if (!args[AQUIET]) mprintf("move: %s created\n",name);
 
@@ -154,6 +180,8 @@ void    maketoname(from) /*==============================================*/
 char    *from;
 {
 int     len;
+
+    if (!from) return;  /* NULL pointer check */
 
     strcpy(toname,dest);
     if (!isdir) return;
@@ -170,6 +198,8 @@ int     len;
 void    addfrom(from) /*=================================================*/
 char    *from;
 {
+    if (!from) return;  /* NULL pointer check */
+    
     if (!*from) {
         addpat("#?");
         return;
@@ -182,7 +212,8 @@ char    *from;
             addpat(from);
             break;
         default:
-            cleanup("move: ParsePattern(\"%s\") error\n",from);
+            mprintf("move: ParsePattern(\"%s\") error\n",from);
+            return;  /* Return instead of calling cleanup */
     }
 }
 
@@ -197,7 +228,12 @@ char    *cp;
 BPTR    lock;
 struct FileInfoBlock __aligned fib;
 
-    if (CheckSignal(SIGBREAKF_CTRL_C)) cleanup("move: *** break\n");
+    if (!from) return;  /* NULL pointer check */
+
+    if (CheckSignal(SIGBREAKF_CTRL_C)) {
+        mprintf("move: *** break\n");
+        return;  /* Return instead of calling cleanup */
+    }
 
     lock = Lock(from,ACCESS_READ);
     if (!lock || !Examine(lock,&fib)) {
@@ -215,7 +251,10 @@ struct FileInfoBlock __aligned fib;
             addslash(base);
 
             sprintf(buf,"0%s",base);    /* 0: basename */
-            if (!l_add(buf)) cleanup("move: out of RAM\n");
+            if (!l_add(buf)) {
+                mprintf("move: out of RAM\n");
+                return;  /* Return instead of calling cleanup */
+            }
 
             sub = -1;
             addsub(NULL);
@@ -227,7 +266,10 @@ struct FileInfoBlock __aligned fib;
                 addslash(base);
 
                 sprintf(buf,"4%s",base);
-                if (!l_add(buf)) cleanup("move: out of RAM\n");
+                if (!l_add(buf)) {
+                    mprintf("move: out of RAM\n");
+                    return;  /* Return instead of calling cleanup */
+                }
 
                 sub = -1;
                 addsub(NULL);
@@ -235,14 +277,20 @@ struct FileInfoBlock __aligned fib;
             else {
                 sprintf(buf,"2%s",from);
                 noslash(buf);
-                if (!l_add(buf)) cleanup("move: out of RAM\n");
+                if (!l_add(buf)) {
+                    mprintf("move: out of RAM\n");
+                    return;  /* Return instead of calling cleanup */
+                }
             }
         }
     }
     else {
         sprintf(buf,"%c%s",(samevol)? '2': '3',from);   /* 2/3: full name */
         noslash(buf);
-        if (!l_add(buf)) cleanup("move: out of RAM\n");
+        if (!l_add(buf)) {
+            mprintf("move: out of RAM\n");
+            return;  /* Return instead of calling cleanup */
+        }
     }
 }
 
@@ -250,6 +298,8 @@ char    *noslash(sp) /*==================================================*/
 char    *sp;
 {
 char    *cp;
+    if (!sp) return NULL;  /* NULL pointer check */
+    
     for (cp = sp; *cp; *cp++) ;
     if (cp > sp && *(cp - 1) == '/') *(cp - 1) = 0;
     return(sp);
@@ -259,6 +309,8 @@ char    *addslash(sp) /*=================================================*/
 char    *sp;
 {
 char    *cp;
+    if (!sp) return NULL;  /* NULL pointer check */
+    
     for (cp = sp; *cp; *cp++) ;
     if (cp > sp && (*(cp - 1) == ':')) return(sp);
     *cp++ = '/';
@@ -277,7 +329,10 @@ struct AnchorPath *ap;
 char    *cp;
 int     i,s;
 
-    if (sub + 1 >= MAXSUB) cleanup("move: addsub() too deep\n");
+    if (sub + 1 >= MAXSUB) {
+        mprintf("move: addsub() too deep\n");
+        return;  /* Return instead of calling cleanup */
+    }
 
     strcpy(buf,base);
     if (from) {
@@ -299,7 +354,11 @@ int     i,s;
     sub++;
     s = MatchFirst(buf,ap);
     while (!s) {
-        if (CheckSignal(SIGBREAKF_CTRL_C)) cleanup("move: *** break\n");
+        if (CheckSignal(SIGBREAKF_CTRL_C)) {
+            mprintf("move: *** break\n");
+            sub--;  /* Restore sub level before returning */
+            return;  /* Return instead of calling cleanup */
+        }
 
         if (ap->ap_Info.fib_DirEntryType > 0) addsub(from);
         else {
@@ -309,7 +368,11 @@ int     i,s;
                 strcat(buf,asub[i].ap.ap_Info.fib_FileName);
             }
 
-            if (!l_add(buf)) cleanup("move: out of RAM\n");
+            if (!l_add(buf)) {
+                mprintf("move: out of RAM\n");
+                sub--;  /* Restore sub level before returning */
+                return;  /* Return instead of calling cleanup */
+            }
         }
         s = MatchNext(ap);
     }
@@ -322,12 +385,16 @@ int     i,s;
         if (sub >= 0) strcat(buf,"/");
     }
     for (i = 0; i <= sub; i++) {
+        strcat(buf,"/");
         strcat(buf,asub[i].ap.ap_Info.fib_FileName);
         if (i < sub) strcat(buf,"/");
     }
     for (cp = buf; *cp; cp++) ;
     if (cp > buf && *(cp - 1) == '/') *(cp - 1) = 0;
-    if (!l_add(buf)) cleanup("move: out of RAM\n");
+    if (!l_add(buf)) {
+        mprintf("move: out of RAM\n");
+        return;  /* Return instead of calling cleanup */
+    }
 }
 
 void    addpat(from) /*==================================================*/
@@ -335,8 +402,13 @@ char    *from;
 {
 int     len,s;
 
+    if (!from) return;  /* NULL pointer check */
+
     sprintf(buf,"%c%s",(samevol)? '5': '6',base);
-    if (!l_add(buf)) cleanup("move: out of RAM\n");
+    if (!l_add(buf)) {
+        mprintf("move: out of RAM\n");
+        return;  /* Return instead of calling cleanup */
+    }
 
     len = strlen(base);
     sub = -1;
@@ -348,18 +420,30 @@ int     len,s;
     inmatch = 1;
     s = MatchFirst(from,&anch);
     while (!s) {
-        if (CheckSignal(SIGBREAKF_CTRL_C)) cleanup("move: *** break\n");
+        if (CheckSignal(SIGBREAKF_CTRL_C)) {
+            mprintf("move: *** break\n");
+            inmatch = 0;  /* Reset flag before returning */
+            return;  /* Return instead of calling cleanup */
+        }
 
         if (anch.ap.ap_Info.fib_DirEntryType > 0) {
             if (args[AALL]) {
                 sprintf(buf,"8%s",anch.ap.ap_Buf + len);
-                if (!l_add(buf)) cleanup("move: out of RAM\n");
+                if (!l_add(buf)) {
+                    mprintf("move: out of RAM\n");
+                    inmatch = 0;  /* Reset flag before returning */
+                    return;  /* Return instead of calling cleanup */
+                }
                 addsub(anch.ap.ap_Buf + len);
             }
         }
         else {
             sprintf(buf,"7%s",anch.ap.ap_Buf + len);
-            if (!l_add(buf)) cleanup("move: out of RAM\n");
+            if (!l_add(buf)) {
+                mprintf("move: out of RAM\n");
+                inmatch = 0;  /* Reset flag before returning */
+                return;  /* Return instead of calling cleanup */
+            }
         }
         s = MatchNext(&anch);
     }
@@ -374,7 +458,10 @@ char    *basep,*dirp,*sp;
     basep = "";
     dirp  = NULL;
     for (sp = l_first(); sp; sp = l_next()) {
-        if (CheckSignal(SIGBREAKF_CTRL_C)) cleanup("move: *** break\n");
+        if (CheckSignal(SIGBREAKF_CTRL_C)) {
+            mprintf("move: *** break\n");
+            return;  /* Return instead of calling cleanup */
+        }
         switch (*sp) {
             case ('0'):     /* !samevol, basename for subdir, ensure dir is created */
                 basep = sp + 1;
@@ -393,11 +480,6 @@ char    *basep,*dirp,*sp;
                 dirp = NULL;
                 samevol = 0;
                 moveit(sp + 1,NULL,NULL);
-                break;
-            case ('4'):     /* samevol, basename for subdir */
-                basep = sp + 1;
-                dirp = NULL;
-                samevol = 1;
                 break;
             case ('5'):     /* samevol, basename for pattern */
                 basep = sp + 1;
@@ -430,6 +512,8 @@ char    *basep,*dirp,*sp;
 void    moveit(basep,dirp,nodep) /*======================================*/
 char    *basep,*dirp,*nodep;
 {
+    if (!basep) return;  /* NULL pointer check */
+
     strcpy(base,basep);
     if (dirp) AddPart(base,dirp,sizeof(base));
     if (nodep) AddPart(base,nodep,sizeof(base));
@@ -454,6 +538,8 @@ BPTR    lock;
 int     len,s;
 struct FileInfoBlock __aligned fib;
 
+    if (!basep || !nodep) return;  /* NULL pointer check */
+
   /* basep contains the base part, nodep actually contains the whole thing */
     len = strlen(basep);
 
@@ -464,14 +550,20 @@ struct FileInfoBlock __aligned fib;
     if (lock) {
         s = Examine(lock,&fib);
         UnLock(lock);
-        if (!s || fib.fib_DirEntryType < 0) cleanup("move: can't create directory %s\n",toname);
+        if (!s || fib.fib_DirEntryType < 0) {
+            mprintf("move: can't create directory %s\n",toname);
+            return;  /* Return instead of calling cleanup */
+        }
     }
     else {
         lock = CreateDir(toname);
         if (!lock) {
             checkpath(toname);
             lock = CreateDir(toname);
-            if (!lock) cleanup("move: can't create directory %s\n",toname);
+            if (!lock) {
+                mprintf("move: can't create directory %s\n",toname);
+                return;  /* Return instead of calling cleanup */
+            }
         }
         UnLock(lock);
         if (!args[AQUIET]) mprintf("move: created %s\n",toname);
@@ -498,6 +590,8 @@ char    *fname,*tname;
 {
 BPTR    lock;
 
+    if (!fname || !tname) return;  /* NULL pointer check */
+
     lock = Lock(fname,ACCESS_READ);     /* So DeleteFile() will fail if tname == fname */
     DeleteFile(tname);
     if (lock) UnLock(lock);
@@ -505,7 +599,10 @@ BPTR    lock;
     if (Rename(fname,tname)) return;
 
     checkpath(tname);
-    if (!Rename(fname,tname)) cleanup("move: failed to rename %s to %s\n",fname,tname);
+    if (!Rename(fname,tname)) {
+        mprintf("move: failed to rename %s to %s\n",fname,tname);
+        return;  /* Return instead of calling cleanup */
+    }
 }
 
 void    copyit(fname,tname) /*===========================================*/
@@ -515,20 +612,37 @@ BPTR    lock;
 long    s,size;
 struct FileInfoBlock __aligned fib;
 
-    lock = Lock(fname,ACCESS_READ);
-    if (!lock) cleanup("move: can't find %s\n",fname);
+    if (!fname || !tname) return;  /* NULL pointer check */
 
-    if (!Examine(lock,&fib)) cleanup("move: can't examine %s\n",fname);
+    lock = Lock(fname,ACCESS_READ);
+    if (!lock) {
+        mprintf("move: can't find %s\n",fname);
+        return;  /* Return instead of calling cleanup */
+    }
+
+    if (!Examine(lock,&fib)) {
+        mprintf("move: can't examine %s\n",fname);
+        UnLock(lock);
+        return;  /* Return instead of calling cleanup */
+    }
     UnLock(lock);
 
     cpi = Open(fname,MODE_OLDFILE);
-    if (!cpi) cleanup("move: can't read %s\n",fname);
+    if (!cpi) {
+        mprintf("move: can't read %s\n",fname);
+        return;  /* Return instead of calling cleanup */
+    }
 
     cpo = Open(tname,MODE_NEWFILE);
     if (!cpo) {
         checkpath(tname);
         cpo = Open(tname,MODE_NEWFILE);
-        if (!cpo) cleanup("move: can't write %s\n",tname);
+        if (!cpo) {
+            mprintf("move: can't write %s\n",tname);
+            Close(cpi);  /* Clean up input file handle */
+            cpi = 0;
+            return;  /* Return instead of calling cleanup */
+        }
     }
 
     size = args[ABUF];
@@ -539,7 +653,15 @@ struct FileInfoBlock __aligned fib;
         if (cb) FreeMem(cb,cbsize);
         cbsize = size;
         cb = AllocMem(cbsize,0L);
-        if (!cb) cleanup("move: out of RAM for copy (needed %ld bytes)\n",cbsize);
+        if (!cb) {
+            mprintf("move: out of RAM for copy (needed %ld bytes)\n",cbsize);
+            Close(cpo);  /* Clean up output file handle */
+            Close(cpi);  /* Clean up input file handle */
+            cpo = 0;
+            cpi = 0;
+            DeleteFile(tname);  /* Remove partial output file */
+            return;  /* Return instead of calling cleanup */
+        }
     }
 
     while (1) {
@@ -551,7 +673,10 @@ struct FileInfoBlock __aligned fib;
             Close(cpo);
             cpo = 0;
             DeleteFile(tname);
-            cleanup("move: error writing %s, file removed\n",tname);
+            mprintf("move: error writing %s, file removed\n",tname);
+            Close(cpi);  /* Clean up input file handle */
+            cpi = 0;
+            return;  /* Return instead of calling cleanup */
         }
         if (size < cbsize) break;
     }
@@ -560,7 +685,10 @@ struct FileInfoBlock __aligned fib;
     cpo = 0;
     if (!s) {
         DeleteFile(tname);
-        cleanup("move: error closing %s, file removed\n",tname);
+        mprintf("move: error closing %s, file removed\n",tname);
+        Close(cpi);  /* Clean up input file handle */
+        cpi = 0;
+        return;  /* Return instead of calling cleanup */
     }
 
     Close(cpi);
@@ -585,7 +713,11 @@ char    **from;
     }
 
     argh = ReadArgs(ARGT,args,NULL);
-    if (!argh || !args[AFROM] || !args[ATO]) cleanup("move: required argument missing\n");
+    if (!argh || !args[AFROM] || !args[ATO]) {
+        mprintf("move: required argument missing\n");
+        cleanup(NULL);
+        return;
+    }
 
   /* Process TO argument first */
     dest = (char *)(args[ATO]);
@@ -594,7 +726,11 @@ char    **from;
     else {
     BPTR    lock;
     struct FileInfoBlock __aligned fib;
-        if (ParsePattern(dest,buf,sizeof(buf)) == 1) cleanup("move: destination cannot be a pattern\n");
+        if (ParsePattern(dest,buf,sizeof(buf)) == 1) {
+            mprintf("move: destination cannot be a pattern\n");
+            cleanup(NULL);
+            return;
+        }
         lock = Lock(dest,ACCESS_READ);
         if (lock && Examine(lock,&fib) && fib.fib_DirEntryType > 0) isdir = 1;
         if (lock) UnLock(lock);
@@ -629,6 +765,7 @@ int     i;
         va_start(vararg,cp);
         vsprintf(buf,cp,vararg);
         PutStr(buf);
+        va_end(vararg);
     }
 
     for (i = 0; i <= sub; i++) MatchEnd(&(asub[i].ap));
@@ -640,5 +777,5 @@ int     i;
     if (inmatch) MatchEnd(&anch);
     if (argh) FreeArgs(argh);
 
-    exit( (cp)? 1: 0 );
+    /* Don't call exit() - let calling function handle it */
 }
