@@ -22,6 +22,7 @@
 
 /// Global Variables
 const char *version = "\0$VER: cc 1.6 (26/08/2025)\n";
+const char *stack_cookie = "$STACK: 8192";
 struct Process *MyProc;
 List LibList;
 ///

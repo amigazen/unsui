@@ -8,10 +8,10 @@ scc:	$(OBJS) smakefile
 	sc LINK $(CFLAGS) $(OBJS) TO scc
 
 sstcc:	stcc.c smakefile
-	sc LINK $(CFLAGS) stcc.c TO sstcc
+	sc LINK $(CFLAGS) stcc.c LIB LIB:amiga.lib TO scc
 
 install:
-	copy scc sc:c/scc
+	copy scc //SDK/C/cc
 
 clean:
 	delete \#?.o scc
