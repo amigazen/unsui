@@ -66,7 +66,7 @@ char **argv;
              The program will write an error message to standard error and
              terminate. */
      {
-          fprintf(stderr, "Usage: shar outputfile file[s]\n");
+          fprintf(stderr, "Usage: shar output_file file...\n");
           return(-1);
      }
 
@@ -83,7 +83,7 @@ char **argv;
                     /* If we couldn't open the file for writing print an
                        error message and terminate. */
                {
-                    fprintf(stderr, "Shar: Couldn't open %s for output.\n",
+                    fprintf(stderr, "shar: Couldn't open %s for output.\n",
                             argv[1]);
                     if (errno > 0 && errno < sys_nerr)
                          /* If there is an entry in the system error list
@@ -101,7 +101,7 @@ char **argv;
                   exists so we want to display the error message and
                   terminate. */
           {
-               fprintf(stderr, "Shar: %s already exists.\n", argv[1]);
+               fprintf(stderr, "shar: %s already exists.\n", argv[1]);
                return(-1);
           }
      }
@@ -113,7 +113,7 @@ char **argv;
                /* We don't care if fclose fails--we're going to terminate
                   the program anyway--so we ignore the value it returns by
                   casting it to a void. */
-          fprintf(stderr, "Shar: %s already exists.\n", argv[1]);
+          fprintf(stderr, "shar: %s already exists.\n", argv[1]);
           return(-1);
      }
 
@@ -147,7 +147,7 @@ char **argv;
                /* Try to open the file for reading.  If the open fails write
                   an error message. */
           {
-               fprintf(stderr, "Shar: couldn't open %s for input.\n",
+               fprintf(stderr, "shar: couldn't open %s for input.\n",
                        argv[i]);
                if (errno > 0 && errno < sys_nerr)
                     /* If there is an entry in the system error list

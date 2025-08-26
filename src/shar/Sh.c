@@ -67,13 +67,13 @@ char **argv;
       /* This points to the list of Token structures returned by parse(). */
 
    if ((argc != 2) || (argv[1][0] == '?'))
-      fatal("Usage: Sh file.");
+      fatal("Usage: unshar archive_file");
       /* If the user requested one or provided the wrong number of arguments
          print a usage message and terminate. */
 
    if ((ifile = fopen(*(argv + 1), "r")) == NULL)
    {
-      sprintf(errmsg, "Sh: Can't open %s for input.", *(argv + 1));
+      sprintf(errmsg, "unshar: Can't open %s for input.", *(argv + 1));
       fatal(errmsg);
    }
       /* If we can't open the input file print an error message and
@@ -96,7 +96,7 @@ char **argv;
             if ((text = malloc(linelen)) == NULL)
                /* If we couldn't allocate memory for the token text print an
                   error message and terminate. */
-               fatal("Sh: Couldn't allocate buffer for token text.");
+               fatal("unshar: Couldn't allocate buffer for token text.");
             textlen = linelen;
                /* Remember the new text buffer length. */
          }
@@ -122,7 +122,7 @@ char **argv;
                   case T_GT:
                      if ((ofile = fopen(token->text, "w")) == NULL)
                      {
-                        sprintf(errmsg, "Sh: Can't open %s.", token->text);
+                        sprintf(errmsg, "unshar: Can't open %s.", token->text);
                         fatal(errmsg);
                      }
                      state = T_WORD;

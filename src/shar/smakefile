@@ -1,0 +1,47 @@
+# shar command SMakefile for Unsui POSIX runtime
+
+# Tools
+CC = sc
+LD = slink
+RM = delete
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS
+LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib NOICONS
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
+
+# Object files for shar (shell archive creator)
+SHAR_OBJS = sc:lib/cres.o Shar.o Fgetline.o Fatal.o
+
+# Object files for unshar (shell archive unpacker)
+UNSHAR_OBJS = sc:lib/cres.o Sh.o Fgetline.o Fatal.o Parse.o Gettoken.o
+
+# Main target
+all: shar unshar
+
+# Build shar command (shell archive creator)
+shar: $(SHAR_OBJS)
+	$(LD) $(LDFLAGS) FROM $(SHAR_OBJS) TO shar
+
+# Build unshar command (shell archive unpacker)
+unshar: $(UNSHAR_OBJS)
+	$(LD) $(LDFLAGS) FROM $(UNSHAR_OBJS) TO unshar
+
+# Compile source files
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+Shar.o: Shar.c /common/common.h
+Sh.o: Sh.c Token.h /common/common.h
+Fgetline.o: Fgetline.c
+Fatal.o: Fatal.c
+Parse.o: Parse.c Token.h
+Gettoken.o: Gettoken.c Token.h
+
+# Clean target
+clean:
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) shar unshar
+
+# Install target
+install: shar unshar
+	copy shar //SDK/C/shar
+	copy unshar //SDK/C/unshar
