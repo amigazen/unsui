@@ -1,0 +1,4 @@
+FROM LIB:c.o+Shar.o
+TO Shar
+LIB LIB:lc.lib+LIB:amiga.lib
+MAP Shar.map

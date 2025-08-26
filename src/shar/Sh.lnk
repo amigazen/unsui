@@ -1,0 +1,6 @@
+FROM LIB:c.o+Sh.o+Fatal.o+Fgetline.o+Gettoken.o+Parse.o
+TO Sh
+LIB LIB:lc.lib+LIB:amiga.lib
+MAP ram:Sh.map
+NODEBUG
+VERBOSE

@@ -1,0 +1,87 @@
+
+
+
+
+
+
+                        Sh: Unpack Files from Shell Archive
+                                        by
+                               Fabbian G. Dufoe, III
+
+
+
+          INTRODUCTION
+
+               Sh is a program designed to unpack shell archives created
+          with my Shar program.  It works by recognizing the "cat" and
+          "echo" commands and by correctly processing quoted strings, >
+          (standard output redirection), and << ("here document"
+          redirection).  It does not rely on the existence of any external
+          programs.
+
+               The shell archive is a technique which makes it easier to
+          manipulate collections of related files.  To create a shell
+          archive file two or more files are concatenated into a single
+          file.  Shell commands are interspersed with the original files.
+          That is called packing.  When a command processor reads the shell
+          archive file the shell commands cause it to create the original
+          files.  That is called unpacking.
+
+               The simplest program to pack a shell archive might work by
+          prefixing the file with "cat > file <<string" where "file" is the
+          name of the file and "string" is a character string which won't
+          occur in the file itself.  Next the program copies the text of the
+          file.  Finally, it writes a line beginning with "string".
+
+               A nicer version would write "echo Creating file" before the
+          "cat" command.  Then the shell will report on its progress as it
+          unpacks the files.  that is how my Shar program works.  A lot of
+          programs pack shell archives essentially the same way but include
+          other commands to provide additional enhancements.  Because Sh
+          ignores any commands except "echo" and "cat" it will handle those
+          files correctly, although it does not support the added features.
+          it will not handle files which rely on commands like "sed" for
+          unpacking.
+
+
+          EXECUTION
+
+               To run Sh type "Sh file" where "file" is the name of the
+          shell archive file to be unpacked.  If the shell archive file is
+          not in the current directory it can be located by either a
+          relative or absolute path name.  The unpacked files will be
+          located relative to the current directory unless they have
+          absolute path names.  There are no command line options.
+
+
+          SUMMARY OF EXECUTION
+
+               Sh reads the shell archive file until it encounters a line
+          beginning with "echo" or "cat".  If the line begins with "echo" Sh
+
+
+
+
+
+
+
+
+
+
+
+
+          writes the rest of the line to standard output.
+
+               If the line begins with "cat" the processing is more
+          complicated.  The program checks for ">" or "<<".  If it finds ">"
+          it uses the following word as a file name to open for writing.  If
+          it finds "<<" it remembers the following string as a terminator.
+
+               Once the "cat" command line has been parsed Sh goes into
+          "copy" mode.  It reads a line from the file.  If the line doesn't
+          match the terminator string Sh writes it to the output file.  When
+          the terminator string is encountered it closes the output file and
+          leave "copy" mode.
+
+               When Sh encounters end of file it closes its input file and
+          terminates.
