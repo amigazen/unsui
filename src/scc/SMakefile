@@ -1,0 +1,24 @@
+CC= sc
+SCOPTS= PARAMETERS=REGISTERS NOSTACKCHECK NOSTANDARDIO NOMULTIPLEINCLUDES \
+STRUCTUREEQUIVALENCE STRINGMERGE OPTIMIZE OPTIMIZERINLINELOCAL SMALLCODE \
+SMALLDATA NOVERSION NOICONS MEMORYSIZE=HUGE BATCH STRIPDEBUG STARTUP=cres
+
+scc: SCOPTIONS scc.o
+   $(CC) link scc.o to scc
+
+cc: scc
+   copy scc cc
+
+SCOPTIONS: SMakefile
+   copy to $@ <from <
+$(SCOPTS)
+<
+
+scc.o: scc.c
+
+install: scc cc
+   copy scc //SDK/C/cc
+   copy cc //SDK/C/cc
+
+clean:
+   -delete quiet \#?.(o|lnk|info) SCOPTIONS cc
