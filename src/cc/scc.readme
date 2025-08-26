@@ -1,0 +1,16 @@
+Short:    GCC-like frontend for SAS/C
+Author:   fasten@cs.bonn.edu (Bernhard Fastenrath)
+Uploader: fasten@cs.bonn.edu (Bernhard Fastenrath)
+Version:  1.5
+Type:     dev/c
+
+Translates unix filenames and gcc-style options to
+AmigaOS filenames and SAS/C 6.x options.
+
+scc -E now can call the GNU cpp instead of "sc pponly"
+if compiled with the PPONLY_WITH_CPP option (in scc.h)
+(Thanks to Lars Hecking for pointing out that the
+ SAS/C preprocessor is not ANSI compliant)
+
+The next step will, of course, be the replacement of
+the main compiler ... :)
