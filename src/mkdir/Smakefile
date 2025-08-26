@@ -3,20 +3,19 @@
 #
 
 # use this, if mkdir should always create a icon
-ICON	= define DEFAULT_ICON
+# ICON	= define DEFAULT_ICON
 
 # use this, if mkdir should create icons only if the
 # keyword ICON is given
-# ICON	= 
+ICON	= 
 
 CFLAGS  = $(ICON)
-LFLAGS  = SMALLCODE SMALLDATA ADDSYM QUIET NOICONS
+LFLAGS  = SMALLCODE SMALLDATA QUIET NOICONS
 
 mkdir: mkdir.o 
-	Slink $(LFLAGS) FROM mkdir.o TO mkdir
-	protect mkdir +p
+	slink $(LFLAGS) FROM sc:lib/c.o mkdir.o /common/common.o /common/getopt.o TO mkdir LIB sc:lib/sc.lib lib:small.lib
 
-mkdir.o: mkdir.c lmkfile Smakefile SCOPTIONS
+mkdir.o: mkdir.c 
 
 clean:
 	-delete mkdir.o mkdir

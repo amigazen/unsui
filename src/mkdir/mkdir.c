@@ -1,280 +1,556 @@
-
 /*
- *  mkdir.c
- *
- *  Author: Georg Hessmann (hessmann@fmi.uni-passau-de)
- *
- *  Copyright: source is public domain, no copyright
- *
- *  Version history:
- *
- *  1.0  25.Sep.92  First release.
- *
- *  1.1  04.Okt.92  Add DEFAULT_ICON define.
- *                  If the define is defined, than mkdir creates always
- *                  a icon, exept NOICON is given.
- *                  If DEFAULT_ICON is not defined, mkdir works like the 
- *                  c:makedir, exept the keyword ICON is given.
- *
- *  1.2  27.Okt.92  Add SAS/C 6.0 support. Initial function needs __saveds!
- *
- *  1.3  01.Nov.92  Borrowed a idea of James McDonald's and Mark McPherson's
- *                  mmdir. Now mkdir can create multiple directories at once.
- *                  (e.g. ram:not_exist_1/not_exist_2 will create both dirs)
- *                  mkdir is a good example of the power of C:
- *                  mkdir does more than mmdir, but is smaller than mmdir.
- *                  But mmdir is completly in ASM, mkdir in C.
- *
+ * mkdir - Unsui POSIX runtime for Amiga
+ * 
+ * Copyright (c) 2025 amigazen project. All rights reserved.
+ * Based on mkdir by Georg Hessmann (hessmann@fmi.uni-passau.de)
+ * 
+ * This version integrates AmigaDOS ReadArgs and standard POSIX getopt
+ * for command-line parsing, providing both POSIX compatibility and
+ * Amiga native functionality.
+ * 
+ * SPDX-License-Identifier: BSD-2-Clause
+ * See LICENSE.md for full license text.
+ * 
  */
 
-
-#define VERSION "1.3"
-
-static const char version[] = "\0$VER: mkdir " VERSION " (11/01/92)";
-
-
-#define SysBase		pb->pb_SysBase
-#define DOSBase		pb->pb_DOSBase
-#define IconBase	pb->pb_IconBase
-
-
-/*
- * Amiga-Includes
- */
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #include <exec/types.h>
 #include <dos/dos.h>
 #include <dos/dosasl.h>
+#include <dos/rdargs.h>
 #include <workbench/workbench.h>
+#include <exec/memory.h>
 
-#include <clib/dos_protos.h>
-#include <clib/exec_protos.h>
-#include <clib/icon_protos.h>
-#include <pragmas/dos_pragmas.h>
-#include <pragmas/exec_pragmas.h>
-#include <pragmas/icon_pragmas.h>
+#include <proto/dos.h>
+#include <proto/exec.h>
+#include <proto/icon.h>
 
+#include "common.h"
+#include "getopt.h"
 
-/*
- * Define SAS/C builtin function
- */
+extern struct DosLibrary *DOSBase;
 
-#define strlen __builtin_strlen
-extern int strlen(char *);
+/* Version tag for Amiga */
+static const char *verstag = "$VER: mkdir 1.1 (23/08/25)\n";
+static const char *stack_cookie = "$STACK: 4096";
 
+/* Magic numbers suggested or required by Posix specification */
+#define SUCCESS 0               /* exit code in case of success */
+#define FAILURE 1               /* or failure */
 
-/*
- * Usefull macro to check Ctrl-C
- */
-
-#define IsCtrlC		(SetSignal(0L,SIGBREAKF_CTRL_C) & SIGBREAKF_CTRL_C)
-
-
-
-/*
- * Used error strings
- */
-
-#define MSG_DI_OBJ	"Can't create icon %s.info\n"
-#define MSG_ERR_CRE	"Can't create directory %s\n"
-#define MSG_ALR_EX	"%s already exists\n"
-#define MSG_NO_ARG	"No name given\n"
-
-
-/*
- * Template for ReadArgs()
- */
-
-#if defined(DEFAULT_ICON)
-#  define TEMPLATE	"NI=NOICON/S,NAME/M"
-#else
-#  define TEMPLATE	"ICON/S,NAME/M"
-#endif
-
-
-
-/*
- * Structure of pseudo global variables.
- */
-
-struct ParamBlock {
-#if defined(__USE_SYSBASE) || !defined(__SASC_60)
-  struct Library       * pb_SysBase;
-#endif
-  struct Library       * pb_DOSBase;
-  struct Library       * pb_SysBase;
-  struct Library       * pb_IconBase;
-  int                    pb_CreateIcons;
+/* For ReadArgs template */
+enum {
+    ARG_DIRECTORY,
+    ARG_PARENTS,
+    ARG_MODE,
+    ARG_VERBOSE,
+    ARG_ICON,
+    ARG_NOICON,
+    ARG_POSIX,
+    ARG_COUNT
 };
 
+/* Global options structure */
+typedef struct {
+    BOOL parents_flag;          /* -p: create parent directories */
+    BOOL verbose_flag;          /* -v: verbose output */
+    BOOL icon_flag;             /* Create .info files */
+    char *mode_string;          /* -m: mode string */
+    int exit_code;              /* Exit code */
+} MkdirOptions;
 
-/*
- * Prototypes of help functions
- */
+/* Function declarations for forward references */
+void usage(const char *program);
+void print_version(const char *program);
+int run_mkdir_logic(MkdirOptions *options, int dir_count, char **directories, const char *program);
+void parse_getopt_args(int argc, char **argv, MkdirOptions *options, int *dir_start, const char *program);
+void init_options(MkdirOptions *options);
+void cleanup_options(MkdirOptions *options);
 
-static int CreateTree(struct ParamBlock * pb, char * ptr);
-static int CreateOneDir(struct ParamBlock * pb, char * ptr);
+/* Static function declarations */
+static int create_directory(const char *dirname, MkdirOptions *options, const char *program);
+static int create_parent_directories(const char *full_path, MkdirOptions *options, const char *program);
+static BOOL create_directory_icon(const char *dirname, const char *program);
 
-
-/*
- * Main function. Must be the first in the module
- */
-
-long __saveds main(void)
+/* Main function: dispatcher for parsing style */
+int main(int argc, char **argv)
 {
-  long rc = RETURN_OK;
-  long options[2];
-  struct RDArgs * args;
-  struct ParamBlock Params;
-  struct ParamBlock * pb = &Params;
-
-#if defined(__USE_SYSBASE) || !defined(__SASC_60)
-  Params.pb_SysBase  = *(struct Library **)(4);
-#endif
-  Params.pb_DOSBase  = OpenLibrary("dos.library", 37);
-  Params.pb_IconBase = OpenLibrary("icon.library", 37);
-  if (!(Params.pb_DOSBase && Params.pb_IconBase)) return RETURN_FAIL;
-
-  options[0] = options[1] = 0L;
-  args = ReadArgs(TEMPLATE, options, NULL);
-  if (args) {
-    char ** dirs = (char **)options[1];
-    if (dirs) {
-      char * ptr;
-
-#if defined(DEFAULT_ICON)
-      Params.pb_CreateIcons = !options[0];	// key -- NOICON
-#else
-      Params.pb_CreateIcons = options[0];	// key -- ICON
-#endif
-
-      for (; rc == RETURN_OK && (ptr = *dirs); dirs++) {
-        BPTR lock;
-
-        lock = Lock(ptr, ACCESS_READ);
-        if (lock) {
-          UnLock(lock);
-          VPrintf(MSG_ALR_EX, (long*)&ptr);
-          rc = RETURN_ERROR;
-        }
-        else {
-          rc = CreateTree(pb, ptr);
-        }
-      }
+    MkdirOptions options;
+    int dir_start = 1;
+    char **directories = NULL;
+    char *program;
     
-      FreeArgs(args);
-    }
-    else {
-      PutStr(MSG_NO_ARG);
-      rc = RETURN_ERROR;
-    }
-  }
-  else {
-    PrintFault(IoErr(), NULL);
-    rc = RETURN_ERROR;
-  }
-  
-  CloseLibrary(Params.pb_IconBase);
-  CloseLibrary(Params.pb_DOSBase);
+    /* ReadArgs Path Variables */
+    const char *template = "DIRECTORY/M,PARENTS/S,MODE/K,VERBOSE/S,ICON/S,NOICON/S,POSIX/K/F";
+    LONG arg_array[ARG_COUNT] = {0};
+    struct RDArgs *rdargs = NULL;
+    char *cmd_string = NULL;
+    int ret_code = SUCCESS;
+    BOOL interactive_help = FALSE;
+    
+    /* POSIX/F Path Variables */
+    char *posix_str;
+    int new_argc;
+    char *new_argv[MAX_TEMPLATE_ITEMS];
+    int i;
+    int dir_count;
+    char initial_args_str[256];
+    char user_input_buf[256];
+    char *temp_str;
+    size_t combined_len;
 
-  return rc;
+    if (argc < 1) {
+        exit(FAILURE);
+    }
+    
+    program = my_basename(argv[0]);
+
+    if (argc == 1) {
+        /* No arguments, show usage */
+        usage(program);
+        return FAILURE;
+    }
+
+    /* Initialize options */
+    init_options(&options);
+
+    /* --- Logic to decide which parser to use --- */
+    if (is_getopt_style(argc, argv)) {
+        /* --- GETOPTS PATH --- */
+        parse_getopt_args(argc, argv, &options, &dir_start, program);
+        directories = &argv[dir_start];
+        dir_count = argc - dir_start;
+        
+        if (dir_count == 0) {
+            fprintf(stderr, "%s: missing operand\n", program);
+            usage(program);
+            cleanup_options(&options);
+            return FAILURE;
+        }
+        
+        return run_mkdir_logic(&options, dir_count, directories, program);
+        
+    } else {
+        /* --- READARGS PATH --- */
+        for (i = 1; i < argc; i++) {
+            if (strcmp(argv[i], "?") == 0) {
+                interactive_help = TRUE;
+                break;
+            }
+        }
+
+        rdargs = AllocDosObject(DOS_RDARGS, NULL);
+        if (!rdargs) {
+            fprintf(stderr, "%s: out of memory for RDArgs\n", program);
+            cleanup_options(&options);
+            return FAILURE;
+        }
+
+        if (interactive_help) {
+            /* Initialize buffers */
+            initial_args_str[0] = '\0';
+            user_input_buf[0] = '\0';
+
+            /* Build a string from any args that are NOT '?' */
+            temp_str = build_command_string(argc, argv, "?");
+            if (temp_str) {
+                strncpy(initial_args_str, temp_str, 255);
+                free(temp_str);
+            }
+
+            /* Print template and prompt for more input */
+            printf("%s: ", template);
+            fflush(stdout);
+            if (fgets(user_input_buf, sizeof(user_input_buf), stdin)) {
+                /* Combine initial args with the new user input */
+                combined_len = strlen(initial_args_str) + strlen(user_input_buf) + 2;
+                cmd_string = malloc(combined_len);
+                if (cmd_string) {
+                    strcpy(cmd_string, initial_args_str);
+                    if (initial_args_str[0] != '\0' && user_input_buf[0] != '\n') {
+                        strcat(cmd_string, " ");
+                    }
+                    strcat(cmd_string, user_input_buf);
+                }
+            } else {
+                cmd_string = strdup(initial_args_str);
+                if (cmd_string) strcat(cmd_string, "\n");
+            }
+        } else {
+            /* Standard case: build command string from all args */
+            cmd_string = build_command_string(argc, argv, NULL);
+        }
+
+        if (!cmd_string) {
+            fprintf(stderr, "%s: out of memory for command string\n", program);
+            FreeDosObject(DOS_RDARGS, rdargs);
+            cleanup_options(&options);
+            return FAILURE;
+        }
+
+        /* Set up ReadArgs to parse from our string */
+        rdargs->RDA_Source.CS_Buffer = cmd_string;
+        rdargs->RDA_Source.CS_Length = strlen(cmd_string);
+        rdargs->RDA_Source.CS_CurChr = 0;
+        rdargs->RDA_Flags |= RDAF_NOPROMPT;
+
+        if (!ReadArgs(template, arg_array, rdargs)) {
+            PrintFault(IoErr(), program);
+            FreeDosObject(DOS_RDARGS, rdargs);
+            free(cmd_string);
+            cleanup_options(&options);
+            return FAILURE;
+        }
+
+        /* Check for POSIX/F override first */
+        if (arg_array[ARG_POSIX]) {
+            posix_str = (char *)arg_array[ARG_POSIX];
+
+            /* Tokenize the string and build a new argv for getopt */
+            new_argv[0] = program;
+            new_argc = tokenize_string(posix_str, &new_argv[1], MAX_TEMPLATE_ITEMS - 1) + 1;
+
+            parse_getopt_args(new_argc, new_argv, &options, &dir_start, program);
+            directories = &new_argv[dir_start];
+            dir_count = new_argc - dir_start;
+            
+            if (dir_count == 0) {
+                fprintf(stderr, "%s: missing operand\n", program);
+                usage(program);
+                cleanup_readargs(rdargs, cmd_string);
+                cleanup_options(&options);
+                return FAILURE;
+            }
+            
+            ret_code = run_mkdir_logic(&options, dir_count, directories, program);
+
+        } else {
+            /* Standard ReadArgs processing */
+            if (arg_array[ARG_PARENTS]) {
+                options.parents_flag = TRUE;
+            }
+            if (arg_array[ARG_VERBOSE]) {
+                options.verbose_flag = TRUE;
+            }
+            if (arg_array[ARG_MODE]) {
+                options.mode_string = strdup((char *)arg_array[ARG_MODE]);
+            }
+            if (arg_array[ARG_ICON]) {
+                options.icon_flag = TRUE;
+            }
+            if (arg_array[ARG_NOICON]) {
+                options.icon_flag = FALSE;
+            }
+            
+            /* Get directories from ReadArgs */
+            if (arg_array[ARG_DIRECTORY]) {
+                /* Count directories and allocate array */
+                dir_count = 0;
+                while (((char **)arg_array[ARG_DIRECTORY])[dir_count] != NULL) {
+                    dir_count++;
+                }
+                
+                directories = (char **)arg_array[ARG_DIRECTORY];
+                ret_code = run_mkdir_logic(&options, dir_count, directories, program);
+            } else {
+                /* No directories specified */
+                fprintf(stderr, "%s: missing operand\n", program);
+                usage(program);
+                ret_code = FAILURE;
+            }
+        }
+
+        /* Clean up ReadArgs */
+        cleanup_readargs(rdargs, cmd_string);
+    }
+    
+    cleanup_options(&options);
+    return ret_code;
 }
 
-
-/*
- *  CreateTree()
- *
- *  Create all not existing directories of path 'ptr'.
- *  Find recursive the first existing dir of the path.
- *  Than with the solving of the recursion, create all
- *  needed directories.
- *  Check for Ctrl-C, too.
- *
+/**
+ * @brief Parse arguments using getopt (POSIX style)
+ * @param argc Argument count
+ * @param argv Argument vector
+ * @param options Options structure to populate
+ * @param dir_start Index where directories start
+ * @param program Program name for error messages
  */
-
-static int CreateTree(struct ParamBlock * pb, char * ptr)
+void parse_getopt_args(int argc, char **argv, MkdirOptions *options, int *dir_start, const char *program)
 {
-  BPTR lock;
-  int rc;
-  char * t;
+    int c;
+    
+    reset_getopt();
+    
+    while ((c = getopt(argc, argv, "pm:vVh")) != -1) {
+        switch (c) {
+            case 'p':
+                options->parents_flag = TRUE;
+                break;
+            case 'm':
+                if (optarg) {
+                    options->mode_string = strdup(optarg);
+                }
+                break;
+            case 'v':
+                options->verbose_flag = TRUE;
+                break;
+            case 'V':
+                print_version(program);
+                exit(SUCCESS);
+                break;
+            case 'h':
+                usage(program);
+                exit(SUCCESS);
+                break;
+            case '?':
+                exit(FAILURE);
+                break;
+        }
+    }
+    
+    /* Update dir_start to point to remaining arguments */
+    *dir_start = optind;
+}
 
-  /* first: search a existing super-dir */
-  for (t=ptr+strlen(ptr)-1;
-       t >= ptr && *t != '/' && *t != ':';
-       t--) ;
+/**
+ * @brief Initialize options structure
+ * @param options Options structure to initialize
+ */
+void init_options(MkdirOptions *options)
+{
+    options->parents_flag = FALSE;
+    options->verbose_flag = FALSE;
+    options->icon_flag = TRUE;  /* Default to creating icons on Amiga */
+    options->mode_string = NULL;
+    options->exit_code = SUCCESS;
+}
 
-  if (IsCtrlC) {
-    PrintFault(ERROR_BREAK, NULL);
-    rc = RETURN_WARN;
-  }
-  else {
+/**
+ * @brief Clean up options structure
+ * @param options Options structure to clean up
+ */
+void cleanup_options(MkdirOptions *options)
+{
+    if (options->mode_string) {
+        free(options->mode_string);
+        options->mode_string = NULL;
+    }
+}
 
-    if (*t == '/') {
-      *t = '\0';				// nun ist der Pfad etwas kuerzer
-      lock = Lock(ptr, ACCESS_READ);
-      if (lock) {
-        // das uebergeordnete Dir. existiert, also erzeuge dieses Dir. nun
+/**
+ * @brief Print usage information
+ * @param program Program name
+ */
+void usage(const char *program)
+{
+    fprintf(stderr, 
+        "Usage: %s [OPTION]... DIRECTORY...\n"
+        "Create the DIRECTORY(ies), if they do not already exist.\n\n"
+        "Mandatory arguments to long options are mandatory for short options too.\n"
+        "  -m, --mode=MODE   set file permissions (as in chmod), not a=rwx - umask\n"
+        "  -p, --parents     no error if existing, make parent directories as needed\n"
+        "  -v, --verbose     print a message for each created directory\n"
+        "  -V, --version     output version information and exit\n"
+        "  -h, --help        display this help and exit\n\n"
+        "Amiga-specific options:\n"
+        "  ICON              create .info files for directories\n"
+        "  NOICON            do not create .info files\n\n"
+        "Examples:\n"
+        "  %s -p /tmp/a/b/c    Create directory /tmp/a/b/c with parents\n"
+        "  %s -m 755 dir1      Create dir1 with permissions 755\n",
+        program, program, program);
+}
+
+/**
+ * @brief Print version information
+ * @param program Program name
+ */
+void print_version(const char *program)
+{
+    printf("%s version 1.0\n", program);
+    printf("Copyright (c) 2025 amigazen project. All rights reserved.\n");
+    printf("This is free software; see the source for copying conditions.\n");
+}
+
+/**
+ * @brief Main mkdir logic - creates directories based on options
+ * @param options Options structure
+ * @param dir_count Number of directories to create
+ * @param directories Array of directory names
+ * @param program Program name for error messages
+ * @return Exit code
+ */
+int run_mkdir_logic(MkdirOptions *options, int dir_count, char **directories, const char *program)
+{
+    int i;
+    int ret_code = SUCCESS;
+    
+    for (i = 0; i < dir_count; i++) {
+        if (create_directory(directories[i], options, program) != SUCCESS) {
+            ret_code = FAILURE;
+        }
+    }
+    
+    return ret_code;
+}
+
+/**
+ * @brief Create a single directory
+ * @param dirname Directory name to create
+ * @param options Options structure
+ * @param program Program name for error messages
+ * @return SUCCESS or FAILURE
+ */
+static int create_directory(const char *dirname, MkdirOptions *options, const char *program)
+{
+    BPTR lock;
+    int rc = SUCCESS;
+    
+    /* Check if directory already exists */
+    lock = Lock(dirname, ACCESS_READ);
+    if (lock) {
         UnLock(lock);
-        *t = '/';				// urspruenglichen Zustand wieder herstellen
-        // und nun Directory erzeugen (wurde nach hinten verlegt)
-      }
-      else {
-        // dies ist immer noch nicht das Ueber-Directory, also weitersuchen
-        rc = CreateTree(pb, ptr);
-        *t = '/';				// urspruenglichen Zustand wieder herstellen
-        // und nun (falls rc == RETURN_OK) Directory erzeugen (wurde nach hinten verlegt)
-      }
+        if (options->verbose_flag) {
+            printf("%s: created directory '%s'\n", program, dirname);
+        }
+        return SUCCESS;  /* Directory already exists */
     }
-    else {
-      // kein '/' gefunden (':' oder gar nichts)
-      // dann erzeuge einfach den kompletten String als Dir.
-      // und nun Directory erzeugen (wurde nach hinten verlegt)
+    
+    /* If parents flag is set, create parent directories */
+    if (options->parents_flag) {
+        rc = create_parent_directories(dirname, options, program);
+        if (rc != SUCCESS) {
+            return rc;
+        }
     }
-
-  }
-
-  if (rc == RETURN_OK) {  
-    rc = CreateOneDir(pb, ptr);
-  }
-
-  return rc;
+    
+    /* Create the directory */
+    lock = CreateDir(dirname);
+    if (lock) {
+        if (options->verbose_flag) {
+            printf("%s: created directory '%s'\n", program, dirname);
+        }
+        
+        /* Create .info file if requested */
+        if (options->icon_flag) {
+            if (!create_directory_icon(dirname, program)) {
+                /* Icon creation failed, but directory was created */
+                fprintf(stderr, "%s: warning: failed to create icon for '%s'\n", program, dirname);
+            }
+        }
+        
+        UnLock(lock);
+    } else {
+        fprintf(stderr, "%s: cannot create directory '%s': %s\n", program, dirname, "Permission denied");
+        PrintFault(IoErr(), program);
+        rc = FAILURE;
+    }
+    
+    return rc;
 }
 
-
-/*
- *  CreateOneDir()
- *
- *  Create directory 'ptr' and give it a .info file, if 
- *  pb->pb_CreateIcons is set.
- *
+/**
+ * @brief Create parent directories for a path
+ * @param full_path Full path to create
+ * @param options Options structure
+ * @param program Program name for error messages
+ * @return SUCCESS or FAILURE
  */
-
-static int CreateOneDir(struct ParamBlock * pb, char * ptr)
+static int create_parent_directories(const char *full_path, MkdirOptions *options, const char *program)
 {
-  BPTR lock;
-  int rc = RETURN_OK;
-
-  lock = CreateDir(ptr);
-
-  if (lock) {
-    if (pb->pb_CreateIcons) {
-      struct DiskObject * di = GetDefDiskObject(WBDRAWER);
-      if (di && PutDiskObject(ptr, di)) {
-        FreeDiskObject(di);
-      }
-      else {
-        VPrintf(MSG_DI_OBJ, (long *)&ptr);
-        PrintFault(IoErr(), NULL);
-        rc = RETURN_ERROR;
-      }
+    char *path_copy;
+    char *slash_pos;
+    char *current_pos;
+    BPTR lock;
+    int rc = SUCCESS;
+    
+    /* Make a copy of the path to work with */
+    path_copy = strdup(full_path);
+    if (!path_copy) {
+        fprintf(stderr, "%s: out of memory\n", program);
+        return FAILURE;
     }
-    UnLock(lock);
-  }
-  else {
-    VPrintf(MSG_ERR_CRE, (long*)&ptr);
-    PrintFault(IoErr(), NULL);
-    rc = RETURN_ERROR;
-  }
+    
+    /* Find the first slash after the device/volume */
+    current_pos = path_copy;
+    if (strchr(current_pos, ':')) {
+        current_pos = strchr(current_pos, ':') + 1;
+    }
+    
+    /* Create each parent directory */
+    while ((slash_pos = strchr(current_pos, '/')) != NULL) {
+        *slash_pos = '\0';
+        
+        /* Skip empty path components */
+        if (strlen(path_copy) == 0 || 
+            (strchr(path_copy, ':') && strlen(path_copy) == 1)) {
+            *slash_pos = '/';
+            current_pos = slash_pos + 1;
+            continue;
+        }
+        
+        /* Check if this directory exists */
+        lock = Lock(path_copy, ACCESS_READ);
+        if (lock) {
+            UnLock(lock);
+            /* Directory exists, continue to next component */
+        } else {
+            /* Directory doesn't exist, create it */
+            lock = CreateDir(path_copy);
+            if (lock) {
+                if (options->verbose_flag) {
+                    printf("%s: created directory '%s'\n", program, path_copy);
+                }
+                
+                /* Create .info file if requested */
+                if (options->icon_flag) {
+                    if (!create_directory_icon(path_copy, program)) {
+                        fprintf(stderr, "%s: warning: failed to create icon for '%s'\n", program, path_copy);
+                    }
+                }
+                
+                UnLock(lock);
+            } else {
+                fprintf(stderr, "%s: cannot create directory '%s': %s\n", program, path_copy, "Permission denied");
+                PrintFault(IoErr(), program);
+                rc = FAILURE;
+                break;
+            }
+        }
+        
+        *slash_pos = '/';
+        current_pos = slash_pos + 1;
+    }
+    
+    free(path_copy);
+    return rc;
+}
 
-  return rc;
+/**
+ * @brief Create a .info file for a directory
+ * @param dirname Directory name
+ * @param program Program name for error messages
+ * @return TRUE if successful, FALSE otherwise
+ */
+static BOOL create_directory_icon(const char *dirname, const char *program)
+{
+    struct DiskObject *disk_obj;
+    BOOL success = FALSE;
+    
+    disk_obj = GetDefDiskObject(WBDRAWER);
+    if (disk_obj) {
+        if (PutDiskObject(dirname, disk_obj)) {
+            success = TRUE;
+        } else {
+            /* Icon creation failed, but this is not fatal */
+            PrintFault(IoErr(), program);
+        }
+        FreeDiskObject(disk_obj);
+    }
+    
+    return success;
 }
