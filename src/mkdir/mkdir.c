@@ -371,9 +371,7 @@ void usage(const char *program)
  */
 void print_version(const char *program)
 {
-    printf("%s version 1.0\n", program);
-    printf("Copyright (c) 2025 amigazen project. All rights reserved.\n");
-    printf("This is free software; see the source for copying conditions.\n");
+    printf("%s version 1.1\n", program);
 }
 
 /**

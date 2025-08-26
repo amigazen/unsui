@@ -1,68 +1,86 @@
 MKDIR(1)                 USER COMMANDS                   MKDIR(1)
 
 NAME
-     mkdir - create directories with icon
-           - create whole path at once
+     mkdir - create directories (POSIX compatible)
+           - create whole path at once with Amiga native support
 
 SYNOPSIS
-     mkdir NI=NOICON/S,NAME/M    (translated with -DDEFAULT_ICON)
-      or
-     mkdir ICON/S,NAME/M
-    
+     mkdir [OPTION]... DIRECTORY...
+     
+     # POSIX Style
+     mkdir -p [-m mode] [-v] directory...
+     
+     # Amiga Style  
+     mkdir DIRECTORY/M [PARENTS] [MODE/K] [VERBOSE] [ICON] [NOICON] [POSIX/K/F]
+
 DESCRIPTION
-     Create   the  specified  directories.   If  the  program  is
-     translated  with  -DDEFAULT_ICON,  mkdir create a .info file
-     for  every directory, exept NOICON is given.  If the program
-     is  translated  without -DDEFAULT_ICON, .info files are only
-     created, if ICON is given.
-     If   you  specify  a  path,  containing  some  not  existing
-     directories, mkdir will create all missing ones.
+     Create the specified directories. This hybrid implementation provides
+     both POSIX compatibility and Amiga native functionality.
+     
+     The command automatically detects whether you're using POSIX-style
+     arguments (starting with -) or Amiga-style arguments, and dispatches
+     to the appropriate parser.
+     
+     By default, mkdir creates .info files for directories on Amiga,
+     providing immediate Workbench icon display.
 
 OPTIONS
-     NOICON   Don't  create .info files.  You can use this option 
-              only if mkdir is translated with -DDEFAULT_ICON.
-     ICON     Create .info files. Only available, if NOICON isn't
-              available.
+     # POSIX Options
+     -p, --parents     no error if existing, make parent directories as needed
+     -m, --mode=MODE   set file permissions (as in chmod), not a=rwx - umask
+     -v, --verbose     print a message for each created directory
+     -V, --version     output version information and exit
+     -h, --help        display this help and exit
+     
+     # Amiga Options
+     DIRECTORY/M       Directory name(s) to create (required)
+     PARENTS           Create parent directories as needed
+     MODE/K            Set directory permissions (mode string)
+     VERBOSE           Print message for each created directory
+     ICON              Force creation of .info files
+     NOICON            Skip creation of .info files
+     POSIX/K/F         POSIX escape hatch for mixed syntax
 
-EXAMPLE
-     % list
-     Directory "" is empty
-     % mkdir dir1/dir2 dir3
-     % list
-     dir3.info                    628 ----rw-d Today     16:58:01
-     dir3                         Dir ----rwed Today     16:58:01
-     dir1.info                    628 ----rw-d Today     16:58:01
-     dir1                         Dir ----rwed Today     16:58:01
-     2 files - 2 directories - 8 blocks used
-     % list dir1
-     Directory "dir1" on Monday 02-Nov-92                                                    
-     dir2.info                    628 ----rw-d Today     16:58:01
-     dir2                         Dir ----rwed Today     16:58:01
-     1 file - 1 directory - 4 blocks used
-     %
+EXAMPLES
+     # POSIX Style
+     % mkdir -p /tmp/a/b/c
+     % mkdir -m 755 dir1
+     % mkdir -v dir1 dir2 dir3
+     
+     # Amiga Style
+     % mkdir "ram:projects/src" PARENTS VERBOSE
+     % mkdir "ram:temp" "ram:backup" "ram:archive"
+     
+     # Mixed Style (POSIX escape hatch)
+     % mkdir DIRECTORY/M POSIX/K/F "-p -v /tmp/work/2025"
+     
+     # Interactive help
+     % mkdir ?
 
 DIAGNOSTICS
-     No name given: mkdir needs at least one directory to create.
-     *** break: You have pressed Ctrl-C, havn't you? :-)
-     xxx already exists:  directory  or file with name  xxx  does
-          already exist.
-     Can't create directory:  some  mystic things  prevent  mkdir
-          from creating the directory. 
-     Can't create icon xxx.info:  the directory xxx  is  created, 
-          but mkdir has problems with creating the icon file.
+     missing operand: mkdir needs at least one directory to create.
+     cannot create directory: permission denied or path invalid.
+     warning: failed to create icon: directory created but icon failed.
+     
+     The command maintains POSIX exit codes:
+     0 = success, 1 = failure
 
 SEE ALSO
-     makedir(1), list(1)
+     makedir(1), list(1), touch(1), wc(1)
 
 REQUIREMENTS
      An Amiga with OS version 2.04 or higher.
+     Requires dos.library, icon.library, and workbench.library.
 
 BUGS
-     Probably.
+     Mode setting (-m) is parsed but not yet implemented (Amiga limitation).
+     Parent directory creation respects Amiga path syntax.
 
 AUTHOR
-     Georg Hessmann (hessmann@fmi.uni-passau.de)
+     amigazen project (based on mkdir by Georg Hessmann)
+     Copyright (c) 2025 amigazen project. All rights reserved.
 
 COPYRIGHT
-     None. This program is in the public domain.
+     SPDX-License-Identifier: BSD-2-Clause
+     See LICENSE.md for full license text.
 
