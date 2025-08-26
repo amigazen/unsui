@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <proto/dos.h>
 #include <proto/exec.h>
+#include <clib/alib_protos.h>
 
 #include "scc.h"
 #include "sc_rexx.h"
@@ -20,7 +21,7 @@
 ///
 
 /// Global Variables
-const char *version = "\0$VER: scc 1.5 (12-17-96)\n";
+const char *version = "\0$VER: cc 1.6 (26/08/2025)\n";
 struct Process *MyProc;
 List LibList;
 ///

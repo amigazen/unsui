@@ -11,13 +11,7 @@
 #include <proto/rexxsyslib.h>
 #include <proto/exec.h>
 
-#if defined (__GNUC__)
-#define RXSLIB struct RxsLib
-#elif defined (__SASC)
-#define RXSLIB struct Library
-#endif
-
-RXSLIB *RexxSysBase = NULL;
+struct RxsLib *RexxSysBase = NULL;
 struct RexxMsg *RexxMesg = NULL;
 struct MsgPort *RexxPort = NULL;
 
@@ -26,7 +20,7 @@ init_scmsg (void)
 {
   system ("run sc:c/scmsg rexxonly");
 
-  if (!(RexxSysBase = (RXSLIB *) OpenLibrary ("rexxsyslib.library", 36)))
+  if (!(RexxSysBase = (struct RxsLib *) OpenLibrary ("rexxsyslib.library", 36)))
     return 0;
   if (!(RexxPort = CreateMsgPort ()))
     return 0;
