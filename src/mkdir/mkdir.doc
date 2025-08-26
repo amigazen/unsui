@@ -1,0 +1,68 @@
+MKDIR(1)                 USER COMMANDS                   MKDIR(1)
+
+NAME
+     mkdir - create directories with icon
+           - create whole path at once
+
+SYNOPSIS
+     mkdir NI=NOICON/S,NAME/M    (translated with -DDEFAULT_ICON)
+      or
+     mkdir ICON/S,NAME/M
+    
+DESCRIPTION
+     Create   the  specified  directories.   If  the  program  is
+     translated  with  -DDEFAULT_ICON,  mkdir create a .info file
+     for  every directory, exept NOICON is given.  If the program
+     is  translated  without -DDEFAULT_ICON, .info files are only
+     created, if ICON is given.
+     If   you  specify  a  path,  containing  some  not  existing
+     directories, mkdir will create all missing ones.
+
+OPTIONS
+     NOICON   Don't  create .info files.  You can use this option 
+              only if mkdir is translated with -DDEFAULT_ICON.
+     ICON     Create .info files. Only available, if NOICON isn't
+              available.
+
+EXAMPLE
+     % list
+     Directory "" is empty
+     % mkdir dir1/dir2 dir3
+     % list
+     dir3.info                    628 ----rw-d Today     16:58:01
+     dir3                         Dir ----rwed Today     16:58:01
+     dir1.info                    628 ----rw-d Today     16:58:01
+     dir1                         Dir ----rwed Today     16:58:01
+     2 files - 2 directories - 8 blocks used
+     % list dir1
+     Directory "dir1" on Monday 02-Nov-92                                                    
+     dir2.info                    628 ----rw-d Today     16:58:01
+     dir2                         Dir ----rwed Today     16:58:01
+     1 file - 1 directory - 4 blocks used
+     %
+
+DIAGNOSTICS
+     No name given: mkdir needs at least one directory to create.
+     *** break: You have pressed Ctrl-C, havn't you? :-)
+     xxx already exists:  directory  or file with name  xxx  does
+          already exist.
+     Can't create directory:  some  mystic things  prevent  mkdir
+          from creating the directory. 
+     Can't create icon xxx.info:  the directory xxx  is  created, 
+          but mkdir has problems with creating the icon file.
+
+SEE ALSO
+     makedir(1), list(1)
+
+REQUIREMENTS
+     An Amiga with OS version 2.04 or higher.
+
+BUGS
+     Probably.
+
+AUTHOR
+     Georg Hessmann (hessmann@fmi.uni-passau.de)
+
+COPYRIGHT
+     None. This program is in the public domain.
+

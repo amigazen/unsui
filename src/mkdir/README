@@ -1,0 +1,28 @@
+Short: mkdir which can create icons too (2.04 only, PD, with source)
+
+mkdir is 100% compatibel to the 2.04 c:makedir.
+But it can create .info files too. It uses
+PutDiskObject(), so that the workbench display the
+icons imediately.
+
+New for version 1.3:
+Now can create a whole path at once. E.g.:
+> mkdir ram:not_exist_1/no_exist_2
+is the same like
+> mkdir ram:not_exist_1 ram:not_exist_1/no_exist_2
+
+Two versions of mkdir are available:
+
+mkdir_noicon [ICON/S,NAME/M]   (size 820 bytes)
+  Create only icons, if ICON is given.
+  E.g.: mkdir ICON ram:test
+
+mkdir [NI=NOICON/S,NAME/M]   (size 840 bytes)
+  Create always icons, exept key NOICON is given.
+
+Program and source are public domain.
+If you improve the program, please send me a copy.
+
+	Georg Heﬂmann (hessmann@fmi.uni-passau.de)
+
+

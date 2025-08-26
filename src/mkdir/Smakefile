@@ -1,0 +1,22 @@
+#
+#   Makefile for SAS/C 6.x
+#
+
+# use this, if mkdir should always create a icon
+ICON	= define DEFAULT_ICON
+
+# use this, if mkdir should create icons only if the
+# keyword ICON is given
+# ICON	= 
+
+CFLAGS  = $(ICON)
+LFLAGS  = SMALLCODE SMALLDATA ADDSYM QUIET NOICONS
+
+mkdir: mkdir.o 
+	Slink $(LFLAGS) FROM mkdir.o TO mkdir
+	protect mkdir +p
+
+mkdir.o: mkdir.c lmkfile Smakefile SCOPTIONS
+
+clean:
+	-delete mkdir.o mkdir
