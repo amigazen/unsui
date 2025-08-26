@@ -9,10 +9,10 @@ LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib NOICONS
 SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
 
 # Object files for shar (shell archive creator)
-SHAR_OBJS = sc:lib/cres.o Shar.o Fgetline.o Fatal.o
+SHAR_OBJS = sc:lib/cres.o Shar.o Fgetline.o Fatal.o /common/common.o /common/getopt.o
 
 # Object files for unshar (shell archive unpacker)
-UNSHAR_OBJS = sc:lib/cres.o Sh.o Fgetline.o Fatal.o Parse.o Gettoken.o
+UNSHAR_OBJS = sc:lib/cres.o Sh.o Fgetline.o Fatal.o Parse.o Gettoken.o /common/common.o /common/getopt.o
 
 # Main target
 all: shar unshar
