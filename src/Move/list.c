@@ -13,6 +13,7 @@
 #include <proto/exec.h>
 
 #include <string.h>
+#include "funcs.h"
 
 #define BLOCKSIZE   10240
 
@@ -26,26 +27,53 @@ static BLOCK *head;
 static BLOCK *curblock;
 static BLOCK *getblock;
 static int  getoff,lcount;
+static int  initialized = 0;  /* Track if list has been initialized */
 
+/* Internal cleanup function - not exposed externally */
+static void internal_cleanup(void)
+{
+BLOCK   *next;
 
-int     l_add(sp) /*=====================================================*/
-char    *sp;
+    curblock = head;
+    head = NULL;
+    initialized = 0;  /* Mark as not initialized */
+    
+    while (curblock) {
+        next = curblock->next;
+        FreeMem(curblock,sizeof(BLOCK));
+        curblock = next;
+    }
+    
+    /* Reset all static variables */
+    getblock = NULL;
+    getoff = 0;
+    lcount = 0;
+}
+
+int     l_add(char *sp) /*=====================================================*/
 {
 BLOCK   *new;
 int     len;
+
+    if (!sp) return 0;  /* NULL pointer check */
 
     if (!curblock) {
         head = AllocMem(sizeof(BLOCK),MEMF_CLEAR);
         if (!head) return(0);
 
         curblock = head;
+        initialized = 1;  /* Mark as initialized */
     }
 
     len = strlen(sp) + 1;
     if (len > BLOCKSIZE) return(0);
     if (curblock->used + len > BLOCKSIZE) {
         new = AllocMem(sizeof(BLOCK),MEMF_CLEAR);
-        if (!new) return(0);
+        if (!new) {
+            /* Memory allocation failed - clean up and return error */
+            internal_cleanup();  /* Use internal cleanup, not recursive l_close */
+            return(0);
+        }
 
         curblock->next = new;
         curblock = new;
@@ -58,21 +86,18 @@ int     len;
     return(1);
 }
 
-void    l_close() /*=====================================================*/
+void    l_close(void) /*=====================================================*/
 {
-BLOCK   *next;
+    /* Protect against multiple calls */
+    if (!initialized) return;
 
-    curblock = head;
-    head = NULL;
-    while (curblock) {
-        next = curblock->next;
-        FreeMem(curblock,sizeof(BLOCK));
-        curblock = next;
-    }
+    internal_cleanup();  /* Use internal cleanup function */
 }
 
-char    *l_first() /*====================================================*/
+char    *l_first(void) /*====================================================*/
 {
+    if (!initialized) return NULL;  /* Check if initialized */
+    
     getblock = head;
     getoff = 0;
 
@@ -80,11 +105,13 @@ char    *l_first() /*====================================================*/
     return(getblock->dat);
 }
 
-char    *l_next() /*=====================================================*/
+char    *l_next(void) /*====================================================*/
 {
 char    *cp;
 
+    if (!initialized) return NULL;  /* Check if initialized */
     if (!getblock || !getblock->used) return(NULL);
+    
     for (cp = getblock->dat + getoff; *cp; cp++) ;
     cp++;
     getoff = cp - getblock->dat;
@@ -97,7 +124,8 @@ char    *cp;
     return(cp);
 }
 
-int     l_num() /*=======================================================*/
+int     l_num(void) /*=======================================================*/
 {
+    if (!initialized) return 0;  /* Check if initialized */
     return(lcount);
 }

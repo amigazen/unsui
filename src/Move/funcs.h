@@ -60,7 +60,7 @@ void renameit(char *fname, char *tname);
 void copyit(char *fname, char *tname);
 
 /* Main entry point */
-void _main(void);
+void main(void);
 
 /* Handle Ctrl-C */
 int CXBRK(void);

@@ -57,7 +57,7 @@ long    cbsize;
 ANCHS   asub[MAXSUB];
 int     sub = -1;
 
-static const char *version_tag = "$VER: Move 47.1 (26/08/25)\n";
+static const char *version_tag = "$VER: Move 47.2 (26/08/25)\n";
 static const char *stack_cookie = "$STACK: 4096";
 
 void    mprintf(char *cp,...) /*=========================================*/
@@ -79,8 +79,7 @@ va_list vararg;
     va_end(vararg);
 }
 
-LONG    getvol(name) /*==================================================*/
-char    *name;
+LONG    getvol(char *name) /*==================================================*/
 {
 char    *cp;
 BPTR    lock;
@@ -108,8 +107,7 @@ char    c;
     return(ret);
 }
 
-void    makebase(from) /*================================================*/
-char    *from;
+void    makebase(char *from) /*================================================*/
 {
 char    *cp;
 int     s;
@@ -143,8 +141,7 @@ int     s;
     samevol = (getvol(base) == destvol);
 }
 
-void    checkpath(name) /*===============================================*/
-char    *name;
+void    checkpath(char *name) /*===============================================*/
 {
 char    *cp;
 BPTR    lock;
@@ -176,8 +173,7 @@ BPTR    lock;
     }
 }
 
-void    maketoname(from) /*==============================================*/
-char    *from;
+void    maketoname(char *from) /*==============================================*/
 {
 int     len;
 
@@ -195,8 +191,7 @@ int     len;
  * call addpat(), otherwise we call addit(). An empty from argument is   *
  * equivalent to the pattern "#?".                                       *
  ***-------------------------------------------------------------------***/
-void    addfrom(from) /*=================================================*/
-char    *from;
+void    addfrom(char *from) /*=================================================*/
 {
     if (!from) return;  /* NULL pointer check */
     
@@ -221,8 +216,7 @@ char    *from;
  * Add a name to the list. The name will be a non-pattern one from the   *
  * FROM list.                                                            *
  ***-------------------------------------------------------------------***/
-void    addit(from) /*===================================================*/
-char    *from;
+void    addit(char *from) /*===================================================*/
 {
 char    *cp;
 BPTR    lock;
@@ -294,8 +288,7 @@ struct FileInfoBlock __aligned fib;
     }
 }
 
-char    *noslash(sp) /*==================================================*/
-char    *sp;
+char    *noslash(char *sp) /*==================================================*/
 {
 char    *cp;
     if (!sp) return NULL;  /* NULL pointer check */
@@ -305,8 +298,7 @@ char    *cp;
     return(sp);
 }
 
-char    *addslash(sp) /*=================================================*/
-char    *sp;
+char    *addslash(char *sp) /*=================================================*/
 {
 char    *cp;
     if (!sp) return NULL;  /* NULL pointer check */
@@ -322,8 +314,7 @@ char    *cp;
  * Recursive routine that adds all files under from to the name list. We *
  * add the part of the name following the base, and prepend a '1'.       *
  ***-------------------------------------------------------------------***/
-void    addsub(from) /*==================================================*/
-char    *from;
+void    addsub(char *from) /*==================================================*/
 {
 struct AnchorPath *ap;
 char    *cp;
@@ -397,8 +388,7 @@ int     i,s;
     }
 }
 
-void    addpat(from) /*==================================================*/
-char    *from;
+void    addpat(char *from) /*==================================================*/
 {
 int     len,s;
 
@@ -451,7 +441,7 @@ int     len,s;
     inmatch = 0;
 }
 
-void    movelist() /*====================================================*/
+void    movelist(void) /*====================================================*/
 {
 char    *basep,*dirp,*sp;
 
@@ -481,6 +471,11 @@ char    *basep,*dirp,*sp;
                 samevol = 0;
                 moveit(sp + 1,NULL,NULL);
                 break;
+            case ('4'):     /* samevol, basename for subdir */
+                basep = sp + 1;
+                dirp = NULL;
+                samevol = 1;
+                break;
             case ('5'):     /* samevol, basename for pattern */
                 basep = sp + 1;
                 dirp = NULL;
@@ -509,8 +504,7 @@ char    *basep,*dirp,*sp;
  * Move a file given by basep and nodep to the destination. We use       *
  * base[] as our "from" name space.                                      *
  ***-------------------------------------------------------------------***/
-void    moveit(basep,dirp,nodep) /*======================================*/
-char    *basep,*dirp,*nodep;
+void    moveit(char *basep,char *dirp,char *nodep) /*======================================*/
 {
     if (!basep) return;  /* NULL pointer check */
 
@@ -531,8 +525,7 @@ char    *basep,*dirp,*nodep;
     if (!args[AQUIET]) mprintf("move: %s moved to %s\n",base,toname);
 }
 
-void    forcedir(basep,nodep) /*=========================================*/
-char    *basep,*nodep;
+void    forcedir(char *basep,char *nodep) /*=========================================*/
 {
 BPTR    lock;
 int     len,s;
@@ -585,8 +578,7 @@ struct FileInfoBlock __aligned fib;
     if (!s && !args[AQUIET]) mprintf("move: can't delete %s\n",nodep);
 }
 
-void    renameit(fname,tname) /*=========================================*/
-char    *fname,*tname;
+void    renameit(char *fname,char *tname) /*=========================================*/
 {
 BPTR    lock;
 
@@ -605,8 +597,7 @@ BPTR    lock;
     }
 }
 
-void    copyit(fname,tname) /*===========================================*/
-char    *fname,*tname;
+void    copyit(char *fname,char *tname) /*===========================================*/
 {
 BPTR    lock;
 long    s,size;
@@ -703,7 +694,7 @@ struct FileInfoBlock __aligned fib;
     }
 }
 
-void    main() /*=======================================================*/
+void    main(void) /*=======================================================*/
 {
 char    **from;
 
@@ -754,7 +745,7 @@ char    **from;
     cleanup(NULL);
 }
 
-int     CXBRK() { return(0); }          /* Disable SAS ^C check */
+int     CXBRK(void) { return(0); }          /* Disable SAS ^C check */
 
 void    cleanup(char *cp,...) /*=========================================*/
 {
