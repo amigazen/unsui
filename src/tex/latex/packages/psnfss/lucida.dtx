@@ -1,0 +1,1242 @@
+\def\fileversion{3.13}
+\def\filedate{1995/12/11}
+\def\docdate {1995/02/19}
+% \iffalse
+% File: lucida.dtx Copyright (C) 1995 Sebastian Rahtz
+%<*driver>
+\documentclass{ltxdoc}
+\begin{document}
+ \title{The \textsf{lucida} package\thanks{This file
+        has version number \fileversion, last
+        revised \filedate.}}
+ \author{Sebastian Rahtz\\s.rahtz@elsevier.co.uk}
+ \date{\filedate}
+ \maketitle
+ \DocInput{lucida.dtx}
+\end{document}
+%</driver>
+% \fi
+% \CheckSum{1818}
+% \maketitle
+% \section{Introduction}
+% This file contains \LaTeXe\ package files needed to use
+% Lucida Bright fonts, and {\tt .fd} files for the fonts as
+% named by Y\&Y. {\tt .fd} and metric files for the Berry-naming
+% scheme are available in \texttt{fonts/metrics/bh} on CTAN.
+%
+% The Lucida Bright font families:
+% \begin{center}
+% \begin{tabular}{lll}
+% hlxd8a&lfd&LucidaFax-Demi\\
+% hlxdi8a&lfdi&LucidaFax-DemiItalic\\
+% hlxr8a&lfr&LucidaFax\\
+% hlxri8a&lfi&LucidaFax-Italic\\
+% \\
+% hlhd8a&lbd&LucidaBright-Demi\\
+% hlhdi8a&lbdi&LucidaBright-DemiItalic\\
+% hlhr8a&lbr&LucidaBright\\
+% hlhri8a&lbi&LucidaBright-Italic\\
+% hlhro8a&lbsl&LucidaBrightSlanted\\
+% hlhrc8a&lbrsc&LucidaBrightSmallcaps\\
+% hlhdc8a&lbdsc&LucidaBrightSmallcaps-Demi\\
+% \\
+% hlsdi8a&lsdi&LucidaSans-DemiItalic\\
+% hlsd8a&lsd&LucidaSans-Demi\\
+% hlsri8a&lsi&LucidaSans-Italic\\
+% hlsr8a&lsr&LucidaSans\\
+% hlsb8a&lsb&LucidaSans-Bold\\
+% hlsbi8a&lsbi&LucidaSans-BoldItalic\\
+% \\
+% hlcrf8a&lbl&LucidaBlackletter\\
+% \\
+% hlcriw8a&lbh&LucidaHandwriting-Italic\\
+% \\
+% hlcrie8a&lbc&LucidaCalligraphy-Italic\\
+% \\
+% hlcrn8a&lbkr&LucidaCasual\\
+% hlcrin8a&lbki&LucidaCasual-Italic\\
+% \\
+% hlsrt8a&lstr&LucidaSans-Typewriter\\
+% hlsrot8a&lsto&LucidaSans-TypewriterOblique\\
+% hlsbot8a&lstbo&LucidaSans-TypewriterBoldOblique\\
+% hlsbt8a&lstb&LucidaSans-TypewriterBold\\
+% \\
+% hlcrt8a&lbtr&LucidaTypewriter\\
+% hlcbt8a&lbtb&LucidaTypewriterBold\\
+% hlcbot8a&lbto&LucidaTypewriterOblique\\
+% hlcrot8a&lbtbo&LucidaTypewriterBoldOblique\\
+% \\
+% hlcra&lbma&LucidaNewMath-Arrows\\
+% hlcda&lbmad&LucidaNewMath-Arrows-Demi\\
+% hlcrv&lbme&LucidaNewMath-Extension\\
+% hlcry&lbms&LucidaNewMath-Symbol\\
+% hlcdy&lbmsd&LucidaNewMath-Symbol-Demi\\
+% hlcrim&lbmi&LucidaNewMath-Italic\\
+% hlcrima&lbmo&LucidaNewMath-AltItalic\\
+% hlcdim&lbmdi&LucidaNewMath-DemiItalic\\
+% hlcdima&lbmdo&LucidaNewMath-AltDemiItalic\\
+% hlcrm&lbmr&LucidaNewMath-Roman\\
+% hlcdm&lbmd&LucidaNewMath-Demibold\\
+% \hline
+% \end{tabular}
+% \end{center}
+% \StopEventually{}
+% \section{Font description files}
+% \subsection{Maths fonts font description files}
+%    \begin{macrocode}
+%<*lucidascale>
+\@ifundefined{DeclareLucidaFontShape}{%
+ \def\DeclareLucidaFontShape#1#2#3#4#5#6{%
+   \DeclareFontShape{#1}{#2}{#3}{#4}{<->#5}{#6}}}{}
+%</lucidascale>
+%<*OMShlh>
+\ProvidesFile{OMShlh.fd} [1995/02/19]
+\DeclareFontFamily{OMS}{hlh}{\skewchar\font'60}
+\DeclareFontShape{OMS}{hlh}{m}{n}    {<-> ssub * hlcy/m/n}{}
+\DeclareFontShape{OMS}{hlh}{m}{it}   {<-> ssub * hlcy/m/n}{}
+\DeclareFontShape{OMS}{hlh}{m}{sl}   {<-> ssub * hlcy/m/n}{}
+\DeclareFontShape{OMS}{hlh}{m}{sc}   {<-> ssub * hlcy/m/n}{}
+\DeclareFontShape{OMS}{hlh}{bx}{n}   {<-> ssub * hlcy/b/n}{}
+\DeclareFontShape{OMS}{hlh}{bx}{it}  {<-> ssub * hlcy/b/n}{}
+\DeclareFontShape{OMS}{hlh}{bx}{sl}  {<-> ssub * hlcy/b/n}{}
+\DeclareFontShape{OMS}{hlh}{bx}{sc}  {<-> ssub * hlcy/b/n}{}
+%</OMShlh>
+%<*OMLhlh>
+\ProvidesFile{OMLhlh.fd} [1995/02/19]
+\DeclareFontShape{OML}{hlh}{m}{n}    {<-> ssub * hlcm/m/n}{}
+\DeclareFontShape{OML}{hlh}{m}{it}   {<-> ssub * hlcm/m/n}{}
+\DeclareFontShape{OML}{hlh}{m}{sl}   {<-> ssub * hlcm/m/n}{}
+\DeclareFontShape{OML}{hlh}{m}{sc}   {<-> ssub * hlcm/m/n}{}
+\DeclareFontShape{OML}{hlh}{bx}{n}   {<-> ssub * hlcm/b/n}{}
+\DeclareFontShape{OML}{hlh}{bx}{it}  {<-> ssub * hlcm/b/n}{}
+\DeclareFontShape{OML}{hlh}{bx}{sl}  {<-> ssub * hlcm/b/n}{}
+\DeclareFontShape{OML}{hlh}{bx}{sc}  {<-> ssub * hlcm/b/n}{}
+%</OMLhlh>
+%<*OMLhlcm>
+% Math Italics
+\DeclareFontFamily{OML}{hlcm}{\skewchar\font=127}
+\DeclareLucidaFontShape{OML}{hlcm}{m}{n}{hlcrm}{}
+\DeclareLucidaFontShape{OML}{hlcm}{b}{n}{hlcdm}{}
+\DeclareLucidaFontShape{OML}{hlcm}{m}{it}{hlcrima}{}
+\DeclareLucidaFontShape{OML}{hlcm}{b}{it}{hlcdima}{}
+%</OMLhlcm>
+%<*OMShlcy>
+% LucidaNewMath-Symbols
+\DeclareFontFamily{OMS}{hlcy}{\skewchar\font=48}
+\DeclareLucidaFontShape{OMS}{hlcy}{m}{n}{hlcry}{}
+\DeclareLucidaFontShape{OMS}{hlcy}{b}{n}{hlcdy}{}
+%</OMShlcy>
+%<*OMXhlcv>
+% LucidaNewMath-Extension
+\DeclareFontFamily{OMX}{hlcv}{}
+\DeclareLucidaFontShape{OMX}{hlcv}{m}{n}{hlcrv}{}
+%</OMXhlcv>
+%<*LMRhlcm>
+% LucidaNewMath-Arrows
+\DeclareFontFamily{LMR}{hlcm}{}
+\DeclareLucidaFontShape{LMR}{hlcm}{m}{n}{hlcra}{}
+\DeclareLucidaFontShape{LMR}{hlcm}{b}{n}{hlcda}{}
+%</LMRhlcm>
+%<*OMLplcm>
+% Math Italics
+\DeclareFontFamily{OML}{plcm}{\skewchar\font=127}
+\DeclareFontShape{OML}{plcm}{m}{it}{<->plcm}{}
+%</OMLplcm>
+%<*OMSplcy>
+% Math-Symbols
+\DeclareFontFamily{OMS}{plcy}{\skewchar\font=48}
+\DeclareFontShape{OMS}{plcy}{m}{n}{<->plcy}{}
+%</OMSplcy>
+%<*OMXplcv>
+% Math-Extension
+\DeclareFontFamily{OMX}{plcv}{}
+\DeclareFontShape{OMX}{plcv}{m}{n}{<->plcv}{}
+%</OMXplcv>
+%    \end{macrocode}
+% \subsection{(Y\&Y names) Lucida Bright font description files}
+%    \begin{macrocode}
+%<*OT1lb>
+\typeout{File\space OT1lb.fd\space loading \space (Y\&Y names)\space Lucida Bright}%
+\DeclareFontFamily{OT1}{lb}{}%
+\DeclareLucidaFontShape{OT1}{lb}{m}{n}{lbr}{}%
+\DeclareLucidaFontShape{OT1}{lb}{m}{it}{lbi}{}%
+\DeclareLucidaFontShape{OT1}{lb}{m}{sl}{lbsl}{}%
+\DeclareLucidaFontShape{OT1}{lb}{m}{sc}{lbrsc}{}%
+\DeclareLucidaFontShape{OT1}{lb}{b}{n}{lbd}{}%
+\DeclareLucidaFontShape{OT1}{lb}{b}{it}{lbdi}{}%
+\DeclareLucidaFontShape{OT1}{lb}{b}{sc}{lbdsc}{}%
+\DeclareFontShape{OT1}{lb}{b}{sl}{<->ssub * lb/b/it}{}%
+\DeclareFontShape{OT1}{lb}{bx}{n}{<->ssub * lb/b/n}{}%
+\DeclareFontShape{OT1}{lb}{bx}{it}{<->ssub * lb/b/it}{}%
+\DeclareFontShape{OT1}{lb}{bx}{sl}{<->ssub * lb/b/sl}{}%
+\DeclareFontShape{OT1}{lb}{bx}{sc}{<->ssub * lb/b/sc}{}%
+%</OT1lb>
+%    \end{macrocode}
+% \subsection{(Y\&Y names) Lucida Sans font description files}
+%    \begin{macrocode}
+%<*OT1lbs>
+\typeout{File\space OT1lbs.fd\space loading \space (Y\&Y names)\space Lucida Sans}%
+\DeclareFontFamily{OT1}{lbs}{}%
+\DeclareLucidaFontShape{OT1}{lbs}{m}{n}{lsr}{}%
+\DeclareLucidaFontShape{OT1}{lbs}{m}{it}{lsi}{}%
+\DeclareLucidaFontShape{OT1}{lbs}{b}{n}{lsd}{}%
+\DeclareLucidaFontShape{OT1}{lbs}{b}{it}{lsdi}{}%
+\DeclareFontShape{OT1}{lbs}{m}{sl}{<->ssub * lbs/m/it}{}%
+\DeclareFontShape{OT1}{lbs}{m}{sc}{<->ssub * lbs/m/n}{}%
+\DeclareFontShape{OT1}{lbs}{b}{sc}{<->ssub * lbs/m/sc}{}%
+\DeclareFontShape{OT1}{lbs}{bx}{sc}{<->ssub * lbs/b/sc}{}%
+\DeclareFontShape{OT1}{lbs}{b}{sl}{<->ssub * lbs/b/it}{}%
+\DeclareFontShape{OT1}{lbs}{bx}{n}{<->ssub * lbs/b/n}{}%
+\DeclareFontShape{OT1}{lbs}{bx}{it}{<->ssub * lbs/b/it}{}%
+\DeclareFontShape{OT1}{lbs}{bx}{sl}{<->ssub * lbs/m/sl}{}%
+%</OT1lbs>
+%    \end{macrocode}
+% \subsection{(Y\&Y names) Lucida Bright Typewriter  font description files}
+%    \begin{macrocode}
+%<*OT1lbt>
+\typeout{File\space OT1lbt.fd\space loading \space (Y\&Y names)\space Lucida Bright Typewriter}%
+\DeclareFontFamily{OT1}{lbt}{\hyphenchar \font\m@ne}%
+\DeclareLucidaFontShape{OT1}{lbt}{m}{n}{lstr}{}%
+\DeclareFontShape{OT1}{lbt}{m}{sc}{<->ssub * lbt/m/n}{}%
+\DeclareLucidaFontShape{OT1}{lbt}{m}{it}{lsto}{}%
+\DeclareFontShape{OT1}{lbt}{m}{sl}{<->ssub * lbt/m/it}{}%
+\DeclareLucidaFontShape{OT1}{lbt}{b}{n}{lstb}{}%
+\DeclareLucidaFontShape{OT1}{lbt}{b}{it}{lstbo}{}%
+\DeclareFontShape{OT1}{lbt}{b}{sc}{<->ssub * lbt/m/sc}{}%
+\DeclareFontShape{OT1}{lbt}{b}{sl}{<->ssub * lbt/b/it}{}%
+\DeclareFontShape{OT1}{lbt}{m}{sl}{<->ssub * lbt/m/it}{}%
+\DeclareFontShape{OT1}{lbt}{bx}{n}{<->ssub * lbt/b/n}{}%
+\DeclareFontShape{OT1}{lbt}{bx}{it}{<->ssub * lbt/b/it}{}%
+\DeclareFontShape{OT1}{lbt}{bx}{sc}{<->ssub * lbt/b/sc}{}%
+\DeclareFontShape{OT1}{lbt}{bx}{sl}{<->ssub * lbt/m/sl}{}%
+%</OT1lbt>
+%    \end{macrocode}
+% \subsection{(Y\&Y names) Lucida Fax  font description files}
+%    \begin{macrocode}
+%<*OT1lbf>
+\typeout{File\space OT1lbf.fd\space loading \space (Y\&Y names)\space Lucida Fax}%
+\DeclareFontFamily{OT1}{lbf}{}%
+\DeclareLucidaFontShape{OT1}{lbf}{m}{n}{lfr}{}%
+\DeclareLucidaFontShape{OT1}{lbf}{b}{n}{lfd}{}%
+\DeclareLucidaFontShape{OT1}{lbf}{m}{it}{lfi}{}%
+\DeclareLucidaFontShape{OT1}{lbf}{b}{it}{lfdi}{}%
+%</OT1lbf>
+%<*OMLlbm>
+% \subsection{Lucida Math Italics  font description files}
+\DeclareFontFamily{OML}{lbm}{\skewchar\font=127}
+\DeclareLucidaFontShape{OML}{lbm}{m}{n}{lbmr}{} 
+\DeclareLucidaFontShape{OML}{lbm}{b}{n}{lbmd}{} 
+\DeclareLucidaFontShape{OML}{lbm}{m}{it}{lbmo}{}
+\DeclareLucidaFontShape{OML}{lbm}{b}{it}{lbmdo}{}
+%</OMLlbm>
+%<*OMLlb>
+\ProvidesFile{OMLlb.fd} [1995/02/19]
+\DeclareFontShape{OML}{lb}{m}{n}    {<-> ssub * lbm/m/n}{}
+\DeclareFontShape{OML}{lb}{m}{it}   {<-> ssub * lbm/m/n}{}
+\DeclareFontShape{OML}{lb}{m}{sl}   {<-> ssub * lbm/m/n}{}
+\DeclareFontShape{OML}{lb}{m}{sc}   {<-> ssub * lbm/m/n}{}
+\DeclareFontShape{OML}{lb}{bx}{n}   {<-> ssub * lbm/b/n}{}
+\DeclareFontShape{OML}{lb}{bx}{it}  {<-> ssub * lbm/b/n}{}
+\DeclareFontShape{OML}{lb}{bx}{sl}  {<-> ssub * lbm/b/n}{}
+\DeclareFontShape{OML}{lb}{bx}{sc}  {<-> ssub * lbm/b/n}{}
+%</OMLlb>
+%<*OMSlb>
+\ProvidesFile{OMSlb.fd} [1995/02/19]
+\DeclareFontFamily{OMS}{lb}{\skewchar\font'60}
+\DeclareFontShape{OMS}{lb}{m}{n}    {<-> ssub * lby/m/n}{}
+\DeclareFontShape{OMS}{lb}{m}{it}   {<-> ssub * lby/m/n}{}
+\DeclareFontShape{OMS}{lb}{m}{sl}   {<-> ssub * lby/m/n}{}
+\DeclareFontShape{OMS}{lb}{m}{sc}   {<-> ssub * lby/m/n}{}
+\DeclareFontShape{OMS}{lb}{bx}{n}   {<-> ssub * lby/b/n}{}
+\DeclareFontShape{OMS}{lb}{bx}{it}  {<-> ssub * lby/b/n}{}
+\DeclareFontShape{OMS}{lb}{bx}{sl}  {<-> ssub * lby/b/n}{}
+\DeclareFontShape{OMS}{lb}{bx}{sc}  {<-> ssub * lby/b/n}{}
+%</OMSlb>
+%<*OMSlby>
+% \subsection{LucidaNewMath-Symbols  font description files}
+\DeclareFontFamily{OMS}{lby}{\skewchar\font=48}
+\DeclareLucidaFontShape{OMS}{lby}{m}{n}{lbms}{}
+\DeclareLucidaFontShape{OMS}{lby}{b}{n}{lbmsd}{}
+%</OMSlby>
+%<*OMXlbv>
+% \subsection{LucidaNewMath-Extension  font description files}
+\DeclareFontFamily{OMX}{lbv}{}
+\DeclareLucidaFontShape{OMX}{lbv}{m}{n}{lbme}{}
+%</OMXlbv>
+%<*LMRlbm>
+% \subsection{LucidaNewMath-Arrows  font description files}
+\DeclareFontFamily{LMR}{lbm}{}
+\DeclareLucidaFontShape{LMR}{lbm}{m}{n}{lbma}{}
+\DeclareLucidaFontShape{LMR}{lbm}{b}{n}{lbmad}{}
+%</LMRlbm>
+%    \end{macrocode}
+% \section{Packages}
+%    \begin{macrocode}
+%<*lucid>
+\ProvidesPackage{lucid}[\filedate\space\fileversion\space
+ Lucida PSNFSS2e package]
+\renewcommand{\sfdefault}{plcs}
+\renewcommand{\rmdefault}{plc}
+\renewcommand{\ttdefault}{pcr}
+%</lucid>
+%<*lucmath>
+\ProvidesPackage{lucmath}[\filedate\space\fileversion\space
+ Lucida Math LaTeX2e package]
+\DeclareSymbolFont{operators}{\encodingdefault}{\rmdefault}{m}{n}
+\DeclareSymbolFont{letters}{OML}{plcm}{m}{it}
+\DeclareSymbolFont{symbols}{OMS}{plcy}{m}{n}
+\DeclareSymbolFont{largesymbols}{OMX}{plcv}{m}{n}
+\DeclareSymbolFont{italics}{\encodingdefault}{\rmdefault}{m}{it}
+\SetSymbolFont{letters}{bold}{OML}{plcm}{m}{it}%
+\SetSymbolFont{operators}{bold}{\encodingdefault}{\rmdefault}{b}{n}%
+\SetSymbolFont{operators}{normal}{\encodingdefault}{\rmdefault}{m}{n}%
+% reset the text in math macros
+% 
+\DeclareMathAlphabet      {\mathbf}{\encodingdefault}{\rmdefault}{b}{n}%
+\DeclareMathAlphabet      {\mathrm}{\encodingdefault}{\rmdefault}{m}{n}%
+\DeclareMathAlphabet      {\mathsf}{\encodingdefault}{\sfdefault}{m}{n}%
+\DeclareMathAlphabet      {\mathit}{\encodingdefault}{\rmdefault}{m}{it}%
+\DeclareMathAlphabet      {\mathtt}{\encodingdefault}{\ttdefault}{m}{n}%
+\SetMathAlphabet{\mathbf}{bold}{\encodingdefault}{\rmdefault}{b}{n}%
+\SetMathAlphabet{\mathsf}{bold}{\encodingdefault}{\sfdefault}{b}{n}%
+\SetMathAlphabet{\mathrm}{bold}{\encodingdefault}{\rmdefault}{b}{n}%
+\SetMathAlphabet{\mathit}{bold}{\encodingdefault}{\rmdefault}{b}{it}%
+\SetMathAlphabet{\mathtt}{bold}{\encodingdefault}{\ttdefault}{b}{n}%
+%</lucmath>
+%<*lucmtime>
+\ProvidesPackage{lucmtime}[\filedate\space\fileversion\space
+Monotype Times fonts with Lucida New Math]
+\def\rmdefault{mntx}
+\def\sfdefault{cmss}
+\def\ttdefault{cmtt}
+\def\Mathdefault{mntluc}
+\DeclareSymbolFont{letters}{OML}{mntluc}{m}{it}
+\DeclareSymbolFont{operators}{OT1}{mntx}{m}{n}
+\SetSymbolFont{letters}{normal}{OML}{mntluc}{m}{it}
+\SetSymbolFont{letters}{bold}{OML}{mntluc}{b}{it}
+\SetSymbolFont{operators}{bold}{OT1}{mntx}{b}{n}%
+\SetSymbolFont{operators}{normal}{OT1}{mntx}{m}{n}%
+%</lucmtime>
+%<*lucmin>
+\ProvidesPackage{lucmin}[\filedate\space\fileversion\space
+Minion fonts with Lucida New Math]
+\def\rmdefault{zmn}
+\def\sfdefault{zmy}
+\def\ttdefault{hlct}
+\renewcommand{\bfdefault}{b}
+\def\Mathdefault{zmnluc}
+\DeclareSymbolFont{letters}{OML}{zmnluc}{m}{it}
+\DeclareSymbolFont{operators}{OT1}{zmn}{m}{n}
+\SetSymbolFont{letters}{normal}{OML}{zmnluc}{m}{it}
+\SetSymbolFont{letters}{bold}{OML}{zmnluc}{b}{it}
+\SetSymbolFont{operators}{bold}{OT1}{zmn}{b}{n}%
+\SetSymbolFont{operators}{normal}{OT1}{zmn}{m}{n}%
+%</lucmin>
+%<*lucidabright>
+\ProvidesPackage{lucbr}[\filedate\space\fileversion\space
+ Lucida Bright PSNFSS2e package]
+%</lucidabright>
+%<*lucidabright|lucbmath>
+\newif\iflucida@expert
+\DeclareOption{kb}{% this is for Berry-type font names
+\def\Lucida@names{0}}
+\DeclareOption{yy}{% this is for Y\&Y font names
+\def\Lucida@names{1}}
+\DeclareOption{expert}{% we have expert set
+\lucida@experttrue}
+\DeclareOption{noexpert}{% we do not have expert set
+\lucida@expertfalse}
+%    \end{macrocode}
+% Set up the variant text and math sizes which Y\&Y
+% suggest for Lucida. The figures for these two
+% options actually come from Frank Mittelbach (oh great one).
+%
+% The default is to scale, but two options allow you to
+% revert to normal behaviour, or get even smaller.
+%    \begin{macrocode}
+\DeclareOption{nolucidascale}{%
+  \def\DeclareLucidaFontShape#1#2#3#4#5#6{%
+     \DeclareFontShape{#1}{#2}{#3}{#4}{<->#5}{#6}%
+  }%
+}
+\DeclareOption{lucidascale}{%
+ \def\DeclareLucidaFontShape#1#2#3#4#5#6{%
+ \DeclareFontShape{#1}{#2}{#3}{#4}{%
+  <-5.5>s*[1.04]#5%
+  <5.5-6.5>s*[1.02]#5%
+  <6.5-7.5>s*[.99]#5%
+  <7.5-8.5>s*[.97]#5%
+  <8.5-9.5>s*[.96]#5%
+  <9.5-10.5>s*[.95]#5%
+  <10.5-11.5>s*[.94]#5%
+  <11.5-13>s*[.93]#5%
+  <13-15.5>s*[.92]#5%
+  <15.5-18.5>s*[.91]#5%
+  <18.5-22.5>s*[.9]#5%
+  <22.5->s*[.89]#5%
+}{#6}}
+}
+\DeclareOption{lucidasmallscale}{%
+ \def\DeclareLucidaFontShape#1#2#3#4#5#6{%
+ \DeclareFontShape{#1}{#2}{#3}{#4}{%
+  <-5.5>s*[.98]#5%
+  <5.5-6.5>s*[.96]#5%
+  <6.5-7.5>s*[.94]#5%
+  <7.5-8.5>s*[.92]#5%
+  <8.5-9.5>s*[.91]#5%
+  <9.5-10.5>s*[.9]#5%
+  <10.5-11.5>s*[.89]#5%
+  <11.5-13>s*[.88]#5%
+  <13-15.5>s*[.87]#5%
+  <15.5-18.5>s*[.86]#5%
+  <18.5-22.5>s*[.85]#5%
+  <22.5->s*[.84]#5%
+}{#6}}
+}
+%    \end{macrocode}
+% The same effect as some of the oldlfont package; 
+% in particular, its allows |\rm|, |\bf| etc in maths.
+%    \begin{macrocode}
+\DeclareOption{oldlfont}{%
+\AtBeginDocument{%
+ \let\math@bgroup\@empty
+ \let\math@egroup\@empty
+ \let \@@math@bgroup \math@bgroup
+ \let \@@math@egroup \math@egroup
+ \let\mit\undefined
+ \let\cal\undefined
+ \DeclareSymbolFontAlphabet{\mit}{letters}%
+ \DeclareSymbolFontAlphabet{\cal}{symbols}%
+ \DeclareRobustCommand\rm{\normalfont\rmfamily\mathgroup\symoperators}%
+ \DeclareRobustCommand\bf{\normalfont\bfseries\mathgroup\symbold}%
+ \DeclareRobustCommand\it{\normalfont\itshape\mathgroup\symitalic}%
+ \DeclareRobustCommand\tt{\normalfont\ttfamily\mathgroup\symtypewriter}%
+ \DeclareRobustCommand\em{%
+   \@nomath\em
+   \ifdim \fontdimen\@ne\font>\z@\rm\else\it\fi}%
+ \def\@setfontsize##1##2##3{\@nomath##1%
+    \ifx\protect\@typeset@protect
+      \let\@currsize##1%
+    \fi
+    \fontsize{##2}{##3}\normalfont}%
+ \let\not@math@alphabet\@gobbletwo
+ }
+}
+\ExecuteOptions{kb,expert,lucidascale} 
+\ProcessOptions
+%</lucidabright|lucbmath>
+%<lucidabright|lucbmath>\ifnum\Lucida@names=0
+%<*lucidabright>
+ \renewcommand{\sfdefault}{hls}
+ \renewcommand{\rmdefault}{hlh}
+ \renewcommand{\ttdefault}{hlst}
+%</lucidabright>
+%<*lucbmath>
+%    \end{macrocode}
+% New encoding scheme for Math Arrows font
+%    \begin{macrocode}
+ \DeclareFontEncoding{LMR}{}{}
+ \DeclareFontSubstitution{LMR}{hlcm}{m}{n}
+%<!luctim> \DeclareSymbolFont{letters}{OML}{hlcm}{m}{it}
+\iflucida@expert
+ \DeclareSymbolFont{mathupright}{OML}{hlcm}{m}{n}
+\fi
+ \DeclareSymbolFont{symbols}{OMS}{hlcy}{m}{n}
+ \DeclareSymbolFont{largesymbols}{OMX}{hlcv}{m}{n}
+%    \end{macrocode}
+% The new Expert set for bold math
+%    \begin{macrocode}
+\iflucida@expert
+%<!luctim> \SetSymbolFont{letters}{bold}{OML}{hlcm}{b}{it}
+ \SetSymbolFont{mathupright}{bold}{OML}{hlcm}{b}{n}
+ \SetSymbolFont{symbols}{bold}{OMS}{hlcy}{b}{n}
+\fi
+%    \end{macrocode}
+% Better get the order of this right, or maths come out as all arrows\ldots
+%    \begin{macrocode}
+ \DeclareSymbolFont{italics}{\encodingdefault}{\rmdefault}{m}{it}
+ \DeclareSymbolFont{arrows}{LMR}{hlcm}{m}{n}
+\iflucida@expert
+ \DeclareSymbolFont{boldarrows}{LMR}{hlcm}{b}{n}
+\fi
+%</lucbmath>
+%<lucidabright|lucbmath>\else
+%<*lucidabright>
+%    \end{macrocode}
+% This is for Y\&Y font names; the supplied tfms are in OT1 encoding
+%    \begin{macrocode}
+ \renewcommand{\sfdefault}{lbs}
+ \renewcommand{\rmdefault}{lb}
+ \renewcommand{\ttdefault}{lbt}
+ \def\encodingdefault{OT1}\fontencoding{OT1}\selectfont
+%</lucidabright>
+%<*lucbmath>
+%    \end{macrocode}
+% New encoding scheme for Math Arrows font
+%    \begin{macrocode}
+ \DeclareFontEncoding{LMR}{}{}
+ \DeclareFontSubstitution{LMR}{lbm}{m}{n}
+%<!luctim> \DeclareSymbolFont{letters}{OML}{lbm}{m}{it}
+\iflucida@expert
+ \DeclareSymbolFont{mathupright}{OML}{lbm}{m}{n} 
+\fi
+ \DeclareSymbolFont{symbols}{OMS}{lby}{m}{n}
+ \DeclareSymbolFont{largesymbols}{OMX}{lbv}{m}{n}
+\iflucida@expert
+%<!luctim> \SetSymbolFont{letters}{bold}{OML}{lbm}{b}{it}
+ \SetSymbolFont{mathupright}{bold}{OML}{lbm}{b}{n}
+ \SetSymbolFont{symbols}{bold}{OMS}{lby}{b}{n}
+\fi
+ \DeclareSymbolFont{italics}{\encodingdefault}{\rmdefault}{m}{it}
+ \DeclareSymbolFont{arrows}{LMR}{lbm}{m}{n}
+\iflucida@expert
+ \DeclareSymbolFont{boldarrows}{LMR}{lbm}{b}{n}
+\fi
+%</lucbmath>
+%<lucidabright|lucbmath>\fi
+%<*lucbmath>
+%<!luctim>\DeclareSymbolFont{operators}{OT1}{\rmdefault}{m}{n}
+%<!luctim>\SetSymbolFont{operators}{bold}{OT1}{\rmdefault}{b}{n}%
+%<!luctim>\SetSymbolFont{operators}{normal}{OT1}{\rmdefault}{m}{n}%
+%    \end{macrocode}
+% 
+% Explicitly redeclare all the alphabets just in case, but differentiate
+% between pure Lucida, and the Times mixture, since those have genuine
+% OT1 mimics.
+%    \begin{macrocode}
+%<*!luctim>
+\DeclareMathAlphabet      {\mathbf}{\encodingdefault}{\rmdefault}{b}{n}%
+\DeclareMathAlphabet      {\mathrm}{\encodingdefault}{\rmdefault}{m}{n}%
+\DeclareMathAlphabet      {\mathsf}{\encodingdefault}{\sfdefault}{m}{n}%
+\DeclareMathAlphabet      {\mathit}{\encodingdefault}{\rmdefault}{m}{it}%
+\DeclareMathAlphabet      {\mathtt}{\encodingdefault}{\ttdefault}{m}{n}%
+\SetMathAlphabet{\mathbf}{bold}{\encodingdefault}{\rmdefault}{b}{n}%
+\SetMathAlphabet{\mathsf}{bold}{\encodingdefault}{\sfdefault}{b}{n}%
+\SetMathAlphabet{\mathrm}{bold}{\encodingdefault}{\rmdefault}{b}{n}%
+\SetMathAlphabet{\mathit}{bold}{\encodingdefault}{\rmdefault}{b}{it}%
+\SetMathAlphabet{\mathtt}{bold}{\encodingdefault}{\ttdefault}{b}{n}%
+%</!luctim>
+%<*luctim>
+\DeclareMathAlphabet      {\mathbf}{OT1}{\Mathdefault}{b}{n}%
+\DeclareMathAlphabet      {\mathrm}{OT1}{\Mathdefault}{m}{n}%
+\DeclareMathAlphabet      {\mathsf}{OT1}{\sfdefault}{m}{n}%
+\DeclareMathAlphabet      {\mathit}{OT1}{\Mathdefault}{m}{it}%
+\DeclareMathAlphabet      {\mathtt}{OT1}{\ttdefault}{m}{n}%
+\SetMathAlphabet{\mathbf}{bold}{OT1}{\Mathdefault}{b}{n}%
+\SetMathAlphabet{\mathsf}{bold}{OT1}{\sfdefault}{b}{n}%
+\SetMathAlphabet{\mathrm}{bold}{OT1}{\Mathdefault}{b}{n}%
+\SetMathAlphabet{\mathit}{bold}{OT1}{\Mathdefault}{b}{it}%
+\SetMathAlphabet{\mathtt}{bold}{OT1}{\ttdefault}{b}{n}%
+%</luctim>
+\DeclareSymbolFontAlphabet{\mathbb}{arrows}
+\DeclareSymbolFontAlphabet{\mathscr}{symbols}
+\iflucida@expert
+  \DeclareSymbolFontAlphabet{\mathup}{mathupright}
+\fi
+\ifnum\Lucida@names=0
+ \DeclareMathAccent\vec  {\mathord}{letters}{"7E}
+\else
+ \DeclareMathAccent\vec  {\mathord}{letters}{"7E}
+ \DeclareMathAccent\dot  {\mathalpha}{operators}{"C7}
+\fi
+%    \end{macrocode}
+% This section derives mostly from  Berthold Horn's
+% |lcdmacro.tex| and |amssymblb.tex|
+% \copyright 1991, 1992 Y\&Y. All Rights Reserved
+% Original from Version 1.2, 1992 June 14; updated \emph{ad hoc}.
+%    \begin{macrocode}
+\@ifpackageloaded{amsmath}{%
+%    \end{macrocode}
+% (From M J Downes): it's possible the factors 1.5, 2, 2.5, 3, 3.5 
+% should be adjusted
+% for Lucida fonts. But that has to be determined by looking at
+% printed tests which I cannot do at the moment. [mjd,24-Jun-1993]
+%    \begin{macrocode}
+  \def\biggg{\bBigg@\thr@@} 
+  \def\Biggg{\bBigg@{3.5}}
+}{% 
+  \def\big#1{{\hbox{$\left#1\vbox to8.20\p@{}\right.\n@space$}}}
+  \def\Big#1{{\hbox{$\left#1\vbox to10.80\p@{}\right.\n@space$}}}
+  \def\bigg#1{{\hbox{$\left#1\vbox to13.42\p@{}\right.\n@space$}}}
+  \def\Bigg#1{{\hbox{$\left#1\vbox to16.03\p@{}\right.\n@space$}}}
+  \def\biggg#1{{\hbox{$\left#1\vbox to17.72\p@{}\right.\n@space$}}}
+  \def\Biggg#1{{\hbox{$\left#1\vbox to21.25\p@{}\right.\n@space$}}}
+  \def\n@space{\nulldelimiterspace\z@ \m@th}
+}
+%    \end{macrocode}
+% Define some extra large sizes --- always done using extensible parts
+%    \begin{macrocode}
+\def\bigggl{\mathopen\biggg}
+\def\bigggr{\mathclose\biggg}
+\def\Bigggl{\mathopen\Biggg}
+\def\Bigggr{\mathclose\Biggg}
+%    \end{macrocode}
+%  Following is only really needed if the roman text font is NOT LucidaBright
+%  Draw the small sizes of `[' and `]' from math italic instead of roman font
+%    \begin{macrocode}
+\mathcode`\[="4186 \delcode`\[="186302 
+\mathcode`\]="5187 \delcode`\]="187303
+%    \end{macrocode}
+%  Draw the small sizes of `(' and `)' from math italic instead of roman font
+%    \begin{macrocode}
+\mathcode`\(="4184 \delcode`\(="184300
+\mathcode`\)="5185 \delcode`\)="185301
+%    \end{macrocode}
+%  Draw  `=' and `+' from symbol font instead of roman
+%    \begin{macrocode}
+\mathcode`\=="3283 
+\mathcode`\+="2282
+%    \end{macrocode}
+% Draw small `/' from math italic instead of roman font
+%    \begin{macrocode}
+\mathcode`\/="013D \delcode`\/="13D30E
+%    \end{macrocode}
+% Make open face brackets accessible, i.e. [[ and ]]
+%    \begin{macrocode}
+\def\ldbrack{\delimiter"4182382 }
+\def\rdbrack{\delimiter"5183383 }
+%    \end{macrocode}
+% Provide access to surface integral signs (linked from text to display size)
+%    \begin{macrocode}
+\DeclareMathSymbol{\surfintop}{1}{largesymbols}{"90}
+\def\surfint{\surfintop\nolimits}
+%    \end{macrocode}
+% Make medium size integrals available (NOT linked to display size)
+%    \begin{macrocode}
+\DeclareMathSymbol{\midintop}{1}{largesymbols}{"92} 
+\def\midint{\midintop\nolimits}
+\DeclareMathSymbol{\midointop}{1}{largesymbols}{"93}
+\def\midoint{\midointop\nolimits}
+\DeclareMathSymbol{\midsurfintop}{1}{largesymbols}{"94}
+\def\midsurfint{\midsurfintop\nolimits}
+%    \end{macrocode}
+% Extensible integral (use with |\bigg|, |\Bigg|, |\biggg|, |\Biggg| etc)
+%    \begin{macrocode}
+\def\largeint{\delimiter"135A395 }
+%    \end{macrocode}
+% To close up gaps in special math characters constructed from pieces
+%    \begin{macrocode}
+\def\joinrel{\mathrel{\mkern-4mu}} % \def\joinrel{\mathrel{\mkern-3mu}}
+%    \end{macrocode}
+% The |\mkern-2.5mu| undoes the bogus `italic correction' after joiners in LBMA
+%    \begin{macrocode}
+\def\relbar{\mathrel{\smash{\mathchar"3\hexnumber@\symarrows 2D}}\mathrel{\mkern-2.5mu}}
+\def\Relbar{\mathrel{\mathchar"3\hexnumber@\symarrows 3D}\mathrel{\mkern-2.5mu}}
+%    \end{macrocode}
+% The |\mkern4mu| undoes the overhang at the ends of the joiners (and more)
+%    \begin{macrocode}
+\def\longleftarrow{\leftarrow\relbar\mathrel{\mkern4mu}}
+\def\longrightarrow{\mathrel{\mkern4mu}\relbar\rightarrow}
+\def\Longleftarrow{\Leftarrow\Relbar\mathrel{\mkern4mu}}
+\def\Longrightarrow{\mathrel{\mkern4mu}\Relbar\Rightarrow}
+%    \end{macrocode}
+% Some characters that need construction in CM exist complete in math
+% italic or math symbol font.
+%    \begin{macrocode}
+\let\bowtie\undefined
+\let\models\undefined
+\let\doteq\undefined
+\let\cong\undefined
+\let\angle\undefined
+\DeclareMathSymbol{\bowtie}{3}{letters}{"F6}
+\DeclareMathSymbol{\models}{3}{symbols}{"EE}
+\DeclareMathSymbol{\doteq}{3}{symbols}{"C9}
+\DeclareMathSymbol{\cong}{3}{symbols}{"9B}
+\DeclareMathSymbol{\angle}{0}{symbols}{"8B}
+%    \end{macrocode}
+% These need undefining so that we can redeclare them.
+%    \begin{macrocode}
+\let\Box\undefined
+\let\Diamond\undefined
+\let\leadsto\undefined
+\let\neq\undefined
+\let\hookleftarrow\undefined
+\let\hookrightarrow\undefined
+\let\mapsto\undefined
+\let\notin\undefined
+\let\rightleftharpoons\undefined
+%    \end{macrocode}
+% Other characters may be found in LucidaNewMath-Arrows (more negated later).
+%    \begin{macrocode}
+\DeclareMathSymbol{\neq}{3}{arrows}{"94}
+\DeclareMathSymbol{\rightleftharpoons}{3}{arrows}{"7A}
+\DeclareMathSymbol{\leftrightharpoons}{3}{arrows}{"79}
+\DeclareMathSymbol{\hookleftarrow}{3}{arrows}{"3C}
+\DeclareMathSymbol{\hookrightarrow}{3}{arrows}{"3E}
+\DeclareMathSymbol{\mapsto}{3}{arrows}{"2C}
+\def\longmapsto{\mapstochar\longrightarrow}
+%    \end{macrocode}
+% Special \LaTeX\ character definitions (originally from \LaTeX\ symbol font)
+%    \begin{macrocode}
+\let\Join\undefined
+\let\rhd\undefined
+\let\lhd\undefined
+\let\unrhd\undefined
+\let\unlhd\undefined
+\DeclareMathSymbol{\Join}{3}{letters}{"F6}
+\DeclareMathSymbol{\rhd}{3}{letters}{"2E}
+\DeclareMathSymbol{\lhd}{3}{letters}{"2F}
+\DeclareMathSymbol{\unlhd}{3}{symbols}{"F4}
+\DeclareMathSymbol{\unrhd}{3}{symbols}{"F5}
+\DeclareMathSymbol{\Box}{0}{arrows}{"02} 
+\DeclareMathSymbol{\Diamond}{0}{arrows}{"08}
+\DeclareMathSymbol{\leadsto}{3}{arrows}{"8E} 
+\DeclareMathSymbol{\leadsfrom}{3}{arrows}{"8D}
+\def\mathstrut{\vphantom{f}}
+\@ifpackageloaded{amstex}{}{%
+ \@ifpackageloaded{amsmath}{}{%
+%    \end{macrocode}
+% AMS math not in use: modify |\matrix| it to adjust the
+% first and last line vertical spacing slightly; otherwise leave
+% it alone.
+% following changed because fonts (i.e. math italic) not `at full scale'
+%    \begin{macrocode}
+  \def\matrix#1{\null\,\vcenter{\normalbaselines\m@th
+    \ialign{\hfil$##$\hfil&&\quad\hfil$##$\hfil\crcr
+      \mathstrut\crcr\noalign{\kern-0.9\baselineskip}
+     #1\crcr\mathstrut\crcr\noalign{\kern-0.9\baselineskip}}}\,}
+  }
+}
+%    \end{macrocode}
+% In n-th root, don't want the `n' to come too close to the radical
+%    \begin{macrocode}
+\def\r@@t#1#2{\setbox\z@\hbox{$\m@th#1\sqrt{#2}$}
+  \dimen@\ht\z@ \advance\dimen@-\dp\z@
+  \mkern5mu\raise.6\dimen@\copy\rootbox \mkern-7.5mu \box\z@}
+%    \end{macrocode}
+% Here are some extra definitions of mathematical symbols and operators:
+%    \begin{macrocode}
+\DeclareMathSymbol{\defineequal}{3}{symbols}{"D6}
+\DeclareMathSymbol{\notleq}{3}{arrows}{"9C}
+\DeclareMathSymbol{\notgeq}{3}{arrows}{"9D}
+\DeclareMathSymbol{\notequiv}{3}{arrows}{"95}
+\DeclareMathSymbol{\notprec}{3}{arrows}{"E5}
+\DeclareMathSymbol{\notsucc}{3}{arrows}{"E6}
+\DeclareMathSymbol{\notapprox}{3}{arrows}{"98}
+\DeclareMathSymbol{\notpreceq}{3}{arrows}{"E7}
+\DeclareMathSymbol{\notsucceq}{3}{arrows}{"E8}
+\DeclareMathSymbol{\notasymp}{3}{arrows}{"F3}
+\DeclareMathSymbol{\notsubset}{3}{arrows}{"C6}
+\DeclareMathSymbol{\notsupset}{3}{arrows}{"C7}
+\DeclareMathSymbol{\notsim}{3}{arrows}{"96}
+\DeclareMathSymbol{\notsubseteq}{3}{arrows}{"C8}
+\DeclareMathSymbol{\notsupseteq}{3}{arrows}{"C9}
+\DeclareMathSymbol{\notsimeq}{3}{arrows}{"97}
+\DeclareMathSymbol{\notsqsubseteq}{3}{arrows}{"D4}
+\DeclareMathSymbol{\notsqsupseteq}{3}{arrows}{"D5}
+\DeclareMathSymbol{\notcong}{3}{arrows}{"99}
+\DeclareMathSymbol{\notin}{3}{arrows}{"1D}
+\DeclareMathSymbol{\notni}{3}{arrows}{"1F}
+\DeclareMathSymbol{\notvdash}{3}{arrows}{"F8}
+\DeclareMathSymbol{\notmodels}{3}{arrows}{"F9}
+\DeclareMathSymbol{\notparallel}{3}{arrows}{"F7}
+\DeclareMathSymbol{\noteq}{3}{arrows}{"94}
+\DeclareMathSymbol{\notless}{3}{arrows}{"9A}
+\DeclareMathSymbol{\notgreater}{3}{arrows}{"9B}
+\DeclareMathSymbol{\notmid}{3}{arrows}{"F6}
+\let\Bbb\mathbb
+%    \end{macrocode}
+% Normal \LaTeX\ draws upper case (upright) Greek from cmr10 ---
+% when using the Cork encoding, that isn't there.
+%    \begin{macrocode}
+\iflucida@expert
+%    \end{macrocode}
+% If we have the LucidaBright Expert set, we'll draw them from the upright
+% math font.  That way we can get bold math to work on upright upper 
+% case Greek.
+%
+% Why doesn't this work?
+%\begin{verbatim}
+% \documentclass{article}
+% \usepackage{lucbry}
+% $\mathbf{\Sigma}$
+% \end{document}
+%\end{verbatim}
+% The answer lies in the meaning of |\mathbf|; as fntguide.tex says, it is
+% for alphabetic switching. The straight lucida style says
+%\begin{verbatim}
+%  \DeclareMathSymbol{\Sigma}{\mathalpha}{largesymbols}{'326}
+%\end{verbatim}
+% and the |\mathalpha| signifies that the |\Sigma| can change with the
+% alphabet; so this in fact looks for |\char'326| in the ``mathbf''
+% alphabet when we ask for that. That is defined with
+%\begin{verbatim}
+% \SetMathAlphabet{\mathbf}{bold}{\encodingdefault}{\rmdefault}{b}{n}
+%\end{verbatim}
+% ie normal text Lucida bold. It all works in CMR because the text fonts
+% have Greek, which is why the symbols are defined as \mathalpha; in
+% addition, the alphabets like |\mathbf| \emph{explicitly} ask for OT1:
+%\begin{verbatim}
+%\DeclareMathAlphabet      {\mathbf}{OT1}{cmr}{bx}{n}
+%\end{verbatim}
+% so it works in T1 encoding too.
+%
+% When we get the symbols from other fonts in Lucida, we should no longer
+% classify the fonts as |\mathalpha|, since the mechanism doesn't
+% function. So we use |\mathord| instead, and you
+% only get bold Greek if you change |\mathversion|. At least it's consistent.
+%
+% If, however, we are using the Times mixture, we can keep
+% |\mathalpha|, as we have the right font layouts around.
+%    \begin{macrocode}
+%<*!luctim>
+  \DeclareMathSymbol{\Gamma}{\mathord}{mathupright}{0}
+  \DeclareMathSymbol{\Delta}{\mathord}{mathupright}{1}
+  \DeclareMathSymbol{\Theta}{\mathord}{mathupright}{2}
+  \DeclareMathSymbol{\Lambda}{\mathord}{mathupright}{3}
+  \DeclareMathSymbol{\Xi}{\mathord}{mathupright}{4}
+  \DeclareMathSymbol{\Pi}{\mathord}{mathupright}{5}
+  \DeclareMathSymbol{\Sigma}{\mathord}{mathupright}{6}
+  \DeclareMathSymbol{\Upsilon}{\mathord}{mathupright}{7}
+  \DeclareMathSymbol{\Phi}{\mathord}{mathupright}{8}
+  \DeclareMathSymbol{\Psi}{\mathord}{mathupright}{9}
+  \DeclareMathSymbol{\Omega}{\mathord}{mathupright}{10}
+  \DeclareMathSymbol{\upalpha}{\mathord}{mathupright}{11}
+  \DeclareMathSymbol{\upbeta}{\mathord}{mathupright}{12}
+  \DeclareMathSymbol{\upgamma}{\mathord}{mathupright}{13}
+  \DeclareMathSymbol{\updelta}{\mathord}{mathupright}{14}
+  \DeclareMathSymbol{\upepsilon}{\mathord}{mathupright}{15}
+  \DeclareMathSymbol{\upzeta}{\mathord}{mathupright}{16}
+  \DeclareMathSymbol{\upeta}{\mathord}{mathupright}{17}
+  \DeclareMathSymbol{\uptheta}{\mathord}{mathupright}{18}
+  \DeclareMathSymbol{\upiota}{\mathord}{mathupright}{19}
+  \DeclareMathSymbol{\upkappa}{\mathord}{mathupright}{20}
+  \DeclareMathSymbol{\uplambda}{\mathord}{mathupright}{21}
+  \DeclareMathSymbol{\upmu}{\mathord}{mathupright}{22}
+  \DeclareMathSymbol{\upnu}{\mathord}{mathupright}{23}
+  \DeclareMathSymbol{\upxi}{\mathord}{mathupright}{24}
+  \DeclareMathSymbol{\uppi}{\mathord}{mathupright}{25}
+  \DeclareMathSymbol{\uprho}{\mathord}{mathupright}{26}
+  \DeclareMathSymbol{\upsigma}{\mathord}{mathupright}{27}
+  \DeclareMathSymbol{\uptau}{\mathord}{mathupright}{28}
+  \DeclareMathSymbol{\upupsilon}{\mathord}{mathupright}{29}
+  \DeclareMathSymbol{\upphi}{\mathord}{mathupright}{30}
+  \DeclareMathSymbol{\upchi}{\mathord}{mathupright}{31}
+  \DeclareMathSymbol{\uppsi}{\mathord}{mathupright}{32}
+  \DeclareMathSymbol{\upomega}{\mathord}{mathupright}{33}
+  \DeclareMathSymbol{\upvarepsilon}{\mathord}{mathupright}{34}
+\else
+%    \end{macrocode}
+% It's in the extension font (largesymbols)
+%    \begin{macrocode}
+  \DeclareMathSymbol{\Gamma}{\mathord}{largesymbols}{'320}
+  \DeclareMathSymbol{\Delta}{\mathord}{largesymbols}{'321}
+  \DeclareMathSymbol{\Theta}{\mathord}{largesymbols}{'322}
+  \DeclareMathSymbol{\Lambda}{\mathord}{largesymbols}{'323}
+  \DeclareMathSymbol{\Xi}{\mathord}{largesymbols}{'324}
+  \DeclareMathSymbol{\Pi}{\mathord}{largesymbols}{'325}
+  \DeclareMathSymbol{\Sigma}{\mathord}{largesymbols}{'326}
+  \DeclareMathSymbol{\Upsilon}{\mathord}{largesymbols}{'327}
+  \DeclareMathSymbol{\Phi}{\mathord}{largesymbols}{'330}
+  \DeclareMathSymbol{\Psi}{\mathord}{largesymbols}{'331}
+  \DeclareMathSymbol{\Omega}{\mathord}{largesymbols}{'332}
+\fi
+%</!luctim>
+%<*luctim>
+  \DeclareMathSymbol{\Gamma}{\mathalpha}{mathupright}{0}
+  \DeclareMathSymbol{\Delta}{\mathalpha}{mathupright}{1}
+  \DeclareMathSymbol{\Theta}{\mathalpha}{mathupright}{2}
+  \DeclareMathSymbol{\Lambda}{\mathalpha}{mathupright}{3}
+  \DeclareMathSymbol{\Xi}{\mathalpha}{mathupright}{4}
+  \DeclareMathSymbol{\Pi}{\mathalpha}{mathupright}{5}
+  \DeclareMathSymbol{\Sigma}{\mathalpha}{mathupright}{6}
+  \DeclareMathSymbol{\Upsilon}{\mathalpha}{mathupright}{7}
+  \DeclareMathSymbol{\Phi}{\mathalpha}{mathupright}{8}
+  \DeclareMathSymbol{\Psi}{\mathalpha}{mathupright}{9}
+  \DeclareMathSymbol{\Omega}{\mathalpha}{mathupright}{10}
+  \DeclareMathSymbol{\upalpha}{\mathalpha}{mathupright}{11}
+  \DeclareMathSymbol{\upbeta}{\mathalpha}{mathupright}{12}
+  \DeclareMathSymbol{\upgamma}{\mathalpha}{mathupright}{13}
+  \DeclareMathSymbol{\updelta}{\mathalpha}{mathupright}{14}
+  \DeclareMathSymbol{\upepsilon}{\mathalpha}{mathupright}{15}
+  \DeclareMathSymbol{\upzeta}{\mathalpha}{mathupright}{16}
+  \DeclareMathSymbol{\upeta}{\mathalpha}{mathupright}{17}
+  \DeclareMathSymbol{\uptheta}{\mathalpha}{mathupright}{18}
+  \DeclareMathSymbol{\upiota}{\mathalpha}{mathupright}{19}
+  \DeclareMathSymbol{\upkappa}{\mathalpha}{mathupright}{20}
+  \DeclareMathSymbol{\uplambda}{\mathalpha}{mathupright}{21}
+  \DeclareMathSymbol{\upmu}{\mathalpha}{mathupright}{22}
+  \DeclareMathSymbol{\upnu}{\mathalpha}{mathupright}{23}
+  \DeclareMathSymbol{\upxi}{\mathalpha}{mathupright}{24}
+  \DeclareMathSymbol{\uppi}{\mathalpha}{mathupright}{25}
+  \DeclareMathSymbol{\uprho}{\mathalpha}{mathupright}{26}
+  \DeclareMathSymbol{\upsigma}{\mathalpha}{mathupright}{27}
+  \DeclareMathSymbol{\uptau}{\mathalpha}{mathupright}{28}
+  \DeclareMathSymbol{\upupsilon}{\mathalpha}{mathupright}{29}
+  \DeclareMathSymbol{\upphi}{\mathalpha}{mathupright}{30}
+  \DeclareMathSymbol{\upchi}{\mathalpha}{mathupright}{31}
+  \DeclareMathSymbol{\uppsi}{\mathalpha}{mathupright}{32}
+  \DeclareMathSymbol{\upomega}{\mathalpha}{mathupright}{33}
+  \DeclareMathSymbol{\upvarepsilon}{\mathalpha}{mathupright}{34}
+\else
+%    \end{macrocode}
+% It's in the extension font (largesymbols)
+%    \begin{macrocode}
+  \DeclareMathSymbol{\Gamma}{\mathalpha}{largesymbols}{'320}
+  \DeclareMathSymbol{\Delta}{\mathalpha}{largesymbols}{'321}
+  \DeclareMathSymbol{\Theta}{\mathalpha}{largesymbols}{'322}
+  \DeclareMathSymbol{\Lambda}{\mathalpha}{largesymbols}{'323}
+  \DeclareMathSymbol{\Xi}{\mathalpha}{largesymbols}{'324}
+  \DeclareMathSymbol{\Pi}{\mathalpha}{largesymbols}{'325}
+  \DeclareMathSymbol{\Sigma}{\mathalpha}{largesymbols}{'326}
+  \DeclareMathSymbol{\Upsilon}{\mathalpha}{largesymbols}{'327}
+  \DeclareMathSymbol{\Phi}{\mathalpha}{largesymbols}{'330}
+  \DeclareMathSymbol{\Psi}{\mathalpha}{largesymbols}{'331}
+  \DeclareMathSymbol{\Omega}{\mathalpha}{largesymbols}{'332}
+\fi
+%</luctim>
+\DeclareMathSymbol{\varGamma}{\mathalpha}{letters}{"00}
+\DeclareMathSymbol{\varDelta}{\mathalpha}{letters}{"01}
+\DeclareMathSymbol{\varTheta}{\mathalpha}{letters}{"02}
+\DeclareMathSymbol{\varLambda}{\mathalpha}{letters}{"03}
+\DeclareMathSymbol{\varXi}{\mathalpha}{letters}{"04}
+\DeclareMathSymbol{\varPi}{\mathalpha}{letters}{"05}
+\DeclareMathSymbol{\varSigma}{\mathalpha}{letters}{"06}
+\DeclareMathSymbol{\varUpsilon}{\mathalpha}{letters}{"07}
+\DeclareMathSymbol{\varPhi}{\mathalpha}{letters}{"08}
+\DeclareMathSymbol{\varPsi}{\mathalpha}{letters}{"09}
+\DeclareMathSymbol{\varOmega}{\mathalpha}{letters}{"0A}
+%    \end{macrocode}
+% Definitions for math symbols and operators 
+% (normally found in the AMS symbol fonts)
+% using LucidaNewMath fonts 
+% MSAM* equivalents:
+%    \begin{macrocode}
+\DeclareMathSymbol{\boxdot}{2}{symbols}{"ED}
+\DeclareMathSymbol{\boxplus}{2}{symbols}{"EA}
+\DeclareMathSymbol{\boxtimes}{2}{symbols}{"EC}
+\DeclareMathSymbol{\square}{0}{arrows}{"02}
+\DeclareMathSymbol{\blacksquare}{0}{arrows}{"03}
+\DeclareMathSymbol{\centerdot}{2}{arrows}{"E1}
+\DeclareMathSymbol{\lozenge}{0}{arrows}{"08}
+\DeclareMathSymbol{\blacklozenge}{0}{arrows}{"09}
+\DeclareMathSymbol{\circlearrowright}{3}{arrows}{"8C}
+\DeclareMathSymbol{\circlearrowleft}{3}{arrows}{"8B}
+\DeclareMathSymbol{\rightleftharpoons}{3}{arrows}{"7A}
+\DeclareMathSymbol{\leftrightharpoons}{3}{arrows}{"79}
+\DeclareMathSymbol{\boxminus}{2}{symbols}{"EB}
+\DeclareMathSymbol{\Vdash}{3}{symbols}{"F0}
+\DeclareMathSymbol{\Vvdash}{3}{letters}{"D3}
+\DeclareMathSymbol{\vDash}{3}{symbols}{"EE}
+\DeclareMathSymbol{\twoheadrightarrow}{3}{arrows}{"25}
+\DeclareMathSymbol{\twoheadleftarrow}{3}{arrows}{"23}
+\DeclareMathSymbol{\leftleftarrows}{3}{arrows}{"71}
+\DeclareMathSymbol{\rightrightarrows}{3}{arrows}{"73}
+\DeclareMathSymbol{\upuparrows}{3}{arrows}{"72}
+\DeclareMathSymbol{\downdownarrows}{3}{arrows}{"74}
+\DeclareMathSymbol{\upharpoonright}{3}{arrows}{"75}
+\DeclareMathSymbol{\downharpoonright}{3}{arrows}{"77}
+\DeclareMathSymbol{\upharpoonleft}{3}{arrows}{"76}
+\DeclareMathSymbol{\downharpoonleft}{3}{arrows}{"78}
+\DeclareMathSymbol{\rightarrowtail}{3}{arrows}{"29}
+\DeclareMathSymbol{\leftarrowtail}{3}{arrows}{"28}
+\DeclareMathSymbol{\leftrightarrows}{3}{arrows}{"6E}
+\DeclareMathSymbol{\rightleftarrows}{3}{arrows}{"6D}
+\DeclareMathSymbol{\Lsh}{3}{arrows}{"7B}
+\DeclareMathSymbol{\Rsh}{3}{arrows}{"7D}
+\DeclareMathSymbol{\rightsquigarrow}{3}{arrows}{"8E}
+\DeclareMathSymbol{\leftsquigarrow}{3}{arrows}{"8D}
+\DeclareMathSymbol{\leftrightsquigarrow}{3}{arrows}{"91}
+\DeclareMathSymbol{\looparrowleft}{3}{arrows}{"3F}
+\DeclareMathSymbol{\looparrowright}{3}{arrows}{"40}
+\DeclareMathSymbol{\circeq}{3}{symbols}{"D0}
+\DeclareMathSymbol{\succsim}{3}{symbols}{"E1}
+\DeclareMathSymbol{\gtrsim}{3}{symbols}{"DD}
+\DeclareMathSymbol{\gtrapprox}{3}{letters}{"DB}
+\DeclareMathSymbol{\multimap}{3}{letters}{"C7}
+\DeclareMathSymbol{\image}{3}{letters}{"C6}
+\DeclareMathSymbol{\original}{3}{letters}{"C5}
+\DeclareMathSymbol{\therefore}{3}{symbols}{"90}
+\DeclareMathSymbol{\because}{3}{symbols}{"91}
+\DeclareMathSymbol{\doteqdot}{3}{symbols}{"CA}
+\DeclareMathSymbol{\triangleq}{3}{symbols}{"D5}
+\DeclareMathSymbol{\precsim}{3}{symbols}{"E0}
+\DeclareMathSymbol{\lesssim}{3}{symbols}{"DC}
+\DeclareMathSymbol{\lessapprox}{3}{letters}{"DA}
+\DeclareMathSymbol{\eqslantless}{3}{letters}{"E2}
+\DeclareMathSymbol{\eqslantgtr}{3}{letters}{"E3}
+\DeclareMathSymbol{\curlyeqprec}{3}{letters}{"E6}
+\DeclareMathSymbol{\curlyeqsucc}{3}{letters}{"E7}
+\DeclareMathSymbol{\preccurlyeq}{3}{letters}{"E4}
+\DeclareMathSymbol{\leqq}{3}{symbols}{"DA}
+\DeclareMathSymbol{\leqslant}{3}{letters}{"E0}
+\DeclareMathSymbol{\lessgtr}{3}{symbols}{"DE}
+\DeclareMathSymbol{\backprime}{0}{letters}{"C8}
+\DeclareMathSymbol{\axisshort}{0}{arrows}{"39}
+\DeclareMathSymbol{\risingdotseq}{3}{symbols}{"CC}
+\DeclareMathSymbol{\fallingdotseq}{3}{symbols}{"CB}
+\DeclareMathSymbol{\succcurlyeq}{3}{letters}{"E5}
+\DeclareMathSymbol{\geqq}{3}{symbols}{"DB}
+\DeclareMathSymbol{\geqslant}{3}{letters}{"E1}
+\DeclareMathSymbol{\gtrless}{3}{symbols}{"DF}
+\let\sqsubset\undefined
+\let\sqsupset\undefined
+\DeclareMathSymbol{\sqsubset}{3}{symbols}{"E4}
+\DeclareMathSymbol{\sqsupset}{3}{symbols}{"E5}
+\DeclareMathSymbol{\vartriangleright}{3}{letters}{"2E}
+\DeclareMathSymbol{\vartriangleleft}{3}{letters}{"2F}
+\DeclareMathSymbol{\trianglerighteq}{3}{symbols}{"F5}
+\DeclareMathSymbol{\trianglelefteq}{3}{symbols}{"F4}
+\DeclareMathSymbol{\bigstar}{0}{arrows}{"AB}
+\DeclareMathSymbol{\between}{3}{letters}{"F2}
+\DeclareMathSymbol{\blacktriangledown}{0}{arrows}{"07}
+\DeclareMathSymbol{\blacktriangleright}{3}{letters}{"F1}
+\DeclareMathSymbol{\blacktriangleleft}{3}{letters}{"F0}
+\DeclareMathSymbol{\arrowaxisright}{0}{arrows}{"37}
+\DeclareMathSymbol{\arrowaxisleft}{0}{arrows}{"36}
+\DeclareMathSymbol{\vartriangle}{3}{arrows}{"04}
+\DeclareMathSymbol{\blacktriangle}{0}{arrows}{"05}
+\DeclareMathSymbol{\triangledown}{0}{arrows}{"06}
+\DeclareMathSymbol{\eqcirc}{3}{symbols}{"CF}
+\DeclareMathSymbol{\lesseqgtr}{3}{letters}{"E8}
+\DeclareMathSymbol{\gtreqless}{3}{letters}{"E9}
+\DeclareMathSymbol{\lesseqqgtr}{3}{letters}{"EA}
+\DeclareMathSymbol{\gtreqqless}{3}{letters}{"EB}
+\DeclareMathSymbol{\Rrightarrow}{3}{arrows}{"6C}
+\DeclareMathSymbol{\Lleftarrow}{3}{arrows}{"6A}
+\DeclareMathSymbol{\veebar}{2}{letters}{"D2}
+\DeclareMathSymbol{\barwedge}{2}{symbols}{"F6}
+\DeclareMathSymbol{\angle}{0}{symbols}{"8B}
+\DeclareMathSymbol{\measuredangle}{0}{symbols}{"8C}
+\DeclareMathSymbol{\sphericalangle}{0}{symbols}{"8D}
+\DeclareMathSymbol{\varpropto}{3}{symbols}{"2F} % ?
+\DeclareMathSymbol{\smallsmile}{3}{letters}{"5E} % ? 
+\DeclareMathSymbol{\smallfrown}{3}{letters}{"5F} % ?       
+\DeclareMathSymbol{\Subset}{3}{symbols}{"F8}
+\DeclareMathSymbol{\Supset}{3}{symbols}{"F9}
+\DeclareMathSymbol{\Cup}{2}{symbols}{"FA}
+\DeclareMathSymbol{\Cap}{2}{symbols}{"FB}
+\DeclareMathSymbol{\curlywedge}{2}{symbols}{"84}
+\DeclareMathSymbol{\curlyvee}{2}{symbols}{"85}
+\DeclareMathSymbol{\leftthreetimes}{2}{letters}{"D0}
+\DeclareMathSymbol{\rightthreetimes}{2}{letters}{"D1}
+\DeclareMathSymbol{\subseteqq}{3}{letters}{"EE}
+\DeclareMathSymbol{\supseteqq}{3}{letters}{"EF}
+\DeclareMathSymbol{\bumpeq}{3}{symbols}{"C8}
+\DeclareMathSymbol{\Bumpeq}{3}{symbols}{"C7}
+\DeclareMathSymbol{\lll}{3}{letters}{"DE}
+\DeclareMathSymbol{\ggg}{3}{letters}{"DF}
+\DeclareMathSymbol{\circledS}{0}{letters}{"CA}
+\DeclareMathSymbol{\pitchfork}{3}{letters}{"F3}
+\DeclareMathSymbol{\dotplus}{2}{symbols}{"89}
+\DeclareMathSymbol{\backsim}{3}{letters}{"F8}
+\DeclareMathSymbol{\backsimeq}{3}{letters}{"F9}
+\DeclareMathSymbol{\complement}{0}{letters}{"94}
+\DeclareMathSymbol{\intercal}{2}{letters}{"D9}
+\DeclareMathSymbol{\circledcirc}{2}{symbols}{"E6}
+\DeclareMathSymbol{\circledast}{2}{symbols}{"E7}
+\DeclareMathSymbol{\circleddash}{2}{letters}{"CC}
+%    \end{macrocode}
+% MSBM* equivalents
+%    \begin{macrocode}
+\DeclareMathSymbol{\lvertneqq}{3}{arrows}{"DE}
+\DeclareMathSymbol{\gvertneqq}{3}{arrows}{"DF}
+\DeclareMathSymbol{\nleq}{3}{arrows}{"9C}
+\DeclareMathSymbol{\ngeq}{3}{arrows}{"9D}
+\DeclareMathSymbol{\nless}{3}{arrows}{"9A}
+\DeclareMathSymbol{\ngtr}{3}{arrows}{"9B}
+\DeclareMathSymbol{\nprec}{3}{arrows}{"E5}
+\DeclareMathSymbol{\nsucc}{3}{arrows}{"E6}
+\DeclareMathSymbol{\lneqq}{3}{arrows}{"DC}
+\DeclareMathSymbol{\gneqq}{3}{arrows}{"DD}
+\DeclareMathSymbol{\nleqslant}{3}{arrows}{"D6}
+\DeclareMathSymbol{\ngeqslant}{3}{arrows}{"D7}
+\DeclareMathSymbol{\lneq}{3}{arrows}{"DA}
+\DeclareMathSymbol{\gneq}{3}{arrows}{"DB}
+\DeclareMathSymbol{\npreceq}{3}{arrows}{"E7}
+\DeclareMathSymbol{\nsucceq}{3}{arrows}{"E8}
+\DeclareMathSymbol{\precnsim}{3}{arrows}{"EB}
+\DeclareMathSymbol{\succnsim}{3}{arrows}{"EC}
+\DeclareMathSymbol{\lnsim}{3}{arrows}{"E0}
+\DeclareMathSymbol{\gnsim}{3}{arrows}{"E2}
+\DeclareMathSymbol{\nleqq}{3}{arrows}{"D8}
+\DeclareMathSymbol{\ngeqq}{3}{arrows}{"D9}
+\DeclareMathSymbol{\precneqq}{3}{arrows}{"E9}
+\DeclareMathSymbol{\succneqq}{3}{arrows}{"EA}
+\DeclareMathSymbol{\precnapprox}{3}{arrows}{"ED}
+\DeclareMathSymbol{\succnapprox}{3}{arrows}{"EE}
+\DeclareMathSymbol{\lnapprox}{3}{arrows}{"E3}
+\DeclareMathSymbol{\gnapprox}{3}{arrows}{"E4}
+\DeclareMathSymbol{\nsim}{3}{arrows}{"96}
+\DeclareMathSymbol{\ncong}{3}{arrows}{"99}
+\DeclareMathSymbol{\diagup}{3}{arrows}{"0B}
+\DeclareMathSymbol{\diagdown}{3}{arrows}{"0C}
+\DeclareMathSymbol{\varsubsetneq}{3}{arrows}{"D0}
+\DeclareMathSymbol{\varsupsetneq}{3}{arrows}{"D1}
+\DeclareMathSymbol{\nsubseteqq}{3}{arrows}{"CA}
+\DeclareMathSymbol{\nsupseteqq}{3}{arrows}{"CB}
+\DeclareMathSymbol{\subsetneqq}{3}{arrows}{"CE}
+\DeclareMathSymbol{\supsetneqq}{3}{arrows}{"CF}
+\DeclareMathSymbol{\varsubsetneqq}{3}{arrows}{"D2}
+\DeclareMathSymbol{\varsupsetneqq}{3}{arrows}{"D3}
+\DeclareMathSymbol{\subsetneq}{3}{arrows}{"CC}
+\DeclareMathSymbol{\supsetneq}{3}{arrows}{"CD}
+\DeclareMathSymbol{\nsubseteq}{3}{arrows}{"C8}
+\DeclareMathSymbol{\nsupseteq}{3}{arrows}{"C9}
+\DeclareMathSymbol{\nparallel}{3}{arrows}{"F7}
+\DeclareMathSymbol{\nmid}{3}{arrows}{"F6}
+\DeclareMathSymbol{\nshortmid}{3}{arrows}{"F4}
+\DeclareMathSymbol{\nshortparallel}{3}{arrows}{"F5}
+\DeclareMathSymbol{\nvdash}{3}{arrows}{"F8}
+\DeclareMathSymbol{\nVdash}{3}{arrows}{"FA}
+\DeclareMathSymbol{\nvDash}{3}{arrows}{"F9}
+\DeclareMathSymbol{\nVDash}{3}{arrows}{"FB}
+\DeclareMathSymbol{\ntrianglerighteq}{3}{arrows}{"F2}
+\DeclareMathSymbol{\ntrianglelefteq}{3}{arrows}{"F1}
+\DeclareMathSymbol{\ntriangleleft}{3}{arrows}{"EF}
+\DeclareMathSymbol{\ntriangleright}{3}{arrows}{"F0}
+\DeclareMathSymbol{\nleftarrow}{3}{arrows}{"32}
+\DeclareMathSymbol{\nrightarrow}{3}{arrows}{"33}
+\DeclareMathSymbol{\nLeftarrow}{3}{arrows}{"66}
+\DeclareMathSymbol{\nRightarrow}{3}{arrows}{"68}
+\DeclareMathSymbol{\nLeftrightarrow}{3}{arrows}{"67}
+\DeclareMathSymbol{\nleftrightarrow}{3}{arrows}{"34}
+\DeclareMathSymbol{\divideontimes}{2}{letters}{"F7}
+\DeclareMathSymbol{\varnothing}{0}{letters}{"9C}
+\DeclareMathSymbol{\nexists}{0}{arrows}{"20}
+\DeclareMathSymbol{\Finv}{0}{letters}{"90}
+\DeclareMathSymbol{\Game}{0}{letters}{"91}
+\let\mho\undefined
+\DeclareMathSymbol{\mho}{0}{letters}{"92}
+\DeclareMathSymbol{\simeq}{3}{symbols}{"27}
+\DeclareMathSymbol{\eqsim}{3}{symbols}{"99}
+\DeclareMathSymbol{\beth}{0}{letters}{"95}
+\DeclareMathSymbol{\gimel}{0}{letters}{"96}
+\DeclareMathSymbol{\daleth}{0}{letters}{"97}
+\DeclareMathSymbol{\lessdot}{3}{letters}{"DC}
+\DeclareMathSymbol{\gtrdot}{3}{letters}{"DD}
+\DeclareMathSymbol{\ltimes}{2}{letters}{"CE}
+\DeclareMathSymbol{\rtimes}{2}{letters}{"CF}
+\DeclareMathSymbol{\shortmid}{3}{letters}{"F4}
+\DeclareMathSymbol{\shortparallel}{3}{letters}{"F5}
+\DeclareMathSymbol{\smallsetminus}{2}{letters}{"D8} %?
+\DeclareMathSymbol{\thicksim}{3}{symbols}{"18} %?
+\DeclareMathSymbol{\thickapprox}{3}{symbols}{"19} %?      
+\DeclareMathSymbol{\approxeq}{3}{symbols}{"9D}
+\DeclareMathSymbol{\succapprox}{3}{letters}{"ED}
+\DeclareMathSymbol{\precapprox}{3}{letters}{"EC}
+\DeclareMathSymbol{\curvearrowleft}{3}{arrows}{"87}
+\DeclareMathSymbol{\curvearrowright}{3}{arrows}{"88}
+\DeclareMathSymbol{\digamma}{0}{letters}{"46} %?
+\DeclareMathSymbol{\varkappa}{0}{letters}{"9B}
+\DeclareMathSymbol{\Bbbk}{0}{arrows}{"6B}
+\DeclareMathSymbol{\hslash}{0}{letters}{"9D}
+\DeclareMathSymbol{\hbar}{0}{arrows}{"1B}
+\DeclareMathSymbol{\backepsilon}{3}{letters}{"FB} %?
+\DeclareMathSymbol{\dashrightarrow}{0}{arrows}{"3A}
+\DeclareMathSymbol{\dashleftarrow}{0}{arrows}{"38}
+\DeclareMathSymbol{\dashuparrow}{0}{arrows}{"39}
+\DeclareMathSymbol{\dashdownarrow}{0}{arrows}{"3B}
+\DeclareMathDelimiter\ulcorner{4}{arrows}{"70}{arrows}{"70}
+\DeclareMathDelimiter\urcorner{5}{arrows}{"71}{arrows}{"71}
+\DeclareMathDelimiter\llcorner{4}{arrows}{"78}{arrows}{"78}
+\DeclareMathDelimiter\lrcorner{5}{arrows}{"79}{arrows}{"79}
+\edef\checkmark{\noexpand\mathhexbox{\hexnumber@\symarrows}AC}
+\edef\circledR{\noexpand\mathhexbox{\hexnumber@\symletters}C9}
+\edef\maltese{\noexpand\mathhexbox{\hexnumber@\symletters}CB}
+%    \end{macrocode}
+% Changes to default for |Leftrightarrow|. I (SPQR) don't like 22C, so:
+%    \begin{macrocode}
+\let\Leftrightarrow\undefined
+\DeclareMathSymbol{\Leftrightarrow}{3}{arrows}{"61}
+%    \end{macrocode}
+% Override AMS logo, just to ensure we don't use any CM fonts!
+%    \begin{macrocode}
+\def\AmS{{\protect\AmSfont
+  A\kern-.1667em\lower.5ex\hbox{M}\kern-.125emS}}
+%<lucidabright|lucbmath>\def\AmSfont{\usefont{OMS}{\ifnum\Lucida@names=0 hlcy\else lby \fi}{m}{n}}
+%</lucbmath>
+%<*lucbrb>
+\ProvidesPackage{lucidbrb}[\filedate\space\fileversion\space
+ Lucida Bright (Berry names) PSNFSS2e package]
+\DeclareOption*{\PassOptionsToPackage{\CurrentOption}{lucbr}}
+\ProcessOptions 
+\RequirePackage{lucbr}
+%</lucbrb>
+%<*lucbry>
+\ProvidesPackage{lucidbry}[\filedate\space\fileversion\space
+ Lucida Bright (Y \& Y names) PSNFSS2e package]
+\DeclareOption*{\PassOptionsToPackage{\CurrentOption}{lucbr}}
+\ProcessOptions 
+\RequirePackage[yy]{lucbr}
+%</lucbry>
+%    \end{macrocode}
+% A test file for the Lucida fonts.
+%    \begin{macrocode}
+%<*lucfont>
+%    \begin{macrocode}
+\documentclass{article}
+\usepackage{t1enc}
+\begin{document}
+\title{All the Lucida text fonts}
+\author{prepared by Sebastian Rahtz}
+\date{February 19th 1995}
+\maketitle
+\def\test#1#2#3#4#5{%
+ \item[#1/#2/#3]#4 (#5):
+ {\fontfamily{#1}\fontseries{#2}\fontshape{#3}\selectfont
+ Animadversion for a giraffe costs \pounds123. Wa\ss\ ist 
+ das f\"ur ein Klopf?
+ We are often na{\"\i}ve vis-\`{a}-vis
+the d{\ae}monic ph{\oe}nix's official r\^{o}le in fluffy souffl\'{e}s}
+}
+\begin{description}
+\test{hlx}{db}{it}{hlxdi8t}{LucidaFax-DemiItalic}
+\test{hlx}{db}{n}{hlxd8t}{LucidaFax-Demi}
+\test{hlx}{m}{it}{hlxrir8t}{LucidaFax-Italic}
+\test{hlx}{m}{n}{hlxr8t}{LucidaFax}
+\test{hlh}{db}{it}{hlcdib8t}{LucidaBright-DemiItalic}
+\test{hlh}{db}{n}{hlcdb8t}{LucidaBright-Demi}
+\test{hlh}{m}{it}{hlcrib8t}{LucidaBright-Italic}
+\test{hlh}{m}{n}{hlcrb8t}{LucidaBright}
+\test{hlce}{m}{it}{hlcrie8t}{LucidaCalligraphy-Italic}
+\test{hlcf}{m}{n}{hlcrf8t}{LucidaBlackletter}
+\test{hlcn}{m}{it}{hlcrin8t}{LucidaCasual-Italic}
+\test{hlcn}{m}{n}{hlcrn8t}{LucidaCasual}
+\test{hlst}{b}{n}{hlsbt8t}{LucidaSans-TypewriterBold}
+\test{hlst}{b}{sl}{hlsbot8t}{LucidaSans-TypewriterBoldOblique}
+\test{hls}{b}{it}{hlsbi8t}{LucidaSans-BoldItalic}
+\test{hls}{b}{n}{hlsb8t}{LucidaSans-Bold}
+\test{hls}{db}{it}{hlsdi8t}{LucidaSans-DemiItalic}
+\test{hls}{db}{n}{hlsd8t}{LucidaSans-Demi}
+\test{hls}{m}{it}{hlsri8t}{LucidaSans-Italic}
+\test{hls}{m}{n}{hlsr8t}{LucidaSans}
+\test{hlct}{b}{n}{hlcbt8t}{LucidaTypewriterBold}
+\test{hlct}{b}{sl}{hlcbot8t}{LucidaTypewriterOblique}
+\test{hlcw}{m}{it}{hlcriw8t}{LucidaHandwriting-Italic}
+\end{description}
+\end{document}
+%</lucfont>
+%    \end{macrocode}
+% \Finale
+\endinput
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+note from Berthold:
+
+P.S. Another thought occured to me.  I wonder whether the
+DefaultRuleThickness ought to be slightly heavier in bold math?  Since
+it is determined by \fontdimen8 in the math extension font, and since
+there is no bold math extension, it stays at 0.4pt for a 10pt font.
+Suppose one wanted to change that (and I am not sure that is a good
+idea) what is the equivalent of
+
+        \fontdimen8\tenex=0.5pt
+
+in LaTeX 2e when switching into bold math?  Of course this opens up a
+can of worms, since right now the top stroke in the radical is 0.4pt
+both in regular and bold math...  And DefaultRuleThickness is used for
+more than just the thickness of the division rule.

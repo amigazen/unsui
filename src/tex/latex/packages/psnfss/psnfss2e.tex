@@ -1,0 +1,270 @@
+\def\fileversion{3.2}
+\def\filedate{1995/11/21}
+%
+% This document describes a LaTeX2e setup with
+% package files for using PostScript fonts.
+%
+\def\PS{\textsc{PostScript}}
+\documentclass{article}
+\usepackage{shortvrb}
+\begin{document}
+\MakeShortVerb{+}
+\title{Notes on setup of PostScript fonts for \LaTeXe}
+\author{Sebastian Rahtz\\\texttt{s.rahtz@elsevier.co.uk}}
+\date{\filedate}
+\maketitle
+%
+\tableofcontents
+\section{Introduction}
+
+This set of files\footnote{Thanks are due to many, many, people for
+  correcting errors and helping, including Michel Goossens, Alois
+  Steindl, Peter Dyballa, Aloysius
+  Helminck, Constantin Kahn, Berthold Horn, Alan Jeffrey, 
+  Howard Marvel, Frank Poppe, 
+  Andrew Trevorrow, Piet Tutelaars\ldots} offers a sample working setup for \LaTeXe's
+NFSS and \PS\ fonts; it is based on the system I created between 1989
+and 1991 for Southampton Computer Science department, checked and
+updated for NFSS2, and subsequently \LaTeXe.  You should be familiar with
+the standard \LaTeXe\ files and their use to follow this document.
+It is assumed that Karl Berry's naming scheme is followed.  
+
+Packages are offered to set documents in the common PostScript fonts,
+plus common free fonts (Charter, Utopia etc).  All Lucida fonts are
+supported. The MathTime fonts are not supported fully because
+I do not understand them and do not have them; a package by Aloysius
+Helminck is provided as-is in the `unsupported/mathtim'
+subdirectory, about which enquiries should be addressed
+to him.  
+
+\section{Finding font metrics}
+\textbf{IMPORTANT NOTE:} .fd files and .tfm files for the common setup are
+\emph{not} included in this package. They can be found in the CTAN
+archives in the companion collection (\texttt{fonts/psfonts}) for each
+font family separately.  That collection also includes simpler \LaTeXe\ 
+package files for each font family. To install a font family, take the
+following steps:
+\begin{enumerate}
+\item Locate the font family in the \texttt{fonts/psfonts} directory,
+  which is divided up by foundry (eg adobe, monotype etc). If, for
+  instance, you want the `normal' Times Roman, this is in
+  \texttt{adobe/times}. The family names for the directories are
+  listed in Karl Berry's font-naming documentation.
+\item Each family directory has subdirectories containing +.tfm+,
+  +.vf+ and +.fd+ files. You need to install these where \LaTeXe\ and
+  your driver will   find them. \LaTeXe\ will need the +.tfm+ and
+  +.fd+ files, and the driver needs the +.vf+ files (and possibly the
+  +.tfm+ ones too).
+\item You now need to tell your driver that you are going to use these
+  new PostScript fonts (to stop it looking for Metafont sources and
+  +.pk+ files). Using +dvips+ this is accomplished by taking the +.map+
+  file in the family directory and appending it to the standard
+  +psfonts.map+ file of dvips. Alternatively you can install the
+  +.map+ and the config file (named +config.+\emph{short family name} (eg
+  Times' short name is ptm, so the config file is +config.ptm+) where
+  dvips' support files live, and use eg +dvips -Pptm+ to load the
+  extra +.map+ file on the fly. Refer to the dvips manual for full
+  details of map and config files.
+
+  If you don't use dvips, refer to your driver's manual for how to
+  tell it about new PostScript fonts.
+\item If the font is not resident in the printer, you'll have to
+  download it. You can use software supplied with the font to do this,
+  or have it done on the fly by some drivers. \emph{However}, note
+  that the names in the +.map+ files supplied on CTAN assume strict
+  conformancy with the Berry scheme --- you may have to rename your
+  +.pfb+ or +.pfa+ font file.
+\item If you just want to load one font family, and have it replace
+  the default roman, sans or typewriter family in your document, each
+  of the font family directories has a simple \LaTeX2e\ .sty package
+  file.
+\end{enumerate}
+
+It is also \textbf{Very Important} to understand the naming system and
+generation of the fonts! This setup follows the latest version of the
+scheme by Karl Berry (on CTAN in +info/fontname+) religiously.  The
+metric and +.fd+ files are named \emph{differently} from the AFM files
+distributed by all font suppliers as this time (August 1995).  Thus, for
+Times Roman, the OT1-encoded font is called +ptmr7t+, the T1-encoded
+font is +ptmr8t+ and the raw font is +ptmr8r+. This system will be
+followed exactly in all PostScript font support in \LaTeXe.
+
+The font metric files whose use we assume are those generated using
+Alan Jeffrey's \emph{fontinst} package. These used to generate quite
+tight setting compared to other systems, which produced a lot of
+hyphenation or overfull boxes if you were not careful. However, since
+February 1995, the metrics have changed, so the advice to reset
+various \TeX\ tolerance parameters etc no longer applies.
+
+\section{Standard installation}
+This distribution is provided as a set of \verb+.dtx+ files which need
+to be unpacked using \emph{docstrip} to create user files.  The
+resulting \verb+.sty+ files change the font defaults to use some new
+group of fonts (sometimes just one default is changed).
+
+Scripts are provided for \emph{docstrip} in the form of \texttt{.ins}
+files, which simply need to be run through \TeX; when that has been
+done, install all the \texttt{.sty} files that result in a
+directory where \LaTeX\ will find them.
+
+You have an important decision to make at some point --- are you going
+to use fonts encoded in the `Cork' layout, or the old ones which look
+like the CM fonts described in the \TeX\ book? This manual will not
+attempt to explain why you should or should not use Cork fonts\ldots
+Font description (\texttt{.fd}) files are available for both T1 and OT1
+encoding in the CTAN \texttt{fonts/psfonts} directories.
+
+If you follow the Cork-encoding route, you need different \TeX\ font
+metric files and virtual font files. To activate this, use the package
+\texttt{t1enc}.
+
+\emph{Important.} If you use the Cork (T1 in \LaTeXe\ scheme) encoding, you
+will probably also need the `dc' CM fonts to go with them, for maths
+and so on.
+
+The standard `35' \PS\ fonts built into most \PS\ printers
+are known by their `Berry' names:
+\begin{quote}
+  \begin{tabular}{|ll|}
+\hline
+Family name & Full name\\
+\hline
+pag&Adobe AvantGarde\\
+pbk&Adobe Bookman\\
+pcr&Adobe Courier\\
+phv&Adobe Helvetica\\
+pnc&Adobe NewCenturySchoolbook\\
+ppl&Adobe Palatino\\
+ptm&Adobe TimesRoman\\
+pzc&Adobe ZapfChancery\\
+psy&Adobe Symbol font\\
+pzd&Adobe ZapfDingbats\\
+\hline
+\end{tabular}
+\end{quote}
+
+To create font and package files for Lucida and Lucida Bright (including
+Lucida Bright maths), run \TeX\ on \texttt{lucida.ins}. 
+
+\section{Testing}
+All installers should run \texttt{test0.tex} through \LaTeX\ and print
+the result, after installing their chosen setup, to ensure that things
+are more or less working. The OT1 encoding demonstration will
+\emph{not} have a proper set of pounds signs! They will all be italic.
+\texttt{test1.tex} will exercise your supply of
+PostScript fonts.
+
+\textbf{Do not worry if nothing but \texttt{test0.tex} works!}.
+\texttt{test0.ps} is a prebuilt version of \texttt{test0.tex} for you
+to compare.
+
+\section{User interface}
+
+The daily user will simply use one of the packages \texttt{times},
+\texttt{newcent}, \texttt{helvet}, \texttt{palatino} etc to change the
+default text fonts for one or more of the roman, sans-serif and
+typewriter faces.  Table \ref{styles} lists the effects of the package
+files created in the installation procedure.
+
+The special package \texttt{pifont} gives access to the Dingbat
+and Symbol fonts. This is described in \emph{The \LaTeX\ Companion}.
+\begin{table}
+\begin{small}
+  \begin{tabular}{|l|lll|}
+\hline
+Package & Sans font & Roman font & Typewriter font\\
+\hline
+times.sty & Helvetica & Times & Courier\\
+palatino.sty & Helvetica & Palatino & Courier\\
+helvet.sty   & Helvetica & &\\
+avant.sty   & AvantGarde & &\\
+newcent.sty & AvantGarde & NewCenturySchoolbook & Courier\\
+bookman.sty &  AvantGarde & Bookman & Courier\\
+\hline
+\end{tabular}
+\end{small}
+\caption{Effect of package files\label{styles}}
+\end{table}
+Note that maths fonts will stay the same unless you have suitable
+fonts to load. If the Adobe Lucida Maths fonts have been purchased, and
+appropriate metrics obtained, loading \texttt{lucmath} will remove
+all reference to CMR fonts in the document. Alternatively, purchase
+the Lucida Bright font set and use the \texttt{lucbr} package.
+
+\subsection{Variant OT1 font encoding}
+The package files assume that you have already made the choice of
+which text font encoding scheme you prefer (T1 or OT1), and that it is
+the default when the \LaTeX\ job starts. If you end up using
+older OT1 \verb+tfm+ files distributed with dvips before mid 1995,
+you'll find some characters are not in the expected places.
+Similarly, older Textures users will find things not quite right. Y\&Y
+users may be loading reencoding packages which moves things around.
+Prior to 1995, PSNFSS provided
+a package  \verb+ot1var+ to cope with this sort of situation.
+It is now \emph{not supported or maintained}. The remnants are in
+the obsolete subdirectory for the curious.
+
+\section{Font family names}
+\begin{tabular}{|ll|}
+\hline
+Family name & Full name\\
+\hline
+bch & Bitstream Charter\\
+hlc&B\&H Lucida Bright\\
+hlcs&B\&H Lucida Sans\\
+hlct&B\&H Lucida Bright Typewriter\\
+pgm&Adobe Garamond\\
+mim&Monotype Imprint\\
+mnt&Monotype Times New Roman\\
+pgm&Adobe ITC Garamond\\
+pgs&Adobe MGillSans\\
+pgs&Adobe MGillSans\\
+plc&Adobe Lucida\\
+plcs&Adobe Lucida Sans\\
+pnb&NewBaskerville\\
+pop&Adobe Optima\\
+pun&Adobe Univers\\
+put&Adobe Utopia-Regular\\
+unmr&URW NimbusRoman-Regular\\
+unmrs&URW NimbusSans-Regular\\
+\hline
+\end{tabular}
+
+\begin{table}
+\begin{small}
+  \begin{tabular}{|l|lll|}
+\hline
+Package & Sans font & Roman font & Typewriter font\\
+\hline
+basker.sty & & Monotype Baskerville &\\
+bembo.sty &  & Bembo & \\
+charter & & Bitstream Charter & \\
+garamond.sty & & Adobe Garamond & \\
+mtimes & & Monotype Times & \\
+nimbus  & URW NimbusSans-Regular & URW NimbusRoman-Regular & \\
+utopia  & & Utopia & \\
+lucid.sty & LucidaSans & Lucida & Courier\\
+lucbr.sty & LucidaSans & LucidaBright & LucidaTypewriter\\
+\hline
+\end{tabular}
+\end{small}
+\caption{Effect of extra package files\label{exstyles}}
+
+Notes: a) \texttt{lucbr.sty} uses the font names for Lucida Bright
+which conform to Karl Berry's scheme. Use package option `yy' to use
+the font names supplied by Y\&Y. b) If you want to use just standard
+PostScript fonts for math, Alan Jeffrey's \emph{mathptm} package does
+as good a job as possible (though it still needs access to some CMR
+math fonts). The extra metric and virtual font files that this needs
+are supplied with Adobe Times Roman in the CTAN
+\verb|fonts/psfonts/adobe/times| directory.
+\end{table}
+
+\end{document}
+
+
+
+
+
+
+

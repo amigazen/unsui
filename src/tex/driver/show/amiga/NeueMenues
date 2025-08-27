@@ -1,0 +1,102 @@
+ShowDVI
+
+Über...
+------
+Lade Datei erneut
+Lade neue Datei...
+Datei automatisch neu laden?
+Speichere als Bild...
+------
+Seite drucken...
+------
+Workbenh in den Vordergrund
+ShowDVI in den Hintergrund
+------
+Verlassen
+
+==================================
+
+Bearbeiten
+
+Kopieren
+-------
+Abmessen...
+Randpunkt setzen
+
+==================================
+
+Befehle
+
+Shellfenster öffnen...
+---------
+AmigaDOS-Befehl ausführen...
+ARexx-Befehl ausführen...
+TeX Script starten
+ARexx TeX-Shell starten
+TeX-Formatfile ändern
+SpecialHost starten
+
+===================================
+
+Blättern
+
+Ordnung der DVI-Datei verwenden?
+--------
+Vorherige Seite
+Nächste Seite
+Erste Seite
+Letzte Seite
+--------
+Blättern laut DVI-Datei >>
+	Vorherige Seite
+	Nächste Seite
+	Erste Seite
+	Letzte Seite
+--------
+Springe auf Seite...
+Lösche Seitenzähler
+
+
+=============================
+
+Auflösung
+
+xxx dpi
+.
+.
+.
+
+
+==============================
+
+Einstellungen
+
+Ganze Seite zeigen?
+Seitengrenzen anzeigen?
+Rollbalken zeigen?
+---------
+Workbench-Farben verwenden?
+Farbpalette...
+Eigenen Bildschirm verwenden?
+Bildschirmmodus...
+---------
+Masseinheit >>
+	Zoll
+	Zentimeter
+	Punkte
+---------
+Konfiguration speichern
+Konfiguration speichern als...
+Konfiguration laden...
+
+
+=============================
+
+Funktionstasten
+
+.... F1
+.
+.
+.
+
+

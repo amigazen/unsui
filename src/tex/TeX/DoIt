@@ -1,0 +1,128 @@
+;
+;  DoIt -- compile six different versions of initex and virtex
+;          needs on my A3000 approx 4h
+;          Different versions:
+;		- norm-noop-00	: small TeX, not optimized, for 68000
+;		- norm-00	: small TeX, optimized, for 68000
+;		- big-00	: big TeX, optimized, for 68000
+;		- norm-noop-20	: small TeX, not optimized, for 68020 and higher
+;		- norm-20	: small TeX, optimized, for 68020 and higher
+;		- big-20	: big TeX, optimized, for 68020 and higher
+;
+;  25.May.95 Georg Heßmann
+
+assign doit: tex:src/tex
+
+set out doit:logfile
+
+echo NOLINE "Starte norm-00 no-opt " >$out
+date >>$out
+
+cd doit:tex
+cp SCOPTIONS-noop-00 SCOPTIONS
+cp config.h-norm config.h
+cd doit:amiga
+delete #?.o
+cd doit:common
+delete #?.o
+cp SCOPTIONS-00 SCOPTIONS
+smake
+cd doit:tex
+delete #?.o
+smake -f Smakefile-norm-00
+rename initex virtex norm-noop-00
+
+
+echo NOLINE "Starte norm-00 opt    " >>$out
+date >>$out
+
+cd doit:tex
+cp SCOPTIONS-00 SCOPTIONS
+cp config.h-norm config.h
+cd doit:amiga
+delete #?.o
+cd doit:common
+delete #?.o
+cp SCOPTIONS-00 SCOPTIONS
+smake
+cd doit:tex
+delete #?.o
+smake -f Smakefile-norm-00
+rename initex virtex norm-00
+
+
+
+echo NOLINE "Starte big-00 opt     " >>$out
+date >>$out
+
+cd doit:tex
+cp SCOPTIONS-00 SCOPTIONS
+cp config.h-big config.h
+cd doit:amiga
+delete #?.o
+cd doit:common
+delete #?.o
+cp SCOPTIONS-00 SCOPTIONS
+smake
+cd doit:tex
+delete #?.o
+smake -f Smakefile-big-00
+rename initex virtex big-00
+
+
+echo NOLINE "Starte norm-20 no-opt " >>$out
+date >>$out
+
+cd doit:tex
+cp SCOPTIONS-noop-20 SCOPTIONS
+cp config.h-norm config.h
+cd doit:amiga
+delete #?.o
+cd doit:common
+delete #?.o
+cp SCOPTIONS-20 SCOPTIONS
+smake
+cd doit:tex
+delete #?.o
+smake -f Smakefile-norm-20
+rename initex virtex norm-noop-20
+
+
+echo NOLINE "Starte norm-20 opt    " >>$out
+date >>$out
+
+cd doit:tex
+cp SCOPTIONS-20 SCOPTIONS
+cp config.h-norm config.h
+cd doit:amiga
+delete #?.o
+cd doit:common
+delete #?.o
+cp SCOPTIONS-20 SCOPTIONS
+smake
+cd doit:tex
+delete #?.o
+smake -f Smakefile-norm-20
+rename initex virtex norm-20
+
+
+echo NOLINE "Starte big-20 opt     " >>$out
+date >>$out
+
+cd doit:tex
+cp SCOPTIONS-20 SCOPTIONS
+cp config.h-big config.h
+cd doit:amiga
+delete #?.o
+cd doit:common
+delete #?.o
+cp SCOPTIONS-20 SCOPTIONS
+smake
+cd doit:tex
+delete #?.o
+smake -f Smakefile-big-20
+rename initex virtex big-20
+
+echo NOLINE "fertig          " >>$out
+date >>$out
+

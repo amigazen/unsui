@@ -1,0 +1,7 @@
+CFLAGS	= -rr -csr -O -v
+
+
+PToFront:	PToFront.o
+	blink from lib:cres.o PToFront.o TO PToFront LIB lib:lcr.lib SC SD ND
+
+PToFront.o:	PToFront.c

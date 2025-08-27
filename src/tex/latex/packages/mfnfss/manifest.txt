@@ -1,0 +1,59 @@
+%
+% CONTENTS OF THE MFNFSS BUNDLE
+% =============================
+
+dccr.mf
+        Metafont source file used by the output files from dccrstd.tex
+        to generate Concrete Roman fonts in T1 encoding.  It needs the
+        DC-Font sources which are *not* part of this bundle but can be
+        found on CTAN servers and other archives.
+
+dccrstd.tex
+        TeX file used in the generation of Concrete Roman fonts in T1
+        encoding.  It will produce a number of .mf files corresponding
+        to Concrete Roman fonts in different sizes.  By modifying the
+        table inside this file further Metafont driver files can be
+        generated.  The .fd files for the Concrete Roman fonts can be
+        produced with cmextra.ins which is part of the LaTeX2e base
+        system.
+
+oldgerm.dtx
+        Package to typeset with old german fonts designed by Yannis
+        Haralambous.  These fonts use special ligatures to access
+        accented characters and may therefore need additional
+        definitions if used with packages like babel or
+        german.  Support for this might be added in future
+        releases.  Please don't report those kind of problems as bugs,
+        we do know about it.
+
+oldgerm.ins
+        Installation script for the oldgerm package.
+
+pandora.dtx
+        Package to typeset with pandora fonts.
+
+pandora.ins
+        Installation script for the pandora package and it .fd files.
+
+manifest.txt
+        The file you are reading.
+
+readme.txt
+        General readme file containing distribution conditions and
+        information on how to process the files in this bundle.
+
+
+===
+
+The following files have been removed from this bundle and are now
+part of the AMS-LaTeX distribution:
+
+amsfonts.fdd
+amsfonts.ins
+eufrak.dtx
+eufrak.ins
+euscript.dtx
+euscript.ins
+
+
+

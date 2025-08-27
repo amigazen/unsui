@@ -1,0 +1,63 @@
+;
+; SNPrintf.a
+;
+; Version 1.1 (30 Oct 1994)
+; Written by Giuseppe Ghibò <ghibo@galileo.polito.it>
+; 
+; C prototype:
+;
+; LONG __stdargs SNPrintf(STRPTR String, LONG Size, STRPTR FmtString, ...);
+
+
+	SECTION text,code
+
+_LVORawDoFmt 	EQU -$20a
+
+	XDEF	_SNPrintf
+;	XREF	_LVORawDoFmt
+
+_SNPrintf:
+
+	movem.l	a2-a4/a6,-(sp)
+	move.l	5*4(sp),a3	; Get output string pointer
+
+	move.l	6*4(sp),a4	; Get size of string buffer
+	beq.b	exit		; 
+
+	move.l	7*4(sp),a0	; Get format string pointer
+	lea.l	8*4(sp),a1	; Get the pointer to the data stream
+
+	lea.l	copychr(pc),a2	; PutChProc
+
+	adda.l	a3,a4
+	move.l	a4,_SNPrintf__BufEnd
+
+	move.l	4.W,a6
+	jsr	_LVORawDoFmt(a6)
+
+	move.l	_SNPrintf__Last,d0
+	sub.l	a3,d0		; returns string length
+
+exit:
+	movem.l	(sp)+,a2-a4/a6
+	rts
+
+copychr:
+	movem.l	a5,-(sp)	; save a5 register
+	move.l	_SNPrintf__BufEnd,a5
+	cmpa.l	a5,a3
+	blt	nextchr
+	subq.l	#1,a3
+
+nextchr:
+	move.l	a3,_SNPrintf__Last
+	move.b	d0,(a3)+
+	movem.l	(sp)+,a5	; restore a5 register
+	rts
+
+	CNOP 0,4
+
+_SNPrintf__BufEnd:	ds.l	1
+_SNPrintf__Last:	ds.l	1
+
+	END

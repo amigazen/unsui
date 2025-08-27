@@ -1,0 +1,19 @@
+\input fontinst.sty
+
+\needsfontinstversion{1.317}
+
+% Some math fonts built from Helvetica and Lucida
+
+\installfonts
+   \installfamily{OML}{phvluc}{\skewchar\font=127}
+\transformfont{phvro8r}{\reencodefont{8r}{\fromafm{phvro8a}}}
+\transformfont{phvbo8r}{\reencodefont{8r}{\fromafm{phvbo8a}}}
+   \installfont{phvlucrm}
+      {kernoff,hlcrima scaled 1000,kernoff,unsetluc,phvro8r,lmathit,lhax}
+      {LOML}{OML}{phvluc}{m}{it}{}
+   \installfont{phvlucbf}
+      {kernoff,hlcdima scaled 1000,kernon,unsetluc,phvbo8r,lmathit,lhax}
+      {LOML}{OML}{phvluc}{b}{it}{}
+ \endinstallfonts
+
+\bye

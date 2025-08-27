@@ -1,0 +1,681 @@
+%%% ====================================================================
+%%%  @LaTeX-file{
+%%%     filename  = "amsthm.dtx",
+%%%     version   = "1.2a",
+%%%     date      = "1995/02/01",
+%%%     time      = "11:11:09 EST",
+%%%     checksum  = "61970 681 3173 26034",
+%%%     author    = "American Mathematical Society",
+%%%     copyright = "Copyright (C) 1995 American Mathematical Society,
+%%%                  all rights reserved.  Copying of this file is
+%%%                  authorized only if either:
+%%%                  (1) you make absolutely no changes to your copy,
+%%%                  including name; OR
+%%%                  (2) if you do make changes, you first rename it
+%%%                  to some other name.",
+%%%     address   = "American Mathematical Society,
+%%%                  Technical Support,
+%%%                  Electronic Products and Services,
+%%%                  P. O. Box 6248,
+%%%                  Providence, RI 02940,
+%%%                  USA",
+%%%     telephone = "401-455-4080 or (in the USA and Canada)
+%%%                  800-321-4AMS (321-4267)",
+%%%     FAX       = "401-331-3842",
+%%%     email     = "tech-support@math.ams.org (Internet)",
+%%%     supported = "yes",
+%%%     keywords  = "latex, amslatex, ams-latex, theorem",
+%%%     abstract  = "This is part of the AMS-\LaTeX{} distribution.
+%%%                  It is a package which provides multiple theorem
+%%%                  styles, unnumbered theorem types, and a proof
+%%%                  environment with automatic ending Q.E.D. symbol.
+%%%                  Loosely derived from Mittelbach's theorem.sty.",
+%%%     docstring = "The checksum field contains: CRC-16 checksum,
+%%%                  word count, line count, and character count, as
+%%%                  produced by Robert Solovay's checksum utility.",
+%%%  }
+%%% ====================================================================
+% \iffalse
+%<*driver>
+\NeedsTeXFormat{LaTeX2e}
+\documentclass{amsdtx}
+\begin{document}
+\title{The \pkg{amsthm} package}
+\author{American Mathematical Society\\Michael Downes}
+\date{Version \fileversion, \filedate}
+\hDocInput{amsthm.dtx}
+\end{document}
+%</driver>
+% \fi
+%
+% \MakeShortVerb{\|}
+%
+% \maketitle
+% \section{Introduction}
+%    The \pkg{amsthm} package is loosely derived from \fn{theorem.sty}
+%    version 2.1c; it adds \cn{newtheorem*} for unnumbered environments
+%    and changes the extensibility support for loading extra theorem
+%    styles from external files: now it is done through the package
+%    option mechanism.
+%
+%    Here are some examples showing the kinds of theorem environment
+%    declarations that are possible with the \pkg{amsthm} package.
+% \begin{verbatim}
+% \newtheorem{prop}{Proposition}
+% \newtheorem{thm}{Theorem}[section]
+% \newtheorem{lem}[thm]{Lemma}
+% \newtheorem*{Zorn}{Zorn's Lemma}
+%
+% \theoremstyle{definition}
+% \newtheorem{dfn}{Definition}
+%
+% \theoremstyle{remark}
+% \newtheorem*{rmk}{Remark}
+% \end{verbatim}
+%
+%    The first four statements all define environments using the default
+%    theorem style (`plain'), since there is no prefatory
+%    \cn{theoremstyle} declaration. The first statement defines an
+%    automatically numbered \env{prop} environment whose headings will
+%    look like this: Proposition 1, Proposition 2, and so forth. The
+%    second statement defines an environment \env{thm} with numbers
+%    subordinate to section numbers, so the headings will look like
+%    this: Theorem 1.1, Theorem 1.2, Theorem 1.3, \dots, (in section 2:)
+%    Theorem 2.1, Theorem 2.2, and so forth. The third statement defines
+%    a \env{lem} environment whose numbers will interleave in sequence
+%    with the theorem numbers: Theorem 1.3, Lemma 1.4, Lemma 1.5,
+%    Theorem 1.6, and so forth. The fourth statement defines a special
+%    unnumbered lemma named `Zorn's Lemma'. The remaining two
+%    \cn{newtheorem} statements have no special features except for the
+%    \cn{theoremstyle} declarations that cause the \env{dfn} and
+%    \env{rmk} environments to have some differences in appearance.
+%
+%    There are three basic styles provided: The `plain' style produces
+%    bold headings and italic body text; the `definition' style produces
+%    bold headings and normal body text; the `remark' style produces
+%    italic headings and normal body text.
+%
+%    A \cn{swapnumbers} command allows theorem numbers to be swapped to
+%    the front of the theorem headings. Putting \cn{swapnumbers} in your
+%    document preamble will cause \emph{all following} \cn{newtheorem}
+%    statements to produce number-first headings. (To provide maximum
+%    control, \cn{swapnumbers} is designed so that it can be used more
+%    than once; each time it is used, theorem numbers will be swapped to
+%    the opposite side for all following \cn{newtheorem} statements. But
+%    rarely will it need to be invoked more than once per document.)
+%
+%    There is a \cn{newtheoremstyle} command provided to make the
+%    creation of custom theoremstyles fairly easy.
+%
+%    Usage:
+% \begin{verbatim}
+%                   #1
+% \newtheoremstyle{NAME}%
+%     #2          #3          #4
+%   {ABOVESPACE}{BELOWSPACE}{BODYFONT}%
+%     #5      #6        #7         #8
+%   {INDENT}{HEADFONT}{HEADPUNCT}{HEADSPACE}%
+%     #9
+%   {CUSTOM-HEAD-SPEC}
+% \end{verbatim}
+%    Leaving the `indent' argument empty is equivalent to entering
+%    |0pt|. The `headpunct' and `headspace' arguments are for the
+%    punctuation and horizontal space between the theorem head and the
+%    following text. There are two special values that may be used for
+%    `headspace': a single space means that a normal interword space
+%    should be used; ``\cn{newline}'' means that there should be a line
+%    break after the head instead of horizontal space. The
+%    `custom-head-spec' argument follows a special convention: it is
+%    interpreted as the replacement text for an internal three-argument
+%    function \cn{thmhead}, i.e., as if you were defining
+% \begin{verbatim}
+% \renewcommand{\thmhead}[3]{...#1...#2...#3...}
+% \end{verbatim}
+%    but omitting the initial |\renewcommand{\thmhead}[3]|. The three
+%    arguments that will be supplied to \cn{thmhead} are the name,
+%    number, and optional note components. Within the replacement text
+%    you can (and normally will want to) use other special functions
+%    \cn{thmname}, \cn{thmnumber}, and \cn{thmnote}. These will print
+%    their argument if and only if the corresponding argument of
+%    \cn{thmhead} is nonempty. For example
+% \begin{verbatim}
+% {\thmname{#1}\thmnumber{ #2}\thmnote{ (#3)}}
+% \end{verbatim}
+%    This would cause the theorem note \arg{3} to be printed with a
+%    preceding space and enclosing parentheses, if it is present, and if
+%    it is absent, the space and parentheses will be omitted because
+%    they are inside the argument of \cn{thmnote}.
+%
+%    Finally, if you have an extra bit of arbitrary code that you want
+%    to slip in somewhere, the best place to do it is in the `body font'
+%    argument.
+%
+%    The \cn{newtheoremstyle} command is designed to provide, through a
+%    relatively simple interface, control over the style aspects that
+%    are most commonly changed. Clearly it cannot serve for all possible
+%    theorem styles. Therefore there is a second interface provided to
+%    allow arbitrary theorem styles by reading suitable definitions from
+%    a separate file whose name ends with \fn{.thm}. If the desired
+%    style is far from any of the basic styles provided by the
+%    \pkg{amsthm} package, writing the definitions may require some
+%    expertise in \latex/'s macro language.
+%
+%    Suppose that you wanted to make a theorem style `exercise' for
+%    exercises. Create a file called \fn{exercise.thm} and in it define
+%    a command \cs{th@exercise} following the form of the commands
+%    \cs{th@plain}, \cs{th@definition}, \cs{th@remark} given below. Then
+%    to use the new style, write
+% \begin{verbatim}
+% \usepackage[exercise]{amsthm}
+% ...
+% \theoremstyle{exercise}
+% \end{verbatim}
+%    Similarly, it's possible to place a group of related
+%    \cn{newtheoremstyle} statements in a \fn{.thm} file, let's say
+%    \fn{stygroup.thm}, so that they could be loaded on demand in
+%    various documents by
+% \begin{verbatim}
+% \usepackage[stygroup]{amsthm}
+% \end{verbatim}
+%
+% \StopEventually{}
+%
+% \section{Implementation}
+%    Standard declaration of package name and date.
+%    \begin{macrocode}
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{amsthm}[1995/02/01 v1.2a]
+%    \end{macrocode}
+%
+%    Load some utility functions from \pkg{amsgen} if it is not already
+%    loaded. Can't use \cn{RequirePackage} because of the later
+%    \cn{ProcessOptions} command, and can't put this after the
+%    \cn{ProcessOptions} command because we might need some bits for
+%    processing a \fn{.thm} file.
+%    \begin{macrocode}
+\@ifpackageloaded{amsgen}{}{\input{amsgen.sty}}
+%    \end{macrocode}
+%
+%    The \cn{theoremstyle} command is very simple except for the need to
+%    warn about an unknown theoremstyle.
+%    \begin{macrocode}
+\newcommand{\theoremstyle}[1]{%
+  \@ifundefined{th@#1}{%
+    \PackageWarning{amsthm}{Unknown theoremstyle `#1'}%
+    \theorem@style{plain}%
+  }{%
+    \theorem@style{#1}%
+  }%
+}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\newtoks\theorem@style
+\theorem@style{plain}
+%    \end{macrocode}
+%
+%    This code for handling theorem body and header font is a
+%    simplification of the code in Mittelbach's \fn{theorem} package.
+%    For consistency we make the header punctuation a token register as
+%    well. And we add a separate font specification for the optional
+%    note (since in AMS publications the note usually takes a different
+%    font). The \cs{normalfont} that in Mittelbach's code resided here
+%    is transferred to \cs{@thm}.
+%    \begin{macrocode}
+\newtoks\theorembodyfont
+\theorembodyfont{\itshape}
+\newtoks\theoremheadfont
+\theoremheadfont{\bfseries}
+\newtoks\theoremnotefont
+\theoremnotefont{\bfseries}
+\newtoks\theoremheadpunct
+\theoremheadpunct{.}
+%    \end{macrocode}
+%    Vertical spacing: initialize to current value of \cs{topsep}.
+%    If a document class loads the \pkg{amsthm} package it
+%    should take care to set these variables explicitly, if current
+%    \cs{topsep} is not the desired value.
+%    \begin{macrocode}
+\newskip\theorempreskipamount \theorempreskipamount\topsep
+\newskip\theorempostskipamount \theorempostskipamount\topsep
+%    \end{macrocode}
+%    Modify \cn{newtheorem} to add |*| option. If a |*| is found, pass
+%    it on to \cs{@xnthm} as the first argument. (This information
+%    enables us to handle two different possibilities in a single
+%    function \cs{@xnthm} instead of needing two separate functions.)
+%    \begin{macrocode}
+\renewcommand{\newtheorem}{\@ifstar{\@xnthm *}{\@xnthm \relax}}
+%    \end{macrocode}
+%
+%    Check to see if an optional arg is present after the first
+%    mandatory arg (which is \arg{2} at the moment since the |*| or
+%    non-|*| is \arg{1}).
+%    \begin{macrocode}
+\def\@xnthm#1#2{%
+  \let\@tempa\relax
+  \@xp\@ifdefinable\csname #2\endcsname{%
+    \global\@xp\let\csname end#2\endcsname\@endtheorem
+    \ifx *#1% unnumbered, need to get one more mandatory arg
+      \edef\@tempa##1{%
+        \gdef\@xp\@nx\csname#2\endcsname{%
+          \@nx\@thm{\@xp\@nx\csname th@\the\theorem@style\endcsname}%
+            {}{##1}}}%
+    \else % numbered theorem, need to check for optional arg
+      \def\@tempa{\@oparg{\@ynthm{#2}}[]}%
+    \fi
+  }%
+  \@tempa
+}
+%    \end{macrocode}
+%
+%    Environment numbered together with a previously defined
+%    environment.
+%
+%    Arg1: env name, e.g. `thm'\par
+%    Arg2: optional sibling counter\par
+%    Arg3: heading text e.g. `Theorem'
+%    \begin{macrocode}
+\def\@ynthm#1[#2]#3{%
+%    \end{macrocode}
+%    If optional arg \arg{2} is empty, call \cs{@xthm} to look for a
+%    possible optional arg in terminal position. Note that
+%    the two optional args are mutually exclusive. As \arg{2} is a
+%    counter name and must be processed by \cs{csname} anyway,
+%    we can use a simpler test instead of \cs{@ifempty}.
+%    \begin{macrocode}
+  \ifx\relax#2\relax
+    \def\@tempa{\@oparg{\@xthm{#1}{#3}}[]}%
+  \else
+    \@ifundefined{c@#2}{%
+      \def\@tempa{\@nocounterr{#2}}%
+    }{%
+      \@xp\xdef\csname the#1\endcsname{\@xp\@nx\csname the#2\endcsname}%
+      \toks@{#3}%
+      \@xp\xdef\csname#1\endcsname{%
+        \@nx\@thm{%
+          \let\@nx\thm@swap
+            \if S\thm@swap\@nx\@firstoftwo\else\@nx\@gobble\fi
+          \@xp\@nx\csname th@\the\theorem@style\endcsname}%
+            {#2}{\the\toks@}}%
+      \let\@tempa\relax
+    }%
+  \fi
+  \@tempa
+}
+%    \end{macrocode}
+%
+%    Environment numbered relative to the counter given as \arg{3}. This
+%    function should really be named \cs{@znthm} but we're trying to
+%    save a bit of hash table and string pool by reusing one of the
+%    command names rendered obsolete by the amsthm option.
+%
+%    Arg1: env name e.g. `thm';
+%    Arg2: heading text e.g. `Theorem';
+%    Arg3: parent counter e.g. section.
+%    \begin{macrocode}
+\def\@xthm#1#2[#3]{%
+%    \end{macrocode}
+%    Set up the counter \verb'c@#1' and optionally add it to the reset
+%    list of counter \arg{3}. As \arg{3} is a
+%    counter name and must be processed by \cs{csname} anyway,
+%    we can use a simpler test instead of \cs{@ifempty}.
+%    \begin{macrocode}
+  \ifx\relax#3\relax
+    \newcounter{#1}%
+  \else
+    \newcounter{#1}[#3]%
+%    \end{macrocode}
+%    Define \cn{thexxx} to be \verb'\theyyy.\arabic{xxx}' (assuming
+%    default values of punctuation and numbering style). The use of
+%    \cs{xdef} here is inherited from the old \LaTeX{} code, I'm not
+%    sure it's a good idea in general, but there should not be any
+%    problems unless someone changes the value of \cs{@thmcounter} or
+%    \cs{@thmcounter}.
+%    \begin{macrocode}
+    \@xp\xdef\csname the#1\endcsname{\@xp\@nx\csname the#3\endcsname
+      \@thmcountersep\@thmcounter{#1}}%
+  \fi
+  \toks@{#2}%
+  \@xp\xdef\csname#1\endcsname{%
+    \@nx\@thm{%
+      \let\@nx\thm@swap
+        \if S\thm@swap\@nx\@firstoftwo\else\@nx\@gobble\fi
+      \@xp\@nx\csname th@\the\theorem@style\endcsname}%
+      {#1}{\the\toks@}}%
+}
+%    \end{macrocode}
+%
+%    If arg \arg{2} is empty, this is an unnumbered environment;
+%    otherwise \arg{2} is the name of a counter. \arg{3} is descriptive
+%    name such as ``Theorem'' or ``Lemma''. Arg \arg{1} is the style
+%    function, for example \cs{th@plain}.
+%    \begin{macrocode}
+\def\@thm#1#2#3{\normalfont
+  \trivlist
+%    \end{macrocode}
+%    Explicitly set plain style here, then override parts as necessary
+%    in the function provided as \arg{1}.
+%    \begin{macrocode}
+  \labelsep.5em\relax \let\thmheadnl\relax
+  \let\theoremindent\noindent % no indent
+  \let\thm@swap\@gobble
+  \theoremheadfont{\bfseries}% heading font bold
+  \theoremheadpunct{.}% add period after heading
+  \theorempreskipamount\topsep
+  \theorempostskipamount\theorempreskipamount
+  #1% style overrides
+  \@topsep \theorempreskipamount               % used by first \item
+  \@topsepadd \theorempostskipamount           % used by \@endparenv
+  \def\@tempa{#2}\ifx\@empty\@tempa
+    \def\@tempa{\@oparg{\@begintheorem{#3}{}}[]}%
+  \else
+    \refstepcounter{#2}%
+    \def\@tempa{\@oparg{\@begintheorem{#3}{\csname the#2\endcsname}}[]}%
+  \fi
+  \@tempa
+}
+%    \end{macrocode}
+%
+%    This variation of the \cs{@thm} command is no longer needed. The
+%    variation \cs{@xthm} was commandeered for \cn{newtheorem} use.
+%    \begin{macrocode}
+\let\@ythm\relax
+%    \end{macrocode}
+%
+%    Init \cn{thmname} etc.
+%    \begin{macrocode}
+\let\thmname\@iden \let\thmnumber\@iden \let\thmnote\@iden
+\def\thmhead@plain#1#2#3{%
+  \thmname{#1}\thmnumber{ #2}\thmnote{ {\the\theoremnotefont(#3)}}}
+\let\thmhead\thmhead@plain
+\def\swappedhead#1#2#3{%
+  \thmnumber{#2}\thmname{. #1}\thmnote{ {\the\theoremnotefont(#3)}}}
+%    \end{macrocode}
+%
+%    In \cs{@begintheorem} \cn{thmheadnl} is called after the theorem
+%    head: maybe a newline, otherwise a no-op.
+%    \begin{macrocode}
+\let\thmheadnl\relax
+%    \end{macrocode}
+%
+%    If argument \arg{2} is empty, then this is an unnumbered
+%    environment. Otherwise \arg{2} is a numbering command such as
+%    \cn{thexyz}.
+%    \begin{macrocode}
+\def\@begintheorem#1#2[#3]{%
+  \item[\normalfont % reset in case body font is abnormal
+%    \end{macrocode}
+%    The standard weird compensation for labelsep space inside a
+%    \cs{trivlist} \cn{item}:
+%    \begin{macrocode}
+  \hskip\labelsep
+  \the\theoremheadfont
+  \theoremindent
+%    \end{macrocode}
+%    Changes to \cs{thmnumber} and \cs{thmnote} are local to this group.
+%    \begin{macrocode}
+  \@ifempty{#1}{\let\thmname\@gobble}{\let\thmname\@iden}%
+  \@ifempty{#2}{\let\thmnumber\@gobble}{\let\thmnumber\@iden}%
+  \@ifempty{#3}{\let\thmnote\@gobble}{\let\thmnote\@iden}%
+%    \end{macrocode}
+%    The \cs{thm@swap} function selects either \cs{swappedhead} or
+%    \cs{thmhead}.
+%    \begin{macrocode}
+  \thm@swap\swappedhead\thmhead{#1}{#2}{#3}%
+%    \end{macrocode}
+%    I can't think of any example where the after-head punctuation
+%    should be omitted so it seems correct not to use \cs{@addpunct}
+%    here.
+%    \begin{macrocode}
+  \the\theoremheadpunct]%
+  \thmheadnl % possibly a newline.
+  \ignorespaces}
+%    \end{macrocode}
+%
+%  \begin{macro}{\nonslanted}
+%    The \cn{nonslanted} command changes the current font to
+%    \cn{upshape} if it is \cn{itshape} or \cn{slshape}. This is used
+%    for document structure numbers that should be consistently upright
+%    in all contexts.
+%    \begin{macrocode}
+\def\nonslanted{\relax
+%    \end{macrocode}
+%    Can't do a direct \cs{ifx} between \cs{f@shape} and \cs{itdefault}
+%    because the latter is \cs{long} (grumble grumble).
+%    \begin{macrocode}
+  \@xp\let\@xp\@tempa\csname\f@shape shape\endcsname
+  \ifx\@tempa\itshape\upshape
+  \else\ifx\@tempa\slshape\upshape\fi\fi}
+%    \end{macrocode}
+%  \end{macro}
+%
+%  \begin{macro}{\swapnumbers}
+%    The \cn{swapnumbers} command sets a switch \cs{thm@swap} that is
+%    used by \cn{newtheorem}. To conserve hash table we load
+%    \cs{thm@swap} with two uses; the first one is needed only in
+%    \cn{newtheorem} declarations and the second one is needed only in
+%    typesetting theorem environments.
+%    \begin{macrocode}
+\def\swapnumbers{\edef\thm@swap{\if S\thm@swap N\else S\fi}}
+\def\thm@swap{N}%
+%    \end{macrocode}
+%  \end{macro}
+%
+%    \cs{@opargbegintheorem} not needed, \cs{@oparg} utility serves
+%    instead.
+%    \begin{macrocode}
+\let\@opargbegintheorem\relax
+%    \end{macrocode}
+%
+%    Except for the body font, default values are built into \cs{@thm}.
+%    \begin{macrocode}
+\def\th@plain{%
+%%  \let\theoremindent\noindent % no indent
+%%  \theoremheadfont{\bfseries}% heading font is bold
+%%  \theoremnotefont{}% same as heading font
+%%  \theoremheadpunct{.}% add period after heading
+%%  \let\thm@swap\@gobble
+%%  \theorempreskipamount\topsep
+%%  \theorempostskipamount\theorempreskipamount
+  \itshape % body font
+}
+%    \end{macrocode}
+%
+%    Theorem style `definition' is the same as `plain' except for the
+%    body font.
+%    \begin{macrocode}
+\def\th@definition{%
+  \normalfont % body font
+}
+%    \end{macrocode}
+%
+%    Theorem style `remark' differs from `plain' in head font and  body
+%    font. Also smaller spacing above and below.
+%    \begin{macrocode}
+\def\th@remark{%
+  \theoremheadfont{\itshape}%
+  \normalfont % body font
+  \theorempreskipamount\topsep
+  \divide\theorempreskipamount\tw@
+  \theorempostskipamount\theorempreskipamount
+}
+%    \end{macrocode}
+%
+%    The standard definition of \cs{@endtheorem} is just
+%    \cs{endtrivlist}, but that doesn't automatically start a new
+%    paragraph, so we add \cs{@endpefalse} in order to ensure a new
+%    paragraph.
+%    \begin{macrocode}
+\def\@endtheorem{\endtrivlist\@endpefalse }
+%    \end{macrocode}
+%
+%  \begin{macro}{\newtheoremstyle}
+%    An easy way to make a not too complicated variant theorem style.
+%    Usage:
+% \begin{verbatim}
+%                   #1
+% \newtheoremstyle{NAME}%
+%     #2          #3          #4
+%   {ABOVESPACE}{BELOWSPACE}{BODYFONT}%
+%     #5      #6        #7         #8
+%   {INDENT}{HEADFONT}{HEADPUNCT}{HEADSPACE}%
+%     #9
+%   {CUSTOM-HEAD-SPEC}
+% \end{verbatim}
+%    \begin{macrocode}
+\newcommand{\newtheoremstyle}[9]{%
+%    \end{macrocode}
+%    Empty or 0pt for \arg{5} is translated to \cs{noindent}.
+%    \begin{macrocode}
+  \@ifempty{#5}{\dimen@\z@skip}{\dimen@#5\relax}%
+  \ifdim\dimen@=\z@
+%    \end{macrocode}
+%    \arg{4} is body font. Extra code could be included there if
+%    necessary.
+%    \begin{macrocode}
+    \toks@{#4\let\theoremindent\noindent}%
+  \else
+    \toks@{#4\def\theoremindent{\noindent\hbox to#5{}}}%
+  \fi
+%    \end{macrocode}
+%    Arg \arg{8} is a glue spec for the space after the head. As
+%    a proper glue spec for `normal interword space' is rather hard to
+%    write, we recognize an argument of |{ }| as a special case and
+%    translate internally to the necessary fontdimen equivalent.
+%    Furthermore, if \arg{8} consists entirely of \cn{newline}, then we
+%    will perform a line break after the theorem head instead of adding
+%    horizontal space. At the moment [1995/01/23] this is not perfectly
+%    well implemented because of complications with the way \latex/'s
+%    \cn{item} adds a heading to the vertical list; for best results
+%    there should not be anything (not even a blank line) after the
+%    |\begin{xxx}| command.
+%    \begin{macrocode}
+  \def\@tempa{#8}\ifx\space\@tempa
+%    \end{macrocode}
+%    Notice that we disregard stretch and shrink for labelsep =
+%    interwordspace.
+%    \begin{macrocode}
+    \toks@\@xp{\the\toks@ \labelsep\fontdimen\tw@\font\relax}%
+  \else
+    \def\@tempb{\newline}%
+    \ifx\@tempb\@tempa
+      \toks@\@xp{\the\toks@ \labelsep\z@skip
+        \def\thmheadnl{\leavevmode\newline}}%
+    \else
+      \toks@\@xp{\the\toks@ \labelsep#8\relax}%
+    \fi
+  \fi
+  \@temptokena{%
+    \theorempreskipamount#2\relax
+    \theorempostskipamount#3\relax
+    \theoremheadfont{#6}\theoremheadpunct{#7}%
+  }%
+  \@ifempty{#9}{%
+    \let\thmhead\thmhead@plain
+  }{%
+    \@namedef{thmhead@#1}##1##2##3{#9}%
+    \@temptokena\@xp{\the\@temptokena
+      \@xp\let\@xp\thmhead\csname thmhead@#1\endcsname}%
+  }%
+  \@xp\xdef\csname th@#1\endcsname{\the\toks@ \the\@temptokena}%
+}
+%    \end{macrocode}
+%  \end{macro}
+%
+%
+%  \begin{macro}{\qed}
+%    Define \cn{qed} for end of proof. This command might
+%    occur in math mode, in a displayed equation, but it should never
+%    occur in inner math mode in ordinary paragraph text.
+%    \begin{macrocode}
+\DeclareRobustCommand{\qed}{%
+  \ifmmode % if math mode, assume display: omit penalty etc.
+  \else \leavevmode\unskip\penalty9999 \hbox{}\nobreak\hfill
+  \fi
+%    \end{macrocode}
+%    The hbox is to prevent a line break within the \cn{qedsymbol} if it
+%    is defined to be something composite--- e.g., things like
+%    \verb"(Corollary 1.2) \openbox" as are occasionally done.
+%    \begin{macrocode}
+  \quad\hbox{\qedsymbol}}
+%    \end{macrocode}
+%  \end{macro}
+%
+%    The reason that we do not simply use the \cn{square} symbol from
+%    msam for the open-box qed symbol is that we want to avoid requiring
+%    users to have the AMSFonts font package. And the \fn{lasy} \cn{Box}
+%    is too large.
+%    \begin{macrocode}
+\newcommand{\openbox}{\leavevmode
+%    \end{macrocode}
+%    I think I got these numbers from measuring \fn{msam}'s \cn{square}
+%    but I forgot to make notes at the time. [mjd,1995/01/25]
+%    \begin{macrocode}
+  \hbox to.77778em{%
+  \hfil\vrule
+  \vbox to.675em{\hrule width.6em\vfil\hrule}%
+  \vrule\hfil}}
+\newcommand{\qedsymbol}{\openbox}
+%    \end{macrocode}
+%
+%    The proof environment is never numbered, and has a \cn{qed} at the
+%    end, which makes it inconvenient to use \cn{newtheorem} for
+%    defining it. Also authors frequently need to substitute an
+%    alternative heading text (e.g. `Proof of Lemma 4.3')
+%    instead of the default `Proof'. For all these reasons we define the
+%    proof environment here instead of leaving it for authors to define.
+%    \begin{macrocode}
+\newenvironment{proof}[1][\proofname]{\par
+  \normalfont
+  \topsep6\p@\@plus6\p@ \trivlist
+  \item[\hskip\labelsep\itshape
+    #1\@addpunct{.}]\ignorespaces
+}{%
+  \qed\endtrivlist
+}
+%    \end{macrocode}
+%    Default for \cn{proofname}:
+%    \begin{macrocode}
+\newcommand{\proofname}{Proof}
+%    \end{macrocode}
+%
+%    Any option given in the \cn{usepackage} statement will be treated
+%    as the name of a file containing additional theorem style
+%    definitions.
+%    \begin{macrocode}
+\DeclareOption*{\input{\CurrentOption .thm}}
+\ProcessOptions
+%    \end{macrocode}
+%
+%    For reference:
+% \begin{verbatim}
+% From: tycchow@math.mit.edu (Timothy Y. Chow)
+% Subject: Suppressing theorem numbering in LaTeX
+% Message-ID: <1994Aug11.234754.22523@galois.mit.edu>
+% Date: Thu, 11 Aug 94 23:47:54 GMT
+% To: tex-news@SHSU.EDU
+%
+% A friend of mine wants numbering of theorems, conjectures, and so on
+% suppressed if there is only one of them in his article.  In other words
+% he wants "Conjecture 1" to appear as simply "Conjecture" if there is no
+% Conjecture 2.  What is the best way to go about doing this?
+% ...
+% \end{verbatim}
+%    Maybe something clever can be done to make the desired behavior
+%    happen automatically. Note that this would seem to be a general
+%    numbering problem rather than a theorem-specific one, because
+%    similar behavior would be desirable for appendixes: according to
+%    standard publishing practice, if there's only one it is titled just
+%    `Appendix', and if there are more than one they are titled
+%    `Appendix A', `Appendix B', and so on.
+%
+%    The usual \cs{endinput} to ensure that random garbage at the end of
+%    the file doesn't get copied by \fn{docstrip}.
+%    \begin{macrocode}
+\endinput
+%    \end{macrocode}
+%
+% \changes{v1.2a}{1995/02/01}{Added missing calls to theoremnotefont}
+%
+% \CheckSum{508}
+% \Finale

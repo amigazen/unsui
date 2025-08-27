@@ -1,0 +1,241 @@
+/*      _main.c         Copyright (C) 1985  Lattice, Inc.       */
+
+#include <stdio.h>
+#include <fcntl.h>
+#include <ios1.h>
+#include <string.h>
+#include <stdlib.h>
+#include <workbench/startup.h>
+#include <libraries/dos.h>
+#include <libraries/dosextens.h>
+
+#include <exec/execbase.h>		/* added*/
+#include <clib/dos_protos.h>	/* renamed from proto/dos.h*/
+#include <clib/exec_protos.h>	/* renamed from proto/exec.h*/
+#include <clib/icon_protos.h>		/* added*/
+#ifndef LIBRARIES_DOSEXTENS_H		/* added*/
+#include <libraries/dosextens.h>	/* added*/
+#endif					/* added*/
+extern struct DosLibrary *DOSBase;	/* added*/
+extern struct Library	*IconBase;	/* added*/
+#include <pragmas/dos_pragmas.h>	/* added*/
+#include <pragmas/exec_pragmas.h>	/* added*/
+#include <pragmas/icon_pragmas.h>	/* added*/
+void main(int argc, char **argv);	/* added*/
+
+extern struct ExecBase		*SysBase;
+extern struct DosLibrary	*DOSBase;
+
+
+#define MAXARG 32
+#define QUOTE  '"'
+#define ESCAPE '*'
+#define ESC '\027'
+#define NL '\n'
+
+#define isspace(c)      ((c == ' ')||(c == '\t') || (c == '\n'))
+
+#ifndef TINY
+extern int _fmode,_iomode;
+extern int (*_ONBREAK)();
+extern int CXBRK();
+#endif
+
+extern struct UFB _ufbs[];
+extern void main(int, char**);
+static int argc;                       /* arg count */
+static char **targv, *argv[MAXARG];   /* arg pointers */
+static void badarg(char *program);
+
+#define MAXWINDOW 80	/* 40 */
+extern struct WBStartup *WBenchMsg;
+/**
+*
+* name         _main - process command line, open files, and call "main"
+*
+* synopsis     _main(line);
+*              char *line;     ptr to command line that caused execution
+*
+* description   This function performs the standard pre-processing for
+*               the main module of a C program.  It accepts a command
+*               line of the form
+*
+*                       pgmname arg1 arg2 ...
+*
+*               and builds a list of pointers to each argument.  The first
+*               pointer is to the program name.  For some environments, the
+*               standard I/O files are also opened, using file names that
+*               were set up by the OS interface module XCMAIN.
+*
+**/
+void _main(line)
+register char *line;
+{
+   register char **pargv;
+   register int x;
+   struct Process *process;
+   struct FileHandle *handle;
+   static char window[MAXWINDOW+18+16];		/* +16 fuer "/CLOSE/AUTO/WAIT"*/
+   char *argbuf;
+
+/*
+*
+* Build argument pointer list
+*
+*/
+   
+   while (argc < MAXARG)
+   {
+        while (isspace(*line))  line++;
+        if (*line == '\0')      break;
+        pargv = &argv[argc++];
+        if (*line == QUOTE)
+        {
+            argbuf = *pargv = ++line;  /* ptr inside quoted string */
+            while (*line != QUOTE && *line != 0)
+            {
+               if (*line == ESCAPE)
+               {
+                  line++;
+                  switch (*line)
+                  {
+                     case '0':
+                        *argbuf = 0;
+                        goto linedone;
+                     case 'E':
+                        *argbuf++ = ESC;
+                        break;
+                     case 'N':
+                        *argbuf++ = NL;
+                        break;
+                     default:
+                        *argbuf++ = *line;
+                  }
+                  line++;
+               }
+               else
+               {
+                 *argbuf++ = *line++;
+               }
+            }
+            line++;
+            *argbuf++ = '\0'; /* terminate arg */
+        }
+        else            /* non-quoted arg */
+        {       
+            *pargv = line;
+            while ((*line != '\0') && (!isspace(*line))) line++;
+            if (*line == '\0')  break;
+            else                *line++ = '\0';  /* terminate arg */
+        }
+   }  /* while */
+
+linedone:
+
+   targv = (argc == 0) ? (char **)WBenchMsg : (char **)&argv[0];
+
+
+/*
+*
+* Open standard files
+*
+*/
+#ifndef TINY
+
+   if (argc == 0)          /* running under workbench      */
+   {
+#ifdef NORMAL
+        strcpy(window, "con:10/10/320/80/");
+        strncat(window, WBenchMsg->sm_ArgList->wa_Name,MAXWINDOW);
+#else
+	int os37 = SysBase->LibNode.lib_Version >= 37;
+	char *name = NULL;
+	int donil;
+
+	window[0] = '\0';
+	IconBase = OpenLibrary("icon.library", 0L);
+	if (IconBase != NULL) {
+	  struct DiskObject *dobject;
+	  /* gibt es immer sm_ArgList->... ?*/
+	  if (dobject = GetDiskObject(WBenchMsg->sm_ArgList->wa_Name)) {
+	    name = FindToolType(dobject->do_ToolTypes, "WINDOW");
+	    /* z.B. WINDOW=CON:0/0/500/100/DVIprint, oder WINDOW=NIL:*/
+	    if (name) strncpy(window, name, MAXWINDOW);
+	    FreeDiskObject(dobject);
+	  }
+	  CloseLibrary(IconBase);
+	  IconBase = NULL;
+	}
+
+	if (!name) {
+          strcpy(window, "CON:8/10/540/90/");
+          strcat(window, WBenchMsg->sm_ArgList->wa_Name);
+	  if (os37) strcat(window, "/CLOSE/AUTO/WAIT");
+	}
+
+	if (stricmp(window, "NIL:") != 0) {
+	  donil = 0;
+	}
+	else {
+	  donil = 1;
+	}
+#endif
+        _ufbs[0].ufbfh = Open(window,MODE_NEWFILE);
+        _ufbs[1].ufbfh = _ufbs[0].ufbfh;
+        _ufbs[1].ufbflg = UFB_NC;
+        _ufbs[2].ufbfh = _ufbs[0].ufbfh;
+        _ufbs[2].ufbflg = UFB_NC;
+#ifdef NORMAL
+        handle = (struct FileHandle *)(_ufbs[0].ufbfh << 2);
+        process = (struct Process *)FindTask(0);
+        process->pr_ConsoleTask = (APTR)handle->fh_Type;
+#else
+	/* prueft Lattice nicht, ob Open erfolgreich war?!*/
+	if (!donil) {	/* NIL: has no ConsoleTask */
+          handle = (struct FileHandle *)(_ufbs[0].ufbfh << 2);
+          process = (struct Process *)FindTask(0);
+          process->pr_ConsoleTask = (APTR)handle->fh_Type;
+	}
+#endif
+        x = 0;
+   }
+   else                    /* running under CLI            */
+   {
+        _ufbs[0].ufbfh = Input();
+        _ufbs[1].ufbfh = Output();
+        if ((_ufbs[2].ufbfh = Open("*", MODE_OLDFILE)) == NULL)
+             _ufbs[2].ufbfh = Open("NIL:", MODE_OLDFILE);
+        x = UFB_NC;                     /* do not close CLI defaults    */
+   }
+
+   _ufbs[0].ufbflg |= UFB_RA | O_RAW | x;
+   _ufbs[1].ufbflg |= UFB_WA | O_RAW | x;
+   _ufbs[2].ufbflg |= UFB_RA | UFB_WA | O_RAW;
+
+   x = (_fmode) ? 0 : _IOXLAT;
+   stdin->_file = 0;
+   stdin->_flag = _IOREAD | x;   
+   stdout->_file = 1;
+   stdout->_flag = _IOWRT | x;
+   stderr->_file = 2;
+   stderr->_flag = _IORW | x;
+
+/*      establish control-c handler */
+
+_ONBREAK = CXBRK;
+
+#endif
+
+/*
+*
+* Call user's main program
+*
+*/
+
+   main(argc,targv);              /* call main function */
+#ifndef TINY
+   exit(0);
+#else
+_  exit(0);
+#endif
+}

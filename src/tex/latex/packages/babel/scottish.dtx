@@ -1,0 +1,261 @@
+% \iffalse meta-comment
+%
+% Copyright 1989-1995 Johannes L. Braams and any individual authors
+% listed elsewhere in this file.  All rights reserved.
+% 
+% For further copyright information any other copyright notices in this
+% file.
+% 
+% This file is part of the Babel system release 3.5.
+% --------------------------------------------------
+%   This system is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+% 
+%   For error reports concerning UNCHANGED versions of this file no more
+%   than one year old, see bugs.txt.
+% 
+%   Please do not request updates from me directly.  Primary
+%   distribution is through the CTAN archives.
+% 
+% 
+% IMPORTANT COPYRIGHT NOTICE:
+% 
+% You are NOT ALLOWED to distribute this file alone.
+% 
+% You are allowed to distribute this file under the condition that it is
+% distributed together with all the files listed in manifest.txt.
+% 
+% If you receive only some of these files from someone, complain!
+% 
+% Permission is granted to copy this file to another file with a clearly
+% different name and to customize the declarations in that copy to serve
+% the needs of your installation, provided that you comply with
+% the conditions in the file legal.txt from the LaTeX2e distribution.
+% 
+% However, NO PERMISSION is granted to produce or to distribute a
+% modified version of this file under its original name.
+%  
+% You are NOT ALLOWED to change this file.
+% 
+% 
+% \fi
+% \CheckSum{125}
+%
+% \iffalse
+%    Tell the \LaTeX\ system who we are and write an entry on the
+%    transcript.
+%<*dtx>
+\ProvidesFile{scottish.dtx}
+%</dtx>
+%<code>\ProvidesFile{scottish.ldf}
+        [1995/07/10 v1.0c scottish support from the babel system]
+%
+% Babel package for LaTeX version 2e
+% Copyright (C) 1989 -- 1995
+%           by Johannes Braams, TeXniek
+%
+% Please report errors to: J.L. Braams
+%                          JLBraams@cistron.nl
+%
+%    This file is part of the babel system, it provides the source
+%    code for the scottish language definition file.
+%
+%    The Gaidhlig or Scottish Gaelic terms were provided by Fraser
+%    Grant \texttt{FRASER@CERNVM}.
+%<*filedriver>
+\documentclass{ltxdoc}
+\newcommand*{\TeXhax}{\TeX hax}
+\newcommand*{\babel}{\textsf{babel}}
+\newcommand*{\langvar}{$\langle \mathit lang \rangle$}
+\newcommand*{\note}[1]{}
+\newcommand*{\Lopt}[1]{\textsf{#1}}
+\newcommand*{\file}[1]{\texttt{#1}}
+\begin{document}
+ \DocInput{scottish.dtx}
+\end{document}
+%</filedriver>
+%\fi
+% \GetFileInfo{scottish.dtx}
+%
+% \changes{scottish-1.0b}{1995/06/14}{Corrected typos (PR1652)}
+%
+%  \section{The scottish language}
+%
+%    The file \file{\filename}\footnote{The file described in this
+%    section has version number \fileversion\ and was last revised on
+%    \filedate. A contribution was made by Fraser Grant
+%    (\texttt{FRASER@CERNVM}).}  defines all the language definition
+%    macros for the scottish language.
+%
+% \StopEventually{}
+%
+%    As this file needs to be read only once, we check whether it was
+%    read before. If it was, the command |\captionsscottish| is
+%    already defined, so we can stop processing. If this command is
+%    undefined we proceed with the various definitions and first show
+%    the current version of this file.
+%
+%    \begin{macrocode}
+%<*code>
+\ifx\undefined\captionsscottish
+\else
+  \selectlanguage{scottish}
+  \expandafter\endinput
+\fi
+%    \end{macrocode}
+%
+% \begin{macro}{\atcatcode}
+%    This file, \file{scottish.ldf}, may have been read while \TeX\
+%    is in the middle of processing a document, so we have to make
+%    sure the category code of \texttt{@} is `letter' while this file
+%    is being read.  We save the category code of the @-sign in
+%    |\atcatcode| and make it `letter'. Later the category code can be
+%    restored to whatever it was before.
+%    \begin{macrocode}
+\chardef\atcatcode=\catcode`\@
+\catcode`\@=11\relax
+%    \end{macrocode}
+% \end{macro}
+%
+%    Now we determine whether the the common macros from the file
+%    \file{babel.def} need to be read. We can be in one of two
+%    situations: either another language option has been read earlier
+%    on, in which case that other option has already read
+%    \file{babel.def}, or \texttt{scottish} is the first language
+%    option to be processed. In that case we need to read
+%    \file{babel.def} right here before we continue.
+%
+%    \begin{macrocode}
+\ifx\undefined\babel@core@loaded\input babel.def\relax\fi
+%    \end{macrocode}
+%
+%    Another check that has to be made, is if another language
+%    definition file has been read already. In that case its
+%    definitions have been activated. This might interfere with
+%    definitions this file tries to make. Therefore we make sure that
+%    we cancel any special definitions. This can be done by checking
+%    the existence of the macro |\originalTeX|. If it exists we simply
+%    execute it.
+%    \begin{macrocode}
+\ifx\undefined\originalTeX
+  \let\originalTeX\empty
+\fi
+\originalTeX
+%    \end{macrocode}
+%
+%    When this file is read as an option, i.e. by the |\usepackage|
+%    command, \texttt{scottish} could be an `unknown' language in
+%    which case we have to make it known.  So we check for the
+%    existence of |\l@scottish| to see whether we have to do something
+%    here.
+%
+%    \begin{macrocode}
+\ifx\undefined\l@scottish
+  \@nopatterns{scottish}
+  \adddialect\l@scottish0\fi
+%    \end{macrocode}
+%    The next step consists of defining commands to switch to (and
+%    from) the scottish language.
+%
+% \begin{macro}{\captionsscottish}
+%    The macro |\captionsscottish| defines all strings used in the
+%    four standard documentclasses provided with \LaTeX.
+% \changes{scottish-1.0c}{1995/07/04}{Added \cs{proofname} for
+%    AMS-\LaTeX}
+%    \begin{macrocode}
+\addto\captionsscottish{%
+  \def\prefacename{Preface}%    <-- needs translation
+  \def\refname{Iomraidh}%
+  \def\abstractname{Br\`{\i}gh}%
+  \def\bibname{Leabhraichean}%
+  \def\chaptername{Caibideil}%
+  \def\appendixname{Ath-sgr`{\i}obhadh}%
+  \def\contentsname{Cl\`ar-obrach}%
+  \def\listfigurename{Liosta Dhealbh }%
+  \def\listtablename{Liosta Chl\`ar}%
+  \def\indexname{Cl\`ar-innse}%
+  \def\figurename{Dealbh}%
+  \def\tablename{Cl\`ar}%
+  \def\partname{Cuid}%
+  \def\enclname{a-staigh}%
+  \def\ccname{lethbhreac gu}%
+  \def\headtoname{gu}%
+  \def\pagename{t.d.}%             abrv. `taobh duilleag'
+  \def\seename{see}%    <-- needs translation
+  \def\alsoname{see also}%    <-- needs translation
+  \def\proofname{Proof}%    <-- needs translation
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\datescottish}
+%    The macro |\datescottish| redefines the command |\today| to
+%    produce Scottish dates.
+%    \begin{macrocode}
+\def\datescottish{%
+  \number\day\space \ifcase\month\or
+  am Faoilteach\or an Gearran\or am M\`art\or an Giblean\or
+  an C\`eitean\or an t-\`Og mhios\or an t-Iuchar\or
+  L\`unasdal\or an Sultuine\or an D\`amhar\or
+  an t-Samhainn\or an Dubhlachd\fi
+  \space \number\year}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\extrasscottish}
+% \begin{macro}{\noextrasscottish}
+%    The macro |\extrasscottish| will perform all the extra
+%    definitions needed for the Scottish language. The macro
+%    |\noextrasscottish| is used to cancel the actions of
+%    |\extrasscottish|.  For the moment these macros are empty but
+%    they are defined for compatibility with the other language
+%    definition files.
+%
+%    \begin{macrocode}
+\addto\extrasscottish{}
+\addto\noextrasscottish{}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+%    It is possible that a site might need to add some extra code to
+%    the babel macros. To enable this we load a local configuration
+%    file, \file{scottish.cfg} if it is found on \TeX' search path.
+% \changes{scottish-1.0c}{1995/07/02}{Added loading of configuration
+%    file}
+%    \begin{macrocode}
+\loadlocalcfg{scottish}
+%    \end{macrocode}
+%
+%    Our last action is to make a note that the commands we have just
+%    defined, will be executed by calling the macro |\selectlanguage|
+%    at the beginning of the document.
+%    \begin{macrocode}
+\main@language{scottish}
+%    \end{macrocode}
+%    Finally, the category code of \texttt{@} is reset to its original
+%    value. The macrospace used by |\atcatcode| is freed.
+%    \begin{macrocode}
+\catcode`\@=\atcatcode \let\atcatcode\relax
+%</code>
+%    \end{macrocode}
+%
+% \Finale
+%\endinput
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%

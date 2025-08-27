@@ -1,0 +1,515 @@
+From ghibo@galileo.polito.it Mon Nov 21 17:22:31 1994
+Received: from galileo.polito.it ([130.192.2.117]) 
+	by rzdspc1.informatik.uni-hamburg.de (8.6.9/8.6.9) with SMTP
+	id RAA27744 for <hessmann@informatik.uni-hamburg.de>; Mon, 21 Nov 1994 17:16:05 +0100
+Received: by galileo.polito.it; id AA27914; Mon, 21 Nov 1994 17:13:21 +0100
+Date: Mon, 21 Nov 1994 17:13:21 +0100
+From: "P.Lepora (7512)" <ghibo@galileo.polito.it>
+Message-Id: <9411211613.AA27914@galileo.polito.it>
+To: hessmann@fbihh
+Subject: EVPAths 1.36 available
+Cc: ghibo@galileo.polito.it
+Status: OR
+
+
+Hi Georg!
+
+I'll send you a small readme of the features of the EVPath routines, which
+should be helpful for you.
+
+Same readme I'll send also to Andreas Scherer.
+
+There follow also EVPaths 1.36. Don't worry only a minor bug is fixed
+(one byte), reported at the end of the following text.
+
+Bye.
+	Giuseppe.
+
+--------------------------------------------------
+Here is a small README about the EVPaths routines.
+--------------------------------------------------
+
+EVPaths routines are routines written from scratch mainly to put and
+end to the unsatisfactory situation that leaded to "path anarchy" :)
+especially for TeX related program for the Amiga.
+The mainly features I wish to obtain was: easy to use and easy to
+implementing. I hope to have obtained this...
+
+Here follow the Features of EVPaths 1.35 & 1.36:
+------------------------------------------------
+
+1) No limits to the length of the Environment variables used to indicate
+   the paths.
+
+2) Recursively path searching.
+
+3) Recursively envrinoment variables searching.
+
+4) Path separators recognized: , ; SPACES TABs LFs FFs
+
+5) Possibility to specify paths containg SPACES, commas, semicolon.
+
+6) Current dir specified with . or "" or "." or "./". The chars ../
+   are equivalent to /
+
+7) Possibility to put the default path at an arbitrary position in the
+   path list, using the char '?'.
+
+8) Duplicated entries are ignored, i.e. a path name is considered only once.
+
+9) Compatibility with any OS >= OS1.3. Note the `='.
+
+10) EVpaths is linkable and even doesn't need any C startup code.
+
+-----------
+Description
+-----------
+
+1) Environment variables may have any length.
+   ------------------------------------------
+
+   The environment variable used to specify a path may have
+   any length (according to the size of the memory specified into
+   Alloc_EnvPath()).
+
+   Of course if we specify the environment variable with the
+   AmigaDOS command SetEnv, the length of the var is truncated to 255 chars,
+   but we can set the Environment variable using for instance an Editor; in
+   such case we may have variables of arbitrary length.
+
+2) Recursively path searching.
+   ---------------------------
+
+   If we append a * or a ** after a path element name, then such name
+   is searched recursively for sub-directories. The char * is for
+   one-level directory searching, while the ** is for searching into all
+   the sub-dirs. Note that ** allow only a maximum of 10 level
+   subdirectories (should be enough, but it can be modified changing
+   the macro MAX_RECURS_DIR into the file EVPaths.c).
+
+   Searching of subdirectories is executed when the function
+   Init_EnvPath() is called and it is performed only _ONCE_ for every time
+   we run the program, so if we append the ** to a directory which contains
+   many (note `many' not `a few') non-reorganized sub-dirs, this can
+   _slightly_ slow down the startup of the program. Of course isn't a good
+   idea   to use path such as:
+
+	.,dh0:**,dh1:**,dh2:**
+
+   although this could give an idea of how much time is needed to scan
+   all the sub-directories of the whole hard disk (you can try this path
+   using TeXWhereIs).
+
+   For instance suppose to have the following path:
+
+	TeX:texinputs**,TeX:macros*
+
+   In such example, then the path list will became, for instance
+
+	TeX:texinputs
+	TeX:texinputs/one
+	TeX:texinputs/one/one
+	TeX:texinputs/one/one/two
+	TeX:texinputs/one/one/two/three
+	TeX:texinputs/one/one/two/three/four
+	.
+	.
+	.
+	TeX:texinputs/two
+	TeX:texinputs/two/one
+	TeX:texinputs/two/one/two
+	.
+	.
+	.
+	TeX:texinputs/macro
+	TeX:texinputs/macro/one
+	TeX:texinputs/macro/two
+	TeX:texinputs/macro
+	
+One of the most advantage of using the chars * and ** is that we don't have
+to change the var contents every time we install a new macro package. Since
+there are many macro packages for TeX, it is a good idea to keep
+each macro package into his own directory. For instance the LaTeX 2e
+macro packages contains also many sub-tools, and is a good idea to
+keep each tool into his own directory (easy to update) rather than to
+put thousands of files into TeX:texinputs/. For instance with
+
+	TeX:texinputs/LaTeX2e*
+
+we match
+
+	TeX:texinputs/LaTeX2e
+	TeX:texinputs/LaTeX2e/tools
+	TeX:texinputs/LaTeX2e/graphics
+	TeX:texinputs/LaTeX2e/babel
+
+and so on.
+
+Note that there is also some synonymous for * and **:
+
+	---------------------------------
+	| Char |       searching        |
+	---------------------------------
+	|  *   | one-level directories  |
+	| **   | all sub-directories    |
+	| #?   | one-level directories  |
+	| #?>  | all sub-directories    |
+	| *>   | all sub-directories    |
+	---------------------------------
+
+Note also that chars * and ** (or synonymous) don't specifies wildcards;
+e.g. specifying TeX:macro/ltx*my we don't include every directory
+which matches the string `ltx*my'.
+
+Specifing TeX:texinputs** or TeX:texinputs/** is exactly the same thing, as
+well TeX:texinputs or TeX:texinputs/.
+
+3) Recursively environment variable searching
+   ------------------------------------------
+
+   In the path of an environment variables, we may also specify
+   the name of another environment variable. For instance specifying the
+   following path
+
+	.,TeX:texinputs,$MYPATH,TeX:macros
+
+   then the contents of the environment variable MYPATH will be added
+   to the path list. Note that MYPATH could cointain another environment
+   variable and so on. Up to 5 level of environment variables recursion are
+   allowed (should be enough, but this value can also be changed changing
+   the macro MAX_RECURS_VAR in EVpaths.c).
+   Closed loop and duplicated entries are ignored. For instance
+
+	setenv VARONE   one,"$"VARTWO
+	setenv VARTWO   two,"$"VARTHREE
+	setenv VARTHREE three,"$"VARFOUR
+	setenv VARFOUR  four,"$"VARFIVE
+	setenv VARFIVE  five,"$"VARSIX
+	setenv VARSIX   six,"$"SEVEN
+	setenv SEVEN    seven
+
+   In such case if we use the variable VARONE, then we obtain the following
+   path list
+		one
+		two
+		three
+		four
+		five
+
+   i.e. since recursive searching of environment variables is limited to 5,
+   the two other variables `VARSIX' and `VARSEVEN' are simply ignored.
+   Note that enclosing of $ between quotes is needed because otherwise the
+   Shell expand the env variable (if it exists). This mean that quotes aren't
+   needed if we use an editor to set the argument of an environment
+   variable.
+   Closed loop are also ignored, for instance if we consider
+
+	setenv TEXINPUTS .,tex:texinputs,"$"MFINPUTS
+	setenv MFINPUTS  .,mf:mfinputs,"$"TEXINPUTS
+
+   if we use TEXINPUTS then the path list will contain
+
+	tex:texinputs
+	mf:mfinputs
+
+   otherwise if we use MFINPUTS the path list will contain
+
+	mf:mfinputs
+	tex:texinputs
+
+   What we can do with a such features? We may specify path
+   using TWO environment variables. For instance suppose that
+   the variable TEXINPUTS contains:
+
+	.,$MYPATH,TeX:texinputs,TeX:LaTeX,TeX:LaTeX2e*
+
+   then we may set for instance the env var MYPATH to `mymacro' and then run
+   TeX or MF. Suppose now we want to use the files contained into the
+   directory `mymacro2'. In such case we have just to change the var
+   MYPATH without to change the whole contents of TEXINPUTS.
+
+4) Path separators
+   ---------------
+
+   Path separators recognized are
+
+	, ; SPACES TABs LFs FFs
+
+   or any combinations of them. For instance we may have the following
+   path
+
+	TeX:texinputs,		TeX:macros**
+	TeX:latex2e*;     CWeb:macros
+	MF:inputs*
+	^L^L
+
+	MyTeX:mymacros
+
+   and so on.
+
+5) Names containing , ; or SPACES or TABS
+   --------------------------------------
+
+   If a path name contains a space or , or ; we must to enclose such
+   name into quotes. For instance:
+
+	"The LaTeX", "this,,  ,,,,dirs"
+	"Another;;;;;;;one"
+
+   Note that if a quote is leaved open then the path is taken as a
+   whole path until a LF or FF is encountered.
+
+6) Current dir.
+   ------------
+
+   To include the current dir into the path we may use one of the
+   following symbols:
+
+	.	""	"."
+
+   Note that Unix like syntax such as:
+
+	./mypath        -> directory `mypath' in the current dir
+
+   and
+
+	../mypath	-> directory `mymath' in the parent dir.
+
+   are supported too.
+
+7) Default path.
+   -------------
+
+   If the path of the environment variable superseed the default path
+   we may include the default path at an arbitrary position. For
+   instance:
+
+	default path = "MF:inputs,MF:ams/fonts/symbols"
+
+        MFINPUTS = .,MF:mfinputs,?,CTAN:mfinputs
+
+   then the resulting path list will be:
+
+	`'	(current dir)
+	`MF:mfinputs'
+	`MF:inputs'		(from default path)
+	`MF:ams/fonts/symbols'	(from default path)
+	`CTAN:mfinputs'
+
+8) Duplicated entries are ignored. For instance using the following path
+
+	.,".","",TeX:inputs,MF:inputs,TeX:inputs,MF:inputs
+	
+   the path list will contain only the following entries:
+
+	`'	(current)
+	TeX:inputs
+	MF:inputs
+
+   this means that a file isn't searched into the current dir
+   or in the directory TeX:inputs or MF:inputs only _ONCE_. Note that
+   although TeX:inputs/ and TeX:inputs are treated in the same way,
+   they aren't recognized as same for the purpose to avoid duplicated
+   entries.
+
+9) Compatibility with OS 1.3.
+   --------------------------
+
+   EVPaths routines are fully compatible with OS 1.3. Since
+   many TeX related programs still works with OS 1.3 it was a pity to
+   loose the OS 1.3 compatibility only for the presence of the
+   EVPaths routines...
+
+Now a small doc about programming, probably superfluous because YOU
+-------------------------------------------------------------------
+have alread installed EVPaths.
+------------------------------
+
+1) Firstly we have to define pointers to the structure EnvVarPath.
+   
+	struct EnvVarPath *var_one, *var_two;
+
+2) We have to alloc memory for every EnvVarPath structure using
+
+	var_one = Alloc_EnvVarPath(varname, size)
+
+	varname = STRING
+	size = LONG
+
+   for instance
+
+	var_one = Alloc_EnvVarPath("TEXINPUTS", 4096L);
+	var_two = Alloc_EnvVarPath("MFINPUTS", 4096L);
+
+   How much memory to alloc. The size of memory that Alloc_EnvVarPath()
+   will alloc for the path depends from the path type. Such memory
+   will contain all the strings of dir names found during the scansion of
+   the specified dirs. Every dir entry need (strlen(dirname) + 5) bytes.
+
+   This size doesn't directly depends by the size of the environment
+   variable. For instance an env var containing only the string
+   `Work:**' is of course 7 byte length but probably the volume `Work:'
+   will contains tons of dirs so a large buffer size should be provided.
+   If the buffer during scans of the volume `Work:' can contain no longer
+   entries then the field evp->status is equal to ENVPATH_BUFFER_FULL. The
+   main reason why I used a fixed-size buffer to store path elements is that
+   entries are stored into the buffer (which may be addressed as an array of
+   string pointers) as follows
+
+
+	TOP OF BUFFER
+        |
+	+--------------------------------------------------------+
+        | PTR 1 | PTR 2 | PTR 3 | PTR 4 | ...                    |
+        +-------+-------+-------+-------+------------------------+
+        | ...   | PTR N | ...                                    |
+        +--------------------------------------------------------+
+        | ......                                                 |
+        +-------+----------+-----+----------+----------+---------+
+        | ...   | string N | ... | string 4 | string 3 | string 2|
+	+----------+---------------------------------------------+
+        | string 1 |
+        +----------+
+                   |
+                   BOTTOM OF BUFFER
+
+  In this way the buffer may be addressed as an array of string pointer
+  and furthermore we don't fragment the memory allocating small chunk.
+
+3) After to have obtained a valid pointer for the EnvVarPath structure
+   we have to init it using the function Init_EnvVarPath(). For instance
+	
+	STRPTR default_path_str   = ".,TeX:inputs*"
+	STRPTR default_path_arr[] = { ".", "TeX:inputs", NULL }
+
+	Init_EnvVarPath(var_one, default_path_str, ENVPATH_DEFSTR);
+	Init_EnvVarPath(var_two, default_path_arr, ENVPATH_DEFARR);
+
+   The flag ENVPATH_DEFARR must be used if the default_path is
+   a pointer to an array of strings.
+   ENVPATH_DEFSTR must be used instead if the default_path is a string
+   pointer.
+
+   When Init_EnvVarPath() is called, the buffer of the structure
+   EnvVarPath is filled with entries from the environment variable
+   and/or from the default path. Path elements containing * or ** or ?
+   are expanded (i.e. the directories scan is performed).
+
+   If we don't want to specify the default path we have to specify
+   NULL as argument, e.g.
+
+	Init_EnvVarPath(var_one, NULL, NULL);
+
+   It is also possible to prepend or append the default path to
+   the one read from the environment variable. To do this simply _OR_
+   the last argument of the Init_EnvVarPath() function with the
+   values ENVPATH_PREPEND_PATH or ENVPATH_APPEND_PATH.
+   For instance suppose that the current directory is to be searched before
+   any path provided from the environment variable, then we can
+   provide what follow:
+
+	Init_EnvVarPath(var_one,".",ENVPATH_DEFSTR|ENVPATH_PREPEND_PATH);
+
+   and the current directory will be searched before any path element given
+   in the environment variable. Suppose now we want to append the default
+   path to the entries given in the environment variable. We have just to
+   _OR_ the last argument with ENVPATH_APPEND_PATH. Let's consider:
+
+	setenv VARONE .,TeX:texinputs,TeX:macros
+	default_path = ".,TeX:inputs*"
+
+	Init_EnvVar(var_one, default_path,ENVPATH_DEFSTR|ENVPATH_APPEND_PATH);
+
+   In such case the path list will be:
+
+	`' (current dir)
+	`TeX:texinputs'
+	`TeX:macros'
+	`TeX:inputs'
+	`TeX:inputs/one'
+	`TeX:inputs/two'
+
+   and so on. Note that since the current dir entry "." already exists
+   in the environment variable, it isn't appended to the path list.  
+
+   After the var has been initialized we may inquire the field
+   evp->status to see the status of the buffer. Possibles values are
+   listed in the file `EVPaths.h' (EVPATH_BUFFER_EMPTY and so on).
+   
+4) After that the EnvVarPath structure has been initialized, the
+   function to search a file is EVP_FileSearch(). For example suppose
+   we want to search the file `cmr10.mf' using the path provided in the
+   structure mf_var (previously initialized with the contents of the
+   environment variable MFINPUTS)
+
+	#define SIZE 256
+	STRPTR s;
+	UBYTE buf[SIZE];
+
+	.
+	. (alloc and init stuffs)
+	.
+
+	if (s = EVP_FileSearch("cmr10.mf", mf_var, buf, SIZE))
+	{
+		file found
+	}
+	else
+	{
+		file not found
+	}
+	
+   where `buf' is a buffer of size `SIZE' to be used to store the
+   returned filename. If the file is found then the returned value `s'
+   is a pointer to `buf' and `buf' contains the full filename, otherwise
+   NULL is returned instead.
+
+5) Before the program exits all the allocated memory should be freed. For
+   this purpose the function Free_EnvVarPath(env_structure) has to be
+   called before the program exits. This is a care stuff, because all
+   the memory is allocated with the Exec function AllocMem(), and this
+   memory is freed only by Free_EnvVarPath(). Note that
+   if a CTRL-C breaks the program and the program exits, an interrupt
+   handler should be provided (i.e. signal(...) ... )
+
+6) Since EVPaths 1.35, there is the EVP_Open() function. This function
+   is similar to EVP_FileSearch() but instead of STRPTR returns BPTR.
+   A DOSFALSE will be returned if the file isn't found. For instance
+   the previous example became:
+
+	if ((fh = EVP_Open("cmr10.mf", mf_var, buf, SIZE, MODE_OLDFILE)) != DOSFALSE)
+	{
+		file is found
+	}
+	else
+	{
+		file isn't found
+	}
+
+   The buf is filled with the full name of the file found. If we don't need
+   to know the name of the found file, simply put NULL either for
+   `buf' and `size' (e.g. EVP_Open("cmr10.mf", mf_var, NULL, NULL, MODE_OLDFILE)).
+   The opened file must then be closed with the library function Close().
+   In the EVP_Open() function there is also the argument `mode'. This argument
+   is the same of the dos.library's function Open(), i.e. MODE_OLDFILE,
+   MODE_NEWFILE, etc.. While the meaning of MODE_OLDFILE is rather clear,
+   what we can do with MODE_NEWFILE isn't so easy. Suppose the environment
+   variable TEXCONFIG contains:
+
+	setenv TEXCONFIG TeX:config,.
+
+   Suppose then we want to save a config file, we may use:
+
+	fh = EVP_Open("MF.config", mf_config, buf, size, MODE_NEWFILE);
+
+   If there is already a file TeX:config/MF.config but it is protected
+   from writing or deleting, or the directory TeX:config doesn't exists,
+   then the current dir (i.e. next path element) will be used to save the
+   file `MF.config'.
+
+-----------------------------------------
+Changes from EVPaths 1.35 to EVPaths 1.36
+-----------------------------------------
+
+- RELTOKEN on line 228 of EVPaths.c changed from "\t\f\040,;" to "\t\040,;"
+

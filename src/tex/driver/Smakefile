@@ -1,0 +1,355 @@
+
+
+.c.o:
+	sc $*
+
+HDIR = 
+S    = $(HDIR)show/
+SA   = $(HDIR)show/amiga/
+U    = $(HDIR)util/
+UA   = $(HDIR)util/amiga/
+UI   = $(HDIR)util/iff/
+UL   = $(HDIR)util/locale/
+P    = $(HDIR)print/
+PA   = $(HDIR)print/amiga/
+INST = $(HDIR)bin/
+
+SGSTFILE = $(SA)sdvi.gst
+GST  = GST=$(SGSTFILE)
+DDEF = DEF=DISPLAY
+
+PGSTFILE = $(PA)muiprint.gst
+
+#
+# SetChar Routine in Assembler
+#
+SETC00ASM = $(UA)SetChar00.asm
+SETC00O   = $(UA)SetChar00.o
+SETC20ASM = $(UA)SetChar20.asm
+SETC20O   = $(UA)SetChar20.o
+
+#SETCASM   = $(SETC00ASM)
+#SETCO     = $(SETC00O)
+SETCASM =
+SETCO   =
+
+
+
+############ Files for SHOWDVI
+SCFILES   = $(SA)help.c $(SA)amscreen.c $(SA)am_menu.c $(SA)am_requ.c\
+	$(S)showdvi.c $(SA)gadget.c $(S)liste.c $(SA)amkey.c $(S)search.c\
+	$(SA)messwin.c $(U)flmt.c $(U)fontmt.c $(U)bitmap.c\
+	$(U)globals.c $(U)mymalloc.c $(UA)amprhelp.c $(U)dospecia.c\
+	$(U)dvihand.c $(U)loadfont.c $(U)unpack.c  $(UA)fast_cp.c\
+	$(SA)config.c $(SA)newcli.c $(U)new_font.c\
+	$(SA)minrexx.c $(SA)arexx.c $(UA)special.c\
+	$(S)skippage.c $(SA)app_icon.c $(UA)GetOpt.c $(U)parsef.c\
+	$(SA)prefwin.c $(UL)local.c $(SA)pgmodel.c $(SA)pgscroll.c $(SA)searchwin.c\
+	$(UI)ilbmw.c $(UI)parse.c $(UI)saveilbm.c $(SA)fullpage.c\
+	$(UA)EVPaths.c $(U)sver.c
+
+SASMFILES = $(UA)fcopy.asm $(UA)speed_copy.asm $(UA)f_cp.asm $(UA)SNPrintf.a
+
+SOBJFILES = $(U)sbitmap.o $(U)flmt.o $(U)new_font.o $(S)search.o\
+	$(U)loadfont.o $(U)unpack.o $(UA)sfast_cp.o $(SETCO) $(S)showdvi.o\
+	$(U)dospecia.o $(U)dvihand.o $(S)liste.o $(U)sglobals.o\
+	$(SA)amscreen.o $(SA)gadget.o $(SA)amkey.o $(SA)messwin.o\
+	$(SA)am_menu.o $(SA)am_requ.o $(UA)samprhelp.o\
+	$(SA)config.o $(SA)newcli.o $(SA)help.o\
+	$(SA)minrexx.o $(SA)arexx.o $(UA)special.o\
+	$(S)skippage.o $(SA)app_icon.o $(UA)GetOpt.o $(U)parsef.o\
+	$(SA)prefwin.o $(UL)local.o $(SA)pgmodel.o $(SA)pgscroll.o $(SA)searchwin.o\
+	$(UI)packer.o $(UI)ilbmw.o $(UI)parse.o $(UI)saveilbm.o\
+	$(UA)EVPaths.o $(UA)SNPrintf.o  $(SA)fullpage.o $(U)sver.o
+
+
+############ Files for DVIPRINT
+PCFILES   = $(P)dviprint.c $(P)newhard.c $(PA)amprint.c\
+	$(UA)GetOpt.c $(PA)PrintOpt.c $(P)prhelp.c\
+	$(UA)pamprhelp.c $(U)dvihand.c  $(U)dospecia.c\
+	$(U)pglobals.c $(U)bitmap.c $(UL)local.c \
+	$(U)flmt.c $(U)new_font.c $(U)parsef.c\
+	$(U)loadfont.c $(U)unpack.c\
+	$(UA)fast_cp.c $(UA)special.c $(P)landscap.c\
+	$(UI)ilbmw.c $(UI)parse.c $(UI)saveilbm.c\
+	$(PA)muiprint.c$ (UA)EVPaths.c\
+	$(U)pver.c
+
+PASMFILES = $(UI)apack.asm $(UA)SNPrintf.a
+
+POBJFILES = $(P)dviprint.o $(P)newhard.o $(PA)amprint.o\
+	$(UA)GetOpt.o $(PA)PrintOpt.o $(P)prhelp.o\
+	$(UA)pamprhelp.o $(U)dvihand.o  $(U)dospecia.o\
+	$(U)pglobals.o $(U)bitmap.o $(UL)local.o\
+	$(U)flmt.o $(U)new_font.o $(U)parsef.o\
+	$(U)loadfont.o $(U)unpack.o\
+	$(UA)fast_cp.o $(UA)special.o $(P)landscap.o\
+	$(UI)packer.o $(UI)ilbmw.o $(UI)parse.o $(UI)saveilbm.o\
+	$(PA)muiprint.o $(UA)EVPaths.o $(UA)SNPrintf.o\
+	$(U)pver.o
+
+
+## name of the generated includefile
+VERSION_H	= $(U)ver_code.h
+
+
+
+showdvi	: $(S)showdvi
+	@date
+
+dviprint: $(P)dviprint
+	@date
+
+all	: showdvi dviprint PasTeX.catalog
+	@echo ""
+
+alll	: showdvi dviprint PasTeX.catalog
+	@date
+
+
+##############################################
+
+$(S)showdvi	: $(SGSTFILE) $(SOBJFILES)
+	Slink <WITH < (ShowDVI.lnk)
+FROM lib:cres.o
+util/sver.o 
+util/sbitmap.o util/flmt.o util/new_font.o
+util/loadfont.o util/unpack.o util/amiga/sfast_cp.o $(SETCO) show/showdvi.o
+util/dospecia.o util/dvihand.o show/liste.o util/sglobals.o show/search.o
+show/amiga/gadget.o show/amiga/amscreen.o show/amiga/amkey.o
+show/amiga/am_menu.o show/amiga/am_requ.o util/amiga/samprhelp.o
+show/amiga/config.o show/amiga/newcli.o
+show/amiga/messwin.o show/amiga/prefwin.o show/amiga/searchwin.o show/amiga/help.o
+show/amiga/minrexx.o show/amiga/arexx.o util/amiga/special.o show/skippage.o
+show/amiga/app_icon.o util/amiga/GetOpt.o util/locale/local.o
+show/amiga/fullpage.o util/amiga/EVPaths.o util/amiga/SNPrintf.o
+util/iff/packer.o util/iff/ilbmw.o util/iff/parse.o util/iff/saveilbm.o
+TO show/ShowDVI
+LIB lib:scmieee.lib lib:sc.lib lib:amiga.lib lib:debug.lib
+SMALLCODE
+SMALLDATA
+ADDSYM
+QUIET
+<
+
+##LIB lib:scmieee.lib lib:sc.lib lib:amiga.lib sc:extras/Memlib/memwatch.lib lib:debug.lib
+
+######################################
+
+$(P)dviprint: $(POBJFILES)
+	Slink <WITH < (DVIprint.lnk)
+FROM lib:cres.o
+util/pver.o
+print/dviprint.o print/newhard.o print/amiga/amprint.o print/landscap.o
+util/amiga/fast_cp.o
+util/amiga/pamprhelp.o util/dospecia.o util/dvihand.o
+util/pglobals.o util/bitmap.o
+util/flmt.o util/new_font.o
+util/loadfont.o util/unpack.o
+util/amiga/special.o util/locale/local.o
+print/prhelp.o util/parsef.o
+util/amiga/GetOpt.o print/amiga/PrintOpt.o print/amiga/muiprint.o
+util/amiga/EVPaths.o util/amiga/SNPrintf.o
+util/iff/packer.o util/iff/ilbmw.o util/iff/parse.o util/iff/saveilbm.o
+TO print/DVIprint
+LIB lib:scmieee.lib lib:sc.lib lib:amiga.lib lib:debug.lib
+SMALLCODE
+SMALLDATA
+ADDSYM
+QUIET
+<
+
+
+##LIB lib:scmieee.lib lib:sc.lib sc:extras/Memlib/memwatch.lib
+
+######################################
+
+
+$(SGSTFILE): $(SA)mkgst.c
+	$(CC) $(DDEF) $(GST) MGST=$(SGSTFILE) $*
+
+$(SA)amscreen.o	: $(SA)amscreen.c $(U)globals.h $(SA)amscreen.h $(SA)gad_def.h $(SGSTFILE) $(UL)localstr.h $(U)version.h $(U)ver_code.h
+	$(CC) $(DDEF) $(GST) $*
+
+$(SA)fullpage.o	: $(SA)fullpage.c $(U)globals.h $(SA)amscreen.h $(SGSTFILE)
+	$(CC) $(DDEF) $(GST) $*
+
+$(SA)help.o	: $(SA)help.c $(U)globals.h $(SA)amscreen.h $(SGSTFILE) $(UL)localstr.h
+	$(CC) $(DDEF) $(GST) $*
+
+$(SA)pgmodel.o : $(SA)pgmodel.c $(SA)pgmodel.h
+	$(CC) $(DDEF) $(GST) $*
+
+$(SA)pgscroll.o : $(SA)pgscroll.c $(SA)pgscroll.i $(SA)pgmodel.h
+	$(CC) $(DDEF) $(GST) $*
+
+$(SA)amkey.o	: $(SA)amkey.c $(U)globals.h $(SA)amscreen.h $(SA)gad_def.h $(SGSTFILE) $(UL)localstr.h
+	$(CC) $(DDEF) $(GST) $*
+
+$(SA)gadget.o	: $(SA)gadget.c $(U)globals.h $(SA)gadget.h $(SA)gad_def.h $(SA)amscreen.h #$(SGSTFILE) $(UL)localstr.h
+	$(CC) $(DDEF) $(GST) $*
+
+$(S)showdvi.o	: $(S)showdvi.c $(U)globals.h $(U)commands.h $(U)dvihand.h $(SA)amscreen.h $(UL)localstr.h
+	$(CC) $(DDEF) $(GST) $*
+
+$(S)skippage.o	: $(S)skippage.c $(S)liste.i $(U)globals.h $(U)commands.h
+	$(CC) $(DDEF) $*
+
+$(S)liste.o	: $(S)liste.c $(U)globals.h $(S)liste.h
+	$(CC) $(DDEF) $*
+
+$(S)search.o	: $(S)search.c $(U)globals.h
+	$(CC) $(DDEF) $*
+
+$(SA)app_win.o	: $(SA)app_win.c $(SA)amscreen.h $(U)globals.h $(SGSTFILE)
+	$(CC) $(DDEF) $(GST) $*
+
+$(SA)app_icon.o	: $(SA)app_icon.c $(SA)amscreen.h $(U)globals.h $(SGSTFILE)
+	$(CC) $(DDEF) $(GST) $*
+
+$(SA)messwin.o	: $(SA)messwin.c $(SA)messwin.i $(SA)amscreen.h $(U)globals.h $(SGSTFILE)
+	$(CC) $(DDEF) $(GST) $*
+
+$(SA)prefwin.o	: $(SA)prefwin.c $(SA)prefwin.i $(SA)amscreen.h $(U)globals.h $(SGSTFILE)
+	$(CC) $(DDEF) $(GST) $*
+
+$(SA)searchwin.o: $(SA)searchwin.c $(SA)searchwin.i $(SA)amscreen.h $(U)globals.h $(SGSTFILE)
+	$(CC) $(DDEF) $(GST) $*
+
+$(SA)am_menu.o	: $(SA)am_menu.c $(SA)am_menu.h $(SA)amscreen.h $(SA)gad_def.h $(U)globals.h $(SGSTFILE) $(UL)localstr.h
+	$(CC) $(DDEF) $(GST) $*
+
+$(SA)am_requ.o	: $(SA)am_requ.c $(SA)am_requ.h $(SA)amscreen.h $(SA)gad_def.h $(U)globals.h $(SGSTFILE)
+	$(CC) $(DDEF) $(GST) $*
+
+$(SA)config.o	: $(SA)config.c $(SA)config.h $(SA)amscreen.h $(U)globals.h $(U)version.h
+	$(CC) $(DDEF) $(GST) $*
+
+$(SA)newcli.o	: $(SA)newcli.c $(SA)amscreen.h $(U)globals.h $(SGSTFILE)
+	$(CC) $(DDEF) $(GST) $*
+
+$(SA)minrexx.o	: $(SA)minrexx.c $(SA)minrexx.h $(SGSTFILE) $(SA)amscreen.h
+	$(CC) $(DDEF) $(GST) $*
+
+$(SA)arexx.o	: $(SA)arexx.c $(SA)amscreen.h $(SA)minrexx.h $(U)globals.h $(SGSTFILE)
+	$(CC) $(DDEF) $(GST) $*
+
+$(UL)local.o	: $(UL)local.c $(UL)local.h $(SA)amscreen.h $(U)globals.h $(UL)localstr.h
+	$(CC) $(DDEF) $(GST) $*
+
+$(UL)localstr.h : $(UL)localstr.cd
+	CatComp DESCRIPTOR $(UL)localstr.cd CFILE $(UL)localstr.h
+$(UL)localstr_ger.ct:
+	CatComp DESCRIPTOR $(UL)localstr.cd CTFILE $(UL)localstr_ger.ct NOOPTIM
+PasTeX.catalog	: $(UL)deutsch/PasTeX.catalog $(UL)italiano/PasTeX.catalog
+$(UL)deutsch/PasTeX.catalog: $(UL)localstr.cd $(UL)localstr_ger.ct
+	CatComp DESCRIPTOR $(UL)localstr.cd TRANSLATION $(UL)localstr_ger.ct CATALOG $(UL)deutsch/PasTeX.catalog NOOPTIM
+	copy $(UL)deutsch/PasTeX.catalog locale:catalogs/Deutsch CLONE
+	avail flush
+$(UL)italiano/PasTeX.catalog: $(UL)localstr.cd $(UL)localstr_ita.ct
+	CatComp DESCRIPTOR $(UL)localstr.cd TRANSLATION $(UL)localstr_ita.ct CATALOG $(UL)italiano/PasTeX.catalog NOOPTIM
+
+
+$(U)sglobals.o	: $(U)globals.c $(U)globals.h $(U)bitmap.h $(VERSION_H) $(U)crypt.h
+	$(CC) $(DDEF) OBJNAME=$@ $*
+$(UA)samprhelp.o: $(UA)amprhelp.c $(U)globals.h $(PA)amprint.h
+	$(CC) $(DDEF) OBJNAME=$@ $*
+$(U)sbitmap.o	: $(U)bitmap.c $(U)globals.h $(U)bitmap.h $(U)sbitmap.i
+	$(CC) $(DDEF) OBJNAME=$@ $*
+$(UA)sfast_cp.o	: $(UA)fast_cp.c $(U)globals.h $(U)bitmap.h $(U)new_font.h $(U)commands.h $(U)flmt.h
+	$(CC) $(DDEF) OBJNAME=$@ $*
+$(U)sver.o	: $(U)sver.c $(U)version.h dummy
+	$(CC) $(DDEF) STRINGMERGE IGNORE=105 $*
+
+
+$(UA)SetChar00.o	: $(UA)SetChar00.asm
+	asm -o$(UA)SetChar00.o $(UA)SetChar00.asm
+$(UA)SetChar20.o	: $(UA)SetChar20.asm
+	asm -o$(UA)SetChar20.o $(UA)SetChar20.asm
+
+
+##############################################################################
+# Files especialy for DVIPRINT
+
+$(P)dviprint.o	: $(P)dviprint.c $(U)commands.h $(U)globals.h $(U)dvihand.h $(U)globvars.h
+$(PA)amprint.o	: $(PA)amprint.c $(PA)amprint.h $(U)globals.h
+$(P)hardcopy.o	: $(P)hardcopy.c $(U)globals.h $(U)bitmap.h
+$(P)newhard.o	: $(P)newhard.c $(P)prhelp.h $(U)bitmap.h $(PA)amprint.h
+$(P)landscap.o	: $(P)landscap.c $(U)globals.h $(U)bitmap.h $(P)prhelp.h
+
+
+$(U)pglobals.o	: $(U)globals.c $(U)globals.h $(VERSION_H) $(U)bitmap.h $(PA)amprint.h $(U)crypt.h
+	$(CC) OBJNAME=$@ $*
+$(UA)pamprhelp.o: $(UA)amprhelp.c $(U)globals.h $(PA)amprint.h
+	$(CC) OBJNAME=$@ $*	
+$(UA)fast_cp.o	: $(UA)fast_cp.c $(U)globals.h $(U)bitmap.h $(U)new_font.h $(U)commands.h $(U)flmt.h
+$(U)bitmap.o	: $(U)bitmap.c $(U)globals.h $(U)bitmap.h
+$(U)pver.o	: $(U)pver.c $(U)version.h dummy
+	$(CC) STRINGMERGE IGNORE=105 $*
+$(PA)PrintOpt.o	: $(PA)PrintOpt.c $(UA)GetOpt.h $(U)globals.h
+$(P)prhelp.o	: $(P)prhelp.c $(P)prhelp.h $(U)parsef.h $(U)globals.h
+$(PA)muiprint.o	: $(PA)muiprint.c $(PA)muiprint.h $(PA)muiprint.i $(U)globals.h $(PGSTFILE)
+	$(CC) GST=$(PGSTFILE) IGNORE=217 $*
+
+$(PGSTFILE) : $(PA)muiprint.h $(PA)muiprint.i $(U)globals.h $(U)version.h $(UL)local.i $(UL)localstr.h
+	$(CC) MGST=$(PGSTFILE) $(PA)mkmuigst
+
+
+
+##############################################################################
+# Files used from all programs
+
+$(U)parsef.o    : $(U)parsef.c $(U)globals.h $(U)parsef.h $(U)parsef.i $(P)prhelp.h
+$(U)dvihand.o   : $(U)dvihand.c $(U)globals.h $(U)commands.h $(U)bitmap.h $(U)dvihand.h
+$(U)dospecia.o  : $(U)dospecia.c $(U)globals.h $(U)bitmap.h $(UA)special.h
+$(UA)special.o	: $(UA)special.c $(UA)special.h $(U)globals.h
+$(U)flibmt.o    : $(U)flibmt.c $(U)globals.h $(U)flib.h $(U)mymalloc.h
+$(U)flmt.o      : $(U)flmt.c $(U)globals.h $(U)flmt.h
+$(U)fontmt.o    : $(U)fontmt.c $(U)globals.h $(U)fontstr.h $(U)mymalloc.h $(U)fontmt.h
+$(U)new_font.o  : $(U)new_font.c $(U)new_font.h $(U)flmt.h $(U)globals.h
+$(U)pkload.o    : $(U)pkload.c $(U)globals.h $(U)fontstr.h $(U)mymalloc.h
+$(U)newpk.o     : $(U)newpk.c $(U)globals.h $(U)flmt.h $(U)new_font.h
+$(U)loadfont.o  : $(U)loadfont.c $(U)globals.h $(U)pkcom.h $(U)textypes.h $(U)flmt.h $(U)new_font.h
+$(U)unpack.o    : $(U)unpack.c $(U)globals.h $(U)pkcom.h $(U)textypes.h $(U)flmt.h $(U)new_font.h
+$(U)mymalloc.o  : $(U)mymalloc.c $(U)globals.h $(U)mymalloc.h
+$(UA)ambreak.o  : $(UA)ambreak.c $(U)globals.h
+$(UA)GetOpt.o	: $(UA)GetOpt.c $(UA)GetOpt.h
+$(UI)packer.o	: $(UI)packer.c $(U)globals.h
+$(UI)apack.o	: $(UI)apack.asm $(U)globals.h
+	asm -o$(UI)apack.o $(UI)apack.asm 
+$(UI)ilbmw.o	: $(UI)ilbmw.c $(U)globals.h
+$(UI)parse.o	: $(UI)parse.c $(U)globals.h
+$(UI)saveilbm.o	: $(UI)saveilbm.c $(U)globals.h
+$(UA)EVPaths.o  : $(UA)EVPaths.c $(UA)EVPaths.h $(U)globals.h
+$(UA)SNPrintf.o : $(UA)SNPrintf.a  $(U)globals.h
+	asm -o$(UA)SNPrintf.o $(UA)SNPrintf.a
+
+
+##############################################################################
+# Generating of the File '$(VERSION_H)'
+
+$(VERSION_H)	: $(U)decode $(U)version.h
+	$(U)decode $(VERSION_H)
+$(U)decode	: $(U)decode.o
+	SLink TO $(U)decode FROM lib:c.o $(U)decode.o LIB lib:sc.lib QUIET
+$(U)decode.o	: $(U)decode.c $(U)version.h $(U)crypt.h $(U)globals.h
+
+
+dummy:
+	@echo "" noline
+
+
+##############################################################################
+#### Whow do make all clean?
+
+
+clean	:
+	-@delete \#?.o \#?/\#?.o \#?/\#?/\#?.o quiet force
+	-@delete $(SGSTFILE)
+	-@delete $(S)showdvi
+	-@delete $(PGSTFILE)
+	-@delete $(P)dviprint
+	-@delete $(VERSION_H)
+	-@delete $(U)decode.o
+	-@delete $(U)decode
+

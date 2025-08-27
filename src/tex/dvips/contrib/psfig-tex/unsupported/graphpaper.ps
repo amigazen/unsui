@@ -1,0 +1,78 @@
+%!
+
+/emptystr { (      ) } def
+/graph {
+	/labels exch def % show labels ? (boolean)
+	/divs exch def	% divsion spacing
+	/height exch def
+	/width exch def
+
+	.25 setlinewidth
+	2 setlinecap
+	gsave 
+%	currentlinewidth currentdash
+%	initgraphics
+%	setdash setlinewidth
+	
+	width divs div cvi
+	/index divs def
+	divs 0 translate
+	
+	    { newpath  
+		0 0 moveto   
+		labels {
+			gsave 
+			90 rotate 20 0 moveto
+			index emptystr cvs show
+			grestore
+		} if
+		0 height lineto
+	      stroke   
+	      divs 0 translate
+	      /index index divs add def
+	
+	    } repeat 
+
+	grestore
+	gsave	
+%	currentlinewidth currentdash
+%	initgraphics
+%	setdash setlinewidth
+
+	height divs div cvi
+	/index divs def
+	0 divs translate
+	
+	    { newpath  
+		0 0 moveto   
+		labels {
+			gsave
+			20 0 moveto
+			index emptystr cvs show
+			grestore
+		} if
+		width 0 lineto
+	      stroke   
+	      0 divs translate
+	      /index index divs add def
+	
+	    } repeat 
+	
+	grestore
+
+} def
+
+save 
+
+/Helvetica findfont 10 scalefont setfont
+/inch {72 mul} def
+
+1 setlinewidth
+8.5 inch 11 inch 100 true graph 
+[3] 0 setdash
+.25 setlinewidth
+8.5 inch 11 inch 20 false graph
+
+restore
+
+showpage

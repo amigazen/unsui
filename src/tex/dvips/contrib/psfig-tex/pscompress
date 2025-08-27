@@ -1,0 +1,12 @@
+#!/bin/csh -f
+while ($1 != "") 
+	if (-e $1.bb || -e $1.Z) then
+		echo will not overwrite $1.bb or $1.Z, skipping
+		shift
+	else 
+		echo "%\!" > $1.bb
+		grep \%\%BoundingBox $1 >> $1.bb
+		compress $1
+		shift
+	endif
+end

@@ -1,0 +1,275 @@
+% \iffalse meta-comment
+%
+% Copyright 1989-1995 Johannes L. Braams and any individual authors
+% listed elsewhere in this file.  All rights reserved.
+% 
+% For further copyright information any other copyright notices in this
+% file.
+% 
+% This file is part of the Babel system release 3.5.
+% --------------------------------------------------
+%   This system is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+% 
+%   For error reports concerning UNCHANGED versions of this file no more
+%   than one year old, see bugs.txt.
+% 
+%   Please do not request updates from me directly.  Primary
+%   distribution is through the CTAN archives.
+% 
+% 
+% IMPORTANT COPYRIGHT NOTICE:
+% 
+% You are NOT ALLOWED to distribute this file alone.
+% 
+% You are allowed to distribute this file under the condition that it is
+% distributed together with all the files listed in manifest.txt.
+% 
+% If you receive only some of these files from someone, complain!
+% 
+% Permission is granted to copy this file to another file with a clearly
+% different name and to customize the declarations in that copy to serve
+% the needs of your installation, provided that you comply with
+% the conditions in the file legal.txt from the LaTeX2e distribution.
+% 
+% However, NO PERMISSION is granted to produce or to distribute a
+% modified version of this file under its original name.
+%  
+% You are NOT ALLOWED to change this file.
+% 
+% 
+% \fi
+% \CheckSum{0}
+%%%     docstring           = " This file can act as a template for
+%%%                            people who want to provide extra
+%%%                            languages to be included in the babel
+%%%                            distribution.
+%
+% \iffalse
+%    Tell the \LaTeX\ system who we are and write an entry on the
+%    transcript.
+%<*dtx>
+\ProvidesFile{<language>.dtx}
+%</dtx>
+%<code>\ProvidesFile{<language>.ldf}
+        [1995/07/04 v1.4 <Language> support from the babel system]
+%
+% Babel package for LaTeX version 2e
+% Copyright (C) 1989 -- 1995
+%           by Johannes Braams, TeXniek
+%
+% Please report errors to: J.L. Braams
+%                          JLBraams@cistron.nl
+%
+%    This file is part of the babel system, it provides the source code for
+%    the <Language> language definition file.
+%<*filedriver>
+\documentclass{ltxdoc}
+\newcommand*{\TeXhax}{\TeX hax}
+\newcommand*{\babel}{\textsf{babel}}
+\newcommand*{\langvar}{$\langle \mathit lang \rangle$}
+\newcommand*{\note}[1]{}
+\newcommand*{\Lopt}[1]{\textsf{#1}}
+\newcommand*{\file}[1]{\texttt{#1}}
+\begin{document}
+ \DocInput{<language>.dtx}
+\end{document}
+%</filedriver>
+%\fi
+% \GetFileInfo{<language>.dtx}
+%
+% \changes{v1.1}{1994/02/27}{Rearranged the file a little}
+% \changes{v1.2}{1994/06/04}{Update for \LaTeXe}
+% \changes{v1.3}{1995/05/13}{Update for \babel\ release 3.5}
+%
+%  \subsubsection{The <Language> language}
+%
+%    The file \file{\filename}\footnote{The file described in this
+%    section has version number \fileversion\ and was last revised on
+%    \filedate.}  defines all the language definition macros for the
+%    <Language> language as well as for the <Dialect> version of this
+%    language.
+%
+% \StopEventually{}
+%
+%    As this file needs to be read only once, we check whether it was
+%    read before. If it was, the command |\captions<language>| is
+%    already defined, so we can stop processing. If this command is
+%    undefined we proceed with the various definitions and first show
+%    the current version of this file.
+%
+%    \begin{macrocode}
+%<*code>
+\ifx\undefined\captions<language>
+\else
+  \selectlanguage{<language>}
+  \expandafter\endinput
+\fi
+%    \end{macrocode}
+%
+% \begin{macro}{\atcatcode}
+%    This file, \file{<language>.ldf}, may have been read while \TeX\
+%    is in the middle of processing a document, so we have to make
+%    sure the category code of \texttt{@} is `letter' while this file
+%    is being read.  We save the category code of the @-sign in
+%    |\atcatcode| and make it `letter'. Later the category code can be
+%    restored to whatever it was before.
+%    \begin{macrocode}
+\chardef\atcatcode=\catcode`\@
+\catcode`\@=11\relax
+%    \end{macrocode}
+% \end{macro}
+%
+%    Now we determine whether the the common macros from the file
+%    \file{babel.def} need to be read. We can be in one of two
+%    situations: either another language option has been read earlier
+%    on, in which case that other option has already read
+%    \file{babel.def}, or \texttt{<language>} is the first language
+%    option to be processed. In that case we need to read
+%    \file{babel.def} right here before we continue.
+%
+%    \begin{macrocode}
+\ifx\undefined\babel@core@loaded\input babel.def\relax\fi
+%    \end{macrocode}
+%
+%    Another check that has to be made, is if another language
+%    definition file has been read already. In that case its
+%    definitions have been activated. This might interfere with
+%    definitions this file tries to make. Therefore we make sure that
+%    we cancel any special definitions. This can be done by checking
+%    the existence of the macro |\originalTeX|. If it exists we simply
+%    execute it.
+%    \begin{macrocode}
+\ifx\undefined\originalTeX
+  \let\originalTeX\empty
+\fi
+\originalTeX
+%    \end{macrocode}
+%
+%    When this file is read as an option, i.e. by the |\usepackage|
+%    command, \texttt{<language>} could be an `unknown' language in
+%    which case we have to make it known.  So we check for the
+%    existence of |\l@<language>| to see whether we have to do
+%    something here.
+%
+%    \begin{macrocode}
+\ifx\undefined\l@<language>
+  \@nopatterns{<Language>}
+  \adddialect\l@<language>0\fi
+%    \end{macrocode}
+%    For the <Dialect> version of these definitions we just add a
+%    ``dialect''. Also, the macros |\captions<dialect>| and
+%    |\extras<dialect>| are |\let| to their \texttt{<language>}
+%    counterparts when these parts are defined.
+%    \begin{macrocode}
+\adddialect\l@<dialect>\l@<language>
+%    \end{macrocode}
+%    The next step consists of defining commands to switch to (and
+%    from) the <Language> language.
+%
+%  \begin{macro}{\<language>hyphenmins}
+%    This macro is used to store the correct values of the hyphenation
+%    parameters |\lefthyphenmin| and |\righthyphenmin|.
+%    \begin{macrocode}
+\def\<language>hyphenmins{23}
+%    \end{macrocode}
+%  \end{macro}
+%
+% \begin{macro}{\captions<language>}
+%    The macro |\captions<language>| defines all strings used in the
+%    four standard documentclasses provided with \LaTeX.
+%    \begin{macrocode}
+\addto\captions<language>{}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\captions<dialect>}
+%    \begin{macrocode}
+\let\captions<dialect>\captions<language>
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\date<language>}
+%    The macro |\date<language>| redefines the command |\today| to
+%    produce <Language> dates.
+%    \begin{macrocode}
+\def\date<language>{%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\date<dialect>}
+%    The macro |\date<dialect>| redefines the command |\today| to
+%    produce <Dialect> dates.
+%    \begin{macrocode}
+\def\date<dialect>{%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\extras<language>}
+% \begin{macro}{\noextras<language>}
+%    The macro |\extras<language>| will perform all the extra
+%    definitions needed for the <Language> language. The macro
+%    |\noextras<language>| is used to cancel the actions of
+%    |\extras<language>|.  For the moment these macros are empty but
+%    they are defined for compatibility with the other
+%    language definition files.
+%
+%    \begin{macrocode}
+\addto\extras<language>{}
+\addto\noextras<language>{}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\extras<dialect>}
+% \begin{macro}{\noextras<dialect>}
+%    Also for the ``<dialect>'' variant no extra definitions are
+%    needed at the moment.
+%    \begin{macrocode}
+\let\extras<dialect>\extras<language>
+\let\noextras<dialect>\noextras<language>
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+%    It is possible that a site might need to add some extra code to
+%    the babel macros. To enable this we load a local configuration
+%    file, \file{<language>.cfg} if it is found on \TeX' search path.
+%    \begin{macrocode}
+\loadlocalcfg{<language>}
+%    \end{macrocode}
+%
+%    Our last action is to make a note that the commands we have just
+%    defined, will be executed by calling the macro |\selectlanguage|
+%    at the beginning of the document.
+%    \begin{macrocode}
+\main@language{<language>}
+%    \end{macrocode}
+%    Finally, the category code of \texttt{@} is reset to its original
+%    value. The macrospace used by |\atcatcode| is freed.
+%    \begin{macrocode}
+\catcode`\@=\atcatcode \let\atcatcode\relax
+%</code>
+%    \end{macrocode}
+%
+% \Finale
+%\endinput
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%

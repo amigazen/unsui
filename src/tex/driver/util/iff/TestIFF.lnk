@@ -1,0 +1,6 @@
+FROM LIB:c.o "TestIFF.o"+"parse.o"+"packer.o"+"ilbmw.o"+"saveilbm.o"
+TO "TestIFF"
+LIB LIB:sc.lib LIB:amiga.lib
+QUIET
+NOICONS
+

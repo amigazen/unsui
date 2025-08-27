@@ -1,0 +1,633 @@
+% \iffalse meta-comment
+%
+% Copyright 1989-1995 Johannes L. Braams and any individual authors
+% listed elsewhere in this file.  All rights reserved.
+% 
+% For further copyright information any other copyright notices in this
+% file.
+% 
+% This file is part of the Babel system release 3.5.
+% --------------------------------------------------
+%   This system is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+% 
+%   For error reports concerning UNCHANGED versions of this file no more
+%   than one year old, see bugs.txt.
+% 
+%   Please do not request updates from me directly.  Primary
+%   distribution is through the CTAN archives.
+% 
+% 
+% IMPORTANT COPYRIGHT NOTICE:
+% 
+% You are NOT ALLOWED to distribute this file alone.
+% 
+% You are allowed to distribute this file under the condition that it is
+% distributed together with all the files listed in manifest.txt.
+% 
+% If you receive only some of these files from someone, complain!
+% 
+% Permission is granted to copy this file to another file with a clearly
+% different name and to customize the declarations in that copy to serve
+% the needs of your installation, provided that you comply with
+% the conditions in the file legal.txt from the LaTeX2e distribution.
+% 
+% However, NO PERMISSION is granted to produce or to distribute a
+% modified version of this file under its original name.
+%  
+% You are NOT ALLOWED to change this file.
+% 
+% 
+% \fi
+% \CheckSum{343}
+% \iffalse
+%    Tell the \LaTeX\ system who we are and write an entry on the
+%    transcript.
+%<*dtx>
+\ProvidesFile{spanish.dtx}
+%</dtx>
+%<code>\ProvidesFile{spanish.ldf}
+        [1995/07/08 v3.4c Spanish support from the babel system]
+%
+% Babel package for LaTeX version 2e
+% Copyright (C) 1989 - 1995
+%           by Johannes Braams, TeXniek
+%
+% Spanish Language Definition File
+% Copyright (C) 1991 - 1995
+%           by Julio Sanchez
+%              GMV, SA
+%              c/ Isaac Newton 11
+%              PTM - Tres Cantos
+%              E-28760 Madrid
+%              Spain
+%              tel: +34 1 807 21 85
+%              fax +34 1 807 21 99
+%              jsanchez@gmv.es
+%
+%              Johannes Braams, TeXniek
+%
+% Please report errors to: Julio Sanchez <jsanchez@gmv.es>
+%                          (or J.L. Braams <JLBraams@cistron.nl)
+%
+%    This file is part of the babel system, it provides the source
+%    code for the Spanish language definition file.  The original
+%    version of this file was written by Julio Sanchez,
+%    (jsanchez@gmv.es) The code for the catalan language has been
+%    removed and now is in an independent file.
+%<*filedriver>
+\documentclass{ltxdoc}
+\newcommand*\TeXhax{\TeX hax}
+\newcommand*\babel{\textsf{babel}}
+\newcommand*\langvar{$\langle \it lang \rangle$}
+\newcommand*\note[1]{}
+\newcommand*\Lopt[1]{\textsf{#1}}
+\newcommand*\file[1]{\texttt{#1}}
+\begin{document}
+ \DocInput{spanish.dtx}
+\end{document}
+%</filedriver>
+%\fi
+% \GetFileInfo{spanish.dtx}
+%
+% \changes{spanish-1.1}{1990/08/19}{Date format corrected.  Wrong
+%    change history deleted}
+% \changes{spanish-1.1a}{1990/08/27}{\cs{I} does not exist, modified}
+% \changes{spanish-2.0}{1991/04/23}{Modified for babel 3.0}
+% \changes{spanish-2.0a}{1991/05/23}{removed use of \cs{setlanguage}}
+% \changes{spanish-2.0b}{1991/04/23}{New check before loading
+%    \file{babel.sty}}
+% \changes{spanish-2.1}{1991/07/03}{Added catalan as a `dialect'}
+% \changes{spanish-2.1a}{1991/07/15}{Renamed \file{babel}.sty in
+%    \file{babel.com}}
+% \changes{spanish-3.0}{1991/11/25}{Major rewriting, new macros,
+%    active accents, catalan removed}
+% \changes{spanish-3.1}{1992/02/20}{Brought up-to-date with babel
+%    3.2a}
+% \changes{spanish-3.1.1}{1993/09/9}{The accents had to be made active
+%    during their own definition. Changed address for goya.}
+% \changes{spanish-3.1.2}{1993/09/13}{Added address, phone and fax for
+%    Julio S\'anchez. The definition of the active tilde was not being
+%    restored on exit.}
+% \changes{spanish-3.2}{1994/03/20}{Active character definitions
+%    changed as in germanb.}
+% \changes{spanish-3.2}{1994/03/20}{Update for \LaTeXe}
+% \changes{spanish-3.3d}{1994/06/26}{Removed the use of \cs{filedate}
+%    and moved identification after the loading of \file{babel.def}}
+% \changes{spanish-3.4b}{1995/06/14}{corrected typo (PR1652)}
+% \changes{spanish-3.4c}{1995/07/08}{made active acute optional}
+%
+%  \iffalse
+%       Missing things, ideas, etc.:
+%          - The \spechyphcodes idea in ML-TeX should be explored
+%          - Support for people with extended keyboards but no
+%            8-bit chars should be added (or not?)
+%  \fi
+%
+%  \section{The Spanish language}
+%
+% \changes{spanish-3.0}{1991/11/25}{Catalan deleted}
+%
+%    The file \file{\filename}\footnote{The file described in this
+%    section has version number \fileversion\ and was last revised on
+%    \filedate. The original author is Julio S\'anchez,
+%    (\texttt{jsanchez@gmv.es}).}  defines all the language definition
+%    macro's for the Spanish\footnote{Catalan used to be part of this
+%    file but is now on its own file.} language.
+%
+%    This file\footnote{In writing this file, many ideas and actual
+%    coding solutions have been taken from a number of sources. The
+%    language definition files \file{dutch.sty} and \file{germanb.sty}
+%    are the main contributors and are not explicitly mentioned in the
+%    sequel. J.~L.~Braams and Bernd Raichle have given helpful
+%    advice. Another source of inspiration is the experience gained in
+%    the use of FTC, a software package written by Jos\'e A. Ma\~nas.
+%    The members of the Spanish-\TeX\ list have helped clarify a
+%    number of issues. Other sources are explicitly acknowledged when
+%    used.  If you think that you contributed something and you are
+%    not mentioned, please let me (\texttt{jsanchez@gmv.es}) know. I
+%    humbly apologize for any omission.} incorporates the result of
+%    discussions held in the
+%    Spanish-\TeX\footnote{\texttt{spanish-tex@goya.eunet.es},
+%    subscription requests can be sent to the address
+%    \texttt{listserv@goya.eunet.es}. This list is devoted to
+%    discussions on support in \TeX\ for Spanish.  Comments on this
+%    language option are welcome there or directly to
+%    \texttt{jsanchez@gmv.es}.}  electronic mail list.
+%
+%    For this language the characters |'| |~| and |"| are made
+%    active. In table~\ref{tab:spanish-quote} an overview is given of
+%    their purpose.
+%    \begin{table}[htb]
+%     \centering
+%     \begin{tabular}{lp{8cm}}
+%      |'a| & an accent that allows hyphenation. Valid for all
+%             vowels uppercase and lowercase.\\
+%      |'n| & a n with a tilde. This is included to
+%             improve compatibility with FTC. Works for uppercase too.\\
+%      \verb="|= & disable ligature at this position.\\
+%      |"-| & an explicit hyphen sign, allowing hyphenation
+%             in the rest of the word.\\
+%      |""| & like \verb="-=, but producing no hyphen sign (for
+%             words that should break at some sign such as
+%             ``entrada/salida.''\\
+%      |\-| & like the old |\-|, but allowing hyphenation
+%             in the rest of the word. \\
+%      |"u| & a u with dieresis allowing hyphenation.\\
+%      |"a| & feminine ordinal as in
+%             1{\raise1ex\hbox{\underbar{\scriptsize a}}}.\\
+%      |"o| & masculine ordinal as in
+%             1{\raise1ex\hbox{\underbar{\scriptsize o}}}.\\
+%      |"<| & for French left double quotes (similar to $<<$).\\
+%      |">| & for French right double quotes (similar to $>>$).\\
+%      |~n| & a n with tilde. Works for uppercase too.
+%     \end{tabular}
+%     \caption{The extra definitions made by \file{spanish.ldf}}
+%     \label{tab:spanish-quote}
+%    \end{table}
+%    These active accent characters behave according to their original
+%    definitions if not followed by one of the characters indicated in
+%    that table.
+%
+%    This option includes support for working with extended, 8-bit
+%    fonts, if available. Old versions of this file based this support
+%    on the existance of special macros with names as in Ferguson's
+%    ML-\TeX{}. This is no longer the case. Support is now based on
+%    providing an appropriate definition for the accent macros on
+%    entry to the Spanish language. This is automatically done by
+%    \LaTeXe\ or NFSS2. If T1 encoding is chosen, and provided that
+%    adequate hyphenation patterns\footnote{One source for such
+%    patterns is the archive at \texttt{ftp.eunet.es} that can be
+%    accessed by anonymous FTP or electronic mail to
+%    \texttt{ftpmail@goya.eunet.es}. They are in the \texttt{info}
+%    directory \texttt{src/TeX/spanish}. The list of Frequently Asked
+%    Questions with Answers about \TeX{} for Spanish is kept there as
+%    well. That list is meant to be a summary of the discussions held
+%    in the Spanish-\TeX{} mail list. Warning: It is in Spanish.}
+%    exist, it is possible to get better hyphenation for Spanish than
+%    before.  The easiest way to use the new encoding with \LaTeXe{}
+%    to load the package \texttt{t1enc} with |\usepackage|. This must
+%    be done before loading \babel.
+%
+%    If the combination of keyboard and \TeX{} version that the user
+%    has is able to produce the accented characters in the T1
+%    enconding, the user could see the accented characters in the
+%    editor, greatly improving the readability of the document source.
+%    As of today, this is not a recommended method for producing
+%    documents for distribution, although it is possible to
+%    mechanically translate the document so that the receiver can make
+%    use of it. If care is taken to define the encoding needed by the
+%    document, the results are pretty portable.
+%
+%    This option file will automatically detect if the T1 encoding is
+%    being used and behave appropriately.  If any other encoding is
+%    being used, the accent macros will be redefined to allow
+%    hyphenation on the accented words.
+%
+% \StopEventually{}
+%
+% \changes{spanish-3.1}{1992/02/20}{Removed code to load
+%    \file{latexhax.com}}
+%
+%    As this file needs to be read only once, we check whether it was
+%    read before. If it was, the |\captionsspanish| is already
+%    defined, so we can stop processing. If this command is undefined
+%    we proceed with the various definitions and first show the
+%    current version of this file.
+%
+% \changes{spanish-2.1a}{1991/07/15}{Added reset of catcode of @
+%    before \cs{endinput}.}
+% \changes{spanish-3.1}{1992/02/20}{removed use of \cs{@ifundefined}}
+% \changes{spanish-3.1}{1992/02/20}{Moved code to the beginning of the
+%    file and added \cs{selectlanguage} call}
+%    \begin{macrocode}
+%<*code>
+\ifx\undefined\captionsspanish
+\else
+  \selectlanguage{spanish}
+  \expandafter\endinput
+\fi
+%    \end{macrocode}
+%
+% \begin{macro}{\atcatcode}
+%    This file, \file{spanish.ldf}, may have been read while \TeX\ is
+%    in the middle of processing a document, so we have to make sure
+%    the category code of \texttt{@} is `letter' while this file is
+%    being read.  We save the category code of the @-sign in
+%    |\atcatcode| and make it `letter'. Later the category code can be
+%    restored to whatever it was before.
+%
+% \changes{spanish-2.0c}{1991/06/06}{Made test of catcode of @ more
+%    robust}
+% \changes{spanish-2.1a}{1991/07/15}{Modified handling of catcode of @
+%    again.}
+% \changes{spanish-3.1}{1992/02/20}{Removed use of \cs{makeatletter}
+%    and hence the need to load \file{latexhax.com}}
+%    \begin{macrocode}
+\chardef\atcatcode=\catcode`\@
+\catcode`\@=11\relax
+%    \end{macrocode}
+% \end{macro}
+%
+%    Now we determine whether the common macros from the file
+%    \file{babel.def} need to be read. We can be in one of two
+%    situations: either another language option has been read earlier
+%    on, in which case that other option has already read
+%    \file{babel.def}, or \texttt{spanish} is the first language
+%    option to be processed. In that case we need to read
+%    \file{babel.def} right here before we continue.
+%
+% \changes{spanish-2.0b}{1991/04/23}{New check before loading
+%    babel.com}
+% \changes{spanish-3.1}{1992/02/20}{Added \cs{relax} after the
+%    argument of \cs{input}}
+%    \begin{macrocode}
+\ifx\undefined\babel@core@loaded\input babel.def\relax\fi
+%    \end{macrocode}
+%
+% \changes{spanish-2.0a}{1991/05/29}{Add a check for existence
+%    \cs{originalTeX}}
+%    Another check that has to be made, is if another language
+%    definition file has been read already. In that case its definitions
+%    have been activated. This might interfere with definitions this
+%    file tries to make. Therefore we make sure that we cancel any
+%    special definitions. This can be done by checking the existence
+%    of the macro |\originalTeX|. If it exists we simply execute it,
+%    otherwise it is |\let| to |\empty|.
+% \changes{spanish-2.1a}{1991/07/15}{Added \cs{let}\cs{originalTeX}%
+%    \cs{relax} to test for existence}
+% \changes{spanish-3.1}{1992/02/20}{Set \cs{originalTeX} to
+%    \cs{empty}, because it should be expandable.}
+%    \begin{macrocode}
+\ifx\undefined\originalTeX \let\originalTeX\empty \else\originalTeX\fi
+%    \end{macrocode}
+%
+%    When this file is read as an option, i.e. by the |\usepackage|
+%    command, \texttt{spanish} could be an `unknown' language in which
+%    case we have to make it known.  So we check for the existence of
+%    |\l@spanish| to see whether we have to do something here.
+%
+% \changes{spanish-2.0}{1991/04/23}{Now use \cs{adddialect} if
+%    language undefined}
+% \changes{spanish-3.1}{1992/02/20}{removed use of \cs{@ifundefined}}
+% \changes{spanish-3.1}{1992/02/20}{Added warning, if no spanish
+%    patterns were loaded}
+% \changes{spanish-3.3d}{1994/06/26}{Now use \cs{@nopatterns} to
+%    produce the warning}
+%    \begin{macrocode}
+\ifx\undefined\l@spanish
+  \@nopatterns{Spanish}
+  \adddialect\l@spanish0
+\fi
+%    \end{macrocode}
+%
+%    The next step consists of defining commands to switch to (and
+%    from) the Spanish language.
+%
+% \changes{spanish-3.0a}{1991/11/26}{Text fixed}
+% \begin{macro}{\captionsspanish}
+%    The macro |\captionsspanish| defines all strings\footnote{The
+%    accent on the uppercase `I' is intentional, following the
+%    recommendation of the \emph{Real Academia de la Lengua} in 
+%    \emph{Esbozo de una Nueva Gram\'atica de la Lengua Espa\~nola,
+%    Comisi\'on de Gram\'atica, Espasa-Calpe, 1973}.} used in the four
+%    standard documentclasses provided with \LaTeX.
+% \changes{spanish-2.0c}{1991/06/06}{Removed \cs{global} definitions}
+% \changes{spanish-3.0}{1991/11/25}{Capitals are accented, some
+%    strings changed}
+% \changes{spanish-3.1}{1992/02/20}{added \cs{seename}, and
+%    \cs{alsoname} and \cs{prefacename}}
+% \changes{spanish-3.1}{1993/07/13}{\cs{headpagename} should be
+%    \cs{pagename}}
+% \changes{spanish-3.2}{1994/03/20}{added translated strings for
+%    \cs{seename} \cs{alsoname} and \cs{prefacename}}
+% \changes{spanish-3.4c}{1995/07/03}{Added \cs{proofname} for
+%    AMS-\LaTeX}
+%    \begin{macrocode}
+\addto\captionsspanish{%
+  \def\prefacename{Prefacio}%
+  \def\refname{Referencias}%
+  \def\abstractname{Resumen}%
+  \def\bibname{Bibliograf\'{\i}a}%
+  \def\chaptername{Cap\'{\i}tulo}%
+  \def\appendixname{Ap\'endice}%
+  \def\contentsname{\'Indice General}%
+  \def\listfigurename{\'Indice de Figuras}%
+  \def\listtablename{\'Indice de Tablas}%
+  \def\indexname{\'Indice de Materias}%
+  \def\figurename{Figura}%
+  \def\tablename{Tabla}%
+  \def\partname{Parte}%
+  \def\enclname{Adjunto}%
+  \def\ccname{Copia a}%
+  \def\headtoname{A}%
+  \def\pagename{P\'agina}%
+  \def\seename{v\'ease}%
+  \def\alsoname{v\'ease tambi\'en}%
+  \def\proofname{Proof}%  <-- needs translation!
+  }%
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\datespanish}
+%    The macro |\datespanish| redefines the command |\today| to
+%    produce Spanish\footnote{Months are written lowercased. This has
+%    been cause of some controversy. This file follows
+%    \emph{Diccionario de Uso de la Lengua Espa\~nola, Mar\'{\i}a
+%    Moliner, 1990,} that is in agreement with the most common
+%    practice.}  dates.
+% \changes{spanish-2.0c}{1991/06/06}{Removed cs{global} definitions}
+% \changes{spanish-2.0d}{1991/07/01}{Capitalize months as suggested by
+%    E. Torrente (\texttt{TORRENTE@CERNVM}).}
+% \changes{spanish-3.0}{1991/11/25}{Uncapitalize months, since that
+%    seems to be the correct, modern usage}
+%    \begin{macrocode}
+\def\datespanish{%
+\def\today{\number\day~de\space\ifcase\month\or
+  enero\or febrero\or marzo\or abril\or mayo\or junio\or
+  julio\or agosto\or septiembre\or octubre\or noviembre\or diciembre\fi
+  \space de~\number\year}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\extrasspanish}
+% \changes{spanish-3.0}{1991/11/25}{Formerly empty, all code is new.}
+% \changes{spanish-3.1}{1992/02/20}{Rewrote the macro.}
+% \changes{spanish-3.2}{1994/03/20}{Major rewrite. Now works like in
+%    germanb and dutch.}
+% \changes{spanish-3.4a}{1995/03/11}{Yet another major rewrite}
+% \begin{macro}{\noextrasspanish}
+%    The macro |\extrasspanish| will perform all the extra definitions
+%    needed for the Spanish language. The macro |\noextrasspanish| is
+%    used to cancel the actions of |\extrasspanish|. For Spanish, some
+%    characters are made active or are redefined. In particular, the
+%    \texttt{"} character, the \texttt{'} character and the |~|
+%    character receive new meanings. Therefore these characters have
+%    to be treated as `special' characters.
+%
+%    \begin{macrocode}
+\addto\extrasspanish{\languageshorthands{spanish}}
+\initiate@active@char{"}
+\initiate@active@char{~}
+\addto\extrasspanish{%
+  \bbl@activate{"}%
+  \bbl@activate{~}}
+\@ifpackagewith{babel}{activeacute}{%
+  \initiate@active@char{'}
+  \addto\extrasspanish{\bbl@activate{'}}}{}
+%\addto\noextrasspanish{
+%  \bbl@deactivate{"}\bbl@deactivate{~}\bbl@deactivate{'}}
+%    \end{macrocode}
+%
+% \changes{spanish-3.4a}{1995/03/07}{All the code for handling active
+%    characters is now moved to \file{babel.def}}
+%
+%    Apart from the active characters some other macros get a new
+%    definition. Therefore we store the current one to be able to
+%    restore them later.
+%    \begin{macrocode}
+\addto\extrasspanish{%
+  \babel@save\"
+  \babel@save\~
+  \def\"{\protect\@umlaut}%
+  \def\~{\protect\@tilde}}
+\@ifpackagewith{babel}{activeacute}{%
+  \babel@save\'
+  \addto\extrasspanish{\def\'{\protect\@acute}}
+  }{}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+%  \begin{macro}{\spanishhyphenmins}
+%    Spanish hyphenation uses |\lefthyphenmin| and |\righthyphenmin|
+%    both set to~2.
+%    \begin{macrocode}
+\def\spanishhyphenmins{\tw@\tw@}
+%    \end{macrocode}
+% \end{macro}
+%
+% \changes{spanish-3.2}{1994/03/20}{Changed \cs{acute} to
+%    \cs{textacute} and \cs{tilde} to \cs{texttilde} because the old
+%    names were already used for math accents.}
+%  \begin{macro}{\dieresis}
+%  \begin{macro}{\textacute}
+%  \begin{macro}{\texttilde}
+%    The original definition of |\"| is stored as |\dieresis|, because
+%    the we do not know what is its definition, since it depends on
+%    the encoding we are using or on special macros that the user
+%    might have loaded. The expansion of the macro might use the \TeX\
+%    |\accent| primitive using some particular accent that the font
+%    provides or might check if a combined accent exists in the font.
+%    These two cases happen with respectively OT1 and T1 encodings.
+%    For this reason we save the definition of |\"| and use that in
+%    the definition of other macros. We do likewise for |\'| and
+%    |\~|. The present coding of this option file is incorrect in that
+%    it can break when the encoding changes. We do not use |\acute| or
+%    |\tilde| as the macro names because they are already defined as
+%    |\mathaccent|.
+%    \begin{macrocode}
+\let\dieresis\"
+\let\texttilde\~
+\@ifpackagewith{babel}{activeacute}{\let\textacute\'}{}
+%    \end{macrocode}
+%  \end{macro}
+%  \end{macro}
+%  \end{macro}
+%
+%  \begin{macro}{\@umlaut}
+%  \begin{macro}{\@acute}
+%  \begin{macro}{\@tilde}
+%    We check the encoding and if not using T1, we make the accents
+%    expand but enabling hyphenation beyond the accent. If this is the
+%    case, not all break positions will be found in words that contain
+%    accents, but this is a limitation in \TeX. An unsolved problem
+%    here is that the encoding can change at any time. The definitions
+%    below are made in such a way that a change between two 256-char
+%    encodings are supported, but changes between a 128-char and a
+%    256-char encoding are not properly supported. We check if T1 is
+%    in use. If not, we will give a warning and proceed redefining the
+%    accent macros so that \TeX{} at least finds the breaks that are
+%    not too close to the accent. The warning will only be printed to
+%    the log file.
+% \changes{spanish-3.0a}{1991/11/26}{Added fix for \cs{dotlessi}}
+% \changes{spanish-3.2}{1994/03/20}{All this code is new}
+%    \begin{macrocode}
+\ifx\undefined\DeclareFontShape
+  \wlog{Warning: You are using an old LaTeX}
+  \wlog{Some word breaks will not be found.}
+  \def\@umlaut#1{\allowhyphens\dieresis{#1}\allowhyphens}
+  \def\@tilde#1{\allowhyphens\texttilde{#1}\allowhyphens}
+  \@ifpackagewith{babel}{activeacute}{%
+    \def\@acute#1{\allowhyphens\textacute{#1}\allowhyphens}}{}
+\else
+  \edef\next{T1}
+  \ifx\f@encoding\next
+    \let\@umlaut\dieresis
+    \let\@tilde\texttilde
+    \@ifpackagewith{babel}{activeacute}{%
+      \let\@acute\textacute}{}
+  \else
+    \wlog{Warning: You are using encoding \f@encoding\space
+      instead of T1.}
+    \wlog{Some word breaks will not be found.}
+    \def\@umlaut#1{\allowhyphens\dieresis{#1}\allowhyphens}
+    \def\@tilde#1{\allowhyphens\texttilde{#1}\allowhyphens}
+    \@ifpackagewith{babel}{activeacute}{%
+      \def\@acute#1{\allowhyphens\textacute{#1}\allowhyphens}}{}
+  \fi
+\fi
+%    \end{macrocode}
+%  \end{macro}
+%  \end{macro}
+%  \end{macro}
+%
+%     Now we can define our shorthands: the umlauts,
+%    \begin{macrocode}
+\declare@shorthand{spanish}{"u}{\@umlaut u}
+\declare@shorthand{spanish}{"U}{\@umlaut U}
+%    \end{macrocode}
+%     french quotes,
+%    \begin{macrocode}
+\declare@shorthand{spanish}{"<}{%
+  \textormath{\guillemotleft{}}{\mbox{\guillemotleft}}}
+\declare@shorthand{spanish}{">}{%
+  \textormath{\guillemotright{}}{\mbox{\guillemotright}}}
+%    \end{macrocode}
+%     ordinals\footnote{The code for the ordinals was taken from the
+%    answer provided by Raymond Chen
+%    (\texttt{raymond@math.berkeley.edu}) to a question by Joseph Gil
+%    (\texttt{yogi@cs.ubc.ca}) in \texttt{comp.text.tex}.},
+%    \begin{macrocode}
+\declare@shorthand{spanish}{"o}{%
+  \raise1ex\hbox{\underbar{\scriptsize o}}}
+\declare@shorthand{spanish}{"a}{%
+  \raise1ex\hbox{\underbar{\scriptsize a}}}
+%    \end{macrocode}
+%     acute accents,
+% \changes{spanish-3.4c}{1995/07/03}{Changed mathmode definition of
+%    acute shorthands to expand to a single prime followed by the next
+%    character in the input}
+%    \begin{macrocode}
+\@ifpackagewith{babel}{activeacute}{%
+  \declare@shorthand{spanish}{'a}{\textormath{\@acute a}{^{\prime} a}}
+  \declare@shorthand{spanish}{'e}{\textormath{\@acute e}{^{\prime} e}}
+  \declare@shorthand{spanish}{'i}{\textormath{\@acute \i{}}{^{\prime} i}}
+  \declare@shorthand{spanish}{'o}{\textormath{\@acute o}{^{\prime} o}}
+  \declare@shorthand{spanish}{'u}{\textormath{\@acute u}{^{\prime} u}}
+  \declare@shorthand{spanish}{'A}{\textormath{\@acute A}{^{\prime} A}}
+  \declare@shorthand{spanish}{'E}{\textormath{\@acute E}{^{\prime} E}}
+  \declare@shorthand{spanish}{'I}{\textormath{\@acute I}{^{\prime} I}}
+  \declare@shorthand{spanish}{'O}{\textormath{\@acute O}{^{\prime} O}}
+  \declare@shorthand{spanish}{'U}{\textormath{\@acute U}{^{\prime} U}}
+%    \end{macrocode}
+%         the acute accent,
+% \changes{spanish-3.4c}{1995/07/08}{Added '{}' as an axtra shorthand,
+%    removed 'n as a shorthand}
+%    \begin{macrocode}
+  \declare@shorthand{spanish}{''}{%
+    \textormath{\textquotedblright}{\sp\bgroup\prim@s'}}
+%    \end{macrocode}
+%     tildes,
+%    \begin{macrocode}
+  \declare@shorthand{spanish}{'n}{\textormath{\~n}{^{\prime} n}}
+  \declare@shorthand{spanish}{'N}{\textormath{\~N}{^{\prime} N}}
+  }{}
+\declare@shorthand{spanish}{~n}{\textormath{\~n}{\@tilde n}}
+\declare@shorthand{spanish}{~N}{\textormath{\~N}{\@tilde N}}
+%    \end{macrocode}
+%     and some additional commands:
+%    \begin{macrocode}
+\declare@shorthand{spanish}{"-}{\allowhyphens\-\allowhyphens}
+\declare@shorthand{spanish}{"|}{%
+  \textormath{\penalty\@M\discretionary{-}{}{\kern.03em}%
+              \allowhyphens}{}}
+\declare@shorthand{spanish}{""}{\hskip\z@skip}
+%    \end{macrocode}
+%
+%    It is possible that a site might need to add some extra code to
+%    the babel macros. To enable this we load a local configuration
+%    file, \file{spanish.cfg} if it is found on \TeX' search path.
+% \changes{spanish-3.4c}{1995/07/02}{Added loading of configuration
+%    file}
+%    \begin{macrocode}
+\loadlocalcfg{spanish}
+%    \end{macrocode}
+%
+%    Next the \babel\ macro |\main@language| is used to activate the
+%    definitions for Spanish at the beginning of the document.
+%
+%    \begin{macrocode}
+\main@language{spanish}
+%    \end{macrocode}
+%
+%    Finally, the category code of \texttt{@} is reset to its original
+%    value. The macrospace used by |\atcatcode| is freed.
+% \changes{spanish-2.1a}{1991/07/15}{Modified handling of catcode of
+%    @-sign.}
+%    \begin{macrocode}
+\catcode`\@=\atcatcode \let\atcatcode\relax
+%</code>
+%    \end{macrocode}
+%
+% \Finale
+%
+%%
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\endinput

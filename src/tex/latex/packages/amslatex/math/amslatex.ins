@@ -1,0 +1,84 @@
+%%% ====================================================================
+%%%  @LaTeX-file{
+%%%     filename        = "amslatex.ins",
+%%%     version         = "1.2a",
+%%%     date            = "31-Jan-1995",
+%%%     time            = "17:02:55 EST",
+%%%     checksum        = "50008 84 320 3417",
+%%%     author          = "American Mathematical Society",
+%%%     address         = "American Mathematical Society,
+%%%                        Technical Support,
+%%%                        Electronic Products and Services,
+%%%                        P. O. Box 6248,
+%%%                        Providence, RI 02940,
+%%%                        USA",
+%%%     telephone       = "401-455-4080 or (in the USA and Canada)
+%%%                        800-321-4AMS (321-4267)",
+%%%     FAX             = "401-331-3842",
+%%%     email           = "tech-support@math.ams.org (Internet)",
+%%%     supported       = "yes",
+%%%     copyright       = "Copyright (C) 1995 American Mathematical Society,
+%%%                        all rights reserved.  Copying of this file is
+%%%                        authorized only if either:
+%%%                        (1) you make absolutely no changes to your copy,
+%%%                        including name; OR
+%%%                        (2) if you do make changes, you first rename it
+%%%                        to some other name.",
+%%%     keywords        = "latex, amslatex, ams-latex, installation",
+%%%     abstract        = "This is part of the AMS-\LaTeX{} distribution.
+%%%                        It is an installation file that will generate
+%%%                        loadable package and class files when run
+%%%                        through \LaTeX{}.",
+%%%     docstring       = "The checksum field above contains a CRC-16
+%%%                        checksum as the first value, followed by the
+%%%                        equivalent of the standard UNIX wc (word
+%%%                        count) utility output of lines, words, and
+%%%                        characters.  This is produced by Robert
+%%%                        Solovay's checksum utility.",
+%%%  }
+%%% ====================================================================
+\NeedsTeXFormat{LaTeX2e}% LaTeX June 94 or later required
+\def\batchfile{amslatex.ins}
+\input docstrip.tex
+\preamble
+\endpreamble
+
+\keepsilent
+
+\csname newtoks\endcsname\filesmsg
+\def\dofile#1#2#3{\generateFile{#1}{t}{\from{#2}{#3}}%
+  \filesmsg\expandafter{\the\filesmsg
+    \Msg{* \space\space#1}}}
+
+%    Math packages
+\dofile{amsmath.sty}{amsmath.dtx}{}
+\dofile{amsgen.sty}{amsgen.dtx}{}
+\dofile{amstext.sty}{amstext.dtx}{}
+\dofile{amsopn.sty}{amsopn.dtx}{}
+\dofile{amsbsy.sty}{amsbsy.dtx}{}
+
+%    More math packages
+\dofile{amsintx.sty}{amsintx.dtx}{}
+\dofile{amscd.sty}{amscd.dtx}{}
+\dofile{amsxtra.sty}{amsxtra.dtx}{}
+
+%    Document classes for printing AMS documentation files:
+\dofile{amsldoc.cls}{amsdtx.dtx}{amsldoc}
+\dofile{amsdtx.cls}{amsdtx.dtx}{amsdtx}
+
+\ifToplevel{
+\Msg{******************************************************************}
+\Msg{*}
+\Msg{* To finish the installation you need to move the following files}
+\Msg{* to a LaTeX input files area (whose exact name will vary}
+\Msg{* depending on your system):}
+\Msg{*}
+\the\filesmsg
+\Msg{*}
+\Msg{* To produce the AMS-LaTeX user's guide, run amsldoc.tex through}
+\Msg{* LaTeX.}
+\Msg{*}
+\Msg{******************************************************************}
+}
+
+\endinput

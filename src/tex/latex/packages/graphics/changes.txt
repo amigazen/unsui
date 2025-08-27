@@ -1,0 +1,522 @@
+Tue Jun 11 16:59:35 1996  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * graphics.ins: pctex32
+
+Mon Jun 10 18:55:58 1996  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * graphics.dtx: use \@gtempa not \g@tempa graphics/2090
+
+        * graphicx.dtx: Fix misplaced = in changes entry. graphics/2034
+
+Wed May 29 12:09:35 1996  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * 00readme.txt: Tidy up.
+
+        * graphicx.dtx:  Declare it version 1 (no other change).
+
+        * graphics.dtx:  Declare it version 1 (no other change).
+
+        * color.dtx: Declare it version 1 (no other change).
+
+        * drivers.dtx: Change arithmetic in dvips' \Ginclude@eps
+        (and the identical code for pctex32) to avoid overflow on very
+        large posters. (Andreas Schott)
+
+Thu Apr 11 16:14:28 1996  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * drivers.dtx: Add pctex32 driver file based on code from pti.
+        Add support for wmf in Y&Y's dviwindo.
+
+        * epsfig.dtx: allow space after [ in \epsfbox bb argument.
+        add `silent' key to \epsfig (ignored).
+
+Tue Feb 20 11:55:05 1996  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * grfguide.ps: Bad dvips configuration forcing A4 paper fixed.
+
+        * textures.def: \gread -> \gread@ typo fixed.
+
+        * graphics.dtx: \gread -> \gread@ typo fixed.
+
+        * graphics.ins: dvi2ps dvitops dvilaser dvialw 
+           added back to the .ins file, so the code gets extracted 
+
+Thu Dec  7 18:02:58 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * color.dtx: Remove \showhyphens and \underbar Now all commands
+        are colour safe already in the kernel.
+        CHANGE Add \leavevmode to \textcolor so that it works out right at
+        the start of a \parbox[t] (and other places)
+
+        * grfguide.tex: Bring up to date.
+
+Wed Dec  6 19:35:53 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * graphicx.dtx: Use \Gin@exclamation to save active ! problems.
+        Rename key to keepaspectratio.
+
+        * graphics.dtx: Add \Gin@exclamation for French graphicx mainly
+
+Mon Dec  4 17:24:38 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * drivers.dtx: New dviwin code after correspondence with
+          Hippocrates Sendoukas.
+
+        * graphics.ins: remove textures.def generation
+
+        * textures.def: New version, not generated from drivers.dtx.
+        Code supplied by Arthur Ogawa.
+
+Fri Nov 10 15:12:07 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * graphics.ins: New version for concurrent docstrip
+
+        * graphicx.dtx: Support height= and width= better for bitmap
+          formats where natural size not known to LaTeX, but known to
+          the driver. 
+
+        * graphics.dtx: Support height= and width= better for bitmap
+          formats where natural size not known to LaTeX, but known to
+          the driver.
+
+Tue Oct 31 15:54:24 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * lscape.dtx: \StopEventually{\end{landscape}} for graphics/1744
+
+Fri Sep 29 14:58:00 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * graphics.dtx: Support isoscale code in \Gscale@box@dddd
+
+        * graphicx.dtx: Support new isoscale key for \includegraphics.
+
+Thu Sep 28 18:35:10 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * graphicx.dtx: Add origin key for \includegraphics rotation.
+
+Wed Sep 27 19:27:49 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * graphicx.dtx: Modify \Gin@esetsize to support calc package
+
+        * graphics.dtx: Modify \Gscale@div to support calc package
+
+Fri Sep 22 16:08:57 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * graphicx.dtx: Fix typo in natheight and natwidth keys.
+
+        * drivers.dtx: Fix bitmap support in dvips for graphics/1879
+
+Thu Sep 21 16:47:50 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * keyval.dtx: Documentation changes for graphics/1698
+
+Mon Sep 18 09:45:08 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * drivers.dtx: (Berthold Horn) Fix up clipping code in Y&Y
+          drivers.
+
+Mon Sep 11 10:22:03 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * drivers.dtx: Fix up named colour support for dvipsone.
+
+Thu Sep  7 11:16:06 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * color.dtx: Merge dvipsone and dviwindo options.
+
+        * grfguide.tex: Document the totalheight key which got
+          omitted before.
+
+        * graphics.ins: Remove generation of dviwindo.def
+
+        * drivers.dtx: Fix bounding box spec in dvipsone 
+          (should be in sp)
+          Remove generation of dviwindo.def: dviwindo option
+          now uses dvipsone.def 
+
+        * graphicx.dtx: Arithmetic in viewport was wrong. (Michel
+          Goossens)
+
+        * graphics.dtx: Merge the two Y&Y options together making
+          dviwindo.def obsolete.
+
+Fri Aug 11 17:38:25 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * grfguide.tex (section{Colour}): Refer to X Window system
+          in the approved manner.
+
+Mon Jun 26 16:38:07 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * graphicx.dtx: Typos fixed in bb.... keys for graphics/1685
+
+Fri Jun 23 17:53:17 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * epsfig.dtx: oops. \ifGin@viewport renamed to \ifGin@bbox
+
+Mon Jun 19 12:19:32 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * drivers.dtx: Add \Gin@PS@raw and \Gin@PS@restored for
+         literal PostScript \specials. (cf \pstVerb and \pstverb)
+
+Fri Jun 16 12:10:51 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * graphics.ins: Modify docstrip options for Y&Y drivers.
+
+        * epsfig.dtx: Remove forcing of dvips option (use graphics.cfg
+        to force the default driver for your site).
+        Modify \ProvidesPackage usage
+
+        * drivers.dtx: Add \AtBeginDvi around `color2' color define
+        \special.
+        Make Y&Y drivers dvipsone and dviwindo use `color2' colour support
+        Following mail message from Berthold Horn.
+
+        * color.dtx: Use #1 not ##1 in \DeclareOption, for latex/1557
+
+Thu Apr 27 15:48:47 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * color.dtx: Move \leavevmode earlier in box commands for
+        graphics/1512
+
+Wed Apr 19 14:20:30 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * graphics.ins: Add template generation (commented out).
+
+        * drivers.dtx: Remove \Gin@tobp, not needed now.
+
+Wed Apr 12 17:32:06 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * grfguide.tex: Fix mention of obsolete syntax, as reported in
+        latex/1295
+
+Tue Apr 11 10:49:11 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * graphicx.dtx: Bounding box changes to match graphics.sty.
+        Add trim viewport and totalheight keys to \includegraphics.
+
+        * graphics.dtx: Start v0.7: \leavevmode positioning.
+        Bounding box cordinates stored as macros (so can use bp)
+        Make more catcodes safe, for binary headers of eps files.
+
+Tue Jan  3 16:42:57 1995  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * drivers.dtx: (Chris Hamlin) Spurious #2 deleted in
+           dviwindo.def: \def\c@lor@cmyk@#1#2,#2,#3,#4,#5\@@{%
+
+Thu Dec 15 11:25:19 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * graphics.dtx: (Denis Roegel) Extra group to keep bb settings 
+          local.
+          (Piet van Oostrum) include `.' in \Gin@ext.
+
+Mon Dec 12 15:29:05 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * drivers.dtx: Add ln (ln03, ln05 etc) support (untested).
+
+        * graphics.dtx: Add ln (ln03, ln05 etc) support (untested).
+
+Tue Nov 29 18:58:51 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * grfguide.tex: New \DeclareGraphicsExtensions description.
+
+        * graphicx.dtx: Modify the type and read keys to work with new
+          graphics.sty.
+
+        * drivers.dtx: Explicitly mention `.' in all file extensions, to
+          work with graphics v0.6.
+
+        * graphics.dtx: Remove Optional argument to 
+          \DeclareGraphicsExtensions
+          Remove the notion of a `separator' and now specify extensions
+          as (eg) .eps rather than eps this makes it easier to work with
+          files without extension.
+
+Tue Nov 22 17:34:14 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * color.dtx: add color@vbox, 
+          remove a load of stuff now in the kernel.
+
+Wed Nov 16 19:04:22 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * keyval.dtx: Move the <% plain> docstrip commands which were being
+          typeset by mistake (reported by Martin Schroeder)
+
+        * trig.dtx: Move the <% plain> docstrip commands which were being
+          typeset by mistake (reported by Martin Schroeder)
+
+Tue Nov  8 10:40:39 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * color.dtx: Add \color@hbox and \color@endbox
+
+Fri Nov  4 17:48:02 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * graphics.ins: add psprint.def  (accidentally omitted)
+
+Wed Nov  2 13:12:34 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * graphics.dtx: fix catcodes of ctrl-D and \endlinechar
+          when reading eps files.
+
+Thu Oct 27 17:25:18 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * pstcol.dtx: add gradbegin and gradend colours.
+
+Mon Oct 24 14:19:23 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * graphics.dtx: Modify support for ! in \resizebox
+          (Old code added to support active ! broke \width etc)
+          \DeclareGraphicsRule Check #3 (not #2) is * (Reported by
+          Arthur Ogawa).
+          Missing \expandafter in \Gin@setfile (Reported by Arthur
+          Ogawa).
+
+        * drivers.dtx: Missing \the in dvitops \special. Reported by
+          Arthur Ogawa.
+
+Mon Oct 17 17:57:43 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * drivers.dtx: removed xdvi.def: xdvi now calls dvips,monochrome
+
+Sun Oct 16 14:16:09 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * trig.dtx: Changed \@xc to \nin@ty (old name clashed with some
+          other package)
+
+Fri Oct 14 19:39:25 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * grfguide.tex: Minor improvements to my English.
+
+Fri Oct  7 18:06:36 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * drivers.dtx: Removed out of date table. Added new code for pctex
+          drivers submitted by PTI.
+
+Wed Oct  5 15:27:52 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * lscape.dtx: converted the old 209 style to dtx form
+          and base on graphics package.
+
+        * drivers.dtx: added hsb colour to drivers that support it.
+
+Tue Oct  4 15:04:22 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * color.dtx: Make \definecolor and \DefineNamedColor give an
+          Info message if the colour was previously defined.
+
+        * drivers.dtx: Add support for bounding box to pctex drivers,
+          remove support for scaling which did not work anyway.
+
+Mon Oct  3 16:17:29 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * color.dtx: Add usenames option.
+
+        * graphics.dtx: Error if no driver specified.
+
+Thu Sep 29 17:27:23 1994  David Carlisle  <carlisle@cs.man.ac.uk>
+
+        * drivers.dtx: Modifications to fit in \DefineNamedColor.
+        textures code redone based on mail from Constantin Kahn (Who
+        owns a Mac which is and advantage when writing code for
+        textures:-)
+
+        * color.dtx (section{Defining Colours}): \DefineNamedColor
+        Add this system, after conversations with Constantin Kahn
+        about the textures support.
+
+Wed Sep 21 19:15:01 1994  David Carlisle  (carlisle@cs.man.ac.uk)
+
+        * drivers.dtx (section{Generic PostScript Colour}): 
+        Modify textures code, to force trailing .0.
+
+Mon Sep 19 18:50:49 1994  David Carlisle  (carlisle@cs.man.ac.uk)
+
+        * color.dtx: small changes to \pagecolor.
+
+Thu Sep 15 17:36:38 1994  David Carlisle  (carlisle@cs.man.ac.uk)
+
+        * drivers.dtx: Add in pctex drivers from Sebastian.
+
+Wed Sep 14 18:39:58 1994  David Carlisle  (carlisle@cs.man.ac.uk)
+
+        * color.dtx: Add fix for footnote bug (should really be in
+          ltfloat/ltoutput)
+
+Tue Sep 13 15:28:47 1994  David Carlisle  (carlisle@cs.man.ac.uk)
+
+        * color.dtx (subsection{Coloured Boxes} New implementation of
+          \fcolorbox and \colorbox. Now share code.
+
+Mon Sep 12 12:36:33 1994  David Carlisle  (carlisle@cs.man.ac.uk)
+
+        * trig.dtx: Improve docstrip handling.
+
+        * keyval.dtx: Improve docstrip handling.
+
+        * color.dtx: Re-organise options, as for graphics package.
+
+        * graphics.dtx (subsection{Options}): Re-organise, so that it is
+          more efficient to specify a default option in graphics.cfg.
+
+        * graphicx.dtx: Make \includegraphics check for 2nd optional
+          arg. Use standard `graphics.sty' form if 2nd arg is there.
+
+Wed Jul 27 11:34:11 1994  David Carlisle  (carlisle@cs.man.ac.uk)
+
+        * graphics.dtx: Add missing 3rd argument to \InputIfFileExists
+
+Thu Jul 21 19:19:19 1994  David Carlisle  (carlisle@cs.man.ac.uk)
+
+        * graphics.dtx: documentation changes.
+
+Wed Jul 20 17:12:16 1994  David Carlisle  (carlisle@cs.man.ac.uk)
+
+        * pstcol.sty:  Package modifying pstrics colour
+          interface to work with LaTeX colours.
+
+        * graphics.dtx (subsection{Stretching and Scaling}): Support
+          active ! for French.
+
+        * drivers.dtx: extensive changes to cope with the new code in
+          graphics.dtx and color.dtx.
+
+        * graphics.dtx: Add default rule possibility, so eg a PS driver
+          can handle any unknown extension as eps, rather than generate
+          an error.
+
+        * color.dtx: Completely new implementation of the internal
+          colour commands. Conversion from `user syntax' to `special
+          syntax' is now in a separate (driver dependant) command,
+          distinct from the commands to define or use colours.
+
+Wed Jul 20 12:16:11 1994  Sebastian Rahtz (Sebastian.Rahtz@cl.cam.ac.uk)
+
+        * drivers.dtx: Fix textures graphics inclusion.
+
+Fri Jun 10 12:11:45 1994  David Carlisle  (carlisle@cs.man.ac.uk)
+
+        * color.dtx: minor change to error texts. (dated 1994/05/14:-)
+
+        * drivers.dtx: (From Sebastian) fix for dviwin.
+
+Mon May 30 15:05:28 1994  David Carlisle  (carlisle@cs.man.ac.uk)
+
+        * graphics.dtx: Rename egraphics to graphicx.
+
+        * testx.tex: new name to match graphicx.
+
+        * graphicx.dtx: Rename from egraphics (8+3).
+
+        * epsfig.dtx: (From Sebastian) Make epsfig default to [dvips]
+        RequirePackage{graphicx} not egraphics.
+        Remove \wlog as now done by \ProvidesPackage.
+
+Fri May 13 15:22:48 1994  David Carlisle  (carlisle@r8d)
+
+        * color.dtx: Remove all support for the test release of LaTeX2e.
+          Add optional argument to \NeedsTeXFormat to show this.
+          Define new versions of the `kernel' colour commands, 
+          \color@{begin|end|set}group and \normalcolor. Remove
+          redefinition of tabbing commands, now colour-safe in the kernel.
+
+Mon May  9 10:30:28 1994  David Carlisle  (carlisle@r8d)
+
+        * test.tex: Remove `times' package from test.tex. (Not part of
+          `base' distribution of LaTeX2e.)
+
+        * color.dtx: improve wording of error messages.
+
+        * drivers.dtx: patch to oztex support from Andrew Trevorrow. (via
+          Sebastian)
+
+Fri May  6 18:58:05 1994  David Carlisle  (carlisle@r8d)
+
+        * graphics.dtx (subsection{Options}): notdraft renamed again to
+          final.
+
+        * drivers.dtx: Replace grot@ by Grot@ throughout.
+
+        * egraphics.dtx: Removed weird and incorrect setting of 
+          \let\Gin@scalex\@empty and \let\Gin@scaley\@empty
+          that I must have added while asleep:-) Now the earlier correct
+          settings actually take effect.
+
+        * graphics.dtx: Changed the handling of `missing file' errors. 
+          If no extension is supplied, each extension in the list is tried
+          until a file is found. A File not found error is generated if
+          this search fails.
+          If an extension is supplied, only a warning is given if the file
+          does not exist. This allows the file to be created `on the fly'
+          eg by extracting the file from a tar or zip archive.
+
+Fri Apr 29 19:36:30 1994  David Carlisle  (carlisle@r8d)
+
+        * drivers.dtx: Removed rotation from drivers.dtx documentation, so
+          it can be processed at any site.
+
+Thu Apr 28 12:25:39 1994  David Carlisle  (carlisle@r8d)
+
+        * drivers.dtx: added PS rules for Mac drivers
+
+        * graphics.dtx: Improve the wording of error messages.
+
+Thu Apr 21 10:42:23 1994  David Carlisle  (carlisle@r8d)
+
+        * drivers.dtx: Added missing \ProvidesFile for xdvi and dvitops
+
+Wed Apr 20 17:32:58 1994  David Carlisle  (carlisle@r8d)
+
+        * graphics.dtx: initialise \Gin@extensions with \providecommand
+          so that definitions in the .def file are not zapped.
+
+Mon Apr 18 10:56:55 1994  David Carlisle  (carlisle@r8d)
+
+        * color.dtx: Stop \normalfont resetting the colour. (\reset@font
+          does still reset the colour. This allows \rm to work as
+          expected. 
+          Fix marginpar, so the baseline is correctly aligned.
+
+        * README Create initial change log from comments in the README
+
+
+Wed Apr 13 10:56:55 1994  David Carlisle  (carlisle@r8d)
+
+        * notdraft renamed to nodraft
+
+        * zaprotate zapscale renamed to hiderotate hidescale
+
+        * kludges for graphics and colour to work with Feb 1994 release
+          now automatically included (so colfix.sty gone)
+
+
+Wed Mar 23 10:56:55 1994  David Carlisle  (carlisle@r8d)
+
+        * rotatebox now correctly rotates about the left hand side.
+
+        * spurious spaces in \resizebox removed
+
+        * no BoundingBox error message improved
+
+        * zaprotate and zapscale options added (probably bad names)
+
+        * notdraft option added to cancel a global draft option.
+
+        * Graphics files now listed by \listfiles
+
+        * PS drivers now support \current@ps@color
+
+        * colfix.sty put back until next release of LaTeX2e.
+
+
+Wed Mar 09 10:56:55 1994  David Carlisle  (carlisle@r8d)
+
+        * \reflectbox added.
+    
+        * \rotatebox* removed
+    
+        * The order of the arguments of \includegraphics corrected
+    
+        * \includegraphics[lower-l,lower-r][upper-l,upper-r]{file}
+    
+        * \definecolor not \newcolor to define colours
+    
+
+
+

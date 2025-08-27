@@ -1,0 +1,57 @@
+
+% \iffalse
+%
+% This file is part of the PSNFSS2e package
+% -----------------------------------------
+%
+% \fi
+
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\begin{document}
+\parskip4pt
+\parindent0em
+\title{PSNFSS: test most of the `35' PostScript fonts}
+\author{Sebastian Rahtz}
+\date{June 17th 1994}
+\maketitle
+\def\Try#1#2{%
+\fontfamily{#1}\selectfont
+This is set in in #2 (#1): 
+\begin{quote}
+\textit{an italicized f\'ee;}
+\textsc{a smallcaps f\'ee;}
+\textsl{a slanted f\'ee;}
+\textbf{
+ a bold f\'ee;
+ \textit{a bold italized f\'ee;}
+ \textsc{a bold smallcaps f\'ee;}
+ \textsl{a bold slanted f\'ee;}
+}
+\end{quote}
+\par
+}
+\Try{pag}{Adobe AvantGarde}
+\Try{pbk}{Adobe Bookman}
+\Try{pcr}{Adobe Courier}
+\Try{phv}{Adobe Helvetica}
+\Try{pnc}{Adobe NewCenturySchoolbook}
+\Try{ppl}{Adobe Palatino}
+\Try{ptm}{Adobe Times Roman}
+\Try{pzc}{Adobe ZapfChancery}
+
+\fontfamily{phv}\selectfont
+In Helvetica we can try the narrow fonts.\footnote{Thanks to Frank
+  Poppe for putting this in.}
+\begin{quote}
+\fontseries{mc}
+\upshape a condensed f\'ee. 
+\slshape a condensed slanted f\'ee. 
+%\fontseries{bc}
+%\upshape a bold condensed f\'ee. 
+%\slshape a bold condensed slanted f\'ee. 
+\end{quote}
+\end{document}
+
+\end{document}

@@ -1,0 +1,81 @@
+\def\fileversion{1.0}
+\def\filedate{1995/08/16}
+\def\docdate {1995/08/16}
+%
+% \iffalse
+%<*driver>
+\documentclass{ltxdoc}
+\begin{document}
+ \title{The \textsf{adobe} package\thanks{This file
+        has version number \fileversion, last
+        revised \filedate.}}
+ \author{Sebastian Rahtz\\S.Rahtz@elsevier.co.uk}
+ \date{\filedate}
+ \maketitle
+ \DocInput{adobe.dtx}
+\end{document}
+%</driver>
+% \fi
+% \CheckSum{40}
+%
+% \section{Introduction}
+%
+% This file contains suitable package files to load
+% certain non-standard Adobe PostScript fonts. 
+% The font definition files and
+% font metrics are available in both T1 and OT1 form in the companion
+% CTAN fonts/psfonts collection.
+%
+% \StopEventually{}
+%
+% \section{The {\tt docstrip} modules}
+%
+%    \begin{macrocode}
+%<*garamond>
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{garamond}[\filedate\space\fileversion\space
+Garamond PSNFSS2e package]
+\renewcommand{\rmdefault}{pgm}
+\renewcommand{\sfdefault}{pop}
+\renewcommand{\ttdefault}{pcr}
+%</garamond>
+%<*basker>
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{basker}[\filedate\space\fileversion\space
+Baskerville PSNFSS2e package]
+\renewcommand{\rmdefault}{pnb}
+%</basker>
+%<*mtimes>
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mtimes}[\filedate\space\fileversion\space
+Monotype Times PSNFSS2e package]
+\renewcommand{\rmdefault}{mnt}
+%</mtimes>
+%<*bembo>
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bembo}[\filedate\space\fileversion\space
+Bembo PSNFSS2e package]
+\renewcommand{\rmdefault}{pbb}
+\renewcommand{\sfdefault}{pop}
+\renewcommand{\ttdefault}{pcr}
+%</bembo>
+%    \end{macrocode}
+% \Finale
+%
+\endinput
+%
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}

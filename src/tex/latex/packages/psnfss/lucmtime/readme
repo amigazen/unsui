@@ -1,0 +1,12 @@
+Lucida Math symbols mixed with fake Times Math.
+
+This is a variant on Alan Jeffrey's mathptm; it takes all the
+letters and numbers from Monotype Times Italic (and bold Italic) and builds
+up the rest of the `letters' math font with Lucida New Math Italic;
+this is for both normal and bold. The symbols and extension font are
+pure Lucida. The Lucida is scaled to .9 of the design size, which is
+a guess. Result is Times-like math, but with a full symbol set.
+
+Sebastian Rahtz
+s.rahtz@elsevier.co.uk
+March 14th 1995

@@ -1,0 +1,419 @@
+% \iffalse meta-comment
+%
+% Copyright 1989-1995 Johannes L. Braams and any individual authors
+% listed elsewhere in this file.  All rights reserved.
+% 
+% For further copyright information any other copyright notices in this
+% file.
+% 
+% This file is part of the Babel system release 3.5.
+% --------------------------------------------------
+%   This system is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+% 
+%   For error reports concerning UNCHANGED versions of this file no more
+%   than one year old, see bugs.txt.
+% 
+%   Please do not request updates from me directly.  Primary
+%   distribution is through the CTAN archives.
+% 
+% 
+% IMPORTANT COPYRIGHT NOTICE:
+% 
+% You are NOT ALLOWED to distribute this file alone.
+% 
+% You are allowed to distribute this file under the condition that it is
+% distributed together with all the files listed in manifest.txt.
+% 
+% If you receive only some of these files from someone, complain!
+% 
+% Permission is granted to copy this file to another file with a clearly
+% different name and to customize the declarations in that copy to serve
+% the needs of your installation, provided that you comply with
+% the conditions in the file legal.txt from the LaTeX2e distribution.
+% 
+% However, NO PERMISSION is granted to produce or to distribute a
+% modified version of this file under its original name.
+%  
+% You are NOT ALLOWED to change this file.
+% 
+% 
+% \fi
+% \CheckSum{205}
+% \iffalse
+%    Tell the \LaTeX\ system who we are and write an entry on the
+%    transcript.
+%<*dtx>
+\ProvidesFile{finnish.dtx}
+%</dtx>
+%<code>\ProvidesFile{finnish.ldf}
+        [1995/07/02 v1.3g Finnish support from the babel system]
+%
+% Babel package for LaTeX version 2e
+% Copyright (C) 1989 - 1995
+%           by Johannes Braams, TeXniek
+%
+% Please report errors to: J.L. Braams
+%                          JLBraams@cistron.nl
+%
+%    This file is part of the babel system, it provides the source
+%    code for the Finnish language definition file.  A contribution
+%    was made by Mikko KANERVA (KANERVA@CERNVM) and Keranen Reino
+%    (KERANEN@CERNVM).
+%<*filedriver>
+\documentclass{ltxdoc}
+\newcommand*\TeXhax{\TeX hax}
+\newcommand*\babel{\textsf{babel}}
+\newcommand*\langvar{$\langle \it lang \rangle$}
+\newcommand*\note[1]{}
+\newcommand*\Lopt[1]{\textsf{#1}}
+\newcommand*\file[1]{\texttt{#1}}
+\begin{document}
+ \DocInput{finnish.dtx}
+\end{document}
+%</filedriver>
+%\fi
+%
+% \GetFileInfo{finnish.dtx}
+%
+% \changes{finnish-1.0a}{1991/07/15}{Renamed \file{babel.sty} in
+%    \file{babel.com}}
+% \changes{finnish-1.1}{1991/02/15}{Brought up-to-date with babel 3.2a}
+% \changes{finnish-1.2}{1994/02/27}{Update for \LaTeXe}
+% \changes{finnish-1.3c}{1994/06/26}{Removed the use of \cs{filedate}
+%    and moved identification after the loading of \file{babel.def}}
+% \changes{finnish-1.3d}{1994/06/30}{Removed a few references to
+%    \file{babel.com}}
+%
+%  \section{The Finnish language}
+%
+%    The file \file{\filename}\footnote{The file described in this
+%    section has version number \fileversion\ and was last revised on
+%    \filedate.  A contribution was made by Mikko KANERVA
+%    (\texttt{KANERVA@CERNVM}) and Keranen Reino
+%    (\texttt{KERANEN@CERNVM}).}  defines all the language definition
+%    macros for the Finnish language.
+%
+%    For this language the character |"| is made active. In
+%    table~\ref{tab:finnish-quote} an overview is given of its purpose.
+%
+%    \begin{table}[htb]
+%     \centering
+%     \begin{tabular}{lp{8cm}}
+%       \verb="|= & disable ligature at this position.\\
+%        |"-| & an explicit hyphen sign, allowing hyphenation
+%               in the rest of the word.\\
+%        |"=| & an explicit hyphen sign for expressions such as
+%               ``pakastekaapit ja -arkut''.\\
+%        |""| & like \verb="-=, but producing no hyphen sign (for
+%              words that should break at some sign such as
+%              ``entrada/salida.''\\
+%        |"`| & lowered double left quotes (looks like ,,)\\
+%        |"'| & normal double right quotes\\
+%        |"<| & for French left double quotes (similar to $<<$).\\
+%        |">| & for French right double quotes (similar to $>>$).\\
+%        |\-| & like the old |\-|, but allowing hyphenation
+%               in the rest of the word.
+%     \end{tabular}
+%     \caption{The extra definitions made by \file{finnish.ldf}}
+%     \label{tab:finnish-quote}
+%    \end{table}
+%
+% \StopEventually{}
+%
+%    As this file needs to be read only once, we check whether it was
+%    read before. If it was, the command |\captionsfinnish| is already
+%    defined, so we can stop processing. If this command is undefined
+%    we proceed with the various definitions and first show the
+%    current version of this file.
+%
+% \changes{finnish-1.0a}{1991/07/15}{Added reset of catcode of @
+%    before rns were loaded.}
+%    \begin{macrocode}
+%<*code>
+\ifx\undefined\captionsfinnish
+\else
+  \selectlanguage{finnish}
+  \expandafter\endinput
+\fi
+%    \end{macrocode}
+%
+% \changes{finnish-1.0b}{1991/10/29}{Removed code to load
+%    \file{latexhax.com}}
+%
+% \begin{macro}{\atcatcode}
+%    This file, \file{finnish.ldf}, may have been read while \TeX\ is
+%    in the middle of processing a document, so we have to make sure
+%    the category code of \texttt{@} is `letter' while this file is
+%    being read.  We save the category code of the @-sign in
+%    |\atcatcode| and make it `letter'. Later the category code can be
+%    restored to whatever it was before.
+%
+% \changes{finnish-1.0a}{1991/07/15}{Modified handling of catcode of @
+%    again.}
+% \changes{finnish-1.0b}{1991/10/29}{Removed use of \cs{makeatletter}
+%    and hence the need to load \file{latexhax.com}}
+%    \begin{macrocode}
+\chardef\atcatcode=\catcode`\@
+\catcode`\@=11\relax
+%    \end{macrocode}
+% \end{macro}
+%
+%    Now we determine whether the the common macros from the file
+%    \file{babel.def} need to be read. We can be in one of two
+%    situations: either another language option has been read earlier
+%    on, in which case that other option has already read
+%    \file{babel.def}, or \texttt{finnish} is the first language
+%    option to be processed. In that case we need to read
+%    \file{babel.def} right here before we continue.
+%
+% \changes{finnish-1.1}{1992/02/15}{Added \cs{relax} after the
+%    argument of \cs{input}}
+%    \begin{macrocode}
+\ifx\undefined\babel@core@loaded\input babel.def\relax\fi
+%    \end{macrocode}
+%
+%    Another check that has to be made, is if another language
+%    definition file has been read already. In that case its
+%    definitions have been activated. This might interfere with
+%    definitions this file tries to make. Therefore we make sure that
+%    we cancel any special definitions. This can be done by checking
+%    the existence of the macro |\originalTeX|. If it exists we simply
+%    execute it, otherwise it is |\let| to |\empty|.
+% \changes{finnish-1.0a}{1991/07/15}{Added
+%    \cs{let}\cs{originalTeX}\cs{relax} to test for existence}
+% \changes{finnish-1.1}{1992/02/15}{\cs{originalTeX} should be
+%    expandable, \cs{let} it to \cs{empty}}
+%    \begin{macrocode}
+\ifx\undefined\originalTeX \let\originalTeX\empty \else\originalTeX\fi
+%    \end{macrocode}
+%
+%    When this file is read as an option, i.e. by the |\usepackage|
+%    command, \texttt{finnish} will be an `unknown' language in which
+%    case we have to make it known.  So we check for the existence of
+%    |\l@finnish| to see whether we have to do something here.
+%
+% \changes{finnish-1.0b}{1991/10/29}{Removed use of \cs{@ifundefined}}
+% \changes{finnish-1.1}{1992/02/15}{Added a warning when no hyphenation
+%    patterns were loaded.}
+% \changes{finnish-1.3c}{1994/06/26}{Now use \cs{@nopatterns} to
+%    produce the warning}
+%    \begin{macrocode}
+\ifx\undefined\l@finnish
+    \@nopatterns{Finnish}
+    \adddialect\l@finnish0\fi
+%    \end{macrocode}
+%
+%    The next step consists of defining commands to switch to the
+%    Finnish language. The reason for this is that a user might want
+%    to switch back and forth between languages.
+%
+% \begin{macro}{\captionsfinnish}
+%    The macro |\captionsfinnish| defines all strings used in the four
+%    standard documentclasses provided with \LaTeX.
+% \changes{finnish-1.1}{1992/02/15}{Added \cs{seename}, \cs{alsoname}
+%    and \cs{prefacename}}
+% \changes{finnish-1.1}{1993/07/15}{\cs{headpagename} should be
+%    \cs{pagename}}
+% \changes{finnish-1.1.2}{1993/09/16}{Added translations}
+% \changes{finnish-1.3g}{1995/07/02}{Added \cs{proofname} for
+%    AMS-\LaTeX}
+%    \begin{macrocode}
+\addto\captionsfinnish{%
+  \def\prefacename{Esipuhe}%
+  \def\refname{Viitteet}%
+  \def\abstractname{Tiivistelm\"a}
+  \def\bibname{Kirjallisuutta}%
+  \def\chaptername{Luku}%
+  \def\appendixname{Liite}%
+  \def\contentsname{Sis\"alt\"o}%   /* Could be "Sis\"allys" as well */
+  \def\listfigurename{Kuvat}%
+  \def\listtablename{Taulukot}%
+  \def\indexname{Hakemisto}%
+  \def\figurename{Kuva}%
+  \def\tablename{Taulukko}%
+  \def\partname{Osa}%
+  \def\enclname{Liitteet}%
+  \def\ccname{Jakelu}%
+  \def\headtoname{Vastaanottaja}%
+  \def\pagename{Sivu}%
+  \def\seename{katso}%
+  \def\alsoname{katso my\"os}%
+  \def\proofname{Proof}%  <-- needs translation!
+  }%
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\datefinnish}
+%    The macro |\datefinnish| redefines the command |\today| to
+%    produce Finnish dates.
+% \changes{finnish-1.3e}{1994/07/12}{Added a`.' after the number of
+%    the day}
+%    \begin{macrocode}
+\def\datefinnish{%
+\def\today{\number\day.~\ifcase\month\or
+  tammikuuta\or helmikuuta\or maaliskuuta\or huhtikuuta\or
+  toukokuuta\or kes\"akuuta\or hein\"akuuta\or elokuuta\or
+  syyskuuta\or lokakuuta\or marraskuuta\or joulukuuta\fi
+  \space\number\year}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\extrasfinnish}
+% \begin{macro}{\noextrasfinnish}
+%    Finnish has many long words (some of them compound, some not).
+%    For this reason hyphenation is very often the only solution in
+%    line breaking. For this reason the values of |\hyphenpenalty|,
+%    |\exhyphenpenalty| and |\doublehyphendemerits| should be
+%    decreased. (In one of the manuals of style Matti Rintala noticed
+%    a paragraph with ten lines, eight of which ended in a hyphen!)
+%
+%    Matti Rintala noticed that with these changes \TeX\ handles
+%    Finnish very well, although sometimes the values of |\tolerance|
+%    and |\emergencystretch| must be increased. However, I don't think
+%    changing these values in \file{finnish.ldf} is appropriate, as
+%    the looseness of the font (and the line width) affect the correct
+%    choice of these parameters.
+% \changes{finnish-1.3f}{1995/05/13}{Added the setting of more
+%    hyphenation parameters, according to PR1027}
+%    \begin{macrocode}
+\addto\extrasfinnish{%
+  \babel@savevariable\hyphenpenalty\hyphenpenalty=30%
+  \babel@savevariable\exhyphenpenalty\exhyphenpenalty=30%
+  \babel@savevariable\doublehyphendemerits\doublehyphendemerits=5000%
+  \babel@savevariable\finalhyphendemerits\finalhyphendemerits=5000%
+  }
+\addto\noextrasfinnish{}
+%    \end{macrocode}
+%
+%    Another thing |\extrasfinnish| needs to do is to make sure that
+%    |\frenchspacing| is in effect.  If this is not the case the
+%    execution of |\noextrasfinnish| will switch it of again.
+% \changes{finnish-1.3f}{1995/05/15}{Added the setting of
+%    \cs{frenchspacing}}
+%    \begin{macrocode}
+\addto\extrasfinnish{\bbl@frenchspacing}
+\addto\noextrasfinnish{\bbl@nonfrenchspacing}
+%    \end{macrocode}
+%
+%    For Finnish the \texttt{"} character is made active. This is
+%    done once, later on its definition may vary. Other languages in
+%    the same document may also use the \texttt{"} character for
+%    shorthands; we specify that the finnish group of shorthands
+%    should be used.
+% \changes{finnish-1.3g}{1995/07/02}{Added the active double quote}
+%    \begin{macrocode}
+\initiate@active@char{"}
+\addto\extrasfinnish{\languageshorthands{finnish}}
+\addto\extrasfinnish{\bbl@activate{"}}
+%\addto\noextrasfinnish{\bbl@deactivate{"}}
+%    \end{macrocode}
+%
+%
+%    The `umlaut' character should be positioned lower on \emph{all}
+%    vowels in Finnish texts.
+%    \begin{macrocode}
+\addto\extrasfinnish{\umlautlow\umlautelow}
+\addto\noextrasfinnish{\umlauthigh}
+%    \end{macrocode}
+%
+%    First we define access to the low opening double quote and
+%    guillemets for quotations,
+%    \begin{macrocode}
+\declare@shorthand{finnish}{"`}{%
+  \textormath{\quotedblbase{}}{\mbox{\quotedblbase}}}
+\declare@shorthand{finnish}{"'}{%
+  \textormath{\textquotedblright{}}{\mbox{\textquotedblright}}}
+\declare@shorthand{finnish}{"<}{%
+  \textormath{\guillemotleft{}}{\mbox{\guillemotleft}}}
+\declare@shorthand{finnish}{">}{%
+  \textormath{\guillemotright{}}{\mbox{\guillemotright}}}
+%    \end{macrocode}
+%    then we define two shorthands to be able to specify hyphenation
+%    breakpoints that behavew a little different from |\-|.
+%    \begin{macrocode}
+\declare@shorthand{finnish}{"-}{\allowhyphens-\allowhyphens}
+\declare@shorthand{finnish}{""}{\hskip\z@skip}
+\declare@shorthand{finnish}{"=}{\hbox{-}\allowhyphens}
+%    \end{macrocode}
+%    And we want to have a shorthand for disabling a ligature.
+%    \begin{macrocode}
+\declare@shorthand{finnish}{"|}{%
+  \textormath{\discretionary{-}{}{\kern.03em}}{}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+%  \begin{macro}{\-}
+%
+%    All that is left now is the redefinition of |\-|. The new version
+%    of |\-| should indicate an extra hyphenation position, while
+%    allowing other hyphenation positions to be generated
+%    automatically. The standard behaviour of \TeX\ in this respect is
+%    very unfortunate for languages such as Dutch, Finnish and German,
+%    where long compound words are quite normal and all one needs is a
+%    means to indicate an extra hyphenation position on top of the
+%    ones that \TeX\ can generate from the hyphenation patterns.
+% \changes{finnish-1.3g}{1995/07/02}{Added change of \cs{-}}
+%    \begin{macrocode}
+\addto\extrasfinnish{\babel@save\-}
+\addto\extrasfinnish{\def\-{\allowhyphens
+                          \discretionary{-}{}{}\allowhyphens}}
+%    \end{macrocode}
+%  \end{macro}
+%
+%  \begin{macro}{\finishhyphenmins}
+%    The finnish hyphenation patterns can be used with |\lefthyphenmin|
+%    set to~2 and |\righthyphenmin| set to~2.
+% \changes{finnish-1.3f}{1995/05/13}{use \cs{finnishhyphenmins} to
+%    store the correct values}
+%    \begin{macrocode}
+\def\finnishhyphenmins{\tw@\tw@}
+%    \end{macrocode}
+%  \end{macro}
+%
+%    It is possible that a site might need to add some extra code to
+%    the babel macros. To enable this we load a local configuration
+%    file, \file{finnish.cfg} if it is found on \TeX' search path.
+% \changes{finnish-1.3g}{1995/07/02}{Added loading of configuration
+%    file}
+%    \begin{macrocode}
+\loadlocalcfg{finnish}
+%    \end{macrocode}
+%
+%    Our last action is to make a note that the commands we have just
+%    defined, will be executed by calling the macro |\selectlanguage|
+%    at the beginning of the document.
+%    \begin{macrocode}
+\main@language{finnish}
+%    \end{macrocode}
+%    Finally, the category code of \texttt{@} is reset to its original
+%    value. The macrospace used by |\atcatcode| is freed.
+% \changes{finnish-1.0a}{1991/07/15}{Modified handling of catcode of
+%    @-sign.}
+%    \begin{macrocode}
+\catcode`\@=\atcatcode \let\atcatcode\relax
+%</code>
+%    \end{macrocode}
+%
+% \Finale
+%%
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\endinput
+

@@ -1,0 +1,21 @@
+Things that still need to be done (1995/07/05) :
+================================================
+
+- Process bug-reports
+
+- Reimplement the support for the use of cyrillic fonts for LaTeX2e.
+  For this reason russian.sty is not part of this release.
+
+- Add slovakian quotatian characters,
+  as suggested by Jana Chlebikova:
+  we have another quotation characters as in English. The opening
+  quotation character is similar to Polish opening quotation (see
+  Proceedings from EUROTEX'92, pages 125) and closing quotation
+  characters is similar as German cl. quat. For ilustration I send you
+  macros (from another slovak.sty) with this things. In that sty you
+  can use both (english and slovak quotations marks) depending on the
+  value \csprimeon or \csprimeoff.  I think, it is a good idea and
+  macro looks quite nice. According me something similar is neccesery
+  to do in babel-slovak.sty.
+
+- Implement the suggestions for italian.sty from Claudio Beccari 

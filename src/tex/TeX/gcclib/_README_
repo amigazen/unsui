@@ -1,0 +1,24 @@
+This directroy contains changed source files, taken from the GCC lib
+(written, maintained and collected by Jwahar Bammi).
+
+!! Refer to the file `patchlev.h' for the Patchlevel of the used lib !!
+
+
+stat.c
+	Many file functions call the internal routine `_do_stat()'.
+	If you don't need `stat()', it's unnecessary to link this
+	function, too.
+	Good sideeffect: the function `unixtime()' and other function
+	for unixtime() are not linked to the executable!
+
+unx2dos.c
+	I have reported an error to bammi in `_canon()', which can cause
+	funny things (the stack gets destroyed!!), if a file- or directory-
+        name is longer than NAME_MAX characters.
+	bammi rejected an additional overflow comparison as `Pascalism',
+ 	but I think that a too long filename shouldn't cause a crash or
+        other things! (Especially if this routine is used as interface
+	function between extended filenames and TOS.. and the last one
+	allows long filenames without crash!)
+
+-- end --

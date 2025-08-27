@@ -1,0 +1,73 @@
+% `texcork.cnf'
+%
+% Contains codepage mapping to be included in the configurationfile
+% `tex.cnf' (resp. `bigtex.cnf' for BigTeX) to map between the ATARI ST
+% character set and the EC/DC/Cork font codes.
+% The character set of the ATARI ST is similar to PC codepage 436 with
+% a lot of characters replaced by hebrew and other characters.
+%
+% ----------    ----------     ----------     ----------     ----------
+%
+% Mapping Atari ST character set --> EC-/DC-Font Encoding  (ISO Latin-1 & 2)
+%
+% E.g. ^^84 = ^^e4  means a character with ST code "84 is read as character
+% with code "E4 by TeX.
+% I.e. you can input this character either as "„" or as "^^e4" (if ^ has the
+% category code 7).
+%
+codepage
+ ^^80 = ^^c7
+ ^^81 = ^^fc
+ ^^82 = ^^e9
+ ^^83 = ^^e2
+ ^^84 = ^^e4
+ ^^85 = ^^e0
+ ^^86 = ^^e5
+ ^^87 = ^^e7
+ ^^88 = ^^ea
+ ^^89 = ^^eb
+ ^^8a = ^^e8
+ ^^8b = ^^ef
+ ^^8c = ^^ee
+ ^^8d = ^^ec
+ ^^8e = ^^c4
+ ^^8f = ^^c5
+ ^^90 = ^^c9
+ ^^91 = ^^e6
+ ^^92 = ^^c6
+ ^^93 = ^^f4
+ ^^94 = ^^f6
+ ^^95 = ^^f2
+ ^^96 = ^^fb
+ ^^97 = ^^f9
+ ^^98 = ^^b8
+ ^^99 = ^^d6
+ ^^9a = ^^dc	% ^^9b = Cent
+ ^^9c = ^^bf	% ^^9d = Yen
+ ^^9e = ^^ff	% ^^9f = f
+ ^^a0 = ^^e1
+ ^^a1 = ^^ed
+ ^^a2 = ^^f3
+ ^^a3 = ^^fa	% a4-a8
+ ^^a8 = ^^be	% a9-ac
+ ^^ad = ^^1a
+ ^^ae = ^^13
+ ^^af = ^^14
+ ^^b0 = ^^e3
+ ^^b1 = ^^f5
+ ^^b2 = ^^d8
+ ^^b3 = ^^f8
+ ^^b4 = ^^f7
+ ^^b5 = ^^d7
+ ^^b6 = ^^c1
+ ^^b7 = ^^c3
+ ^^b8 = ^^d5
+ ^^b9 = ^^04
+ ^^ba = ^^01	% bb-bf
+ ^^c0 = ^^bc
+ ^^c1 = ^^9c	% c2-dc
+ ^^dd = ^^9f	% de-f7
+ ^^f8 = ^^06	% f9-fe
+ ^^ff = ^^09
+<<
+#

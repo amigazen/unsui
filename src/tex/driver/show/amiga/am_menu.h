@@ -1,0 +1,171 @@
+/** am_menu.h **/
+
+#define NR_MENU_LINES		10
+#define NR_SMENU_O_LINES	4
+#define NR_SMENU_L_LINES	2
+#define NR_SMENU_R_LINES	3				/* variabel */
+
+
+#define MAIN_MENU		0
+#define SMENU_OUTFIT		1
+#define SMENU_LOAD		2
+#define SMENU_RESOLUTION	3
+
+#define TXTHEIGHT		txt_height
+#define TXTWIDTH		txt_width
+
+#define YOFFSET			(TXTHEIGHT+2)
+
+#define CALC_HEIGHT(lines)	(long)(7+((lines)*YOFFSET))
+
+#define MENU_CHARS		16
+#define CALC_MENU_WIDTH		(MENU_CHARS*TXTWIDTH+8)
+#define CALC_MENU_HEIGHT	CALC_HEIGHT(NR_MENU_LINES)
+#define MENU_WIDTH		menu_width
+#define MENU_HEIGHT		menu_height
+
+#define SMENU_O_CHARS		16
+#define CALC_SMENU_O_WIDTH	(SMENU_O_CHARS*TXTWIDTH+8)
+#define CALC_SMENU_O_HEIGHT	CALC_HEIGHT(NR_SMENU_O_LINES)
+#define SMENU_O_WIDTH		smenu_o_width
+#define SMENU_O_HEIGHT		smenu_o_height
+
+#define SMENU_L_CHARS		17
+#define CALC_SMENU_L_WIDTH	(SMENU_L_CHARS*TXTWIDTH+8)
+#define CALC_SMENU_L_HEIGHT	CALC_HEIGHT(NR_SMENU_L_LINES)
+#define SMENU_L_WIDTH		smenu_l_width
+#define SMENU_L_HEIGHT		smenu_l_height
+
+#define SMENU_R_CHARS		12 /*9*/
+#define CALC_SMENU_R_WIDTH	(SMENU_R_CHARS*TXTWIDTH+8)
+#define CALC_SMENU_R_HEIGHT	CALC_HEIGHT(show_state.menu_res_lines)	/* variabel */
+#define SMENU_R_WIDTH		smenu_r_width
+#define SMENU_R_HEIGHT		smenu_r_height
+
+#define SMENU_O_START_LINE	6
+#define SMENU_L_START_LINE	7
+#define SMENU_R_START_LINE	8
+
+#define SPALTE			(TXTWIDTH*9)		/* zweite Spalte im Menu */
+#define SUBMENU_SPALTE		(SPALTE)		/* Start Submenu */
+#define SUBMENU_ARROW		(MENU_WIDTH-20)		/* draw arrow */
+
+
+
+
+
+/****************************************************************************/
+
+#include "localstr.h"
+
+#define SPECIAL_HAS_SUB	1<<0
+#define SPECIAL_EMPTY 	1<<1
+#define SPECIAL_IS_SUB 	1<<2
+
+struct MenuLayout {
+  WORD  StringNr;
+  BYTE  Special;
+  BYTE  Command;
+  UWORD Flags;
+  char *RightString;
+};
+
+static struct IntuiText DefaultIText = {
+   0, 1, JAM1, 1, 1, NULL, NULL, NULL
+};
+
+static struct MenuItem DefaultMenuItem = {
+   NULL, 0, 0, 0, 0, 0, 0, NULL, NULL, 0, NULL, 0
+};
+
+static struct Image EmptyImage = {
+   0, 0, 0, 0, 1,NULL, 0, 0, NULL
+};
+
+#define DEFFLAGS	ITEMENABLED|ITEMTEXT|HIGHCOMP
+#define DEFSUBFLAGS	ITEMENABLED|ITEMTEXT|HIGHBOX
+#define DEFEMPTY	HIGHNONE
+
+
+
+static struct Menu *DosMenu;
+
+
+static struct MenuLayout ProjectMenu[] = {
+  { MSG_PROJECT_ABOUT, 0, '\0', DEFFLAGS, "HELP" },
+  { -1, SPECIAL_EMPTY, '\0', DEFEMPTY, NULL },
+  { MSG_PROJECT_OPENAGAIN, 0, '\0', DEFFLAGS, "a" },
+  { MSG_PROJECT_OPENNEW, 0, 'O', DEFFLAGS|COMMSEQ, NULL },
+  { MSG_PROJECT_AUTOLOADAGAIN, 0, 'A', DEFFLAGS|COMMSEQ|MENUTOGGLE|CHECKIT, NULL },
+  { MSG_PROJECT_SAVEIFF, 0, '\0', DEFFLAGS, NULL },
+  { -1, SPECIAL_EMPTY, '\0', DEFEMPTY, NULL },
+  { MSG_PROJECT_SHELLCOMANDS, SPECIAL_HAS_SUB, '\0', DEFSUBFLAGS, NULL },
+  { -1, SPECIAL_EMPTY, '\0', DEFEMPTY, NULL },
+  { MSG_PROJECT_PRINTPAGE, 0, '\0', DEFFLAGS, "p" },
+  { -1, SPECIAL_EMPTY, '\0', DEFEMPTY, NULL },
+  { MSG_PROJECT_WBTOFRONT, 0, '\0', DEFFLAGS, "d" },
+  { MSG_PROJECT_HIDE, 0, '\0', DEFFLAGS, "ESC" },
+  { MSG_PROJECT_SAVECONFIG, 0, 'W', DEFFLAGS|COMMSEQ, NULL },
+  { -1, SPECIAL_EMPTY, '\0', DEFEMPTY, NULL },
+  { MSG_PROJECT_QUIT, 0, 'Q', DEFFLAGS|COMMSEQ, NULL }
+ };
+
+static struct MenuLayout ProjectShellMenu[] = {
+  { MSG_PROJECT_SHELLCOMANDS_NEWCLI, SPECIAL_IS_SUB, '\0', DEFFLAGS, "!" },
+  { MSG_PROJECT_SHELLCOMANDS_EXECUTECOMMAND, SPECIAL_IS_SUB, 'E', DEFFLAGS|COMMSEQ, NULL },
+  { MSG_PROJECT_SHELLCOMANDS_TEXSCRIPT, SPECIAL_IS_SUB, '\0', DEFFLAGS, "r|R" },
+  { MSG_PROJECT_SHELLCOMANDS_AREXXTEXSHELL, SPECIAL_IS_SUB, '\0', DEFFLAGS, NULL },
+  { MSG_PROJECT_SHELLCOMANDS_SETENVTEXFORMAT, SPECIAL_IS_SUB, '\0', DEFFLAGS, NULL },
+  { MSG_PROJECT_SHELLCOMANDS_SPECIALHOST, SPECIAL_IS_SUB, 'H', DEFFLAGS|COMMSEQ, NULL },
+ };
+
+static struct MenuLayout OutfitMenu[] = {
+  { MSG_OUTFIT_COPY, 0, 'C', DEFFLAGS|COMMSEQ, NULL },
+  { -1, SPECIAL_EMPTY, '\0', DEFEMPTY, NULL },
+  { MSG_OUTFIT_LACE, 0, '\0', DEFFLAGS|MENUTOGGLE|CHECKIT, "i" },
+  { MSG_OUTFIT_SCROLLBAR, 0, '\0', DEFFLAGS|MENUTOGGLE|CHECKIT, "o" },
+  { MSG_OUTFIT_FULLPAGE, 0, '\0', DEFFLAGS|MENUTOGGLE|CHECKIT, "f" },
+  { MSG_OUTFIT_MEASUREWINDOW, 0, '\0', DEFFLAGS|MENUTOGGLE|CHECKIT, "m" },
+  { MSG_OUTFIT_BORDERLINE, 0, '\0', DEFFLAGS|MENUTOGGLE|CHECKIT, "l" },
+  { -1, SPECIAL_EMPTY, '\0', DEFEMPTY, NULL },
+  { MSG_OUTFIT_SETMARGIN, 0, '\0', DEFFLAGS, "M" },
+  { MSG_OUTFIT_4COLORSCREEN, 0, '\0', DEFFLAGS|MENUTOGGLE|CHECKIT, NULL },
+  { -1, SPECIAL_EMPTY, '\0', DEFEMPTY, NULL },
+  { MSG_OUTFIT_UNIT, SPECIAL_HAS_SUB, '\0', DEFSUBFLAGS, NULL },
+  { MSG_OUTFIT_COLOR, 0, '\0', DEFFLAGS, NULL },
+  { MSG_OUTFIT_CLONEWBCOLOR, 0, '\0', DEFFLAGS, NULL },
+  { MSG_OUTFIT_SCREENPREFS, 0, 'X', DEFFLAGS|COMMSEQ, NULL },
+ };
+
+static struct MenuLayout OutfitUnitMenu[] = {
+  { MSG_OUTFIT_UNIT_INCH, SPECIAL_IS_SUB, '\0', DEFFLAGS|MENUTOGGLE|CHECKIT, NULL },
+  { MSG_OUTFIT_UNIT_CM, SPECIAL_IS_SUB, '\0', DEFFLAGS|MENUTOGGLE|CHECKIT, NULL },
+  { MSG_OUTFIT_UNIT_PT, SPECIAL_IS_SUB, '\0', DEFFLAGS|MENUTOGGLE|CHECKIT, NULL },
+ };
+
+static struct MenuLayout MoveMenu[] = {
+  { MSG_MOVE_SEARCH, 0, '\0', DEFFLAGS, "s" },
+  { -1, SPECIAL_EMPTY, '\0', DEFEMPTY, NULL },
+  { MSG_MOVE_PREVPAGE, 0, '\0', DEFFLAGS, "-|BACKSP" },
+  { MSG_MOVE_NEXTPAGE, 0, '\0', DEFFLAGS, "+|RET|ENTER" },
+  { MSG_MOVE_FIRSTPAGE, 0, '\0', DEFFLAGS, "SHIFT -|BACKSP" },
+  { MSG_MOVE_LASTPAGE, 0, '\0', DEFFLAGS, "SHIFT +|RET|ENTER" },
+  { -1, SPECIAL_EMPTY, '\0', DEFEMPTY, NULL },
+  { MSG_MOVE_PAGECOUNTER, 0, '\0', ITEMTEXT|HIGHNONE, NULL },
+  { MSG_MOVE_JUMPTOPAGENUMBER, 0, '\0', DEFFLAGS, "g|." },
+  { MSG_MOVE_CLEARPAGECOUNTER, 0, '\0', DEFFLAGS, "c" },
+  { -1, SPECIAL_EMPTY, '\0', DEFEMPTY, NULL },
+  { MSG_MOVE_USEPHY, 0, '\0', ITEMTEXT|HIGHNONE, NULL },
+  { MSG_MOVE_USEORDERDVI, 0, '\0', DEFFLAGS|MENUTOGGLE|CHECKIT, "y" },
+  { MSG_MOVE_USEPHYPREVPAGE, 0, '\0', DEFFLAGS, "CTRL -|BACKSP" },
+  { MSG_MOVE_USEPHYNEXTPAGE, 0, '\0', DEFFLAGS, "CTRL +|RET|ENTER" },
+  { MSG_MOVE_USEPHYFIRSTPAGE, 0, '\0', DEFFLAGS, "CTRL SHIFT -|BACKSP" },
+  { MSG_MOVE_USEPHYLASTPAGE, 0, '\0', DEFFLAGS, "CTRL SHIFT +|RET|ENTER" },
+ };
+
+
+#define MEN_1_ENTRIES	(sizeof(ProjectMenu) / sizeof(struct MenuLayout))
+#define MEN_2_ENTRIES	(sizeof(OutfitMenu) / sizeof(struct MenuLayout))
+#define MEN_3_ENTRIES	(sizeof(MoveMenu) / sizeof(struct MenuLayout))
+#define MEN_4_ENTRIES	11	/* maximum; not sure */
+

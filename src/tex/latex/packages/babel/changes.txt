@@ -1,0 +1,627 @@
+
+This file lists changes to the Babel files in reverse chronological order.
+==========================================================================
+
+
+Tue Aug 30 22:33:59 1994 Johannes Braams  (J.L.Braams@research.ptt.nl)
+
+	* babel.dtx (subsection{Cross referencing macros}): Moved the last
+	%</def> inside the macrocode environment. Noted by Frank Poppe
+	(poppe@swov.nl) 
+
+Fri Aug 26 15:49:11 1994 Johannes Braams  (J.L.Braams@research.ptt.nl)
+
+	* babel.dst: fixed typo (lhyphen -> lthyphen)
+
+Tue Jul 12 23:33:36 1994 Johannes Braams  (J.L.Braams@research.ptt.nl)
+
+	* finnish.dtx: Added a `.' after the day in the output of \today
+	for finnish 
+
+Sun Jul 3 22:55:42 1994 Johannes Braams  (J.L.Braams@research.ptt.nl)
+
+	* babel.dtx (section{Identification}): The line with \ProvidesFile
+	was missing from both babel.drv and user.drv.
+	Added code to \process@language to detect whether the patterns
+	file also contains assignments to \left- and \righthyphenmin. When
+	it doesn't supply a default setting of 2 and 3; store the setting
+	in \extras<language>. Added \@nopatterns, to be used in the
+	language specific files. 
+	Also use \PackageError and \PackageWarning when they are
+	available. 
+
+	* language.dat : Commented out dutch, used the default name for
+	the american english hyphenation patterns, hyphen.tex. Added a
+	(commented out) line showing ukhyphen.tex.
+
+Thu Jun 30 14:07:03 1994 Johannes Braams  (J.L.Braams@research.ptt.nl)
+
+	* language.skeleton:  Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* slovak.dtx: Removed the references to babel.com
+
+	* finnish.dtx: Removed the references to babel.com
+
+Sun Jun 26 00:27:49 1994 Johannes Braams  (J.L.Braams@research.ptt.nl)
+
+	* bahasa.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* turkish.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* slovene.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* romanian.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* polish.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* czech.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* magyar.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* finnish.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* swedish.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* norsk.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* danish.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* galician.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+	Renamed \acute and \tilde to \texacute and \texttilde because of a
+	clash with \mathaccent's
+
+	* catalan.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+	Renamed \acute and \tilde to \texacute and \texttilde because of a
+	clash with \mathaccent's
+
+	* spanish.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* portuges.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* italian.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* francais.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* germanb.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* english.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* dutch.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+Sat Jun 25 23:38:50 1994 Johannes Braams  (J.L.Braams@research.ptt.nl)
+
+	* esperant.dtx: Removed the use of \filedate, moved the
+	identification after the loading of babel.def and use \@nopatterns
+	to produce the warning
+
+	* babel.dtx (subsection{Multiple languages}): Added \@nopatterns,
+	to be used in the language specific files. Also use \PackageError
+	and \PackageWarning when they are available.
+
+Fri Jun 24 23:08:44 1994 Johannes Braams  (J.L.Braams@research.ptt.nl)
+
+	* babel.dtx (section{Identification}): redid this bit and made
+	sure the files are processable with plain TeX. Supply a dummy
+	definition of \ProvidesFile.
+	(subsection{Multiple languages}): Added code to
+	\process@language to detect whether the patterns file also
+	contains assignments to left- and righthyphenmin. When it doesn't
+	supply a default setting of 2 and 3; store the setting in
+	\extras<language>.
+	
+
+Thu Jun 9 00:15:14 1994 Johannes Braams  (J.L.Braams@research.ptt.nl)
+
+	* esperant.dtx: Removed a superfluous | from the code that
+	activates the ^
+
+Wed Jun 8 13:13:43 1994 Johannes Braams  (J.L.Braams@research.ptt.nl)
+
+	* Makefile: added install.txt
+
+Sun Jun 5 02:29:40 1994 Johannes Braams  (J.L.Braams@research.ptt.nl)
+
+	* babel.dtx: Repaired mal-formed changes entries (`babel~' was
+	missing.
+
+	* italian.dtx: Repaired mal-formed changes entry (`italian-' was
+	missing.
+
+	* danish.dtx: Repaired mal-formed changes entry (`danish-' was
+	missing.
+
+	* swedish.dtx: Repaired mal-formed changes entry (`swedish-' was
+	missing).
+
+	* babel.dst: Added a few missing }
+
+	* install.txt: Added a remark about producing the full source
+	listing. 
+
+	* babel.dst: Added the production if bbidx.ist and bbglo.ist
+
+	* Makefile: Added bbidxglo
+
+	* slovene.dtx (section{The Slovanian language}): Removed < and >
+	from a \changes entry to prevent a problem when generating the
+	glossary file.
+
+	* babel.dtx (subsection{Identification}): Wrong docstrip guard
+	nesting resulted in a superfluous line in lthyphen.cfg
+	Updated Checksum
+
+Sat Jun 4 00:00:44 1994 Johannes Braams  (J.L.Braams@research.ptt.nl)
+
+	* language.skeleton: Updated for LaTeX2e; included the small
+	driver. 
+
+	* czech.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+
+	* croatian.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+
+	* slovene.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+	(section{The Slovanian language}): Added extra tranlations from
+	Josef Leydold, <leydold@statrix2.wu-wien.ac.at
+
+	* romanian.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+
+	* turkish.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+	(section{The Turkish language}): Added braces behind the use of \i
+	to prevent a lot of undefined macros.
+
+	* norsk.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+
+	* swedish.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+
+	* babel.ins: lhyphen.cfg has now to be called lthyphen.cfg.
+
+	* babel.dtx (subsection{Macros common to a number of languages}):
+	An end of line ended up in the middle of a || expression.
+
+	* slovak.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+	Added setting of \lefthyphenmin and \righthyphenmin.
+
+	* finnish.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+
+	* magyar.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+
+	* polish.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+	Changed the table describing the conventions to really describe
+	what is iomplemented.
+	Tried to initialize polish letters by calling \texptl; this should
+	have been \textpl.
+
+	* danish.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+	(section{The Danish language}): Peter Busk Larsen proposed a few
+	changes to the translations.
+
+Thu May 19 00:14:49 1994 Johannes Braams  (J.L.Braams@research.ptt.nl)
+
+	* galician.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+
+	* catalan.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+
+	* spanish.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+
+	* portuges.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+
+	* italian.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode. Added some of the
+	suggestions from Claudio Beccari. The others wil have to wait.
+
+	* francais.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+
+	* germanb.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+
+Wed May 18 23:31:15 1994 Johannes Braams  (J.L.Braams@research.ptt.nl)
+
+	* dutch.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+
+	* esperant.dtx: Added a small driver to the top of the file.
+	Removed the use of \wlog from native mode.
+
+	* bahasa.dtx: Added a small driver to the top of the file.
+	Added missing \begin{macrocode}.
+	Removed the use of \wlog from native mode.
+
+	* babel.dtx (driver): use the ltxdoc class
+	Added a small driver to the top of the file as an addition to the
+	large drivers.
+	Removed the use of \wlog from native mode.
+
+Mon Jul 10 00:36:11 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* catalan.dtx (section{The Catalan language}): Added translation
+	of the word `Proof'
+
+Sun Jul  9 00:34:50 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* spanish.dtx, galician.dtx: made the use of the active acute
+	accent optional.
+
+Sat Jul  8 00:03:41 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* catalan.dtx: Removed support for ~n; add `` and '' as
+        shorthands.
+
+Fri Jul  7 00:14:19 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* francais.dtx, breton.dtx: Postpone the declaration of the
+        TextCompositeCommands untill \AtBeginDocument
+
+Tue Jul  4 00:19:32 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* babel.dtx (section{The Package File}): Added the options
+	activegrave and activeacute.
+
+	* catalan.dtx: Made the activation of the grave and acute accents
+	optional 
+
+        * esperant.dtx, dutch.dtx, english.dtx, germanb.dtx, breton.dtx,
+	irish.dtx, scottish.dtx, italian.dtx, portuges.dtx, swedish.dtx,
+	magyar.dtx, croatian.dtx, czech.dtx, estonian.dtx, polish.dtx,
+	romanian.dtx, slovak.dtx, slovene.dtx, turkish.dtx, lsorbian.dtx,
+	usorbian.dtx, bahas.dtx: Added \proofname to captions and added
+	loading local configuration file.
+
+	* babel.dtx (subsection{Cross referencing macros}): Use a
+	different control sequence for making \ref and \pageref robust to
+	prevent a clash with the showkeys package.
+
+Mon Jul  3 00:53:24 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* galician.dtx: Changed behaviour of 'a etc. to expand to
+	"^{\prime} a" in mathmode.
+
+	* spanish.dtx: Changed behaviour of 'a etc. to expand to
+	"^{\prime} a" in mathmode; added \proofname to captions; added
+	loading local configuration file.
+
+	* catalan.dtx: Added Goncal's changes; changed behaviour of 'a
+	etc. to expand to "^{\prime} a" in mathmode; added \proofname to
+	captions; added \llgem and \Lgem; added loading local
+	configuration file.
+
+Sun Jul  2 22:40:55 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* galician.dtx: Added comments from Manual Carriba, added
+	\proofname to captions; added seting of \frenchspacing and added
+	loading local configuration file.
+
+	* francais.dtx: Also allow the hyphenation patterns to be loaded
+	for `french', added \proofname to captions; and added loading
+	local configuration file.
+
+	* finnish.dtx: Now also has active double quote; added by Niilo
+        Siljamo <siljamo@cc.helsinki.fi>, added \proofname to captions;
+	and added loading local configuration file.
+
+	* danish.dtx : Added \proofname to captions; added seting of
+	\frenchspacing and added loading local configuration file.
+
+	* babel.dtx (section{The Package File}): Load language definition
+	files *after* manipulating with the identifaction of the
+	hyphenation patterns; load french.ldf (from Bernard Gaulle's
+	french package) if it exists.
+
+Mon Jun 19 21:53:13 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* babel.dtx (subsection{Multiple languages}): Added missing brace
+	in definition of \@activated for plain TeX, found by
+	te@informatik.uni-hannover.de
+
+Fri Jun 16 22:42:05 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* estonian.dtx: corrected typos
+
+Wed Jun 14 21:19:55 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* babel.dtx : Changed the order of typesetting the documentation
+	for the various languages (PR1652)
+
+	* scottish, irish.dtx, esperant.dtx, spanish.dtx, babel.dtx,
+	glyphs.dtx: corrected typos (PR1652) 
+
+	* language.dat: finally corrected typo langauge (PR1656)
+
+	* babel.dst: corrected typos (ldfle -> style, PR1654)
+
+	* install.txt: corrected typo (PR1653)
+
+Thu Jun  8 00:18:21 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* danish.dtx: Added active double quote character as suggested by
+	Peter Busk Laursen.
+
+Tue Jun  6 23:52:28 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* estonian.dtx: New language definition file, provided by Enn
+	Saar, updated for Babel release 3.5
+
+	* scottish.dtx: New language definition file
+
+Sun Jun  4 15:31:21 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* polish.dtx: Update for babel release 3.5
+
+	* slovene.dtx : Introduced the active " for this language; used
+	for accessing hacek characters and other common usage.
+
+	* portuges.dtx: Added brasilian captions, the usage of
+	"-shorthands and macros for ordinals.  
+
+	* dutch.dtx : added "" shorthand
+
+Sat Jun  3 23:47:05 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* francais.dtx : Added system level shorthands for the active
+	characters to prevent them from gobbling up a following space
+
+Fri Jun  2 00:52:10 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* swedish.dtx: Use \finnishhyphenmins to store the correct values
+	of \lefthyphenmin and \righthyphenmin as suggested in PR1606.
+
+Mon May 29 00:13:25 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* swedish.dtx: Updated for release 3.5
+
+Sun May 28 23:06:08 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* swedish.dtx: Updated for release 3.5
+
+	* usorbian.dtx: Updated for release 3.5
+
+	* italian.dtx: Updated for release 3.5
+
+Thu May 25 22:21:06 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* babel.dtx (section{The Package File}): Added the option
+	brazilian as an alternative for brazil; added the copying of
+	\<lang>hyphenmins when alternatives are provided.
+
+	* romanian.dtx: Updated for release 3.5
+
+Mon May 15 22:47:29 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* turkish.dtx: Updated for release 3.5
+
+	* finnish.dtx: Added setting of \frenchspacing for finnish text
+
+Sat May 13 22:35:49 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* finnish.dtx: Use \finnishhyphenmins to store the correct values
+	of \lefthyphenmin and \righthyphenmin as suggested in PR1606;
+	also set a number of hyphenation parameters, as suggested in
+	PR1027.
+
+	* germanb.dtx: Use \germanhyphenmins to store the correct values
+	of \lefthyphenmin and \righthyphenmin.
+
+	* dutch.dtx: Use \dutchhyphenmins to store the correct values of
+	\lefthyphenmin and \righthyphenmin.
+
+	* babel.dtx (subsection{Multiple languages}): Changed
+	\selectlanguage to first store the name of the current language in
+	a control sequence and then passing the contents of the control
+	sequence to \selectlanguage_ instead of passing the entire
+	construct which strips the optional escape character.
+	Seperated the setting of \lefthyphenmin and \righthyphenmin, using
+	the new macro \set@hyphenmins. The values shoud be stored in
+	\<language>hyphenmins. 
+	No longer store the values of \lefthyphenmin and \righthyphenmin
+	which were set in the pattern file through code in
+	\extras<language>, but store them in \<language>hyphenmins.
+
+Fri May  5 00:09:44 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* finnish.dtx: Updated for release 3.5
+	* bahasa.dtx: Updated for release 3.5
+
+Wed May  3 15:57:16 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* tb1401.tex: Changed name from babel-new.tex and updated the
+	coding to make it processable with LaTeX2e
+
+	* tb1202.tex: Changed name from tb-article.tex and updated the
+	coding to make it processable with LaTeX2e
+
+Fri Apr 28 02:38:11 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* babel.dtx (subsection{Multiple languages}): Added the
+	possibility to add a the name of a file with hyphenation
+	exceptions to the configuration file language.dat. Now also
+	support `synonyms' for languages. Both on request from Bernard
+	Gaulle. 
+
+Tue Mar 14 16:25:24 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* babel.dtx (section{The Package File}): Changed the extension of
+	the languages definition files to .ldf to clearly distinguish them
+	for the files in the previous release.
+
+	* magyar.dtx: Updated for release 3.5
+	* galician.dtx: Updated for release 3.5, using the new active
+	character handling mechanism.
+	* catalan.dtx: Updated for release 3.5, using the new active
+	character handling mechanism.
+	* spanish.dtx: Updated for release 3.5, using the new active
+	character handling mechanism.
+	* portuges.dtx: Updated for release 3.5
+	* lsorbian.dtx: new file in release 3.5
+	* languages.skeleton: Updated for release 3.5
+
+Fri Mar 10 00:17:10 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* babel.dtx (subsection{Support for active characters}): Added a
+	check for the ' in \initiate@active@char
+	Replaced 16 system level shorthands to deal with hexadecimal
+	numbers by one.
+	Added a system shorthand for the '; when it is active its usage in
+	mathmode needs special care.
+
+Tue Mar  7 00:26:22 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* babel.dtx (subsection{Cross referencing macros}): Made \ref and
+	\pageref robust to prevent the problem reported in PR 1353.
+
+Sat Mar  4 23:54:15 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* babel.dtx (subsection{Multiple languages}): Changed the name of
+	\p@selectlanguage to \csname selectlanguage \endcsname;
+	Rewrote the entire handling of active chars.
+
+Fri Feb 17 00:25:11 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* babel.dtx (subsection{Multiple languages}): Added \main@language
+	to be able to postpone the execution of \selectlanguage. It now
+	also happens only once, not for every language loaded.
+
+Thu Feb 16 01:15:13 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* babel.dtx (subsubsection{Support for active `hat'}): this
+	section added.
+
+Wed Feb 15 10:54:33 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* germanb.dtx: Removed a lot of code that is now present in
+	babel.def (things like \flqq, the double quote mechanism, etc.);
+	Use \Declaredq now.
+	Brought up to date with german.sty version 2.5b
+
+	* babel.dtx (subsection{Multiple languages}): Added the command
+	\@activated to be used for logging when characters are made
+	active. Introduced the \if@safe@actives switch which should be
+	checked on the highest level expansion of an active
+	character. This first expansion is defined by \UseActive.
+	(subsection{Cross referencing macros}): Removed the meaning trick
+	and introduced the use of the \if@safe@actives switch. Not all
+	cross referencing macros need to be aware of this switch.
+
+	* dutch.dtx: Moved the definition of the opening quote character
+	and \ij and \IJ to glyphs.dtx
+
+	* glyphs.dtx (section{Making glyphs available}): New file to
+	collect all definitions of missing glyphs for all languages. The
+	code will be part of babel.def
+
+Sun Feb 12 00:35:11 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* babel.dtx (subsection{Support for active characters}): Added
+	\Activate and \Deactivate instead of \Activatedq and \Deactivatedq
+	as this form is more generic.
+
+Sat Feb 11 14:58:09 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* english.dtx: Moved identification code to the top.
+
+Thu Feb  9 00:52:23 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* esperant.dtx: Moved identification code to the top.
+
+Sat Feb  4 00:51:21 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* dutch.dtx: Updated this language definition file to make use of
+	the new support macros. Also implemented support for both OT1 and
+	T1 encoding. Changed the kerning in the faked ij-characters to
+	match the dc-versions more closely.
+
+	* babel.dtx (subsection{Support for active double quote}): Added
+	this section with generic macros to support making the double
+	quote character active. A language definition file now only needs
+	call \Activatedq and use \Declaredq{}{}{} to define its actions.
+
+Wed Feb  1 01:03:39 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* english.dtx (section{The English language}): Only define
+	american as a dialect when no patterns have been loaded for it.
+	(PR #735)
+
+Tue Jan 31 00:04:38 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* polish.dtx (section{The Polish language}): The definition of "C
+	incorrectly used \'c instead of \'C. (PR #1401)
+
+	* turkish.dtx (section{The Turkish language}): removed an extra
+	closing brace and added a missing \def (PR #1397)
+	\mont should be \month (PR #1398)
+
+Wed Jan 25 00:48:32 1995  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* babel.dtx (section{Identification}): lthyphen.cfg has changed
+	its name; now called hyphen.cfg.
+	(section{The Package File}): Added a warning about using T1
+	fontencoding giving unexpected results.
+
+Wed Nov  9 00:21:03 1994  Johannes Braams  <J.L.Braams@research.ptt.nl>
+
+	* galician.dtx (section{The Catalan language}): Added a few
+	missing translations and corrected marzal to marzo in the date.
+
+	* catalan.dtx (section{The Catalan language}): Added a few
+	missing translations.
+
+	* portuges.dtx (section{The Portuguese language}): Added a few
+	missing translations.
+

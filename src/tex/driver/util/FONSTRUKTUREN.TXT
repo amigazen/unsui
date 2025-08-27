@@ -1,0 +1,225 @@
+
+Neue Fontstrukturen:
+====================
+
+
+Mehr Gliederung: (Versuch von objektorientierter Programierung :)
+
+
+
+ - Oberste Struktur: TeXFont mit
+			- TeXnummer
+			- Vergrößerung (Magnify)
+			- Name
+			- Flags (?)
+			- ...
+			- Pointer auf nächste Struktur (UseFont)
+
+   In dieser Struktur sind *alle* Daten, die vom jeweiligen TeX File
+   abhängen. Alle anderen STrukturen dürfen sonstige Ahängigkeiten
+   *nicht* haben.
+
+
+ - UseFont Struktur:
+			- Flags (Fonsubst/Sizesubst/Lib/File/virtuell/...)
+			- Name (wichtig bei Subst)
+			- DPI Größe (wichtig bei Subst)
+			- ...
+			- Pointer auf eigentliche Font-Struktur
+
+
+   Name und DPI Größe sind die, wie sie verwendet werden, also nicht
+   die, wie der Font wirklich von Platte geholt wurde!
+
+   In dieser Struktur werden 
+   a) alle Infos, was für ein Font das ist, bzw. woher er geladen wurde zusammengefasst und
+   b) die verwendeten Name/DPI nach der Substitution abgespeichert.
+   
+   Die darunterliegende(n) Struktur(en) sind also immer reale Fonts!
+   (Alle Werte der darunterliegenden Strukturen passen exact für den Font.)
+   
+   Der Pointer auf die Font-Struktur sollte *nie* NULL sein. Falls der
+   Font nicht gefunden wird, so wird entweder:
+   - die Größe substituiert
+   - der Name substituiert
+   - das TFM-File gelesen 
+   - (das TFM-File von ALTERNATE-Font (cmr10) gelesen)
+   - (eine TFM-Struktur mit 0 Pixel großen Fonts erzeugt)
+   
+   Ein Nachteil: Diese Struktur hat zwei Aufgaben (a+b)  :(
+
+
+ - struct Font:
+			- Tag, welche Struktur hier nun gilt
+			- Union:
+			  o Struktur PK-Font		(struct PKfont)
+			  o Struktur FLIB-Font		(struct FLIBfont)
+			  o Struktur Virtueller Font	(struct VIRTfont)
+			  o Struktur TFM-File		(struct TFMfont)
+
+
+
+Interessant ist es, was bei den Strukturen PKfont/FLIBfont(/VIRTfont/TFMfont)
+alles so zusammengefaßt werden kann, daß gemeinsame Funktionen darauf
+zugreifen können!
+
+
+Dazu gibt es noch die eigenen Strukturlisten:
+
+ - struct PKfont
+ 
+ - struct FLIBfont
+ 
+ - struct VIRTfont
+
+ - struct TFMfont
+			- Fontname
+			- ... sämtliche Infos, die in einem TFM File
+			  (bzw.  PK File) zu finden sind.
+
+   Die TFMfont Struktur könnte man auch Auflösungs (dpi) abhängig machen (ctfmw).
+   Dann braucht man noch eine dpi-unabhängige TFM Structur, in der das normale
+   tfmw gespeichert wird.
+   
+   Ha, wichtig: diese Struktur brauche ich auf jeden Fall (FontGroup...).
+
+
+   Das ist die alte Fontgroup-Geschichte.
+   Dies wird nun so angelegt, daß es auch reicht, nur ein TFM-File zu laden.
+
+
+
+Die Font-Strukturen werden in zwei Richtungen groupiert:
+
+ - bzgl. gemeinsamer Datenstruktur der verschiedenen Font Arten (PXL/virt/..)
+   Diese Gemeinsamkeiten sollen helfen ein und dieselbe Funktion
+   für verschiedene Font-Arten verwenden zu können.
+ 
+ - bzgl. gemeinsamer Daten verschiedener Fonts.
+   Das soll etwas RAM sparen, kann aber auch in anderer Hinsicht
+   hilfreich sein. So z.B. bei den TFM Daten:
+   Wenn ein cmr10 Font bereits geladen wurde, so stehen die
+   TFM Daten bereits für alle cmr10 Fonts zur Verfügung.
+   Wenn ein anderer cmr10 Font also nicht gefunden wird, so muß
+   das cmr10.tfm File nicht mehr geladen werden, sondern es kann
+   schon die vorhandene TFM Struktur des mr10 Fonts verwendet werden.
+
+
+
+Member aller (?) dieser Font-Strukturen ist struct COMfont.
+
+  COMfont ist eine Struktur, die nur genau zu *einem* Font passt, die
+  aber sowohl fuer PK-Fonts, als auch FLIB-Fonts (vielleicht auch virtuelle-Fonts)
+  verwendet wird.
+
+  /* dies sollte alle Fonts betreffen */
+  struct COMfont {
+    long		flags;
+
+    long		dpi;
+    long		dpi5;			/* dpi*5 :-( */
+
+    char *		filename;
+    char *		directory;
+
+    long		space_factor;
+    long		design_factor;
+    long		chksum;
+    long		ctfmw[NPXLCHARS];	/* tfmw um den space_factor scaliert */
+    long		ctfmw_ok;		/* kann auch zu einem 'flag' werden! */
+
+  }
+    
+
+  /* dies wird nur fuer PK und FLIB Fonts benoetigt */
+  struct PXLfont {
+    long *		char_bm_start;
+    ulong		char_bm_len;
+    struct PXLChars	ch[NPXLCHARS];
+    short		maxchars;
+    
+  }
+
+
+
+  struct PKfont {
+    struct COMfont	com;
+    struct PXLfont	pxl;
+    char *		filename;		/* Name des pk-Files */
+    char *		directory;		/* Directory, in dem das pk-File ist */
+    
+  }
+
+  struct FLIBfont {
+    struct COMfont	com;
+    struct PXLfont	pxl;
+    char *		filename;		/* Name des FLIB-Files */
+    char *		directory;		/* Directory, in dem das FLIB-File ist */
+    
+  }
+
+
+
+  struct TFMfont {
+    long 		ctfmw[NPXLCHARS];
+    long		dpi;
+    long		dpi5;
+    struct TFMdata *	tfmdata;
+  }
+
+
+
+------------------------------
+
+
+Welche Funktionen werden überhaupt alle benötigt?
+Mit den Funktionen kann man dann wohl besser abschätzen, was in
+den einzelnen Strukturen benötigt wird, und in welchen Unterstrukturen
+es besser aufgehoben ist.
+
+
+Externe Funktionen:
+===================
+
+ - LoadTeXFont()
+	Läd einen bestimmten TeX Font.
+	Baut eine TeXfont Struktur auf und sucht den passenden
+	Font. Dazu wird die interne Funktion LoadFont() aufgerufen.
+	Liefert einen Pointer auf diesen Font zurück.
+
+ - ReleaseAllTeXFonts()
+	Gibt alle TeXfont Strukturen frei.
+
+ - SetTeXFont()
+	Wird mit einer bestimmten TeX-Fontnummer aufgerufen
+	und gibt einen Pointer auf den Font mit der passenden
+	Nummer zurück.
+	Falls der Font noch nicht in den Speicher geladen
+	ist, so wird er nun geladen.
+
+
+
+Interne Funktionen:
+===================
+
+ - LoadFont()
+	Sucht nach einen bestimmten Font und gibt die Font-Struktur
+	zurück. Hier wird ohne Infos gearbeitet, die DVI-File
+	abhängig sind.
+
+ - LoadFontData()
+	Wird mit einem Font (kein TeXfont) aufgerufen und läd dessen
+	Infos (z.B. pk-Data, TFM-Data) in den internen Speicher.
+	Falls der Font schon geladen ist, so ist dies ein NOP.
+	Diese Funktion arbeitet auf allen möglichen Font-Arten.
+	Diese Funktion baut auch das Feld 'ctfmw' auf und setzt
+	'ctfmw_ok', damit nach einer Font-Freigabe, wo ja 'ctfmw'
+	nicht freigegeben wird, dieses nicht beim erneuten Laden
+	nochmals berechnet wird. (Naja, Effizienz über alles)
+	Oder sollte man der Klarheit zuliebe darauf verzichten?
+
+ - LoadPKfontData() LoadFLIBfontData() LoadTFMfontData() LoadTFMfontData()
+	Diese Funktionen werden von LoadFontData() aufgerufen.
+	LoadFontData() mach alles, was global möglich ist und ruft
+	dann die passende Funktion auf.
+

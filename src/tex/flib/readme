@@ -1,0 +1,24 @@
+Short: New version of flib (for PasTeX1.3)
+
+New fatures:
+
+- wildcard support (only if compiled with DICE)
+- strip path/extension if adding a font to a library
+
+Example:
+
+  % flib avse TeX:fontlib/PK0100 TeX:pk/100/#?
+
+This will add all fonts of TeX:pk/100 into the fontlib
+TeX:fontlib/PK0100 and strip the path "TeX:pk/100/"
+as well as the extension ".100pk" from the module
+names. So ShowDVI/DVIprint will find the fonts
+immediately without changing anything in TeX:config/#?.fnt.
+
+Note: Wildcard support is only for adding modules,
+not for extracting them! (No matching within the library)
+
+
+	Georg Heﬂmann (hessmann@informatik.uni-hamburg.de)
+
+

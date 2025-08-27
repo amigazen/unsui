@@ -1,0 +1,1806 @@
+## version $VER: PasTeX.catalog 1.41 (05.06.94)
+## codeset 0
+## language deutsch
+MSG_CATALOG_VERSION
+141.2
+;
+MSG_WRONG_CATALOG_VERSION
+Falsche Catalog Version!!\nVerwende eingebaute Texte!
+;
+MSG_PROJECT_MENU
+ShowDVI
+;
+MSG_OUTFIT_MENU
+Konfiguration
+;
+MSG_MOVE_MENU
+Blättern
+;
+MSG_RESOLUTION_MENU
+Auflösung
+;
+MSG_PROJECT_ABOUT
+über ...
+;
+MSG_PROJECT_OPENAGAIN
+lade File erneut
+;
+MSG_PROJECT_OPENNEW
+lade neues File ...
+;
+MSG_PROJECT_AUTOLOADAGAIN
+lade automatisch erneut
+;
+MSG_PROJECT_SAVEIFF
+speichere als IFF-File ...
+;
+MSG_PROJECT_SHELLCOMANDS
+Shell Kommandos
+;
+MSG_PROJECT_PRINTPAGE
+Seite drucken/abbrechen
+;
+MSG_PROJECT_WBTOFRONT
+Workbench Screen nach vorne
+;
+MSG_PROJECT_HIDE
+ShowDVI nach hinten
+;
+MSG_PROJECT_SAVECONFIG
+Konfiguration speichern
+;
+MSG_PROJECT_QUIT
+verlassen
+;
+MSG_PROJECT_SHELLCOMANDS_NEWCLI
+Shell Window öffnen
+;
+MSG_PROJECT_SHELLCOMANDS_EXECUTECOMMAND
+Shell Befehl ausführen
+;
+MSG_PROJECT_SHELLCOMANDS_TEXSCRIPT
+TeX Script starten
+;
+MSG_PROJECT_SHELLCOMANDS_AREXXTEXSHELL
+ARexx TeX-Shell starten
+;
+MSG_PROJECT_SHELLCOMANDS_SETENVTEXFORMAT
+TeX Formatfile ändern
+;
+MSG_PROJECT_SHELLCOMANDS_SPECIALHOST
+SpecialHost starten
+;
+MSG_OUTFIT_COPY
+Kopieren
+;
+MSG_OUTFIT_LACE
+Interlace
+;
+MSG_OUTFIT_SCROLLBAR
+Scrollbar
+;
+MSG_OUTFIT_FULLPAGE
+ganze Seite
+;
+MSG_OUTFIT_MEASUREWINDOW
+Maß-Window
+;
+MSG_OUTFIT_BORDERLINE
+Seitengrenzen anzeigen
+;
+MSG_OUTFIT_SETMARGIN
+Randpunkt setzen
+;
+MSG_OUTFIT_4COLORSCREEN
+4 Farben-Screen
+;
+MSG_OUTFIT_PAGESCROLLBAR
+Seitenscrollbar
+;
+MSG_OUTFIT_UNIT
+Maßeinheit
+;
+MSG_OUTFIT_COLOR
+Farb-Palette
+;
+MSG_OUTFIT_CLONEWBCOLOR
+verwende WB Farben
+;
+MSG_OUTFIT_SCREENPREFS
+Screen Aussehen ...
+;
+MSG_OUTFIT_UNIT_INCH
+inch
+;
+MSG_OUTFIT_UNIT_CM
+cm
+;
+MSG_OUTFIT_UNIT_PT
+pt
+;
+MSG_MOVE_SEARCH
+suche String ...
+;
+MSG_MOVE_PREVPAGE
+vorherige Seite
+;
+MSG_MOVE_NEXTPAGE
+nächste Seite
+;
+MSG_MOVE_FIRSTPAGE
+erste Seite
+;
+MSG_MOVE_LASTPAGE
+letzte Seite
+;
+MSG_MOVE_PAGECOUNTER
+== Seitenzähler ==
+;
+MSG_MOVE_JUMPTOPAGENUMBER
+springe auf Seitennummer ...
+;
+MSG_MOVE_CLEARPAGECOUNTER
+lösche den Seitenzähler
+;
+MSG_MOVE_USEPHY
+== DVI-File Seiten-Ordnung ==
+;
+MSG_MOVE_USEORDERDVI
+verwende Ordnung des DVI-Files
+;
+MSG_MOVE_USEPHYPREVPAGE
+vorherige Seite
+;
+MSG_MOVE_USEPHYNEXTPAGE
+nächste Seite
+;
+MSG_MOVE_USEPHYFIRSTPAGE
+erste Seite
+;
+MSG_MOVE_USEPHYLASTPAGE
+letzte Seite
+;
+MSG_NO_LIBRARY
+Kann Library '%s' (Version >= %ld) nicht öffnen!
+; Can't open library '%s'!;
+MSG_NO_CONSOLE_DEVICE
+Kann das Console Device nicht öffnen!
+; Can't open the \"console.device\"?!;
+MSG_NO_NEW_OBJECT
+Kann Object '%s' nicht erzeugen!
+; Can't get new object '%s'!;
+MSG_CANT_CLOSE_SCREEN
+Kann den Screen nich schließen!\nSchließen Sie bitte alle Windows auf dem Screen\n\
+und schicken Sie dem ShowDVI Prozess ein CTRL-C.
+; Can't close the Screen!\nPlease close all windows\nand send a ^C to me.;
+MSG_CLOSE_WINDOWS
+Sie müssen erst alle Windows auf dem Screen schließen!
+; You must first close all your windows!;
+MSG_SCRERR_NOERR
+Error -- kein Error?
+; no error?;
+MSG_SCRERR_NOMONITOR
+Monitor für den gewählten Display-Mode ist nicht aktiv
+; monitor for display mode not available;
+MSG_SCRERR_NOCHIPS
+Ihre Graphik-Chips sind leider zu alt für diesen Display-Mode
+; you need newer custom chips for display mode;
+MSG_SCRERR_NOMEM
+kein normaler Speicher vorhanden
+; couldn't get normal memory;
+MSG_SCRERR_NOCHIPMEM
+kein Chip-Mem vorhanden
+; couldn't get chip memory;
+MSG_SCRERR_PUBNOTUNIQUE
+Public-Screen Name ist bereits in Gebrauch
+; public screen name already used;
+MSG_SCRERR_UNKNOWNMODE
+der verlangte Screen-Mode ist dem System nicht bekannt
+; don't recognize display mode requested;
+MSG_SCRERR_DEFAULT
+mir nicht bekannter Fehler
+; unknown error;
+MSG_CANT_OPEN_SCR_NAME
+kann Screen '%s' nicht öffnen!
+; can't open screen: \"%s\"!;
+MSG_CANT_FIND_SCR_USE_WB
+kann Screen '%s' nicht finden! Versuche es mit der Workbench...
+; Can't find screen \"%s\"! Will try workbench screen...;
+MSG_CANT_LOCK_PBSCR
+Kann den Public-Screen nich fixieren!
+; Can't lock public-screen!;
+MSG_CANT_GET_VI
+Kann die 'visual info' nicht allocieren!
+; Can't get visual info!;
+MSG_CANT_GET_DI
+Kann die 'draw info' nicht allocieren!
+; Can't get draw info!;
+MSG_CANT_OPEN_WIN
+Kann das Window nicht öffnen!
+; Can't open window!;
+MSG_SET_MARGIN
+Linker/oberer Eckpunkt (für ENTER...) festgelegt.
+; Top/left corner (for ENTER...) set.
+MSG_SEARCH_STRING_NOT_FOUND
+Suchstring \"%s\" nicht gefunden.
+;
+MSG_SEARCH_STRING_CANCELED
+Suche abgebrochen.
+;
+MSG_SHOWDVI_MESSAGE
+ShowDVI Nachricht
+; ShowDVI message ... ;
+MSG_ABORT_PRINT_PAGE
+Seitendruck abbrechen?
+; Abort print page?;
+MSG_OK_CANCEL_REQSTRING
+Ja|Nein
+; Ok|Cancel;
+MSG_ABORT_PRINT
+Seitendruck abbrechen...
+; Abort printing...;
+MSG_PRINT_IS_ABORTED
+Seitendruck ist abgebrochen!
+; Print aborted!;
+MSG_PRINT_CUR_PAGE
+Drucke die aktuelle Seite
+; Print current page.;
+MSG_WIN_HEADER_FILE
+ShowDVI   Datei: %s   Seite: %d von %d  
+; ShowDVI V%s%c   File: %s   Page: %d / %d  ;
+MSG_WIN_HEADER_NO_FILE
+ShowDVI V%s%c  «keine Datei geladen»  
+; ShowDVI V%s%c  «no file»  ;
+MSG_UNAVAILABLE_MODE
+Nicht verfügbarer Modus
+; Unavailable mode;
+MSG_UNKNOWN_MODE_NAME
+Unbekannter Modus Name
+; Unknown mode name;
+MSG_INTERNAL_ERROR
+Interner Fehler!
+; Internal error!;
+MSG_NO_CHIPMEM
+Nicht genug CHIP-RAM!
+; Not enough chip-memory!;
+MSG_BUILD_FULL_PAGE
+Baue Ganzseitenansicht auf....
+; Building full page...;
+MSG_NO_MEM
+Nicht genug Speicher!
+; not enough memory!;
+MSG_CANT_SAVE_TO_CLIP
+Kann die Seite nicht in das Clipboard speichern!
+; Can't save page to the clipboard!;
+MSG_CANT_SAVE_TO_IFF
+Kann die Seite nicht als IFF File '%s' speichern!
+; Can't save page to iff-file \"%s\"!;
+MSG_NO_SIGNAL
+Kein Signal Bit verfügbar!
+; No signal available!;
+MSG_CANT_NOTIFY
+Notify auf File '%s' funktionier nicht!\nIch verwende eigne Notify Funktion.
+; Notify of file '%s' don't work!\n%s\nI use own notify routine.;
+MSG_MARGIN_SET
+Linker/oberer Randpunkt gesetzt.
+; Top/left margin set.;
+MSG_SHOWDVI_ALREADY_ACTIVE
+ShowDVI ist bereits gestartet! (Es können keine Optionen nachträglich gesetzt werden)\n
+; ShowDVI already running! (You can't set any options)\n;
+MSG_CANT_ACCESS_FILE
+Kann auf das File '%s' nicht zugreifen!
+; Can't access file '%s'!;
+MSG_AREXX_COMM_START_FAILED
+Start des ARexx-Kommandos fehlgeschlagen!
+; Start of ARexx-command failed!;
+MSG_AREXX_COMM_FAILED
+ARexx-Kommando '%s' hat Fehler-Code %d zurückgeliefert!
+; ARexx comamnd: '%s' failed with return code %d!;
+MSG_DIV_ZERO
+Division durch Null!!
+; Division by zero!!;
+MSG_CANT_SET_VARIABLE
+Kann Umgebungsvariable '%s' nicht setzen!
+; Can't set ENV: variable \"%s\"!;
+MSG_ERROR_IN_CONFIG_FILE
+Es sind Fehler im Konfigurationsfile!
+; There are problems in the config-file!;
+MSG_BETA_VERSION
+Achtung:\nDies ist eine Beta-Test Version!
+; This is a beta version!\nPlease don't spread it!;
+MSG_INTERNAL_ERROR_W_ARG
+Interner Fehler: \"%s\"
+; Internal error: %s!;
+MSG_WRONG_MAP_WIDTH
+falsche Bitmap-Breite
+; incorrect Map-width;
+MSG_NO_DVI_FILE
+Kein DVI File geladen!
+; No DVI-File loaded!;
+MSG_DVI_FILE_LOST
+DVI-File ist verschwunden!?
+; Where is my DVI-File?!;
+;
+;################################################################
+;
+MSG_UNKNOWN_POP_SUBMENU
+Unbekanntes Untermenü?
+; Unknown sub-menu!?;
+MSG_FILENAME
+Dateiname:
+; Filename:;
+MSG_ENTER_COMMAND
+Befehl und Argumente eingeben:
+; Enter Command and its Arguments;
+MSG_EXECUTE_COMMAND
+Befehl Ausgabe
+; Execute Command;
+MSG_CANT_EXECUTE_COMMAND
+Kann Befehl nicht ausführen!
+; Can't execute command!;
+MSG_USE_WHICH_PUBSCR
+Welcher Public-Screen soll verwendet werden?
+; Use which Public-Screen?;
+MSG_DONT_FIND_PUBSCR_USE_WB
+Finde Public-Screen '%s' nicht!\nSoll statt dessen der Workbench-Screen verwendet werden?
+; Don't find Public-Screen \"%s\"!\nSould I use Workbench-Screen?;
+MSG_SHOWDVI_TEX_SHELL
+ShowDVI TeX-Shell Fenster
+; ShowDVI - ARexx TeX-Shell;
+MSG_CANT_START
+Kann '%s' nicht starten!
+; Can't start \"%s\"!;
+MSG_START_SPECIALHOST
+Kann SpecialHost nicht starten!
+; Start SpecialHost;
+MSG_UNKNOWN_SUBITEM
+Unbekannter Untermenü Eintrag (%d, %d, %d)
+; Unknown SubItem (%d, %d, %d);
+MSG_UNKNOWN_SUBMENU
+Unbekanntes Untermenü (%d, %d, %d)
+; Unknown SubMenu (%d, %d, %d);
+MSG_UNKNOWN_MENU
+Unbekanntes Menü (%d, %d, %d)
+; Unknown Menu (%d, %d, %d);
+MSG_CANT_OPEN_HELP_FILE
+Kann das Hilfe-File '%s' nicht öffnen!
+; Can't open the help-file \"%s\"!;
+MSG_SHOWDVI_MENU_HELP
+ShowDVI Menü Hilfe
+; ShowDVI Menu Help;
+MSG_NO_HELP_FOR_MENU
+Kein Hilftext für Menü (%d, %d, %d) verfügbar!
+; Found no help for menu (%d, %d, %d)!?;
+MSG_INTERNAL_ERROR_MENU_ENTRY
+Interner Fehler: Kann Menü Eintrag (%d, %d, %d) [%d] nicht finden!
+; Internal error: can't find Menu-Entry (%d, %d, %d) [%d];
+;
+;##########################################################################
+;
+MSG_CONFUSED_ABOUT_REQ
+Help Window hat Probleme!
+; Confused about requester!;
+MSG_SHOWDVI_ABOUT_WINDOW
+ShowDVI Über/Help Fenster
+; ShowDVI About/Help Window;
+MSG_CANT_OPEN_ABOUT_REQ
+Kann Über/Help Fenster öffnen!
+; Can't open About-Requester window!;
+MSG_NEED_REQ_LIB
+Brauche die 'req.library'!
+; I need the 'req.library'!;
+MSG_SHOWDVI_REQUEST
+ShowDVI Meldung
+; ShowDVI Request;
+MSG_OK
+Ok
+; OK;
+MSG_CANCEL
+Abbruch
+; Cancel;
+MSG_SHOWDVI_FATAL_MESSAGE
+ShowDVI Abbruch Meldung
+; ShowDVI fatal message ... ;
+MSG_FATAL_WRONG
+Irgendwas stimmt nicht!\n\n%s\n\nDas Programm muß leider beendet werden!
+; Something is wrong...\n\n  %s\n\nBetter I quit!;
+MSG_FATAL_CHIPMEM
+Zu wenig CHIP-RAM!\n\n%s\n\nDas Programm muß leider beendet werden!
+; Sorry, not enough ChipMem...\n\n%s\n\nI must quit!;
+MSG_FATAL_MEMORY
+Zu wenig Speicher!\n\n%s\n\nDas Programm muß leider beendet werden!
+; Lack of memory?\n\n%s\n\nProgram terminate!;
+MSG_FATAL_INTERNAL
+Interner Fehler im Programm!\n\n%s\n\nDas Programm muß leider beendet werden!
+; Internal error...\n\n%s\n\nProgram terminate!;
+MSG_FATAL_FATAL
+Sie haben es geschafft!\nDas Programm ist total verwirrt!\n\n%s\n\nIch verzieh mich besser aus dem Speicher.
+; Suddenly the dungeon collapse...\nRead 4 instead of 4 bytes :-)\n\n  %s\n\nCan't open highscore file!\nArrghh...;
+MSG_REALLY_QUIT
+Programm wirklich beenden?
+; Really quit?;
+MSG_YES_NO
+Ja|Nein
+; Yes;
+MSG_FILE_ISNT_DVI_FILE
+Die Datei '%s' ist kein DVI-File!
+; The file \"%s\" isn't a DVI-File!;
+MSG_CANT_ALLOC_FREQ
+Kann Filerequester Struktur nicht allocieren!
+; can't allocate filerequest-structure;
+MSG_LOAD_NEW_DVI
+Lade neue DVI-Datei
+; Load new DVI-File;
+MSG_CANT_FOUND_FILE
+Kann File '%s' nicht finden!
+; Can't found file \"%s\"!;
+MSG_CANT_ALLOC_ASLREQ
+Kann AslRequest Struktur nicht initialisieren!
+; Can't initialize AslRequest!;
+MSG_FORMAT_FILE_NAME
+Geben Sie den Namen des Formatfiles an
+; Please input your format-file name.;
+;
+;##########################################################################
+;
+MSG_NOT_WHILE_PRINTING
+Dies ist während einem laufenden Ausdruck nicht möglich!
+;This is not allowed while printing!;
+;
+;##########################################################################
+;
+MSG_NO_APP_ICON
+Kann Application-Icon nicht installieren!
+;Can't setup application icon!;
+;
+;##########################################################################
+;
+MSG_ENTER_A_STRING
+String Eingabe
+;
+MSG_ENTER_A_NUMBER
+Zahl Eingabe
+;
+;##########################################################################
+;
+MSG_CANT_OPEN_CONFIG
+Kann ShowDVI configuration file '%s' nicht öffnen!
+; *** Can't open ShowDVI configuration file \"%s\"!;
+MSG_LOAD_CONFIG
+Lade ShowDVI configuration file '%s'.
+; Loading ShowDVI configuration file \"%s\".;
+MSG_WRITE_CONFIG
+Schreibe ShowDVI configuration file '%s'.
+; Writing ShowDVI configuration file \"%s\".;
+MSG_NO_AREXX_FOR_FX
+Es fehlt das ARexx Kommando für die Funktionstaste '%d'.
+; No ARexx command for function key %d!;
+MSG_NO_ON_OFF
+Es fehlt ein 'on' oder 'off'.
+; missing 'on' or 'off'!;
+MSG_WRONG_ON_OFF
+'%s' anstatt von 'on' oder 'off' gelesen.
+; read '%s' instead of 'on' or 'off'!;
+MSG_UNKNOWN_KEYWORD
+'%s' ist kein gültiges Schlüsselwort.
+; Unknown keyword '%s' in config-file!;
+MSG_UNKNOWN_MODEID
+Mode ID %x ist nicht gültig.
+; ModeID %x not available!;
+MSG_ILLEGAL_COLOR
+Ungültige Farbwerte
+; Illegal color value!;
+MSG_WRONG_COLOR_PARAMS
+Fehler in den RGB Farb Parametern
+; Error in colors parameter!;
+MSG_WRONG_DEF_RESO
+Fehler im Parameter der default Auflösung.
+; Error in parameters for default resolution;
+MSG_WRONG_VAL_IN_RES_MENU
+Seltsame Werte im Resulution-Menü.
+; Strange value for the resolution-menu!;
+MSG_WRONG_UNITS
+'%s' ist keine gültige Maßeinheit (cm|in|pt).
+; Read '%s' instead of 'cm', 'in' or 'pt'!;
+MSG_WRONG_APPICON_POS
+Ungültige Application-Icon Position '%s'.
+; Illegal app-icon position \'%s\'!;
+MSG_WRONG_MIN_SCREEN_SIZE
+Ungültige Screen Größe (Minimum: 540x200).
+; Illegal screen size \'%s\' (min: 540x200)!;
+MSG_WRONG_SCREEN_SIZE
+Ungültige Screen Größe '%s'.
+; Illegal screen size \'%s\'!;
+MSG_WRONG_MONITOR_SIZE
+Ungültige Monitor Größe '%s'.
+; Illegal monitor size \'%s\'!;
+MSG_WRONG_WIN_POS
+Ungültige Fenster Position '%s'.
+; Illegal window position \'%s\'!;
+MSG_WRONG_WIN_SIZE
+Ungültige Fenster Größe '%s'.
+; Illegal window size \'%s\'!;
+MSG_WRONG_MAX_DVIBUF_SIZE
+Ungültige maximale DVI-Buffer Größe '%s'.
+; Illegal maximal dvibuf size \'%s\'!;
+MSG_CONFIG_HEADER
+\; Dies ist das automatisch erzeugte Konfigurationsfile für ShowDVI V%s\n
+; ; This is a machine generated configuration file for ShowDVI\n;
+MSG_CONFIG_RGB_BACK
+RGB Werte für die Hintergrundfarbe
+; RGB values of background color;
+MSG_CONFIG_RGB_FORE
+RGB Werte für die Vordergrundfarbe
+; RGB values of foreground color;
+MSG_CONFIG_RGB_2
+RGB Werte für Farbe 2
+; RGB values of color 2;
+MSG_CONFIG_RGB_3
+RGB Werte für Farbe 3
+; RGB values of color 3;
+MSG_CONFIG_SCROLL_STATE
+Status der Scrollbars
+; state of scrollbars;
+MSG_CONFIG_BORDER_LINE
+Status der Seitengrenzen Linien
+; draw border line;
+MSG_CONFIG_LACE
+Interlace Modus
+; interlace;
+MSG_CONFIG_BEEP
+Klingeln, falls irgendwas passiert
+; beep on warnings;
+MSG_CONFIG_ESC
+Programm durch ESC verlassen
+; exit prog on ESC;
+MSG_CONFIG_QUICK_EXIT
+Programm ohne Nachfrage verlassen
+; exit prog immediately;
+MSG_CONFIG_POPUP
+PopUp Menü verwenden
+; use pop-up-menu;
+MSG_CONFIG_INT_POPUP
+Schlaues PopUp Menü
+; is the pop-up-menu \"intelligent\";
+MSG_CONFIG_BIG_POPUP
+Etwas größeres PopUp Menü verwenden
+; pop-up-menu with topaz 11;
+MSG_CONFIG_MIDDLE_POPUP
+PopUp Menü auf die mittlere Maustaste legen
+; use middle-mouse-button for pop-up menu;
+MSG_CONFIG_USEPHY
+verwende die Seitenreihenfolge aus dem DVI-File
+; on == use physical numbering;
+MSG_CONFIG_ACT_LOAD_AGAIN
+lade DVI-File erneut, wenn ShowDVI Fenster aktiv wird
+; activate window => load file again;
+MSG_CONFIG_USE_OWN_SCR
+verwende eigenen Screen
+; use own screen;
+MSG_CONFIG_SHOW_PUBSCR_NAME
+Name des ShowDVI Public-Screen (def.: ShowDVI-PubScr)
+; name of the ShowDVI public screen (default: ShowDVI-PubScr);
+MSG_CONFIG_DEF_PUBSCR_NAME
+Name des Public-Screen falls nicht eigener Scr. verw. wird (def.: Workbench)
+; name of the public screen (default: Workbench);
+MSG_CONFIG_WIN_POS
+Position des Anzeige Windows (x, y) (-1, -1 def. Pos)
+; position of the main window (x, y) (-1, -1 default pos);
+MSG_CONFIG_WIN_SIZE
+Größe des Anzeige Windows (x, y) (-1, -1 def. Größe);
+; size of the main window (x, y) (-1, -1 default size);
+MSG_CONFIG_SCR_POS
+Position des Fensters auf dem ShowDVI Screen (x, y) (-1, -1 default pos)
+; position at the ShowDVI screen (x, y) (-1, -1 default pos);
+MSG_CONFIG_SHOW_WIN_SIZE
+Größe des Fensters auf dem ShowDVI Screen (x, y) (-1, -1 default size)
+; window size at ShowDVI screen (x, y) (-1, -1 default size);
+MSG_CONFIG_4_COL_SCR
+verwende 4 Farben Screen
+; use 4 color screen;
+MSG_CONFIG_BACK_HOOK
+verwende Farbe 2 als Hintergrund
+; use color 2 as background
+MSG_CONFIG_USE_WB_COLS
+verwende die Farben der Workbench
+; clone the wb colors;
+MSG_CONFIG_UNIT
+zu verwendende Einheit
+; used unit;
+MSG_CONFIG_APP_ICON
+Aplication Icon anzeigen
+; application-icon on/off;
+MSG_CONFIG_INFO_APP_ICON
+Pfad des Icon Files für das App-Icon
+; \".info\" file for the app-icon;
+MSG_CONFIG_APP_ICON_POS
+App-Icon Position (0,0 -> verwende WB Position)
+; position 0,0 => use default position;
+MSG_CONIFG_SCRIPT_FILE
+Script File Name mit Pfad
+; Script-file (only for OS 2.0);
+MSG_CONFIG_TEX_SERVER
+Script File das den TeX-Server startet
+; Script-file, start the TeX-server (only for OS 2.0);
+MSG_CONFIG_SCR_SIZE
+Screen Größe, 0,0 -> verwende WorkBench Größe
+; screen size. 0,0 => clone wb-size;
+MSG_CONFIG_SCR_MODE
+Screen Mode (pal|ntsc|productivity|a2024|workbench) oder dezimal die Mode-ID
+; screen mode (pal|ntsc|productivity|a2024|workbench) or mode-id
+MSG_CONFIG_MONITOR_SIZE
+Monitor Anzeigeverhältnis/Größe (x, y)
+; monitor size (x, y);
+MSG_CONFIG_ALWBMFAST
+verwende grundsätzlich Fast-Ram für die Bitmap (langsameres Scrollen)
+;use always fast-ram for the bitmap (slower scrolling)
+MSG_CONFIG_SMARTWIN
+verwende 'smart-refresh' Fenster (benötigt mehr Chip-Ram, ist etwas schneller)
+;use 'smart-refresh' window (needs more chip-mem, faster)
+MSG_CONFIG_MAX_DVIBUF
+maximale Größe von DVI Files, die noch im komplett RAM gehalten werden
+; what's the max size for caching the whole DVI file in ram?;
+MSG_CONFIG_DEF_RESO
+Auflösung zu Programmbeginn
+; default start resolution;
+MSG_CONFIG_RESO_MENU
+Einträge im Resultion Menü
+; entries for the resolution menu;
+MSG_CONFIG_SAVED_OK
+Konfiguration abgespeichert.
+; Configuration saved.;
+MSG_CANT_SAVE_CONFIG
+Konnte Konfiguration nicht abspeichern!
+; Can't save configuration!;
+;
+MSG_CONFIG_APEN
+Stift Nummer für die Vordergrundfarbe (0..255)
+; Pen number for foreground color (0..255)
+;
+MSG_CONFIG_BPEN
+Stift Nummer für die Hintergrundfarbe (0..255)
+; Pen number for background color (0..255)
+;
+MSG_WRONG_PEN
+Fehler in der Stift Nummer Beschreibung!
+; Error in color-pen definition!
+;
+;##########################################################################
+;
+MSG_MEASURE_WINDOW
+Maß Fenster
+; Measure Window;
+MSG_CANT_OPEN_MESSWIN
+Kann das Maß Fenster nicht öffnen!
+; Can't open MessWin!;
+MSG_MESSWIN_WIDTH
+Breite:
+; Width:;
+MSG_MESSWIN_HEIGHT
+Höhe:
+; Height:;
+MSG_MESSWIN_X
+X-Koo: 
+; X-Koo:  ;
+MSG_MESSWIN_Y
+Y-Koo: 
+; Y-Koo:  ;
+MSG_MESSWIN_DEL_X
+X-Diff:
+; Delta-X:;
+MSG_MESSWIN_DEL_Y
+Y-Diff:
+; Delta-Y:;
+MSG_MESSWIN_MAG
+Vergrößerung: %4d
+; Magnification: %4d;
+;
+;########################################################
+;
+MSG_AREXX_REPLY_CODE
+ARexx Rückgabe Wert '%ld'!
+;ARexx reply code '%ld'!
+;
+;
+;########################################################
+;
+MSG_EXECUTE_TEX_SCRIPT
+ShowDVI - Führe TeX-Script aus
+;ShowDVI - Execute TeX-Script
+MSG_NEWCLI_TITLE
+ShowDVI - Neue Shell
+;ShowDVI - new CLI
+;
+;
+;########################################################
+;
+MSG_PREFWIN_GADARR_0
+Screen Breite:
+;
+MSG_PREFWIN_GADARR_1
+Screen _Höhe:
+;
+MSG_PREFWIN_GADARR_2
+Hinter_grund:
+; background:
+;
+MSG_PREFWIN_GADARR_3
+_Overscan Größe
+;
+MSG_PREFWIN_GADARR_4
+_DVI-Seiten Größe
+;
+MSG_PREFWIN_GADARR_5
+Ben_utzen
+;
+MSG_PREFWIN_GADARR_6
+Abbre_chen
+;
+MSG_PREFWIN_GADARR_7
+Eigener _Screen
+;
+MSG_PREFWIN_GADARR_8
+_4 Farben Screen:
+;
+MSG_PREFWIN_GADARR_9
+Neuer Screen _Mode
+;
+MSG_PREFWIN_GADARR_10
+Screen Mode:
+;
+MSG_PREFWIN_GADTOOLS
+Es wird die 'gadtools.library' Version 37 oder mehr benötigt.\n\
+Bitte updaten Sie Ihren Rechner!
+;I need the gadtools.library version 37.x or higher.\n\
+;Please update your operating system software!
+;
+MSG_PREFWIN_WIN_TITLE
+Screen Voreinstellungen
+;Screen Preferences
+;
+MSG_PREFWIN_CANT_OPEN
+Kann das Screen Voreinstellungswindow nicht öffnen.
+;Can't open Screen Preference window.
+;
+;
+;########################################################
+;
+MSG_SEARCHWIN_WIN_TITLE
+Suchtext eingeben...
+;
+MSG_SEARCHWIN_DOSEARCH
+Suche läuft...
+;
+MSG_SEARCHWIN_FOUND
+Text gefunden...
+;
+MSG_SEARCHWIN_CANT_OPEN
+Kann das Suchfenster nicht öffnen.
+;
+MSG_SEARCHWIN_STRING
+Suchstrin_g:
+;
+MSG_SEARCHWIN_SEARCH
+_Suchen
+;
+MSG_SEARCHWIN_CANCEL
+Abbre_chen
+;
+;
+;########################################################
+;
+MSG_NO_FILE_GIVEN
+Kein File angegeben!
+; No file specified!;
+MSG_BUILD_BITMAP
+Seite aufbauen...
+; Building bitmap ...;
+MSG_STACK_OVER
+DVI-Stack überschritten
+; stack overflow;
+MSG_STACK_UNDER
+DVI-Stack unterschritten
+; stack underflow;
+MSG_PRE_IN_FILE
+PRE erscheint im File
+; PRE occurs within file;
+MSG_POST_IN_FILE
+POST erscheint im File
+; Reached POST command in DVI file!;
+MSG_POST_POST
+POST_POST ohne vorheriges POST
+; POST_POST with no preceding POST;
+MSG_DVI_FILE_ERROR
+Fehler im DVI File!
+; DVI file error!;
+MSG_ALREADY_FIRST
+Sie sind bereits auf der ersten Seite.
+; You are already on the first page.;
+MSG_ALREADY_LAST
+Sie sind bereits auf der letzten Seite.
+; You are already on the last page.;
+MSG_PAGE_NOT_FOUND
+Seite '%d' nicht gefunden!
+; page %d not found!;
+MSG_MISSING_PRE
+PRE kommt nicht am Anfang des Files. Ist das wirklich ein DVI File?
+; PRE doesn't occur first--are you sure this is a DVI file?;
+MSG_WRONG_DVI_TYPE
+DVI File Format ist %d, ShowDVI kann aber nur bis zu Format %d arbeiten
+; DVI format = %d, can only process DVI format %d files;
+MSG_LOADING_DVI
+Lade DVI file '%s'.
+; Loading DVI file \"%s\".;
+MSG_INCOMPLETE_DVI_PRELOAD
+Unvollständiges DVI file. Kann die Fonts nicht vorladen!
+; Incomplete DVI file: can't preload fonts!;
+MSG_SCAN_DVI_FILE
+DVI File durchsuchen...
+; Scanning DVI file ...;
+MSG_HELP_HELP
+Hilfe Text anzeigen
+;print help information
+;
+MSG_HELP_FONTDIR
+zusätzliches Directory für Fontlibs/pk-Files
+;additional dir for fontlibs/pk-files
+;
+MSG_HELP_FONTMEM
+Größe des Fontspeichers
+;size of the fontmemory
+;
+MSG_HELP_FROM
+Beginne bei Seite
+;start at page
+;
+MSG_HELP_HOFFSET
+Horizontaler Offset `num'[true]`unit'
+;horizontal offset `num'[true]`unit'
+;
+MSG_HELP_HOFFSET_2
+(Einheit aus pt|cm|in|pc|dd|cc|bp|mm|mi|cp)
+;(unit out of: pt|cm|in|pc|dd|cc|bp|mm|mi|cp)
+;
+MSG_HELP_VOFFSET
+Vertikaler Offset `num'[true]`unit'
+;vertical offset `num'[true]`unit'
+;
+MSG_HELP_VOFFSET_2
+(Einheit aus pt|cm|in|pc|dd|cc|bp|mm|mi|cp)
+;(unit out of: pt|cm|in|pc|dd|cc|bp|mm|mi|cp)
+;
+MSG_HELP_PRELOAD
+lade alle Fonts bei Öffnen des DVI Files
+;preload all fonts
+;
+MSG_HELP_RESOLUTION
+Start Auflösung in DPI
+;starting resolution in DPI
+;
+MSG_HELP_STATISTIC
+zusätzliche Ausgaben im Logfile
+;more output to the logfile
+;
+MSG_HELP_DEBUGSTAT
+schliesse das Logfile nach jeder Ausgabe
+;close logfile after every line
+;
+MSG_HELP_LOGNAME
+Logfile Name
+;logfile name
+;
+MSG_HELP_NOLOG
+erzeuge kein Logfile
+;don't create logfile
+;
+MSG_HELP_PRIORITY
+setze die Task Priorität
+;set the task priority
+;
+MSG_HELP_PRINTAUTHOR
+zeige die Autoren
+;show author name
+;
+MSG_HELP_DVIFILE
+DVI-File
+;DVI-file
+;
+MSG_COPYRIGHT
+Übersetzt am %s.
+; (c)Copyright 1990-91, (hes). All rights reserved. %s;
+MSG_USAGE
+usage: %s 
+; usage: %s ;
+MSG_CANT_FIND_FILE
+Kann DVI File '%s' nicht finden!
+; Can't find DVI-file \"%s\";
+;
+;
+;########################################################
+;
+MSG_NOT_ENOUGH_MEM_BYTES
+%d Bytes konnten nicht allociert werden!
+; not enough memory (%d bytes)!;
+MSG_PROGRAM_END_ERR
+\nProgramm wurde mit Fehlercode %d beendet!
+; \nProgram aborted with error code %d!;
+MSG_USER_ABORT
+\nProgramm wurde vom Benutzer abgebrochen!
+; \nUser aborted program!;
+MSG_PROGRAM_END_OK
+\nProgramm wurde ohne Fehler beendet.
+; \nProgram terminated without errors.;
+MSG_DVIP_PRINT_FINISHED
+\nAusdruck beendet.
+; \nPrint finished.;
+MSG_FATAL
+FATAL -- 
+; FATAL-- ;
+MSG_LOG_FILE_CREATED
+Logfile '%s' wurde angelegt.
+; Log file (%s) created.;
+MSG_LINE_BUFFER_OVERFLOW
+Zeilenbuffer wurde überschritten! (%d)
+; Line buffer overflow! (%d);
+MSG_BREAK
+*** Abbruch
+; *** BREAK;
+MSG_BREAK_IO
+*** Abbruch (warte bis die Ausgabe abgeschlossen ist)
+; *** BREAK (wait for IO to complete);
+MSG_CALL_MF
+Rufe Metafont mittels '%s' auf.
+; Call Metafont via \"%s\".;
+MSG_CANT_OPEN
+Kann '%s' nicht öffnen!\n
+; Can't open \"%s\"!\n;
+;
+;
+;########################################################
+;
+;
+;
+MSG_DVIP_WHOLE_BITMAP_IN_RAM
+In diesem Druck-Modus muß die gesamte Bitmap vollständig\nim Speicher aufgebaut werden!
+; In this print mode the whole bitmap must be in the memory!;
+MSG_CANT_ALLOC_BITMAP
+Es kann nicht genug Speicher für die Seitenbitmap allociert werden!
+; Can't allocate enough memory for bitmap!;
+MSG_DVIP_PARTS
+Die Seite wurde im Speicher in %d Teile zerlegt
+; page is splitted in %d parts;
+MSG_DVIP_SAVE_CLIP
+Kopiere Seitennummer %d von File %s in das Clipboard %s
+; Save page number %d of file %s to the clipboard %s;
+MSG_DVIP_SAVE_IFF
+Speichere Seiten %d von File %s nach %s
+; Save page number %d of file %s to %s;
+MSG_DVIP_CANT_SAVE_IFF
+Aktuelle Seite kann nicht als IFF File '%s' gespeichert werden!
+; Can't write page to iff-file \"%s\"!;
+;
+;
+;########################################################
+;
+;
+;
+MSG_SPECIAL_TOO_LONG
+\\special String ist zu lang, wird ignoriert.
+; \\special too long -- ignored.;
+MSG_NO_MEM_FOR_SPECIAL
+Kann keinen Speicher für \\special String allocieren, \\special wird ignoriert.
+; Can't allocate memory for \\special -- ignored.;
+MSG_PICT_OUT_LEFT
+Graphik ist außerhalb des linken Seitenrandes! (x=%ld)
+; Picture out of left border! (x=%ld);
+MSG_PICT_OUT_RIGHT
+Graphik ist außerhalb des rechten Seitenrandes!
+; Picture out of right border!;
+MSG_NO_MEM_FOR_SPECIAL_BITMAP
+Kein Speicher um die \\special Graphik zu kopieren!
+; No memory for special-bitmap copy!;
+MSG_UNKNOWN_PICT_LOC
+Unbekannter SpecialHost Graphik-Typ!?
+; Unknown picture locating!?;
+MSG_ILLEG_PS_COMM
+Ungültiges .ps Kommando '%s'
+; Illegal .ps command format: %s;
+MSG_TOO_MANY_POINTS
+Zu viele Punkte definiert, %s wird ignoriert
+; Too many points defined - ignored %s;
+MSG_MALFORMED_PATH_COMM
+Ungültiges 'path' Kommando, %s wird ignoriert
+; Malformed path command - ignored %s;
+;
+;
+;########################################################
+;
+;
+MSG_BAD_DVI_FILE_END
+DVI File hat ein ungültiges Ende
+; Bad end of DVI file;
+MSG_BAD_FONT_DEFS
+Seltsame Werte in den DVI-File Font Definitionen
+; Bad byte value in font defs;
+MSG_MISS_POST_POST
+Vermisse ein POST_POST Kommando nach den Font Definitionen
+; POST_POST missing after fontdefs;
+MSG_MISS_POST
+Vermisse ein POST Kommando am Kopf der Postamble - das DVI File ist unvollständig
+; POST missing at head of postamble - DVI file not complete;
+MSG_LOG_PAGE_DIM
+\nSeiten Größen:
+; Page dimensions:;
+MSG_LOG_HORIZ
+  horizontal: %2.2fin, %4d Pixel, %3lu Points, %8ld DVI Einheiten,
+;  horizontal: %2.2fin, %4d pixels, %3lu points, %8ld DVI units,;
+MSG_LOG_VERT
+  vertikal  : %2.2fin, %4d Pixel, %3lu Points, %8ld DVI Einheiten,
+;  vertical  : %2.2fin, %4d pixels, %3lu points, %8ld DVI units.;
+MSG_LOG_MAG
+ Vergrößerung = %ld; %ld Pixel pro DVI Einheit.
+; Magnification = %ld; %ld pixels per DVI unit.;
+MSG_LOG_OFFSET
+Abstände (Offsets):
+; Offsets:;
+MSG_LOG_THOFF
+  horizontal: %2.2fin (%2.1ftruein), %4d Pixel,
+;  horizontal: %2.2fin (%2.1ftruein), %4d pixels,;
+MSG_LOG_HOFF
+  horizontal: %2.2fin (%2.1fin), %4d Pixel,
+;  horizontal: %2.2fin (%2.1fin), %4d pixels,;
+MSG_LOG_TVOFF
+  vertikal  : %2.2fin (%2.1ftruein), %4d Pixel,
+;  vertical  : %2.2fin (%2.1ftruein), %4d pixels.;
+MSG_LOG_VOFF
+  vertikal  : %2.2fin (%2.1fin), %4d Pixel,
+;  vertical  : %2.2fin (%2.1fin), %4d pixels.;
+MSG_LOG_RESO
+ Horizontale- Vertikale Auflösung: %d / %d dpi.
+; Horizontal/vertical resolution: %d / %d dpi.;
+MSG_DVI_STACK_TOO_SMALL
+DVI Stack zu klein! Maximale Größe ist %d!\n
+; DVI stack too small, can only handle size %d!\n;
+MSG_LOG_NUM_PAGES
+Das Dokument hat %d Seiten.\n
+; %d pages in document.\n;
+;
+;
+;########################################################
+;
+;
+MSG_CANT_OPEN_FONTLIB
+*** Kann Fontlibrary '%s' nicht öffnen!
+; *** Can't open library \"%s\"!;
+MSG_NOT_A_FONTLIB
+*** File '%s' ist keine Fontlibrary!
+; *** File \"%s\" is no font library!;
+MSG_OLD_FONTLIB
+Achtung: File '%s' ist eine Fontlibrary im alten Format.
+; Warning: File \"%s\" is an old font library!;
+MSG_TOO_MANY_FONTLIB_LEVELS
+*** Zu viele Fontlibrary-Link Ebenen!
+; *** To many link levels!;
+MSG_ERROR_READING_FONTLIB_DIR
+*** Fehler beim Lesen des Fontlibrary Directories!
+; *** Error during reading flib-directory!;
+;
+;
+;########################################################
+;
+;
+MSG_BAD_PK_FILE
+Fehlerhaftes PK-File %s: %s
+; Bad PK file %s: %s;
+MSG_UNEXPECTED_EOF_IN_PK
+zu kurzes File
+; unexpected eof;
+MSG_EXPECTED_PRE_IN_PK
+PRE wurde erwartet
+; expected pre;
+MSG_WRONG_ID_IN_PK
+falsches ID Byte
+; wrong id byte;
+MSG_CHECKSUM_MISS_IN_PK
+Prüfsummen Fehler
+; Checksum mismatch;
+MSG_CHAR_CODE_OUT_OF_RANGE_IN_PK
+Buchstabennummer außerhalb des gültigen Bereichs
+; character code out of range;
+MSG_PACKET_LENGTH_SMALL_IN_PK
+Packet Länge zu kurz
+; packet length too small;
+MSG_NO_MEM_FOR_CHAR
+Kein Speicher für einen Buchstaben
+; Not enough memory for char;
+MSG_UNEXPECTED_COMM_IN_PK
+! Unerwartete Anweisung
+; ! unexpected command;
+;
+;
+;########################################################
+;
+;
+MSG_RELEASE_CHARS
+Gebe den Speicher für alle ausgepackten Zeichen frei (%ld Bytes für %ld Zeichen)
+; Release all unpacked chars (%ld bytes for %ld chars);
+MSG_INTERNAL_ERROR_SPRINTF
+Interner Fehler (my_sprintf)!
+; internal error in my_sprintf!;
+MSG_UNKNOWN_FORMAT_SPRINTF
+Interner Fehler (format spec)!
+; unknown format spec in format-string!;
+MSG_STRING_OVERFLOW_SPRINTF
+Interner Fehler (string overflow)!
+; string overflow in my_sprintf!;
+MSG_ERROR_SEARCH_LIST_LIB
+Fehler beim Lesen der Pfadliste für Fontlibraries!
+; Error while reading search list for font libraries!;
+MSG_ERROR_SEARCH_LIST_PK
+Fehler beim Lesen der Pfadliste für PK-Fonts!
+; Error while reading search list for PK files!;
+MSG_FONT_UNDEFINED
+Font %ld ist nicht definiert
+; Font %ld is undefined;
+MSG_FONT_ALREADY_DEFINED
+Font %s (%ld) wurde bereits definiert
+; Font %s (%ld) is already defined;
+MSG_FONT_STR_UNDEFINED
+Font %s (%ld) ist nicht definiert
+; Font %s (%ld) is undefined;
+MSG_RELOAD_FONT
+Lade Font %s erneut (%3ld dpi)
+; Reloading font %-10s (%3ld dpi);
+MSG_FONTMEM_USED
+  \t(Fontspeicher zu %3ld%% gefüllt)
+;   \t(font memory used: %3ld%%);
+MSG_LOAD_LOADED_FONT
+Lade einen bereits geladenen Font?? (%s,%ld)\n
+; Load a loaded font?? (%s,%ld)\n;
+MSG_LOAD_FONT
+Lade Font %s (%3ld dpi).
+; Loading font %-10s (%3ld dpi).;
+MSG_INTERNAL_ERROR_LIB_MISMATCH
+Interner Fehler: FLib Struktur passt nicht
+; Internal error: library structure mismatched;
+MSG_LOAD_FONT_MEM_USED
+Lade Font %s (%3ld dpi).   \t(Fontspeicher zu %3ld%% gefüllt)
+; Loading font %-10s (%3ld dpi).   \t(font memory used: %3ld%%);
+MSG_FOUND_IN_LIB
+\tgefunden in: Direktory '%s', Fontlibrary '%s'
+; \tfound at: dir '%s', library '%s';
+MSG_FOUND_AS_PK
+\tgefunden in: Direktory '%s', PK-File '%s'
+; \tfound at: dir '%s', pk-file '%s';
+MSG_MEMORY_ERROR
+Speicher Fehler!?!
+; memory error!?!;
+MSG_SUBSTITUTE_FONT
+** Ersetze Font %10s: %3ld --> %3ld dpi
+; ** Substituted font %-10s: %3ld --> %3ld dpi.;
+MSG_FONT_NOT_FOUND
+**** Font %10s (%3ld dpi) nicht gefunden! ****
+; **** Font %-10s (%3ld dpi) not found! ****;
+MSG_FONT_XY_NOT_FOUND
+**** Font %10s (%3ld x %3ld dpi) nicht gefunden! ****
+; **** Font %-10s (%3ld x %3ld dpi) not found! ****;
+MSG_TRY_SUBSTITUTE
+** Versuche Font %s zu ersetzen: %3ld --> %3ld dpi
+; ** Trying to substitute font %-10s: %3ld --> %3ld dpi.;
+MSG_PREDEF_FONT_IN_LIB
+Vordefinierter Font in FLib? Das Feature gibt es doch gar nicht!
+; Predefined font in library? This feature is not implemented!;
+MSG_PREDEF_FONT_NOT_FOUND
+**** Vordefinierter Font %10s (%3ld dpi) nicht gefunden!
+; **** predefined font %-10s (%3ld dpi) not found!;
+MSG_INTERNAL_ERROR_FMT_STR
+Interner Fehler (fmt_str == NULL)!
+; internal error (fmt_str == NULL)!;
+MSG_BYTES_USED_FOR_CHARS
+%ld Bytes für %ld ausgepackte Zeichen benötigt.
+; %ld bytes used for %ld unpacked chars.;
+MSG_SEARCHPATH_LIB_ENTRIES_NR
+Der Suchpfad für Fontlibraries hat %ld Einträge:
+; The search path for fontlibraries has %ld entries:;
+MSG_SEARCHPATH_PK_ENTRIES_NR
+Der Suchpfad für PK-Files hat %ld Einträge:
+; The search path for pk-files has %ld entries:;
+MSG_LOG_FONTDEF_START
+-------- Beginn des Fontdefinitions File --------
+; -------- start of fontdef file --------;
+MSG_LOG_FONTDEF_LIB_FOUND
+flib\t\t%lu\t%s\t\t\; Library gefunden
+; flib\t\t%lu\t%s\t\t; library found;
+MSG_LOG_FONTDEF_LIB_DEF
+flib\t\t%lu\t%s\t\t\; Library nur definiert
+; flib\t\t%lu\t%s\t\t; library only defined;
+MSG_LOG_FONTDEF_LIB_NOT_FOUND
+\; ** flib\t%lu\t%s\t\t\; Library *nicht* gefunden
+; ; ** flib\t%lu\t%s\t\t; library *not* found;
+MSG_LOG_FONTDEF_PK_FOUND
+font\t\t%s\t%lu\t%s\t\t\; Font gefunden
+; font\t\t%s\t%lu\t%s\t\t; font found;
+MSG_LOG_FONTDEF_PK_PREDEF
+font\t\t%s\t%lu\t%s\t\t\; Font vordefiniert
+; font\t\t%s\t%lu\t%s\t\t; font predefined;
+MSG_LOG_FONTDEF_PK_PREDEF_NOT_FOUND
+\; ** font\t%s\t%lu\t%s\t\t\; Vordefinierter Font *nicht* gefunden
+; ; ** font\t%s\t%lu\t%s\t\t; predefined font *not* found;
+MSG_LOG_FONTDEF_NR_BASE_PK_DIRS_PREDEF
+\;%ld Basis PK-Direktories sind vordefiniert
+; ; %ld base pk-directories are predefined;
+MSG_LOG_FONTDEF_NO_PK_DIRS_PREDEF
+\; %ld PK-Direktories sind vordefiniert
+; ; %ld pk-directories are predefined;
+MSG_LOG_FONTDEF_END
+-------- Ende des Fontdefinitions File --------
+; -------- end of fontdef file --------;
+MSG_CANT_OPEN_FONT_CONFIG
+*** Font/FLib Konfiguarationsfile '%s' kann nicht geöffnet werden!
+; *** Can't open font/flib configuration file \"%s\"!;
+MSG_LOAD_FONT_CONFIG
+Lese Font/FLib Konfiguarationsfile '%s'.
+; Loading font/flib configuration file \"%s\".;
+MSG_CANT_PARSE_FONT_CONFIG_LINE
+Verstehe Zeile '%s' nicht!
+; Can't parse line \"%s\"!;
+MSG_TOO_FEW_ARGS
+Zu wenige Argumente für das '%s' Kommando!
+; Too few arguments for the \"%s\" command!;
+MSG_NOT_A_VALID_INT
+Keine gültige Integer Zahl '%s'!
+; Not a valid integer \"%s\"!;
+MSG_CANT_READ_DPI_FONT_COMM
+Kann die dpi Angabe des 'font' Kommandos nicht lesen!
+; Can't read dpi of the \"font\" command!;
+MSG_UNKNOWN_KEYWORD_IN_CONFIG
+Unbekanntes Schlüsselwort '%s' im Fontkonfiguartionsfile!
+; Unknown keyword \"%s\" in font configuration file!;
+MSG_FONT_REMOVED
+Font %10s (%3ld) aus dem RAM entfernt.
+; Font %-10s (%3ld dpi) removed.;
+MSG_FONT_REMOVED_USED
+Font %10s (%3ld dpi) aus dem RAM entfernt. \t(Fontspeicher zu %3ld%% gefüllt)
+; Font %-10s (%3ld dpi) removed.   \t(font memory used: %3ld%%);
+MSG_ERROR_IN_FONTVOLS
+Fehler im 'fontvols' File. rmisse %s! (Zeile %d)
+; Error in \"fontvols\" file. Missing %s! (line %d);
+MSG_FONTVOLS_FIRST_DOT
+ersten '.'
+; first `.';
+MSG_COPY_FONT_TO_CACHE
+Kopiere Font '%s' (%ld dpi) in den Font Cache '%s'.
+; Copy font \"%s\" (%ld dpi) to font cache \"%s\".;
+MSG_CANT_COPY_FONT_TO_CACHE
+Kann Font nicht in das Font Cache kopieren!
+; Can't copy pk-font to font cache!;
+;
+;
+;########################################################
+;
+;
+MSG_PARSE_BAD_NR_ARGS
+Falsche Anzahl von Argumenten in Zeile %d: '%s'.
+; Bad number of arguments line %d: \"%s\".;
+MSG_PARSE_BAD_ON_OFF
+Falscher on/off Schalter in Zeile %d: '%s'.
+; Bad on/off switch in line %d: \"%s\".;
+MSG_PARSE_CANT_PARSE
+Verstehe Zeile %d nicht: '%s'.
+; Can't parse line %d: \"%s\".;
+MSG_PARSE_CANT_PARSE_IGNORE
+Verstehe Zeile %d nicht: '%s', ignoriere sie.
+; Can't parse line %d: \"%s\", ignoring it.;
+MSG_PARSE_ILLEG_ARG
+Ungültiges Argument zum Schlüsselwort %s: '%s'.
+; Illegal argument to keyword '%s' : \"%s\".;
+;
+;
+;########################################################
+;
+;
+MSG_UNPACK_RECURSIV
+Recursiver Wiederholungs-Zähler im PK-File!
+; recursive repeat count in pk file;
+MSG_UNPACK_MORE_BITS
+Fehler beim Dekomprimieren eines PK-Files: Zuviele Daten als erwartet!
+; error while unpacking; more bits than required;
+;
+;
+;########################################################
+;
+;
+MSG_PORT_ALREADY_EXISTS
+Port '%s' ist existiert bereits!
+; \"%s\" port already exists!;
+MSG_CANT_OPEN_PRINTER_PORT
+Kann Drucker-Port '%s' nicht öffnen!
+; can't open printer port %s!;
+MSG_CREATEEXTIO_FAILED
+'CreateExtIO' fehlgeschlagen!
+; \"CreateExtIO\" failed!;
+MSG_YOU_PRINT_GENERIC
+Es wird mit dem System-Druckertreiber gedruckt:
+; You print with the generic printer:;
+MSG_GENERIC_PRINT_NAME
+  Name: %s, Version: %d, Revision: %d
+;   Name : '%s', Version = %d, Revision = %d.;
+MSG_GENERIC_PRINT_RESO
+  Auflösung: X=%d dpi, Y=%d dpi, Dichte=%d
+;   Resolution: X = %d dpi, Y = %d dpi, density = %d.;
+MSG_GENERIC_PRINT_MAXD
+  MaxXDots=%d, MaxYDots=%d
+;   MaxXDots=%d, MaxYDots=%d.;
+MSG_PRT_ERROR_NO_ERROR
+kein Printer-Fehler
+; no printer error;
+MSG_PRT_ERROR_ABORT
+Drucken abgebrochen
+; printing aborted.;
+MSG_PRT_ERROR_NO_GFX
+Drucker ist nicht graphikfähig
+; printer cannot output graphics.;
+MSG_PRT_ERROR_ILLDIM
+Druck Dimensionen sind unzulässig
+; print dimensions illegal.;
+MSG_PRT_ERROR_NO_MEM_VARS
+Kein Speicher für die internen Variablen
+; no memory for internal variables.;
+MSG_PRT_ERROR_NO_MEM_BUFF
+Kein Speicher für den Drucker Puffer
+; no memory for print puffer.;
+MSG_PRT_ERROR_UNKNOWN_ERR
+(unbekannter Drucker Fehler)
+; (unknown printer error);
+MSG_PRT_ERR
+Printer Fehler: %s
+; Printer-Error: %s;
+MSG_TRY_CLEAR_PRT
+Versuche Drucker zurückzusetzen.
+; Trying to clear printer.;
+MSG_CLEAR_FAILED
+Drucker Initialisierung fehlgeschlagen.
+; Zero failed!;
+;
+;
+;########################################################
+;
+;
+MSG_GETOPT_LINEBUF_OVERFLOW
+Zeilenbuffer Überlauf in GetOptError!
+; Line overflow in GetOptError!;
+MSG_GETOPT_ERROR
+*** Fehler: %s
+; *** Error: %s;
+MSG_GETOPT_ERROR_KEY
+*** Fehler: Schlüsselwort %.20s (%.50s)
+; *** Error: Keyword %.20s (%.50s);
+MSG_GETOPT_NO_OPTION_STRING
+Kein Options-String angegeben!
+; no option-string given!;
+MSG_GETOPT_MISSING_NUM
+Zahl fehlt!
+; missing number!;
+MSG_GETOPT_NO_NUMBER
+'%.20s' ist keine Zahl!
+; \"%.20s\" is no number!;
+MSG_GETOPT_MISSING_REAL
+Gleitzahl fehlt!
+; missing real number!;
+MSG_GETOPT_NO_REAL
+'%.20s' ist keine Gleitzahl!
+; \"%.20s\" is no real number!;
+MSG_GETOPT_MISSING_TEX
+TeX Dimension fehlt!
+; missing TeX dimension!;
+MSG_GETOPT_NO_TEX
+'%.20s' ist keine TeX Dimension!
+; \"%.20s\" not a TeX dimension!;
+MSG_GETOPT_UNKNOWN_PARAM
+Unbekannter Parameter Typ!
+; Unknown parameter type!;
+MSG_GETOPT_WRONG_ONOFF_PARAM
+Falscher Parameter: '%.20s anstatt von (on/off)!
+; Wrong parameter. '%.20s' instead of (on/off)!;
+MSG_GETOPT_NO_PARAM_EXPECTED
+Kein Parameter erwartet (%.20s)!
+; No parameter expected (%.20s)!;
+MSG_GETOPT_UNKNOWN_KEYWORD
+Unbekanntes Schlüsselwort '%.20s'!
+; Unknown keyword \"%.20s\"!;
+MSG_GETOPT_TOO_MANY_ENV_ARGS
+Zu viele Argumente im Environment String!
+; Too many arguments in the environment string!;
+MSG_GETOPT_NO_MEM_FOR_ENV
+Kein Speicher für das Auswerten des Environment String!
+; No memory for the environment string!;
+MSG_GETOPT_SUPER_FILE
+Überflüssiger Dateiname '%.20s'!
+; Supernumerary file \"%.20s\"!;
+MSG_GETOPT_NO_INFO
+Finde '%s.info' nicht!
+; Can't get '%s.info'!;
+MSG_GETOPT_PARAM_REQU
+Parameter erwartet!
+; Parameter required!;
+MSG_GETOPT_TAB_TAB_DEF
+\t\t\t%.50s (Def.: 
+; \t\t\t%.50s (def.: ;
+MSG_GETOPT_TAB_DEF
+\t%.50s%.50s (Def.: 
+; \t%.50s%.50s (def.: ;
+MSG_GETOPT_NO_DEFAULT
+<kein Default>
+; <no def>;
+MSG_GETOPT_PRESS_RET
+(drücke <Ret> für mehr Hilfe) ?
+; (press <ret> for more help) ? ;
+;
+;
+;########################################################
+;
+;
+MSG_SPECIAL_WAIT_FOR_PICT
+Warte auf das Bild von SpecialHost ...
+; wait for picture...;
+MSG_SPECIAL_EXPT_REPLY_SPECIAL
+AC_REPLY_SPECIAL erwartet, %d empfangen!
+; I have expected AC_REPLY_SPECIAL, I found %d!;
+MSG_SPECIAL_RET_FROM_SPECIAL
+Rückgabe Wert von SpecialHost: %d!
+; Return from \"special\" program: %d!;
+MSG_SPECIAL_EXPT_REPLY_TPIC
+AC_REPLY_TPIC erwartet, %d empfangen!
+; I expected AC_REPLY_TPIC, I found %d!;
+MSG_SPECIAL_EXPT_REPLY_BITMAP
+AC_REPLY_BITMAP erwartet, %d empfangen!
+; I expected AC_REPLY_BITMAP, I found %d!;
+MSG_SPECIAL_PICT_RECEIVED
+Bild empfangen.
+; picture received;
+MSG_SPECIAL_FOUND_NO_SPECIAL
+Kein 'SpecialHost' Programm aktiv!
+; Found no \"special\" program!;
+MSG_SPECIAL_CANT_CREATE_PORT
+Kann keinen 'special' Port einrichten!
+; Can't create \"special\" reply-port!;
+;
+;
+;########################################################
+;
+;
+MSG_NO_DVI_FILENAME
+Kein DVI Filenamen angegeben!
+;
+MSG_CANT_OPEN_DVI_FILE
+Kann DVI File \"%s\" nicht öffnen!
+;
+MSG_INCOMPLETE_DVI_REVERSE
+DVI FIle ist defekt: Kann nicht in umgekehrter Reihenfolge drucken!
+;
+MSG_INCOMPLETE_DVI
+DVI File ist defekt!
+;
+MSG_UNDEFINED_DVI_COMMAND
+'%d' ist ein unbekanntes DVI Kommando
+;
+;
+;########################################################
+;
+;
+MSG_NO_LAND_WITH_GENERIC
+Landscape Modus funktioniert nicht mit dem 'gerneric' Treiber!
+;
+MSG_NO_LAND_XDPI_YDPI
+Unterschiedliche x/y-Auflösung: Kann nicht im Landscape Modus drucken!
+;
+;
+;########################################################
+;
+;
+MSG_PRINTER_NAME
+\nDrucker \"%s\":
+;
+MSG_PRINTER_ID
+Drucker ID: \"%s\"
+;
+MSG_MISSING_KEYWORD
+\tVermisse Schlüsselwort \"%s\"!
+;
+MSG_INCOMPLETE_PRT_DESC
+%s: Unvollständige Drucker Beschreibung endet in Zeile %d!
+;
+MSG_USE_DRAFT_OPT
+Verwendbar mit %sdraft und %soptimize
+;
+MSG_PRT_RESO
+\tAuflösung %d/%d dpi.
+;
+MSG_PRT_WIDTH
+\tPapier Breite ist %d Pica-Zeichen.
+;
+MSG_PRT_PASSES
+\tDrucke in %d Durchgängen, Nadel Gruppierung: %d
+;
+MSG_PRT_BITMAP_HEIGHT
+\tBitmap Höhe: %d
+;
+MSG_PRT_DEF_BUF_SIZE
+\tNormale Buffer Größe %d.
+;
+MSG_PRT_MOVE_TO_POINT
+\tVerwende das \"setze auf Punkt\" (ESC '$') Kommando.
+;
+MSG_PRT_ONE_GRAPHIC_COMMAND
+\tSchicke die komplette Druck-Zeile in einem Graphik-Kommando.
+;
+MSG_PRT_SKIP_WITH_SPACES
+\tÜberspringe größere weiße Bereiche mit Leerzeichen.
+;
+MSG_PRT_BAD_RESO
+%s: Ungültige Auflösung in Zeile %d \"%s\"!
+;
+MSG_PRT_USE_RES
+Verwende entweder '<res>' oder '<hres>/<vres>'.
+;
+MSG_UNKNOWN_BLANKING
+%s: Unbekannte Blanking-Methode in Zeile %d \"%s\"
+;
+MSG_ILLEG_PARM_FOR_KEY
+%s: Ungültiger Parameter für Schlüsselwort \"%s\" in Zeile %d: %s
+;
+MSG_GROUPING_RANGE
+%s: Nadel-Gruppierung muß im Bereich [1..3] liegen (nicht %ld)!
+;
+MSG_CANT_OPEN_PRT_CONFIG
+Kann Drucker Konfigurationsfile \"%s\" nicht öffnen!
+;
+MSG_READ_PRT_CONFIG
+Lese Drucker Konfigurationsfile \"%s\".
+;
+MSG_THATS_ALL
+Das war's!
+;
+MSG_AVAILABLE_PRINTERS
+Verfügbare Drucker:\n
+;
+MSG_MAX_GROUPING
+Achtung: Maximaler Wert für \"grouping\" ist 6!
+;
+MSG_PRINT_WITH
+Drucke mit: %s
+;
+MSG_UNKNOWN_PRT_CONFIG
+%s: Unbekannte Drucker Konfiguration!
+;
+MSG_PRT_NO_OUTPUT_REDIRECTION
+Mit diesem Drucker ist keine Ausgabe-Umlenkung möglich!
+;
+MSG_CANT_OPEN_OUTPUT_FILE
+Kann Ausgabe File \"%s\" nicht öffnen!
+;
+MSG_NO_PRT_TYPE_FLAG
+Das Flag 'printer type' ist nicht gesetzt!
+;
+MSG_KEY_TWICE
+%s: Schlüsselwort in Zeile %d zweimal angegeben \"%s\"!
+;
+MSG_KEY_CONTEXT
+%s: Schlüsselwort in Zeile %d unzulässig \"%s\"!
+;
+;
+;########################################################
+;
+;
+MSG_CANT_WRITE_OUTPUT_FILE
+Kann nicht in das Ausgabefile schreiben!
+;
+;
+;########################################################
+;
+;
+MSG_WRONG_NUM_COPIES
+Anzahl der Kopien muß zwischen 1 und 99 liegen!
+;
+MSG_PRINT_AT_LEAST_ONE_PAGE
+Soll ich nun eine Seite drucken oder nicht?
+;
+MSG_WRONG_RESO_FORMAT
+Falsches Auflösungs-Format \"%s\"! Verwende \"RES nr\" oder \"RES hnr/vnr\".
+;
+MSG_NO_ODD_NO_EVEN
+Weder ungerade noch gerade Seiten drucken? Was bleibt übrig??
+;
+MSG_DENSITY_RANGE
+Druck-Dichte muß im Bereich 1 bis 7 liegen!
+;
+MSG_BITMAP_MEM_MINIMUM
+Speichergröße für die Bitmap wurde auf das Minimum %ld gesetzt.
+;
+MSG_TRY_HELP_SHOWP
+Bitte, probier erst mal \"%s help\" und \"%s PRINTER HELP [ShowPrinters]\".
+;
+MSG_UNKNOWN_PAPER_SIZE
+Ungültige Papiergröße '%s'!
+;
+MSG_REVERSE_TWOUP_ERR
+TWOUP arbeitet leider nicht mit REVERSE zusammen.
+;Sorry: TWOUP doesn't work together with REVERSE.
+;
+MSG_PAPER_WIDTH_HEIGHT_ERR
+Achtung: %s überschreibt die PAPER Option.
+;%s overwrites the PAPER option.
+;
+;
+;########################################################
+;
+;
+MSG_OPTIONS_HELP
+Gibt Hilfsinformationen aus
+MSG_OPTIONS_GUI
+benutze eine graphische Benutzeroberfläche
+MSG_OPTIONS_FONTDIR
+Dir. für Fontlibs und pk-Files
+MSG_OPTIONS_FONTMEM
+Größe des Fontspeichers
+MSG_OPTIONS_MAXBITMEM
+Maximale Größe der Seiten-BM
+MSG_OPTIONS_MAXBITMEM2
+(0 bedeutet unbeschränkte Größe)
+MSG_OPTIONS_PRTBUFFER
+Größe des internen Druck-Puffers
+MSG_OPTIONS_FROM
+drucke ab Seite
+MSG_OPTIONS_TO
+drucke bis Seite
+MSG_OPTIONS_NUMBER
+Anzahl der zu druckenden Seiten
+MSG_OPTIONS_ODD
+nur alle geraden Seiten drucken
+MSG_OPTIONS_EVEN
+nur alle ungeraden Seiten drucken
+MSG_OPTIONS_PHYSICAL
+verwende die Ordnung des DVI-Files
+MSG_OPTIONS_HOFFSET
+horizontaler Offset `num'[true]`unit'
+MSG_OPTIONS_HVOFFSET2
+(unit ist einer aus: pt|cm|in|pc|dd|cc|bp|mm|mi|cp)
+MSG_OPTIONS_VOFFSET
+vertikaler Offset `num'[true]`unit'
+MSG_OPTIONS_PRINTER
+Drucker Name
+MSG_OPTIONS_OPTIMIZE
+Druckausgabe optimieren?
+MSG_OPTIONS_DRAFT
+in Entwurfsqualität drucken?
+MSG_OPTIONS_DENSITY
+Druck Dichte
+MSG_OPTIONS_DENSITY2
+(nur für den 'generic' Drucker Treiber)
+MSG_OPTIONS_UNIDIRECT
+drucke nur in eine Richtung
+MSG_OPTIONS_COPIES
+Anzahl der Kopien (nur HP Drucker)
+MSG_OPTIONS_LANDSCAPE
+drucke im Querformat
+MSG_OPTIONS_TWOPAGE
+drucke zwei Seiten auf ein Blatt nebeneinander
+MSG_OPTIONS_MOFFSET
+Abstand zwischen den Seiten im TWOUP Modus
+MSG_OPTIONS_BOOK
+drucke die Seiten passend in Buch-Reihenfolge (zusammen mit TWOUP)
+MSG_OPTIONS_IFF
+gib die Seiten als IFF-Files aus
+MSG_OPTIONS_SKIPFORMFEED
+kein Seitenvorschub nach der letzten Seite
+MSG_OPTIONS_REVERSE
+drucke in umgekehrter Reihenfolge
+MSG_OPTIONS_RESOLUTION
+Auflösung der internen Bitmap
+MSG_OPTIONS_RESOLUTION2
+(Nur für besondere Effekte! Verwende RES n oder RES h/v)
+MSG_OPTIONS_WIDTH
+Seitenbreite (normalerweise unnötig)
+MSG_OPTIONS_HEIGHT
+Seitenhöhe (normalerweise unnötig)
+MSG_OPTIONS_PRELOAD
+lade sofort alle Fonts
+MSG_OPTIONS_FAST
+beschleunigte Device-Ausgabe
+MSG_OPTIONS_FAST2
+(benötigt unter 1.3 das \"pufer.device\")
+MSG_OPTIONS_MARK
+markiere alle verwendeten Fonts
+MSG_OPTIONS_STATISTIC
+mehr Ausgabe in das Logfile
+MSG_OPTIONS_DEBUGSTAT
+schließe das Logfile nach jeder Ausgabe
+MSG_OPTIONS_NOLOG
+kein Logfile anlegen
+MSG_OPTIONS_OUTTO
+Druck-Ausgabe in ein File umleiten
+MSG_OPTIONS_OUTTO2
+(wenn IFF und \"OutTo=CLIP\" dann geht die Seite in das Clipboard)
+MSG_OPTIONS_LOGNAME
+Pfad/Name des Logfiles
+MSG_OPTIONS_SHOWPRINTERS
+Zeige Druckerdefinitionen an
+MSG_OPTIONS_ACCOUNTING
+zähle jede Ausgedruckte Seite
+MSG_OPTIONS_PRIORITY
+setze Task Priorität
+MSG_OPTIONS_SPECIALHOST
+starte (wenn nötig) SpecialHost automatisch
+MSG_OPTIONS_PRINTAUTHOR
+zeige Autor Name
+MSG_OPTIONS_DVIFILE
+DVI-File
+MSG_OPTIONS_PUBSCREEN
+verwende öffentlichen Screen
+MSG_OPTIONS_PAPER
+verwende spezielle Seitengröße
+MSG_OPTIONS_PAPER2
+(verwende einen Bezeichner wie A3, A4, B3, ...)
+;
+;
+;########################################################
+;
+;
+MSG_MUI_MW_DESCRIPTION
+TeX Druckertreiber für PasTeX
+MSG_MUI_MW_TITEL
+Drucke ein DVI-File
+MSG_MUI_MW_DVIFILE
+f DVI-File
+MSG_MUI_MW_ASL_DVIFILE
+DVI-File auswählen
+MSG_MUI_MW_SEITEN
+s Drucke Seiten:
+MSG_MUI_MW_VON
+v von:
+MSG_MUI_MW_BIS
+b bis:
+MSG_MUI_MW_NUM
+a Anzahl Seiten zu drucken:
+MSG_MUI_MW_KOPIEN
+k Kopien:
+MSG_MUI_MW_DRUCKEN
+_Drucken
+MSG_MUI_MW_PREF
+_Einstellungen
+MSG_MUI_MW_CANCEL
+_Abbrechen
+MSG_MUI_MW_APP_FAIL
+Kann MUI Applikation nicht öffnen!
+MSG_MUI_MW_SEITEN_ALL
+alle
+MSG_MUI_MW_SEITEN_VONBIS
+von/bis
+MSG_MUI_ME_WINTITLE
+DVIprint Meldungen
+MSG_MUI_ME_CLOSE
+_schließen
+MSG_MUI_ME_TITEL
+Meldungen
+MSG_MUI_WO_WINTITLE
+DVIprint Ausdruck
+MSG_MUI_WO_TITEL
+Ausdruck
+MSG_MUI_WO_SEEMESS
+_Meldungen
+MSG_MUI_WORK_DOALL
+alle Seiten
+MSG_MUI_WORK_START
+der ersten Seite
+MSG_MUI_WORK_END
+zur letzten Seite
+MSG_MUI_WORK_FROM
+von
+MSG_MUI_WORK_PAGE
+Seite
+MSG_MUI_WORK_TO
+bis
+MSG_MUI_FA_WINTITLE
+Fehler
+MSG_MUI_FA_TITEL
+Schwerer Fehler!

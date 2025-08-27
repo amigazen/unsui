@@ -1,0 +1,56 @@
+\def\batchfile{adobe.ins}
+\input docstrip.tex
+\preamble
+
+Copyright (C) 1995 Sebastian Rahtz
+All rights reserved.
+
+This file is part of the PSNFSS2e package.
+\endpreamble
+\def\batchfile{adobe.dst}      % ignored in distribution
+\input docstrip.tex              % ignored in distribution
+
+\keepsilent
+
+\preamble
+
+Copyright (C) 1995 Sebastian Rahtz
+All rights reserved.
+
+This file is part of the PSNFSS2e package.
+-----------------------------------------
+
+This is a generated file.  Permission is granted to to customize the
+declarations in this file to serve the needs of your installation.
+However, no permission is granted to distribute a modified version of
+this file under its original name.
+\endpreamble
+
+
+\Msg{*** Generating .sty files ***}
+
+\generateFile{garamond.sty}{f}{
+  \from{adobe.dtx}{garamond}}
+
+\generateFile{basker.sty}{f}{
+  \from{adobe.dtx}{basker}}
+
+\generateFile{mtimes.sty}{f}{
+  \from{adobe.dtx}{mtimes}}
+
+\generateFile{bembo.sty}{f}{
+  \from{adobe.dtx}{bembo}}
+
+
+\ifToplevel{
+\Msg{***********************************************************}
+\Msg{*}
+\Msg{* To finish the installation you have to move the following}
+\Msg{* files into a directory searched by TeX:}
+\Msg{*}
+\Msg{* \space\space All *.sty}
+\Msg{*}
+\Msg{***********************************************************}
+}
+
+\endinput

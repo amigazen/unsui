@@ -1,0 +1,88 @@
+%% german.ins
+%%
+%% Docstrip installation instruction file
+%% for package `german', Version 2.5c of 96/05/01
+%%
+%% Copyright (C) 1995, 1996 by B.Raichle and DANTE e.V.
+%%                          All rights reserved.
+%%
+\def\batchfile{german.ins}
+\input docstrip.tex
+\keepsilent
+\preamble
+
+This file is part of the GERMAN.STY package,
+a PACKAGE for writing german texts with
+plainTeX or LaTeX version 2e/2.09.
+
+-- Copyright 1996 by B.Raichle and DANTE e.V. All rights reserved. --
+Maintained by Bernd Raichle (Uni Stuttgart),
+using ideas by H.Partl (TU Wien, Uni.f.Bodenkultur Wien)
+and many other people.
+
+
+Copying of this file is authorized only if either
+(1) you make absolutely no changes to your copy, including name, or
+(2) if you do make changes, you name it something other than
+    german.dtx, german.sty, german.tex, or german.doc.
+This restriction helps ensure that all styles developed for
+DANTE e.V. (the users group of german speaking TeX users)
+remain identical.
+
+You are NOT ALLOWED to distribute this file alone, atleast you have to
+include the file `germdoc.tex' containing the documentation, and the
+files `german.dtx' and `german.ins' containing the documented macro
+source.  You are NOT ALLOWED to take money for the distribution or use
+of either this file or a changed version, except for some nominal
+charge for copying etc.
+
+Error Reports in case of UNCHANGED versions to
+
+               Bernd Raichle
+               Stettener Str. 73
+               73732 Esslingen
+               Federal Republic of Germany
+        Email: raichle@Informatik.Uni-Stuttgart.DE
+
+or
+
+               DANTE, Deutschsprachige Anwendervereinigung TeX e.V.
+               Koordinator ``german.sty''
+               Postfach 10 18 40
+               69008 Heidelberg
+               Federal Republic of Germany
+        Email: german@dante.de
+
+\endpreamble
+\Msg{*** Generating files ***}
+\generateFile{german.sty}{t}{\from{german.dtx}{}}
+\generateFile{german.drv}{t}{\from{german.dtx}{driver}}
+\preamble
+\endpreamble
+\generateFile{hyphxmpl.cfg}{t}{\from{german.dtx}{hyphcfg}}
+\Msg{************************************************************}
+\Msg{*}
+\Msg{* To finish the installation you have to move the following}
+\Msg{* files into a directory searched by TeX:}
+\Msg{*}
+\Msg{* \space\space german.sty}
+\Msg{*}
+\Msg{* There exists a separate file `germdoc.tex' containing}
+\Msg{* the user documentation.  Please get this file, run it}
+\Msg{* through LaTeX (LaTeX2e or LaTeX 2.09):}
+\Msg{*}
+\Msg{* \space\space latex germdoc.tex}
+\Msg{*}
+\Msg{* and follow the instructions how to install the hyphenation}
+\Msg{* patterns when creating format files.  The file `hyphxmpl.cfg'}
+\Msg{* can be used as an example for LaTeX2e's `hyphen.cfg' file.}
+\Msg{*}
+\Msg{* (Gurus only!) To produce the implementation documentation you}
+\Msg{* can run the file `german.drv' through LaTeX:}
+\Msg{* \space\space latex german.drv}
+\Msg{*}
+\Msg{* Happy TeXing}
+\Msg{************************************************************}
+\endinput
+%% 
+%% End of file `german.ins'.

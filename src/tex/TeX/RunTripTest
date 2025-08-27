@@ -1,0 +1,37 @@
+;
+; Script does run the TeX-Trip-Test
+;
+; To use it assign first "TeX-test-dir:" to the directory where
+; initex is. The script does change the TEXCONFIG environmant variable.
+; To do a quik check, if initex passes the Trip-Test, check the diff
+; files in RAM:diffs.
+;
+; 25.May.95 Georg Heﬂmann
+;
+
+failat 11
+
+assign TripSrcDir: TeX:src/tex/trip
+delete ram:trip all quiet
+makedir ram:trip
+delete ram:diffs all quiet
+makedir ram:diffs
+cd ram:trip
+
+copy TripSrcDir:trip.tex ""
+copy TripSrcDir:trip.tfm ""
+copy TeX:config/trip.cnf tex.cnf
+copy tex.cnf 		 bigtex.cnf
+setenv TEXCONFIG ram:trip
+
+TeX-test-dir:initex <TripSrcDir:trip1.in
+diff TripSrcDir:tripin.log trip.log >ram:diffs/diff1
+
+TeX-test-dir:initex <TripSrcDir:trip2.in >trip.fot
+diff TripSrcDir:trip.log trip.log >ram:diffs/diff2
+diff TripSrcDir:trip.fot trip.fot >ram:diffs/diff3
+
+tex:bin/dvitype trip.dvi <TripSrcDir:dvitype.in
+diff TripSrcDir:trip.typ dvitype.out >ram:diffs/diff4
+
+popcd

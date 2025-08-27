@@ -1,0 +1,31 @@
+
+PasTeX 1.4 Source:  initex / virtex
+-----------------------------------
+
+
+How to compile:
+	Install SAS/C 6.55 and execute DoIt.
+	After a while you have 6*2 executables in the subdirectories
+	of TeX:src/TeX/tex.
+
+How to test:
+	Go in one of the directories with the executables
+	and type 'assign TeX-test-dir: ""'
+	The start TeX:src/TeX/RunTripTest.
+	Finally check the files in RAM:diffs/*
+
+
+Authors:
+	Many.
+	Changes made from Bernd Raichle and Georg Heﬂmann.
+	EVPath is from Giuseppe GhibÚ <ghibo@galileo.polito.it>.
+
+Copyright:
+	The PasTeX version of initex/virtex is covert by
+	the GNU general public license (see file COPYING).
+
+
+Georg Heﬂmann (hessmann@informatik.uni-hamburg.de)
+26.May.95
+
+

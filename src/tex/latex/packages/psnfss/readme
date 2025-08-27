@@ -1,0 +1,18 @@
+A set of LaTeX2e package files to load the common PostScript fonts,
+together with a special package for Lucida fonts. This corresponds
+to the description in the LaTeX Companion, p. 334. The collection is
+useless without the font description (fd) and font metric files for
+the font families you wish to use. These can be obtained from the CTAN
+archives or your TeX supplier. On CTAN they are in fonts/psfonts,
+divided up by foundry (adobe, monotype etc), and then by 8 character
+family name. Each directory has sets of .vf, .tfm, and .fd files which
+you have to install where TeX will read them. It also has a .map file
+suitable for appending to the psfonts.map file of dvips.
+
+A more detailed description can be obtained by processing psnfss2e.tex.
+
+See lucida.txt to see how the  Lucida Bright fonts and their
+names are used, relative to the names which Y&Y supply them in.
+
+Sebastian Rahtz
+s.rahtz@elsevier.co.uk

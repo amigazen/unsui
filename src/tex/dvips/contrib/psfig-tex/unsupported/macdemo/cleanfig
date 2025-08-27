@@ -1,0 +1,3 @@
+#!/bin/csh -f
+tr \\15 \\12 | grep -v %%EOF | sed -e 's/^%%BoundingBox: ? ? ? ?/%%BoundingBox: 0 0 600 800/g' | awk -f stripfonts.awk 
+

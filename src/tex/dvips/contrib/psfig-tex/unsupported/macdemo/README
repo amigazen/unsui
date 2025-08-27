@@ -1,0 +1,76 @@
+NOTE: Much of this information and code is now obselete, since
+robust EPSF postscript can be obtained from many Mac applications 
+(such as canvas and photoshop.) With system 7, Postscript can often
+be routed to a file using a dialog box option rather than cmd-F/K.
+
+=====================================================================
+=====================================================================
+Tips on redirecting Mac postscript (when there is no "Save as...EPSF")
+
+1) How to capture a figure and the LaserPrep prolog into a disk file:
+
+Many different methods exist to appempt to do this, some of which As
+of this writing, it is possible to convince MacDraw to place a Postscript
+description of a figure in a file rather than sending it directly to a
+LaserWriter by hitting clover-F immediately after clicking
+`OK' on the print dialog box. The file is always called `PostScript'
+and is left in the folder MacDraw was started in. Use a communications
+program to move the file over to the host on which TeX is running.
+
+MacDraw creates a output file in the form of `QuickDraw' calls, which
+are interpreted as a set of PostScript procedures. These procedures
+are defined in what we call the Macintosh LaserPrep prolog, which must
+be downloaded before Macintosh figures are sent to the printer. By
+using clover-K rather than clover-F in the key sequence above both the
+prolog and figure will be captured in the PostScript file.  The prolog
+can be extracted by hand-editing out the portion of the clover-K file
+not also present in the clover-F file.  
+
+You need to always make sure that you keep a version of the prolog
+that was resident in the Mac when the figures was generated,
+since the prolog is usually not backward compatible. E.g. figures
+which rely on laseprep version 68 will not print using laserprep
+verion 70. (Thanks Apple!)
+
+2) Make the postscript suitible for including as an encapsulated
+postscript figure.
+
+Unfortunately, the postscript produced by most versions of the
+LaserWriter driver is not well suited to be included directly as a
+psfig figure.  Most versions of the LaserPrep do not include an
+accurate bounding box comment in the PostScript files they produce;
+figures created by these systems will have to have their bounding box
+added by hand. "graphpaper.ps" is often useful for determining the
+bounding box of a figure. The "cleanfig" shell script adds a default
+bounding box, removes nasty "%%EOF" lines, converts CF-LF (useful for
+files that have been moved across appletalk), and strips away
+downloaded fonts.
+
+NOTE: fonts are stripped by the cleanfig program because I found that
+my documents were crashing on figures that were downloading fonts that
+were already printer-resident. Cleanfig will remove all fonts, so if
+you are using non-resident fonts in your figures you will have to
+modify cleanfig to not stip out the downloading of those fonts.
+
+3) Make sure the Laserprep prolog is loaded in the printer
+before printing your document.
+
+Other Macintoshes will often automatically download the Laserprep
+code into the printer whenever access the printer and find it
+does not have the code already downloaded.
+
+The laserprep prolog can be manually sent down by either
+by prepending it using /bin/cat:
+	cat lprep70.pro doc.ps | lpr 
+or with the dvips special header command at the top of your latex file:
+	\special{header=lprep70.procs} 
+The only difference between the ".pro" and ".procs" version is what
+structuring comments are included. The ".procs" version works well
+as the argument to a \special{header=..} within dvips (e.g. it
+will preview correctly under NeWS).
+
+4) Good luck!  (you may need it.) 
+"macdemo.tex" containts a test document that including four version 68
+mac figures.
+
+======================================================================

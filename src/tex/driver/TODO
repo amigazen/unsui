@@ -1,0 +1,39 @@
+
+What is still missing in ShowDVI and DVIprint?
+==============================================
+
+
+Both programs:
+--------------
+
+ * Virtual font support. 
+   Virtual fonts are not so complicicated, but to implement them
+   in my drivers, there are some bigger changes in util/new_font.?
+   necessary. :-(
+
+ * New documentation!
+
+
+ShowDVI:
+--------
+
+ * New menu layout.
+ * Preference window to setup all config values of the SHowDVI.config file.
+ * Online-Help. It's mostly finished, but the help file (config/ShowDVI.guide)
+   is only experimental.
+ * Antialiasing/gray support like xdvi (?).
+
+
+DVIprint:
+---------
+
+ * Finish the MUI GUI. To setup all (nearly) CLI switches.
+ * Support for more printers (font downloading?).
+
+
+And more....?
+
+
+Georg Heﬂmann (hessmann@informatik.uni-hamburg.de)
+28. May 95
+

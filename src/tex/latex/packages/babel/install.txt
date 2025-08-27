@@ -1,0 +1,90 @@
+                           Babel Installation Guide
+ 
+                                  5 July 1995
+
+
+        When you install the babel system you have first to decide
+        whether you want to make a new format file. If you don't, you
+        miss some of the functionality of the babel system, but you
+        can then skip steps 2 through 6 . If you do want to build a
+        new format, start with step 1.
+
+        When you want to produce the full listing of all the source
+        files in the babel system run babel.drv through LaTeX, then
+        use MakeIndex to produce babel.ind using bbind.ist as a style
+        file and use MakeIndex to produce babel.glo using bbglo.ist as
+        a style file. Then run LaTeX on babel.drv again.
+
+        When you want to use the babel system with plain TeX you will
+        have to produce slightly different stripped files. Add the
+        `compat' option to each line in the file babel.ins.
+
+        1 Make sure that you have the Docstrip (version 2) program
+          available (it is part of the LaTeX2e distribution);  then
+          run the file babel.ins through TeX. 
+          This strips all the .dtx files of the comments and produces
+          fast loadable versions of the files. It will tell that you
+          have to move the resulting .sty and .def files into a
+          directory where TeX can find them.
+          Do that now.
+
+          Docstrip also produces two files called babel.drv and
+          user.drv. You can use babel.drv to produce the full
+          documented source listing of the babel system. (Which is
+          also provided as babel.dvi) You can use user.drv to produce
+          a short document that describes the features of each
+          language specific file.
+
+        2 Make sure you have the hyphenation patterns available for
+          the languages that you intend to use. If you don't have
+          them, you may be able to find them in CTAN, in the directory:
+          /tex-archive/language/hyphenation.
+          If you happen to have a set of patterns that is not
+          available there you could make it available by either
+          putting it in the /incoming directory or sending it to me.
+
+        3 Make sure that the iniTeX you are using has a sufficiently
+          large trie_size and trie_op_size to be able to process all
+          the hyphenation patterns that you wish to load into your
+          format. If you can recompile TeX, do so (with enlarged
+          parameters) if you need more than one or two languages.
+
+        4 The docstripping process will have produced a file called
+          hyphen.cfg. This file will be loaded when you build a
+          LaTeX format. To build a plain format with the babel system
+          preloaded you should make sure that the standard file
+          `hyphen.tex' has a different name. You could for instance
+          rename it to UShyphen.tex, to indicate American English
+          hyphenation patterns.
+
+        5 Check the hyphenation patterns that you have available and
+          want to load into the format. For each language that you
+          want to hyphenate correctly you need a hyphenation pattern.
+          List them all in the file `language.dat'. The file that is
+          in the distribution serves as an example of what you have to
+          put in there.
+          **NOTE The file language.dat that is in the distribution
+          ** loads hyphen.tex for english. When you want to use babel
+          ** with plain TeX you will have to rename the file
+          ** hyphen.tex and therefore you will have to change
+          ** language.dat to reflect that change.
+
+        6 Run iniTeX, telling it to load your favorite macro package
+          (ie plain or latex).
+          When you build a LaTeX format iniTeX will find the file
+          hyphen.cfg (provided that you have stored it in the
+          correct place).
+          When you build a plain TeX format iniTeX tries to find
+          hyphen.tex. If you have renamed or moved that file iniTeX
+          will tell you that the file can't be found and ask you for a
+          different name. Enter `hyphen.cfg' at this point.
+          If you haven't renamed or moved hyphen.tex the format will be
+          built *without* the babel code.
+
+          *Beware*: some implementations of TeX only look in the
+          current directory when the \openin primitive is used. If
+          your TeX does that you need to put the file `languages.dat'
+          in the same directory where you build your format.
+
+
+--- Copyright 1995 Johannes Braams.  All rights reserved ---

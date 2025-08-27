@@ -1,0 +1,6 @@
+FROM LIB:c.o "TeXWhereIs.o"
+TO "TeXWhereIs"
+LIB EVPaths.lib LIB:sc.lib LIB:amiga.lib
+ADDSYM
+NOICONS
+

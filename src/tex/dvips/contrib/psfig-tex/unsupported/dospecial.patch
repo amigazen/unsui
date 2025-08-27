@@ -1,0 +1,37 @@
+*** dospecial.c	Tue Jan 15 16:17:59 1991
+--- dospecial.c.new	Sun Oct 20 13:14:10 1991
+***************
+*** 620,628 ****
+          } else if (strncmp(p+3, " plotfile ", 10) == 0) {
+             char *sfp ;
+             p += 13;
+!            for (sfp = p; *sfp && *sfp != ' '; sfp++) ;
+             *sfp = '\0';
+!            figcopyfile (p, 0);
+          } else
+             nlcmdout(&p[3]);
+          return;
+--- 620,642 ----
+          } else if (strncmp(p+3, " plotfile ", 10) == 0) {
+             char *sfp ;
+             p += 13;
+! 	   /*
+! 	    *  Fixed to allow popen input for plotfile
+! 	    *  TJD 10/20/91
+! 	    */
+! 	   while (*p == ' ') p++;
+! 	   if (*p == '"') {
+! 	     p++;
+! 	     for (sfp = p; *sfp && *sfp != '"'; sfp++) ;
+!            } else {
+! 	     for (sfp = p; *sfp && *sfp != ' '; sfp++) ;
+!            }
+             *sfp = '\0';
+! 	   if (*p == '`') 
+! 	     figcopyfile(p+1, 1);
+! 	   else
+! 	     figcopyfile (p, 0);
+! 	   /* End TJD changes */
+          } else
+             nlcmdout(&p[3]);
+          return;

@@ -1,0 +1,70 @@
+%
+% CONTENTS OF THE Babel DISTRIBUTION (3.5, 1995/07/05)
+% =====================================================
+%
+% Documentation:
+% --------------
+%
+% 00readme.txt     --  The distribution guide.
+% install.txt      --  How to install Babel.
+% manifest.txt     --  This file.
+% bugs.txt         --  How to submit a bug report for babel.
+% todo.txt         --  A list of things that need to be done for a
+%                      future release of the babel system.
+% changes.txt      --  List of changes in reverse chronological order.
+% tb1202.tex       --  The source of the original article that appeared
+%                      in TUGboat, Volume 12 (1991), No. 2
+% tb1401.tex       --  The source of an update article that appeared in
+%                      in TUGboat, Volume 14 (1993), No. 1
+%
+% Kernel files:
+% -------------
+%
+% babel.dtx        --  The source for the common parts of Babel
+% bbcompat.dtx     --  The source for compatibility mode files
+% bbplain.dtx      --  The source for plain compatibility
+%
+% Language specific files:
+% ------------------------
+% bahasa.dtx       --  Support for the Bahasa language
+% breton.dtx       --  Support for the Breton language
+% catalan.dtx      --  Support for the Catalan language
+% croatian.dtx     --  Support for the Croatian language
+% czech.dtx        --  Support for the Czech language
+% danish.dtx       --  Support for the Danish language
+% dutch.dtx        --  Support for the Dutch language
+% english.dtx      --  Support for the English language
+% esperant.dtx     --  Support for the Esperanto language
+% estonian.dtx     --  Support for the Estonian language
+% finnish.dtx      --  Support for the Finnish language
+% francais.dtx     --  Support for the French language
+% galician.dtx     --  Support for the Galician language
+% germanb.dtx      --  Support for the German language
+% irish.dtx        --  Support for the Irish Gaelic language
+% italian.dtx      --  Support for the Italian language
+% lsorbian.dtx     --  Support for the Lower Sorbian language
+% magyar.dtx       --  Support for the Hungarian language
+% norsk.dtx        --  Support for the Norwegian languages
+% polish.dtx       --  Support for the Polish language
+% portuges.dtx     --  Support for the Portuguese language
+% romanian.dtx     --  Support for the Rumanian language
+% scottish.dtx     --  Support for the Scottish Gaelic language
+% slovak.dtx       --  Support for the Slovakian language
+% slovene.dtx      --  Support for the Slovenian language
+% spanish.dtx      --  Support for the Spanish language
+% swedish.dtx      --  Support for the Swedish language
+% turkish.dtx      --  Support for the Turkish language
+% usorbian.dtx     --  Support for the Upper Sorbian language
+%
+%
+% Installation script:
+% --------------------
+%
+% babel.ins        --  Unpacks the .dtx files
+%
+% Example files:
+% --------------
+% language.dat     --  an example file which show how to specify
+%                      hyphenation files
+% language.skelton --  An example file that can be used to build new
+%                      language definition files from scratch.

@@ -1,0 +1,282 @@
+% \iffalse meta-comment
+%
+% Copyright 1989-1995 Johannes L. Braams and any individual authors
+% listed elsewhere in this file.  All rights reserved.
+% 
+% For further copyright information any other copyright notices in this
+% file.
+% 
+% This file is part of the Babel system release 3.5.
+% --------------------------------------------------
+%   This system is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+% 
+%   For error reports concerning UNCHANGED versions of this file no more
+%   than one year old, see bugs.txt.
+% 
+%   Please do not request updates from me directly.  Primary
+%   distribution is through the CTAN archives.
+% 
+% 
+% IMPORTANT COPYRIGHT NOTICE:
+% 
+% You are NOT ALLOWED to distribute this file alone.
+% 
+% You are allowed to distribute this file under the condition that it is
+% distributed together with all the files listed in manifest.txt.
+% 
+% If you receive only some of these files from someone, complain!
+% 
+% Permission is granted to copy this file to another file with a clearly
+% different name and to customize the declarations in that copy to serve
+% the needs of your installation, provided that you comply with
+% the conditions in the file legal.txt from the LaTeX2e distribution.
+% 
+% However, NO PERMISSION is granted to produce or to distribute a
+% modified version of this file under its original name.
+%  
+% You are NOT ALLOWED to change this file.
+% 
+% 
+% \fi
+% \CheckSum{114}
+%\iffalse
+%    Tell the \LaTeX\ system who we are and write an entry on the
+%    transcript.
+%<*dtx>
+\ProvidesFile{bahasa.dtx}
+%</dtx>
+%<code>\ProvidesFile{bahasa.ldf}
+       [1995/07/04 v1.0b Bahasa support from the babel system]
+%
+% Babel package for LaTeX version 2e
+% Copyright (C) 1989 - 1995
+%           by Johannes Braams, TeXniek
+%
+% Bahasa Language Definition File
+% Copyright (C) 1994 - 1995
+%           by J"org Knappen, (knappen@vkpmzd.kph.uni-mainz.de)
+%              Terry Mart (mart@vkpmzd.kph.uni-mainz.de)
+%              Institut f\"ur Kernphysik
+%              Johannes Gutenberg-Universit\"at Mainz
+%              D-55099 Mainz
+%              Germany
+%
+% Please report errors to: J.L. Braams
+%                          JLBraams@cistron.nl
+%
+%    This file is part of the babel system, it provides the source
+%    code for the bahasa indonesia / bahasa melayu language definition
+%    file.  The original version of this file was written by Terry
+%    Mart (mart@vkpmzd.kph.uni-mainz.de) and J"org Knappen
+%    (knappen@vkpmzd.kph.uni-mainz.de).
+%<*filedriver>
+\documentclass{ltxdoc}
+\newcommand*\TeXhax{\TeX hax}
+\newcommand*\babel{\textsf{babel}}
+\newcommand*\langvar{$\langle \it lang \rangle$}
+\newcommand*\note[1]{}
+\newcommand*\Lopt[1]{\textsf{#1}}
+\newcommand*\file[1]{\texttt{#1}}
+\begin{document}
+ \DocInput{bahasa.dtx}
+\end{document}
+%</filedriver>
+%\fi
+% \GetFileInfo{bahasa.dtx}
+%
+% \changes{bahasa-0.9c}{1994/06/26}{Removed the use of \cs{filedate}
+%    and moved identification after the loading of \file{babel.def}}
+%
+%  \section{The Bahasa language}
+%
+%    The file \file{\filename}\footnote{The file described in this
+%    section has version number \fileversion\ and was last revised on
+%    \filedate.}  defines all the language definition macros for the
+%    bahasa indonesia / bahasa melayu language. Bahasa just means
+%    `language' in bahasa indonesia / bahasa melayu. Since both
+%    national versions of the language use the same writing, although
+%    differing in pronounciation, this file can be used for both
+%    languages.
+%
+%    For this language currently no special definitions are needed or
+%    available.
+%
+% \StopEventually{}
+%
+%    As this file needs to be read only once, we check whether it was
+%    read before. If it was, the command |\captionsbahasa| is already
+%    defined, so we can stop processing. If this command is undefined
+%    we proceed with the various definitions and first show the
+%    current version of this file.
+%
+%    \begin{macrocode}
+%<*code>
+\ifx\undefined\captionsbahasa
+\else
+  \selectlanguage{bahasa}
+  \expandafter\endinput
+\fi
+%    \end{macrocode}
+%
+% \begin{macro}{\atcatcode}
+%    This file, \file{bahasa.sty}, may have been read while \TeX\ is
+%    in the middle of processing a document, so we have to make sure
+%    the category code of \texttt{@} is `letter' while this file is
+%    being read.  We save the category code of the @-sign in
+%    |\atcatcode| and make it `letter'. Later the category code can be
+%    restored to whatever it was before.
+%    \begin{macrocode}
+\chardef\atcatcode=\catcode`\@
+\catcode`\@=11\relax
+%    \end{macrocode}
+% \end{macro}
+%
+%    Now we determine whether the common macros from the file
+%    \file{babel.def} need to be read. We can be in one of two
+%    situations: either another language option has been read earlier
+%    on, in which case that other option has already read
+%    \file{babel.def}, or \texttt{bahasa} is the first language option
+%    to be processed. In that case we need to read \file{babel.def}
+%    right here before we continue.
+%
+%    \begin{macrocode}
+\ifx\undefined\babel@core@loaded\input babel.def\relax\fi
+%    \end{macrocode}
+%
+%    Another check that has to be made, is if another language
+%    definition file has been read already. In that case its
+%    definitions have been activated. This might interfere with
+%    definitions this file tries to make. Therefore we make sure that
+%    we cancel any special definitions. This can be done by checking
+%    the existence of the macro |\originalTeX|. If it exists we simply
+%    execute it, otherwise it is |\let| to |\empty|.
+%    \begin{macrocode}
+\ifx\undefined\originalTeX \let\originalTeX\empty\fi
+\originalTeX
+%    \end{macrocode}
+%
+%    When this file is read as an option, i.e. by the |\usepackage|
+%    command, \texttt{bahasa} could be an `unknown' language in which
+%    case we have to make it known. So we check for the existence of
+%    |\l@bahasa| to see whether we have to do something here.
+%
+% \changes{bahasa-0.9c}{1994/06/26}{Now use \cs{@patterns} to produce
+%    the warning}
+%    \begin{macrocode}
+\ifx\undefined\l@bahasa
+  \@nopatterns{Bahasa}
+  \adddialect\l@bahasa0\fi
+%    \end{macrocode}
+%
+%    The next step consists of defining commands to switch to (and
+%    from) the Bahasa language.
+%
+% \begin{macro}{\captionsbahasa}
+%    The macro |\captionsbahasa| defines all strings used in the four
+%    standard documentclasses provided with \LaTeX.
+% \changes{bahasa-1.0b}{1995/07/04}{Added \cs{proofname} for
+%    AMS-\LaTeX}
+%    \begin{macrocode}
+\addto\captionsbahasa{%
+  \def\prefacename{Pendahuluan}%
+  \def\refname{Pustaka}%
+  \def\abstractname{Ringkasan}% (sometime it's called 'intisari'
+                              %  or 'ikhtisar')
+  \def\bibname{Bibliografi}%
+  \def\chaptername{Bab}%
+  \def\appendixname{Lampiran}%
+  \def\contentsname{Daftar Isi}%
+  \def\listfigurename{Daftar Gambar}%
+  \def\listtablename{Daftar Tabel}%
+% Glossary: Daftar Istilah
+  \def\indexname{Indeks}%
+  \def\figurename{Gambar}%
+  \def\tablename{Tabel}%
+  \def\partname{Bagian}%
+%  Subject:  Subyek
+%  From:  Dari
+  \def\enclname{Lampiran}%
+  \def\ccname{cc}%
+  \def\headtoname{Kepada}%
+  \def\pagename{Halaman}%
+%  Notes (Endnotes): Catatan
+  \def\seename{lihat}%
+  \def\alsoname{lihat juga}%
+  \def\proofname{Proof}%  <-- needs translation
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\datebahasa}
+%    The macro |\datebahasa| redefines the command |\today| to produce
+%    Bahasa dates.
+%    \begin{macrocode}
+\def\datebahasa{%
+  \def\today{\number\day~\ifcase\month\or
+    Januari\or Februari\or Maret\or April\or Mei\or Juni\or
+    Juli\or Agustus\or September\or Oktober\or Nopember\or Desember\fi
+    \space \number\year}}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\extrasbahasa}
+% \begin{macro}{\noextrasbahasa}
+%    The macro |\extrasbahasa| will perform all the extra definitions
+%    needed for the Bahasa language. The macro |\extrasbahasa| is used
+%    to cancel the actions of |\extrasbahasa|.  For the moment these
+%    macros are empty but they are defined for compatibility with the
+%    other language definition files.
+%
+%    \begin{macrocode}
+\addto\extrasbahasa{}
+\addto\noextrasbahasa{}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+%    It is possible that a site might need to add some extra code to
+%    the babel macros. To enable this we load a local configuration
+%    file, \file{bahasa.cfg} if it is found on \TeX' search path.
+% \changes{bahasa-1.0b}{1995/07/02}{Added loading of configuration
+%    file}
+%    \begin{macrocode}
+\loadlocalcfg{bahasa}
+%    \end{macrocode}
+%
+%    Our last action is to make a note that the commands we have just
+%    defined, will be executed by calling the macro |\selectlanguage|
+%    at the beginning of the document.
+% \changes{bahasa-0.9d}{1995/05/05}{Use \cs{main@language} instead
+%    of \cs{selectlanguage}}
+%    \begin{macrocode}
+\main@language{bahasa}
+%    \end{macrocode}
+%    Finally, the category code of \texttt{@} is reset to its original
+%    value. The macrospace used by |\atcatcode| is freed.
+%    \begin{macrocode}
+\catcode`\@=\atcatcode \let\atcatcode\relax
+%</code>
+%    \end{macrocode}
+%
+% \Finale
+%%
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\endinput

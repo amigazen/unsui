@@ -1,0 +1,116 @@
+% \iffalse
+% LaTex2e support for Lucida, Lucida Math, Lucida Bright
+% and Lucida New Math.
+%
+% Sebastian Rahtz
+%
+% \fi
+\def\fileversion{1.5}
+\def\filedate{1995/11/19}
+%
+% \StopEventually{}
+%
+% As always we begin by identifying the latest version of this file
+% on the VDU and in the {\sf log} file.
+%    \begin{macrocode}
+\def\batchfile{lucida.ins}
+\input docstrip.tex
+\preamble
+
+Copyright (C) 1995 by Sebastian Rahtz
+All rights reserved.
+
+This file is part of the PSNFSS2e package.
+\endpreamble
+
+\def\batchfile{lucida.dst}    % ignored in distribution
+\input docstrip.tex            % ignored in distribution 
+
+\keepsilent
+
+\preamble
+Copyright (C) 1993 Sebastian Rahtz. All rights reserved.
+This is a generated file for *PSNFSS2e*.  Permission is granted to to
+customize the declarations in this file to serve the needs of your
+installation.  However, no permission is granted to distribute a
+modified version of this file under its original name.
+
+\endpreamble
+
+
+\Msg{*** Generating .fd files for using Lucida fonts ***}
+
+
+
+\generateFile{OT1lb.fd}{f}{
+        \from{lucida.dtx}{lucidascale,OT1lb}}
+\generateFile{OT1lbs.fd}{f}{
+        \from{lucida.dtx}{lucidascale,OT1lbs}}
+\generateFile{OT1lbt.fd}{f}{
+        \from{lucida.dtx}{lucidascale,OT1lbt}}
+\generateFile{OT1lbf.fd}{f}{
+        \from{lucida.dtx}{lucidascale,OT1lbf}}
+\generateFile{OMLplcm.fd}{f}{
+        \from{lucida.dtx}{lucidascale,OMLplcm}}
+\generateFile{OMSplcy.fd}{f}{
+        \from{lucida.dtx}{lucidascale,OMSplcy}}
+\generateFile{OMXplcv.fd}{f}{
+        \from{lucida.dtx}{lucidascale,OMXplcv}}
+\generateFile{OMLhlcm.fd}{f}{
+        \from{lucida.dtx}{lucidascale,OMLhlcm}}
+\generateFile{OMShlcy.fd}{f}{
+        \from{lucida.dtx}{lucidascale,OMShlcy}}
+\generateFile{OMXhlcv.fd}{f}{
+        \from{lucida.dtx}{lucidascale,OMXhlcv}}
+\generateFile{LMRhlcm.fd}{f}{
+        \from{lucida.dtx}{lucidascale,LMRhlcm}}
+\generateFile{OMLlbm.fd}{f}{
+        \from{lucida.dtx}{lucidascale,OMLlbm}}
+\generateFile{OMSlby.fd}{f}{
+        \from{lucida.dtx}{lucidascale,OMSlby}}
+\generateFile{OMSlb.fd}{f}{
+        \from{lucida.dtx}{OMSlb}}
+\generateFile{OMXlbv.fd}{f}{
+        \from{lucida.dtx}{lucidascale,OMXlbv}}
+\generateFile{LMRlbm.fd}{f}{
+        \from{lucida.dtx}{lucidascale,LMRlbm}}
+\generateFile{OMLhlh.fd}{f}{
+        \from{lucida.dtx}{OMLhlh}}
+\generateFile{OMShlh.fd}{f}{
+        \from{lucida.dtx}{OMShlh}}
+
+\Msg{*** Generating style files for using Lucida fonts ***}
+
+\generateFile{lucid.sty}{f}{
+        \from{lucida.dtx}{lucid}}
+\generateFile{lucmath.sty}{f}{
+        \from{lucida.dtx}{lucmath}}
+\generateFile{lucbr.sty}{f}{
+        \from{lucida.dtx}{lucidabright,lucbmath}}
+\generateFile{lucmtime.sty}{f}{
+        \from{lucida.dtx}{lucmtime,lucbmath,luctim}}
+\generateFile{lucmin.sty}{f}{
+        \from{lucida.dtx}{lucmin,lucbmath,luctim}}
+\generateFile{lucbmath.sty}{f}{
+        \from{lucida.dtx}{lucbmath}}
+\generateFile{lucidbry.sty}{f}{
+        \from{lucida.dtx}{lucbry}}
+\generateFile{lucidbrb.sty}{f}{
+        \from{lucida.dtx}{lucbrb}}
+
+\generateFile{lucfont.tex}{f}{
+        \from{lucida.dtx}{lucfont}}
+
+
+\Msg{***********************************************************}
+\Msg{*}
+\Msg{* To finish the installation you have to move the following}
+\Msg{* files into a directory searched by TeX:}
+\Msg{*}
+\Msg{* \space\space  *.fd *.sty}
+\Msg{*}
+\Msg{***********************************************************}
+
+
+\endinput
+

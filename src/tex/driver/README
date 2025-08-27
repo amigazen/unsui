@@ -1,0 +1,24 @@
+
+PasTeX 1.4 Source: ShowDVI / DVIprint
+-------------------------------------
+
+How to compile:
+	Install SAS/C 6.51 and do 'smake all'.
+	Yes, use SAS/C 6.51! ShowDVI doesn't
+	work correctly with SAS/C 6.55! :-(
+
+
+Authors:
+	Georg Heßmann; with the help of:
+	Robert Stabl and Jörg Höhle.
+
+Copyright:
+	ShowDVI and DVIprint are copyright Georg Heßmann.
+	They also are covert by the GNU general public license
+	(see file COPYING).
+	See also the header of the file util/version.h!
+
+
+Georg Heßmann (hessmann@informatik.uni-hamburg.de)
+26. May 95
+

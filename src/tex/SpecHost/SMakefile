@@ -1,0 +1,67 @@
+##
+##	SpecialHost for PasTeX
+##
+##	Copyright © by Olaf Barthel & Georg Heﬂmann
+##
+
+.c.o:
+	SC $(CFLAGS) $(CPU) $(MATH) $(DEBUG) $(GST) $*.c
+
+.c.oo:
+	SC $(CFLAGS) $(OPTIMIZE) $(CPU) $(MATH) $(DEBUG) $(GST) OBJNAME=$*.oo $*.c
+
+.asm.o:
+	ASM -D -IASM: -DVANILLA $*.asm
+
+.a.o:
+	ASM -D -IASM: -DVANILLA -u $*.a
+
+CFLAGS		= MCCONS STREQ STRMERGE NOSTKCHK UTILLIB IDLEN=65
+LFLAGS		= DEFINE __CXM33=__UCXM33 DEFINE __CXD33=__UCXD33 \
+		  DEFINE __CXM22=__UCXM22 DEFINE __CXD22=__UCXD22 \
+		  SC SD ADDSYM
+
+OPTIMIZE	= OPTIMIZE OPTINLOCAL OPTTIME
+#CPU		= CPU=68030
+MATH		= MATH=IEEE
+DEBUG		= DEBUG=LINE
+#DEBUG		= DEBUG=SYMBOL
+GST		= GST=Host.gst GSTIMM
+
+#LIBS		= LIB:pools.lib LIB:scmieee.lib LIB:sc.lib LIB:amiga.lib LIB:debug.lib
+LIBS		= evpaths.lib LIB:scmieee.lib LIB:sc.lib LIB:amiga.lib LIB:debug.lib
+OBJS		= Host.oo asyncio.oo graphics.oo tpic.oo Parse.oo ReadImage.oo \
+		  Tools.oo Data.o Luminance.o Filter.oo Dither.oo Post.oo postasm.o \
+		  CRC.o
+
+all:		Host.gst SpecialHost 
+
+SpecialHost:	$(OBJS)
+		SLINK WITH T:LinkTemp.WITH <<!(T:LinkTemp.WITH)
+			FROM
+			$(OBJS)
+			TO
+			$@.debug
+			LIB
+			$(LIBS)
+			$(LFLAGS)
+			NOICONS
+			MAP RAM:$@.map,hs
+		<
+		SLINK $@.debug TO $@ ND NOICONS
+
+Host.gst:	PreInclude.c asyncio.h
+		SC NOOBJNAME IDLEN=65 $(CPU) $(MATH) MAKEGST=$@ PreInclude.c
+		@avail >nil: Flush
+
+asyncio.oo:	asyncio.c asyncio.h
+		SC $(CFLAGS) $(OPTIMIZE) $(CPU) $(DEBUG) IGNORE=73 OBJNAME=$@ asyncio.c
+
+spec_deutsch.dvi:	spec_deutsch.tex
+		virtex spec_deutsch.tex
+
+sample.dvi:	sample.tex
+		virtex &lplain sample.tex
+
+clean:		
+		-@delete \#?.o \#?.oo Host.gst

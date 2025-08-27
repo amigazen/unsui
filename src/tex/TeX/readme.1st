@@ -1,0 +1,123 @@
+Directories:
+============
+
+common/
+tex/
+	Source fuer IniTeX/VirTeX
+
+trip/
+	Neuester Trip-Test
+	(zusaetzlich `trip.tfm' schon drin, da pltotf nicht
+	mitkommt)
+
+gcclib/
+	Aenderungen an GCC C-Library, nur fuer Atari ST!!
+	(sollte ich wohl besser in `atari/' umbenennen)
+
+amiga/
+	Amigaspezifische Files:
+	Linkfiles, Assemblersources, etc.
+
+ 
+Neuerungen, notwendige Aenderungen:
+===================================
+
+* Update von TeX 3.14 auf TeX 3.1415
+
+* Source enthaelt viele Aenderungen, insbesonders wurde an einigen
+  Stellen Variablen lokaler in Bloecken definiert, da mein GCC dann
+  dafuer meist besseren Code erzeugt (bessere Registerverwendung).
+  Ausserdem wurde Grossteil der Strings aus `tex.pool' direkt als
+  C-Strings in den Code verschoben bzw. befinden sich in `help.c'.
+  Zusaetzlich wurde viele #define-Anweisungen eingefuehrt und Code
+  entsprechend geaendert.  Mehrfach verwendete Code-Teile (durch WEB-
+  Makros), die nicht geschwindigkeitsrelevant sind, wurden in separate
+  Funktionen geschoben.
+
+
+* Auswahl/Konfiguration zwischen normal/big-TeX verschoben von
+	tex/texd.h
+  nach
+	tex/config.h
+
+* Low-level-Speicherverwaltung in TeX (Assembler fuer ST) wurde aus
+  tex/tex0.c nach
+	tex/getmem.c
+  verschoben.
+
+  Ich habe das File amiasm0.asm auch fuer BigTeX angepasst (Code ist im
+  File amiasm0b.asm), jedoch muss dies nochmals getestet werden.
+
+  !! Assemblerroutinen in amiasm0b.asm muessen fuer BigTeX ausgetestet
+  !! werden.
+  !! Dazu in tex/getmem.c die C-Teile ausdefinieren (defines entsprechend
+  !! aendern) und das Assemblerfile dazulinken.
+
+  !! Achtung: Argumentwerte fuer Funktion `overflow()' haben sich
+  !!          geaendert!
+
+* Das Makefile fuer den AMIGA und die Linkanweisungen (in amiga/) wurden
+  soweit wie moeglich schon angepasst.
+  Muessen jedoch nochmals ueberprueft werden.
+
+* File
+	tex/math.c
+  !! sollte fuer BigTeX nochmals ausprobiert werden, ob Optimizerbug immer
+  !! noch vorhanden.  Evtl. muss `makefraction()' dann doch wieder in
+  !! separates File.
+
+* Files in
+	common/*
+  Aenderungen wurden (teilweise leicht veraendert) nachgezogen, jedoch
+  wurde sonst nichts geaendert.
+
+* "TeX codepage" ist jetzt auch fuer `virtex' moeglich (ueber "codepage*"
+  im Konfigurationsfile).  Diese Erweiterung wurde noch nicht vollstaendig
+  ausgetestet, muesste jedoch funktionieren.
+
+* Ich habe einen Filenamestring-Wiederverwendungs-Cache :-) eingefuehrt,
+  der dazu fuehrt, dass bei vielen einzulesenden Files in LaTeX nicht so
+  schnell der Stringpool vollaeuft (TeX verwendet Strings fuer Filenamen
+  leider nicht wieder).
+  Die Aenderung habe ich an E.Mattes geschickt, ich muesste nochmals
+  nachfragen, ob er ihn in emTeX eingebaut hat und dabei noch Verbesserungen
+  vornahm.
+
+
+Erweiterungen:
+==============
+
+Eigene:
+
+* Fuer \tracingcommmand>2 werden bei \if, \ifcat und \ifx zusaetzlich
+  die beiden Tokens ausgegeben, die verglichen werden.
+  [Kann man in tex/config.h abschalten; lasse ich jedoch drin, da es
+  mir schon einige Male gute Dienste erwiesen hat!]
+
+* Neues Count-Register \interactionmode.  Damit kann man den momentanen
+  `interaction'-mode auf TeX-Makroebene(!) abfragen und auch lokal in
+  einer Gruppe aendern (siehe dazu: \batchmode, ..., \errorstopmode).
+  Diese Aenderung wird wahrscheinlich im "enhanced TeX -- e-TeX" enthalten
+  sein.
+  [in tex/config.h abschaltbar]
+
+* Andere: in der Source sind ueber `#define' in tex/config.h einige Patches
+  drin, die mehr oder weniger sinnvoll und funktionstuechtig sind bzw. nur
+  fuer die Version 3.141 funktionstuechtig waren.
+  [Von der Verwendung wird abgeraten!!]
+
+
+Andere:
+
+* MLTeX: Vor ein paar Tagen wurde ein weiterer Fehler gefunden, der zu
+  korrupten dvi-Files fuehrt.  Bis dieser beseitigt ist (zwei Moegl. eines
+  Patches habe ich Michael Ferguson vorgeschlagen, warte noch auf
+  endgueltige Auswahl von MF), sollte keine MLTeX-Version verbreitet werden.
+
+* TeX--XeT: Die Aenderungen wurden leider immer noch nicht vollstaendig
+  vollzogen.  Ausserdem aendert momentan Peter Breitenlohner noch etwas
+  am Patch, so dass ich ihn im Laufe der naechsten Wochen einbaue.
+  Soll uebrigens auch Bestandteil im "e-TeX" werden.
+
+
+- 1.11.93 br

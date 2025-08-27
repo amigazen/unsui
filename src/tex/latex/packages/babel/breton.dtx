@@ -1,0 +1,422 @@
+% \iffalse meta-comment
+%
+% Copyright 1989-1995 Johannes L. Braams and any individual authors
+% listed elsewhere in this file.  All rights reserved.
+% 
+% For further copyright information any other copyright notices in this
+% file.
+% 
+% This file is part of the Babel system release 3.5.
+% --------------------------------------------------
+%   This system is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+% 
+%   For error reports concerning UNCHANGED versions of this file no more
+%   than one year old, see bugs.txt.
+% 
+%   Please do not request updates from me directly.  Primary
+%   distribution is through the CTAN archives.
+% 
+% 
+% IMPORTANT COPYRIGHT NOTICE:
+% 
+% You are NOT ALLOWED to distribute this file alone.
+% 
+% You are allowed to distribute this file under the condition that it is
+% distributed together with all the files listed in manifest.txt.
+% 
+% If you receive only some of these files from someone, complain!
+% 
+% Permission is granted to copy this file to another file with a clearly
+% different name and to customize the declarations in that copy to serve
+% the needs of your installation, provided that you comply with
+% the conditions in the file legal.txt from the LaTeX2e distribution.
+% 
+% However, NO PERMISSION is granted to produce or to distribute a
+% modified version of this file under its original name.
+%  
+% You are NOT ALLOWED to change this file.
+% 
+% 
+% \fi
+% \CheckSum{295}
+%
+% \iffalse
+%    Tell the \LaTeX\ system who we are and write an entry on the
+%    transcript.
+%    \begin{macrocode}
+%<*dtx>
+\ProvidesFile{breton.dtx}
+%</dtx>
+%<code>\ProvidesFile{breton.ldf}
+        [1995/07/09 v1.0c Breton support from the babel system]
+%    \end{macrocode}
+%
+% Babel package for LaTeX version 2e
+% Copyright (C) 1989 - 1995
+%           by Johannes Braams, TeXniek
+%
+% Breton Language Definition File
+% Copyright (C) 1994 - 1995
+%           by Christian Rolland
+%              Universite de Bretagne occidentale
+%              Departement d'informatique
+%              6, avenue Le Gorgeu
+%              BP 452
+%              29275 Brest Cedex -- FRANCE
+%              Christian.Rolland@univ-brest.fr (Internet)
+%
+%              Johannes Braams, TeXniek
+%              Kooienswater 62
+%              2715 AJ Zoetermeer
+%              The Netherlands
+%
+% Please report errors to: J.L. Braams
+%                          JLBraams@cistron.nl
+%
+%    This file is part of the babel system, it provides the source
+%    code for the Breton language definition file. It is based on the
+%    language definition file for french, version 4.5c
+%<*filedriver>
+\documentclass{ltxdoc}
+\newcommand*\TeXhax{\TeX hax}
+\newcommand*\babel{\textsf{babel}}
+\newcommand*\langvar{$\langle \it lang \rangle$}
+\newcommand*\note[1]{}
+\newcommand*\Lopt[1]{\textsf{#1}}
+\newcommand*\file[1]{\texttt{#1}}
+\begin{document}
+ \DocInput{breton.dtx}
+\end{document}
+%</filedriver>
+%\fi
+% \GetFileInfo{breton.dtx}
+%
+% \changes{breton-1.0}{1994/09/21}{First release}
+%
+%  \section{The Breton language}
+%
+%    The file \file{\filename}\footnote{The file described in this
+%    section has version number \fileversion\ and was last revised on
+%    \filedate.} defines all the language-specific macros for the Breton
+%    language. 
+%
+%    There are not really typographic rules for the Breton
+%    language. It is a local language (it's one of the celtic
+%    languages) which is spoken in Brittany (West of France). So we
+%    have a synthesis between french typographic rules and english
+%    typographic rules. The characters \texttt{:}, \texttt{;},
+%    \texttt{!} and \texttt{?} are made active in order to get a
+%    whitespace automatically before these characters.
+%
+% \StopEventually{}
+%
+%    As this file needs to be read only once, we check whether it was
+%    read before. If it was, the |\captionsbreton| is already
+%    defined, so we can stop processing. If this command is undefined
+%    we proceed with the various definitions and first show the
+%    current version of this file.
+%
+%    \begin{macrocode}
+%<*code>
+\ifx\undefined\captionsbreton
+\else
+  \selectlanguage{breton}
+  \expandafter\endinput
+\fi
+%    \end{macrocode}
+%
+% \begin{macro}{\atcatcode}
+%    This file, \file{breton.ldf}, may have been read while \TeX\ is
+%    in the middle of processing a document, so we have to make sure
+%    the category code of \texttt{@} is `letter' while this file is
+%    being read. We save the category code of the @-sign in
+%    |\atcatcode| and make it `letter'. Later the category code can be
+%    restored to whatever it was before.
+%    \begin{macrocode}
+\chardef\atcatcode=\catcode`\@
+\catcode`\@=11\relax
+%    \end{macrocode}
+% \end{macro}
+%
+%    Now we determine whether the the common macros from the file
+%    \file{babel.def} need to be read. We can be in one of two
+%    situations: either another language option has been read earlier
+%    on, in which case that other option has already read
+%    \file{babel.def}, or \texttt{breton} is the first language option
+%    to be processed. In that case we need to read \file{babel.def}
+%    right here before we continue.
+%    \begin{macrocode}
+\ifx\undefined\babel@core@loaded\input babel.def\relax\fi
+%    \end{macrocode}
+%
+%    Another check that has to be made, is if another language
+%    definition file has been read already. In that case its
+%    definitions have been activated. This might interfere with
+%    definitions this file tries to make. Therefore we make sure that
+%    we cancel any special definitions. This can be done by checking
+%    the existence of the macro |\originalTeX|. If it exists we simply
+%    execute it, otherwise it is |\let| to |\empty|.
+%    \begin{macrocode}
+\ifx\undefined\originalTeX \let\originalTeX\empty \fi
+\originalTeX
+%    \end{macrocode}
+%
+%    When this file is read as an option, i.e. by the |\usepackage|
+%    command, \texttt{breton} will be an `unknown' language in which
+%    case we have to make it known.  So we check for the existence of
+%    |\l@breton| to see whether we have to do something here.
+%
+%    \begin{macrocode}
+\ifx\undefined\l@breton
+    \@nopatterns{Breton}
+    \adddialect\l@breton0\fi
+%    \end{macrocode}
+%    The next step consists of defining commands to switch to the
+%    English language. The reason for this is that a user might want
+%    to switch back and forth between languages.
+%
+% \begin{macro}{\captionsbreton}
+%    The macro |\captionsbreton| defines all strings used in the
+%    four standard document classes provided with \LaTeX.
+% \changes{breton-1.0b}{1995/07/04}{Added \cs{proofname} for
+%    AMS-\LaTeX}
+%    \begin{macrocode}
+\addto\captionsbreton{%
+  \def\prefacename{Rakskrid}%
+  \def\refname{Daveenno\`u}%
+  \def\abstractname{Dvierra\~n}%
+  \def\bibname{Lennadurezh}%
+  \def\chaptername{Pennad}%
+  \def\appendixname{Stagadenn}%
+  \def\contentsname{Taolenn}%
+  \def\listfigurename{Listenn ar Figurenno\`u}%
+  \def\listtablename{Listenn an taolenno\`u}%
+  \def\indexname{Meneger}%
+  \def\figurename{Figurenn}%
+  \def\tablename{Taolenn}%
+  \def\partname{Lodenn}%
+  \def\enclname{Diello\`u kevret}%
+  \def\ccname{Eilskrid da}%
+  \def\headtoname{evit}
+  \def\pagename{Pajenn}%
+  \def\seename{Gwelout}%
+  \def\alsoname{Gwelout ivez}%
+  \def\proofname{Proof}%  <-- needs translation
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\datebreton}
+%    The macro |\datebreton| redefines the command
+%    |\today| to produce Breton dates.
+%    \begin{macrocode}
+\def\datebreton{%
+\def\today{\ifnum\day=1\relax 1\/$^{\rm a\tilde{n}}$\else
+  \number\day\fi \space a\space viz\space\ifcase\month\or
+  Genver\or C'hwevrer\or Meurzh\or Ebrel\or Mae\or Mezheven\or
+  Gouere\or Eost\or Gwengolo\or Here\or Du\or Kerzu\fi
+  \space\number\year}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\extrasbreton}
+% \begin{macro}{\noextrasbreton}
+%    The macro |\extrasbreton| will perform all the extra
+%    definitions needed for the Breton language. The macro
+%    |\noextrasbreton| is used to cancel the actions of
+%    |\extrasbreton|.
+%
+%    The category code of the characters \texttt{:}, \texttt{;},
+%    \texttt{!} and \texttt{?} is made |\active| to insert a little
+%    white space.
+% \changes{breton-4.6}{1995/03/07}{Use the new mechanism for dealing
+%    with active chars}
+%    \begin{macrocode}
+\initiate@active@char{:}
+\initiate@active@char{;}
+\initiate@active@char{!}
+\initiate@active@char{?}
+%    \end{macrocode}
+%    We specify that the breton group of shorthands should be used.
+%    \begin{macrocode}
+\addto\extrasbreton{\languageshorthands{breton}}
+%    \end{macrocode}
+%    These characters are `turned on' once, later their definition may
+%    vary. 
+%    \begin{macrocode}
+\addto\extrasbreton{%
+  \bbl@activate{:}\bbl@activate{;}%
+  \bbl@activate{!}\bbl@activate{?}}
+%\addto\noextrasbreton{%
+%  \bbl@deactivate{:}\bbl@deactivate{;}%
+%  \bbl@deactivate{!}\bbl@deactivate{?}}
+%    \end{macrocode}
+%
+%    The last thing |\extrasbreton| needs to do is to make sure that
+%    |\frenchspacing| is in effect.  If this is not the case the
+%    execution of |\noextrasbreton| will switch it of again.
+%    \begin{macrocode}
+\addto\extrasbreton{\bbl@frenchspacing}
+\addto\noextrasbreton{\bbl@nonfrenchspacing}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\breton@sh@;@}
+%    We have to reduce the amount of white space before \texttt{;},
+%    \texttt{:} and \texttt{!} when the user types a space in front of
+%    these characters. This should only happen outside mathmode, hence
+%    the test with |\ifmmode|.
+%
+%    \begin{macrocode}
+\declare@shorthand{breton}{;}{%
+    \ifmmode
+      \string;\space
+    \else\relax
+%    \end{macrocode}
+%    In horizontal mode we check for the presence of a `space' and
+%    replace it by a |\thinspace|.
+%    \begin{macrocode}
+      \ifhmode
+        \ifdim\lastskip>\z@
+          \unskip\penalty\@M\thinspace
+        \fi
+      \fi
+      \string;\space
+    \fi}%
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\breton@sh@:@}
+% \begin{macro}{\breton@sh@!@}
+%    Because these definitions are very similar only one is displayed
+%    in a way that the definition can be easily checked.
+%    \begin{macrocode}
+\declare@shorthand{breton}{:}{%
+  \ifmmode\string:\space
+  \else\relax
+    \ifhmode
+      \ifdim\lastskip>\z@\unskip\penalty\@M\thinspace\fi
+    \fi
+    \string:\space
+  \fi}
+\declare@shorthand{breton}{!}{%
+  \ifmmode\string!\space
+  \else\relax
+    \ifhmode
+      \ifdim\lastskip>\z@\unskip\penalty\@M\thinspace\fi
+    \fi
+    \string!\space
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\breton@sh@?@}
+%    For the question mark something different has to be done. In this
+%    case the amount of white space that replaces the space character
+%    depends on the dimensions of the font.
+%    \begin{macrocode}
+\declare@shorthand{breton}{?}{%
+  \ifmmode
+    \string?\space
+  \else\relax
+    \ifhmode
+      \ifdim\lastskip>\z@
+        \unskip
+        \kern\fontdimen2\font
+        \kern-1.4\fontdimen3\font
+      \fi
+    \fi
+    \string?\space
+  \fi}
+%    \end{macrocode}
+% \end{macro}
+%
+%    All that is left to do now is provide the breton user with some
+%    extra utilities.
+%
+%    Some definitions for special characters.
+%    \begin{macrocode}
+\DeclareTextSymbol{\at}{OT1}{64}
+\DeclareTextSymbol{\at}{T1}{64}
+\DeclareTextSymbolDefault{\at}{OT1}
+\DeclareTextSymbol{\boi}{OT1}{92}
+\DeclareTextSymbol{\boi}{T1}{16}
+\DeclareTextSymbolDefault{\boi}{OT1}
+\DeclareTextSymbol{\circonflexe}{OT1}{94}
+\DeclareTextSymbol{\circonflexe}{T1}{2}
+\DeclareTextSymbolDefault{\circonflexe}{OT1}
+\DeclareTextSymbol{\tild}{OT1}{126}
+\DeclareTextSymbol{\tild}{T1}{3}
+\DeclareTextSymbolDefault{\tild}{OT1}
+\DeclareTextSymbol{\degre}{OT1}{23}
+\DeclareTextSymbol{\degre}{T1}{6}
+\DeclareTextSymbolDefault{\degre}{OT1}
+%    \end{macrocode}
+%
+%    The following macros are used in the redefinition of |\^| and
+%    |\"| to handle the letter i.
+% \changes{breton-1.0c}{1995/07/07}{Postpone the declaration of the
+%    TextCompositeCommands untill \cs{AtBeginDocument}}
+%
+%    \begin{macrocode}
+\AtBeginDocument{%
+  \DeclareTextCompositeCommand{\^}{OT1}{i}{\^\i}
+  \DeclareTextCompositeCommand{\"}{OT1}{i}{\"\i}} 
+%    \end{macrocode}
+%
+%    And some more macros for numbering.
+%    \begin{macrocode}
+\def\kentan{1\/${}^{\rm a\tilde{n}}$}
+\def\eil{2\/${}^{\rm l}$}
+\def\re{\/${}^{\rm re}$}
+\def\trede{3\re}
+\def\pevare{4\re}
+\def\vet{\/${}^{\rm vet}$}
+\def\pempvet{5\vet}
+%    \end{macrocode}
+%
+%    It is possible that a site might need to add some extra code to
+%    the babel macros. To enable this we load a local configuration
+%    file, \file{breton.cfg} if it is found on \TeX' search path.
+% \changes{breton-1.0b}{1995/07/02}{Added loading of configuration
+%    file}
+%    \begin{macrocode}
+\loadlocalcfg{breton}
+%    \end{macrocode}
+%
+%    Our last action is to make a note that the commands we have just
+%    defined, will be executed by calling the macro |\selectlanguage|
+%    at the beginning of the document.
+%    \begin{macrocode}
+\main@language{breton}
+%    \end{macrocode}
+%    Finally, the category code of \texttt{@} is reset to its original
+%    value. The macrospace used by |\atcatcode| is freed.
+%    \begin{macrocode}
+\catcode`\@=\atcatcode \let\atcatcode\relax
+%</code>
+%    \end{macrocode}
+%
+% \Finale
+%%
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\endinput

@@ -1,0 +1,289 @@
+#
+#   Makefile for dvips.  Edit this first part of the file.
+#
+#   First, the things that absolutely must be edited for your system.
+#   Please, don't forget to edit MakeTeXPK in the same way!
+
+# modified for Amiga SAS/C v6.x by G. Ghibò <ghibo@galileo.polito.it>
+# Last revised 28th September 1994
+#
+# To compile on a 68040 CPU use, for instance:
+#
+#      smake -f amiga/smakefile dvips CPU=68040 MATH=8
+#
+
+
+#compiler and linker
+CC= sc
+CPU=ANY
+MATH=I
+NOWARN=IGN=100+161+85
+
+#Uncomment for your processor
+#CPU=CPU=ANY
+#CPU=CPU=68020
+#CPU=CPU=68040
+#MATH=I
+#MATH=S
+#MATH=8
+
+# where TeX is `rooted'.  Sometimes /usr/local/lib/tex.
+# TEXDIR = TeX
+TEXDIR = TeX
+
+# another place pk, tfm, and vf files might be found.
+# LOCALDIR = texfonts
+LOCALDIR = texfonts
+
+# the default path to search for TFM files 
+# (this usually is identical to TeX's defaultfontpath, which omits `.')
+# (private fonts are given an explicit directory, which overrides the path)
+#   overridden by the environment variable TEXFONTS
+# TFMPATH = .,$(LOCALDIR)/tfm,$(TEXDIR):texfonts/tfm,$(TEXDIR):fonts/tfm,$(TEXDIR):fonts
+TFMPATH = .,$(LOCALDIR)/tfm,$(TEXDIR):texfonts/tfm,$(TEXDIR):fonts/tfm,$(TEXDIR):fonts
+
+# the default path to search for PK files (usually omits `.')
+# Don't forget to add the directory that
+# MakeTeXPK puts the files!  (In this case, /LocalLibrary/Fonts...)
+#   overridden by the environment variable TEXPKS or TEXPACKED or PKFONTS
+# PKPATH = .,$(LOCALDIR)/pk,$(TEXDIR):texfonts/pk,$(TEXDIR):fonts/pk,$(TEXDIR):pk
+PKPATH = .,$(LOCALDIR)/pk,$(TEXDIR):texfonts/pk,$(TEXDIR):fonts/pk,$(TEXDIR):pk
+
+# the default path to search for VF files (usually omits `.')
+#   overridden by the environment variable VFFONTS
+# VFPATH = .,$(LOCALDIR)/vf,$(TEXDIR):texfonts/vf,$(TEXDIR):fonts/vf,$(TEXDIR):fonts
+VFPATH = .,$(LOCALDIR)/vf,$(TEXDIR):texfonts/vf,$(TEXDIR):fonts/vf,$(TEXDIR):fonts
+
+# additional directories in which to search for subdirectories to find
+# both tfm and pk files
+FONTSUBDIRPATH = 
+
+# where the config files go
+# CONFIGDIR = $(TEXDIR):ps
+CONFIGDIR = $(TEXDIR):ps
+
+# the default path to search for config files
+#   overridden by the environment variable TEXCONFIG
+# CONFIGPATH = .,$(CONFIGDIR)
+CONFIGPATH = .,$(CONFIGDIR)
+
+# the name of your config file
+# CONFIGFILE = config.ps
+CONFIGFILE = config.ps
+
+# where the header PS files go
+# HEADERDIR = $(TEXDIR):ps
+HEADERDIR = $(TEXDIR):ps
+
+# the default path to search for header files
+# HEADERPATH = .,$(HEADERDIR)
+HEADERPATH = .,$(HEADERDIR)
+
+# where epsf.tex and rotate.tex go (usually the TeX macros directory)
+# TEXMACRODIR = $(TEXDIR):texinputs
+TEXMACRODIR = $(TEXDIR):texinputs
+
+# the default path to search for epsf and psfiles
+# (usually the same as TeX's defaultinputpath)
+# FIGPATH = .,$(TEXDIR):texinputs
+FIGPATH = .,$(TEXDIR):texinputs
+
+# the default path to search for font libraries
+# FLIPATH = .,$(LOCALDIR)/pk,$(TEXDIR):texfonts/pk,$(TEXDIR):fonts/pk,$(TEXDIR):pk
+FLIPATH = .,$(LOCALDIR)/pk,$(TEXDIR):texfonts/pk,$(TEXDIR):fonts/pk,$(TEXDIR):pk,$(TEXDIR):texfonts/pk/ljfour
+
+# the names of font libraries
+# FLINAME = ljh_0,ljh_h,ljh_1,ljh_2,ljh_3,ljh_4,ljh_5,ljh_sli
+FLINAME = ljh_0,ljh_h,ljh_1,ljh_2,ljh_3,ljh_4,ljh_5,ljh_sli
+
+# the place man pages are located.
+MANDIR = $(TEXDIR):doc
+
+# change -DDEFRES=300 or whatever is required
+#    if the default resolution is not 300 dpi,
+# add -DDEBUG to turn on debugging capability
+# add -DTPIC for tpic support
+# add -DFONTLIB to search font libraries
+# add -DSEARCH_SUBDIRECTORIES to search the FONTSUBDIRPATH.
+# add -DHAVE_GETCWD if you have getcwd (relevant only for subdir searching)
+# add -DIBM6000 for compiling on IBM 6000 systems
+# add -DCREATIONDATE if your system has a working time() and you want dated files
+# (for VM/CMS, see the MKDVIPS.EXEC file in the vmcms subdirectory).
+#
+#   If you define FONTLIB, make sure to also give definitions to
+#   FLIPATH and FLINAME.
+#
+#   If your compiler doesn't like void*, then add
+#      -DVOID=char
+#
+DEFS= DEF=TPIC DEF=FONTLIB DEF=DEBUG DEF=DEFRES=600 DEF=CREATIONDATE DEF=SEARCH_SUBDIRECTORIES DEF=HAVE_GETCWD
+
+# options
+# OPT = RESOPT CPU=$(CPU) MATH=$(MATH) IDIR=amiga/include  NOICON NOSTKCHK
+# OPT = RESOPT CPU=$(CPU) MATH=$(MATH) IDIR=amiga/include GPROTO GPTDEF NOGPDATA NOICON
+OPTMZ = OPT OPTCOMP=3 OPTDEP=3 OPTRDEP=3 OPTINLOCAL OPTSCHED OPTTIME
+OPT = RESOPT CPU=$(CPU) MATH=$(MATH) IDIR=amiga/include NOICON NOSTKCHK PREC=D DEF=FLTTODBL PARM=R $(OPTMZ)
+
+
+# to link
+# FLIBS=LINK
+FLIBS=LINK
+
+# If you are compiling dvips for suid or other privileges, you will
+# definitely want to define the following symbol; else don't.
+# SECURE = DEF=SECURE
+
+# If you want EMTEX specials, define the following.
+EMTEX = DEF=EMTEX
+
+# for SYSV (and friends which use <string.h> instead of <strings.h>)
+# define the c-compiler flag
+# add DEF=_POSIX_SOURCE if you are POSIX (also define SYSV) (only relevant
+# for subdir searching)
+# SYS = DEF=SYSV
+
+# Define this to be whatever you use for installation.  If you don't have
+# install, use a script that invokes copy and chmod's the files
+# appropriately.
+# INSTALL = install
+INSTALL = copy CLONE
+
+# where the installed binary goes
+# BINDIR = $(TEXDIR):bin
+BINDIR = $(TEXDIR):bin
+
+PATHS = DEF=TFMPATH="$(TFMPATH)"\
+DEF=PKPATH="$(PKPATH)"\
+DEF=VFPATH="$(VFPATH)"\
+DEF=HEADERPATH="$(HEADERPATH)"\
+DEF=CONFIGPATH="$(CONFIGPATH)"\
+DEF=CONFIGFILE="$(CONFIGFILE)"\
+DEF=FONTSUBDIRPATH="$(FONTSUBDIRPATH)"\
+DEF=FIGPATH="$(FIGPATH)"\
+DEF=FLIPATH="$(FLIPATH)"\
+DEF=FLINAME="$(FLINAME)"
+
+#CFLAGS = $(OPT) $(DEFS) $(SYS) $(SECURE) $(EMTEX) $(DEFPFMT)
+CFLAGS = $(OPT) $(DEFS) $(EMTEX)
+
+SRC = dospecial.c dviinput.c fontdef.c loadfont.c dvips.c tfmload.c \
+	download.c prescan.c scanpage.c skippage.c output.c scalewidth.c \
+	dosection.c dopage.c resident.c search.c unpack.c drawPS.c \
+	header.c makefont.c repack.c virtualfont.c dpicheck.c finclude.c \
+	pprescan.c papersiz.c flib.c color.c bbox.c emspecial.c amiga/pipe.c \
+	amiga/rexx.c
+
+OBJ = dospecial.o dviinput.o fontdef.o loadfont.o dvips.o tfmload.o\
+	download.o prescan.o scanpage.o skippage.o output.o scalewidth.o\
+	dosection.o dopage.o resident.o search.o unpack.o drawPS.o\
+	header.o makefont.o repack.o virtualfont.o dpicheck.o finclude.o\
+	pprescan.o papersiz.o flib.o color.o bbox.o emspecial.o amiga/pipe.o\
+	amiga/rexx.o
+
+all : afm2tfm dvips tex.pro texps.pro texc.pro special.pro finclude.pro \
+      color.pro crop.pro
+
+.c.o:   $(SRC)
+	$(CC) $(CFLAGS) $<
+
+amigapaths.h: amiga/smakefile
+	@echo "\#define TFMPATH        *"$(TFMPATH)*"" >amigapaths.h
+	@echo "\#define PKPATH         *"$(PKPATH)*"" >>amigapaths.h
+	@echo "\#define VFPATH         *"$(VFPATH)*"" >>amigapaths.h
+	@echo "\#define HEADERPATH     *"$(HEADERPATH)*"" >>amigapaths.h
+	@echo "\#define CONFIGPATH     *"$(CONFIGPATH)*"" >>amigapaths.h
+	@echo "\#define CONFIGFILE     *"$(CONFIGFILE)*"" >>amigapaths.h
+	@echo "\#define FONTSUBDIRPATH *"$(FONTSUBDIRPATH)*"" >>amigapaths.h
+	@echo "\#define FIGPATH        *"$(FIGPATH)*"" >>amigapaths.h
+	@echo "\#define FLIPATH        *"$(FLIPATH)*"" >>amigapaths.h
+	@echo "\#define FLINAME        *"$(FLINAME)*"" >>amigapaths.h
+
+objfiles.lst: amiga/smakefile
+	@echo $(OBJ) >objfiles.lst
+
+dvips : $(OBJ) objfiles.lst
+	$(CC) $(CFLAGS) $(FLIBS) PNAME=dvips WITH objfiles.lst
+
+dvips.o: dvips.c amigapaths.h
+	$(CC) $(CFLAGS) dvips.c
+
+afm2tfm: afm2tfm.c
+	$(CC) $(OPT) $(FLIBS) afm2tfm.c
+
+$(OBJ) : dvips.h debug.h
+flib.o resident.o dvips.o loadfont.o tfmload.o : paths.h
+
+squeeze : squeeze.c
+	$(CC) $(OPT) NOMATH $(FLIBS) squeeze.c
+
+tex.pro : tex.lpro squeeze
+	squeeze tex.lpro tex.pro
+
+texc.pro: texc.lpro squeeze
+	squeeze texc.lpro texc.pro
+
+texc.lpro: tex.lpro
+	@rx amiga/texc.rexx
+	copy clone T:texc.lpro texc.lpro
+
+texps.pro : texps.lpro squeeze
+	squeeze texps.lpro texps.pro
+
+special.pro : special.lpro squeeze
+	squeeze special.lpro special.pro
+
+finclude.pro : finclude.lpro squeeze
+	squeeze finclude.lpro finclude.pro
+
+color.pro : color.lpro squeeze
+	squeeze color.lpro color.pro
+
+crop.pro : crop.lpro squeeze
+	squeeze crop.lpro crop.pro
+
+install : afm2tfm dvips MakeTeXPK \
+	tex.pro texc.pro texps.pro special.pro finclude.pro color.pro \
+	crop.pro config.ps psfonts.map epsf.tex epsf.sty rotate.tex \
+	rotate.sty colordvi.tex colordvi.sty blackdvi.tex blackdvi.sty \
+	dvips.tex dvipsmac.tex dvips.1 afm2tfm.1
+       
+	- makedir $(BINDIR)
+	- makedir $(CONFIGDIR)
+	- makedir $(HEADERDIR)
+	- makedir $(MANDIR)
+	- makedir $(TEXMACRODIR)
+	- makedir $(TEXMACRODIR)/dvips
+	- makedir $(TEXDIR):s
+
+	$(INSTALL) afm2tfm $(BINDIR)/afm2tfm
+	$(INSTALL) dvips $(BINDIR)/dvips
+	$(INSTALL) amiga/env-vars $(TEXDIR):s
+	$(INSTALL) amiga/MakeTeXPK $(TEXDIR):s
+	$(INSTALL) \#?.pro $(CONFIGDIR)
+	$(INSTALL) amiga/ps/config.ps $(CONFIGDIR)/$(CONFIGFILE)
+	$(INSTALL) amiga/ps/config.ljfour $(CONFIGDIR)
+	$(INSTALL) amiga/ps/config.NEChi $(CONFIGDIR)
+	$(INSTALL) amiga/ps/config.generic $(CONFIGDIR)
+	$(INSTALL) amiga/ps/*.map $(CONFIGDIR)
+	$(INSTALL) psfonts.map $(CONFIGDIR)
+	$(INSTALL) psdraft.ps $(CONFIGDIR)
+	$(INSTALL) blackdvi.sty $(TEXMACRODIR)/dvips
+	$(INSTALL) blackdvi.tex $(TEXMACRODIR)/dvips
+	$(INSTALL) colordvi.sty $(TEXMACRODIR)/dvips
+	$(INSTALL) colordvi.tex $(TEXMACRODIR)/dvips
+	$(INSTALL) dvips.tex $(TEXMACRODIR)/dvips
+	$(INSTALL) dvipsmac.tex $(TEXMACRODIR)/dvips
+	$(INSTALL) epsf.tex $(TEXMACRODIR)/dvips
+	$(INSTALL) epsf.sty $(TEXMACRODIR)/dvips
+	$(INSTALL) rotate.tex $(TEXMACRODIR)/dvips
+	$(INSTALL) rotate.sty $(TEXMACRODIR)/dvips
+	$(INSTALL) contrib/psfig-tex/psfig.sty $(TEXMACRODIR)/dvips
+	$(INSTALL) contrib/pspic/pspic.sty $(TEXMACRODIR)/dvips
+
+veryclean:
+	- delete \#?.(o|lnk|pro|log|dvi) dvips squeeze afm2tfm texc.lpro \
+	       amiga/\#?.o amigapaths.h objfiles.lst
+
+clean:
+	- delete \#?.(o|lnk|log|dvi) squeeze afm2tfm amiga/\#?.o amigapaths.h \
+	       objfiles.lst

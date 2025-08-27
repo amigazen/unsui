@@ -1,0 +1,259 @@
+%%
+%% This file will generate fast loadable files and documentation
+%% driver files from the doc files in this package when run through
+%% LaTeX or TeX.
+%%
+%% Copyright 1989-1995 Johannes L. Braams and any individual authors
+%% listed elsewhere in this file.  All rights reserved.
+%% 
+%% For further copyright information see any other copyright notices in
+%% this file.
+%% 
+%% This file is part of the Babel system, release 3.5.
+%% ---------------------------------------------------
+%%   This system is distributed in the hope that it will be useful,
+%%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+%% 
+%%   For error reports concerning UNCHANGED versions of this file no more
+%%   than one year old, see bugs.txt.
+%% 
+%%   Please do not request updates from me directly.  Primary
+%%   distribution is through the CTAN archives.
+%% 
+%% 
+%% IMPORTANT COPYRIGHT NOTICE:
+%% 
+%% You are NOT ALLOWED to distribute this file alone.
+%% 
+%% You are allowed to distribute this file under the condition that it is
+%% distributed together with all the files listed in manifest.txt.
+%% 
+%% If you receive only some of these files from someone, complain!
+%% 
+%% No other permissions to distribute this file in any form are granted
+%% and in particular NO PERMISSION to modify its contents.
+%% 
+%% You are NOT ALLOWED to change this file.
+%% 
+%% 
+%%
+%% --------------- start of docstrip commands ------------------
+%%
+\def\batchfile{babel.ins}
+\input docstrip.tex
+\preamble
+
+
+This is a generated file.
+
+Copyright 1989-1995 Johannes L. Braams and any individual authors
+listed elsewhere in this file.  All rights reserved.
+
+For further copyright information see any other copyright notices in
+this file.
+
+This file is part of the Babel system, release 3.5.
+---------------------------------------------------
+  This system is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+  For error reports concerning UNCHANGED versions of this file no more
+  than one year old, see bugs.txt.
+
+  Please do not request updates from me directly.  Primary
+  distribution is through the CTAN archives.
+
+
+IMPORTANT COPYRIGHT NOTICE:
+
+You are NOT ALLOWED to distribute this file alone.
+
+You are allowed to distribute this file under the condition that it is
+distributed together with all the files listed in manifest.txt.
+
+If you receive only some of these files from someone, complain!
+
+Permission is granted to copy this file to another file with a clearly
+different name and to customize the declarations in that copy to serve
+the needs of your installation, provided that you comply with
+the conditions in the file legal.txt from the LaTeX2e distribution.
+
+However, NO PERMISSION is granted to generate or to distribute a
+modified version of this file under its original name.
+ 
+You are NOT ALLOWED to change this file.
+
+
+MODIFICATION ADVICE:
+
+If you want to customize this file, it is best to make a copy of the
+source file(s) from which it was produced.  Use a different name for
+your copy(ies) and modify the copy(ies); this will ensure that your
+modifications do not get overwritten when you install a new release of
+the standard system.  You should also ensure that your modified source
+file does not generate any modified file with the same name as a
+standard file.  You can then easily distribute your modifications by
+distributing the modified and renamed copy of the source file, taking
+care to observe the conditions in legal.txt; this will ensure that
+other users can safely use your modifications.
+
+You will also need to produce your own, suitably named, .ins file to
+control the generation of files from your source file; this file
+should contain your own preambles for the files it generates, not
+those in the standard .ins files.
+
+The names of the source files used are shown above.
+
+
+
+\endpreamble
+\def\batchfile{babel.dst}
+\input docstrip.tex
+\keepsilent
+
+%  LaTeX2e pakage file
+\generateFile{babel.sty}{f}{\from{babel.dtx}{package}}
+%
+% definitions read in while processing a document
+\generateFile{babel.def}{f}{\from{babel.dtx}{core}}
+%
+% The swithing mechanism, loaded either at runtime, or in the format.
+\generateFile{switch.def}{f}{\from{babel.dtx}{kernel}}
+\generateFile{hyphen.cfg}{f}{\from{babel.dtx}{kernel,patterns}}
+%
+% Support for plain users
+\generateFile{plain.def}{f}{\from{bbplain.dtx}{code}}
+%
+%  The language specific files
+\generateFile{esperant.ldf}{f}{\from{esperant.dtx}{code}}
+%%%
+\generateFile{dutch.ldf}{f}{\from{dutch.dtx}{code}}
+\generateFile{english.ldf}{f}{\from{english.dtx}{code}}
+\generateFile{germanb.ldf}{f}{\from{germanb.dtx}{code}}
+%%%
+\generateFile{irish.ldf}{f}{\from{irish.dtx}{code}}
+\generateFile{scottish.ldf}{f}{\from{scottish.dtx}{code}}
+\generateFile{breton.ldf}{f}{\from{breton.dtx}{code}}
+\generateFile{francais.ldf}{f}{\from{francais.dtx}{code}}
+\generateFile{italian.ldf}{f}{\from{italian.dtx}{code}}
+\generateFile{portuges.ldf}{f}{\from{portuges.dtx}{code}}
+\generateFile{spanish.ldf}{f}{\from{spanish.dtx}{code}}
+\generateFile{catalan.ldf}{f}{\from{catalan.dtx}{code}}
+\generateFile{galician.ldf}{f}{\from{galician.dtx}{code}}
+%%%
+\generateFile{danish.ldf}{f}{\from{danish.dtx}{code}}
+\generateFile{norsk.ldf}{f}{\from{norsk.dtx}{code}}
+\generateFile{swedish.ldf}{f}{\from{swedish.dtx}{code}}
+%%%                   
+\generateFile{finnish.ldf}{f}{\from{finnish.dtx}{code}}
+\generateFile{magyar.ldf}{f}{\from{magyar.dtx}{code}}
+%%%                   
+\generateFile{croatian.ldf}{f}{\from{croatian.dtx}{code}}
+\generateFile{czech.ldf}{f}{\from{czech.dtx}{code}}
+\generateFile{slovak.ldf}{f}{\from{slovak.dtx}{code}}
+\generateFile{polish.ldf}{f}{\from{polish.dtx}{code}}
+\generateFile{estonian.ldf}{f}{\from{estonian.dtx}{code}}
+\generateFile{romanian.ldf}{f}{\from{romanian.dtx}{code}}
+\generateFile{slovene.ldf}{f}{\from{slovene.dtx}{code}}
+%%%
+%\generateFile{russian.ldf}{f}{\from{russian.dtx}{}}
+%\generateFile{cyrillic.ldf}{f}{\from{cyrillic.dtx}{}}
+%%%
+\generateFile{turkish.ldf}{f}{\from{turkish.dtx}{code}}
+\generateFile{lsorbian.ldf}{f}{\from{lsorbian.dtx}{code}}
+\generateFile{usorbian.ldf}{f}{\from{usorbian.dtx}{code}}
+%%%
+\generateFile{bahasa.ldf}{f}{\from{bahasa.dtx}{code}}
+
+% compatibility files
+
+\generateFile{esperant.sty}{f}{\from{bbcompat.dtx}{esperant}}
+\generateFile{dutch.sty}{f}{\from{bbcompat.dtx}{dutch}}
+\generateFile{english.sty}{f}{\from{bbcompat.dtx}{english}}
+\generateFile{germanb.sty}{f}{\from{bbcompat.dtx}{germanb}}
+\generateFile{irish.sty}{f}{\from{bbcompat.dtx}{irish}}
+\generateFile{scottish.sty}{f}{\from{bbcompat.dtx}{scottish}}
+\generateFile{breton.sty}{f}{\from{bbcompat.dtx}{breton}}
+\generateFile{francais.sty}{f}{\from{bbcompat.dtx}{francais}}
+\generateFile{italian.sty}{f}{\from{bbcompat.dtx}{italian}}
+\generateFile{portuges.sty}{f}{\from{bbcompat.dtx}{portuges}}
+\generateFile{spanish.sty}{f}{\from{bbcompat.dtx}{spanish}}
+\generateFile{catalan.sty}{f}{\from{bbcompat.dtx}{catalan}}
+\generateFile{galician.sty}{f}{\from{bbcompat.dtx}{galician}}
+\generateFile{danish.sty}{f}{\from{bbcompat.dtx}{danish}}
+\generateFile{norsk.sty}{f}{\from{bbcompat.dtx}{norsk}}
+\generateFile{swedish.sty}{f}{\from{bbcompat.dtx}{swedish}}
+\generateFile{finnish.sty}{f}{\from{bbcompat.dtx}{finnish}}
+\generateFile{magyar.sty}{f}{\from{bbcompat.dtx}{magyar}}
+\generateFile{croatian.sty}{f}{\from{bbcompat.dtx}{croatian}}
+\generateFile{czech.sty}{f}{\from{bbcompat.dtx}{czech}}
+\generateFile{slovak.sty}{f}{\from{bbcompat.dtx}{slovak}}
+\generateFile{polish.sty}{f}{\from{bbcompat.dtx}{polish}}
+\generateFile{estonian.sty}{f}{\from{bbcompat.dtx}{estonian}}
+\generateFile{romanian.sty}{f}{\from{bbcompat.dtx}{romanian}}
+\generateFile{slovene.sty}{f}{\from{bbcompat.dtx}{slovene}}
+\generateFile{russian.sty}{f}{\from{bbcompat.dtx}{russian}}
+\generateFile{turkish.sty}{f}{\from{bbcompat.dtx}{turkish}}
+\generateFile{lsorbian.sty}{f}{\from{bbcompat.dtx}{lsorbian}}
+\generateFile{usorbian.sty}{f}{\from{bbcompat.dtx}{usorbian}}
+\generateFile{bahasa.sty}{f}{\from{bbcompat.dtx}{bahasa}}
+
+% driver files
+
+\preamble
+
+This file is part of the babel package, version 3.5
+---------------------------------------------------
+
+Copyright (C) 1995 Johannes Braams. All rights reserved.
+
+To produce the documentation in the way you like you are allowed
+to change this driver file.
+
+\endpreamble
+
+
+\generateFile{babel.drv}{t}{\from{babel.dtx}{driver}}
+\generateFile{user.drv}{t}{\from{babel.dtx}{driver,user}}
+
+% MakeIndex style files
+
+\preamble
+
+This file is part of the babel package, version 3.5
+---------------------------------------------------
+
+Copyright (C) 1995 Johannes Braams. All rights reserved.
+
+This file is a style file for the MakeIndex program
+
+\endpreamble
+
+\generateFile{bbind.ist}{t}{\from{bbidxglo.dtx}{idx}}
+\generateFile{bbglo.ist}{t}{\from{bbidxglo.dtx}{glo}}
+
+\Msg{***********************************************************}
+\Msg{*}
+\Msg{* To finish the installation you have to move all the files}
+\Msg{* with names ending in .ldf, .sty or .def into a directory}
+\Msg{* searched by TeX}
+\Msg{*}
+\Msg{* For making a format the following files have to be in a}
+\Msg{* directory which is searched by IniTeX:}
+\Msg{* \space\space hyphen.cfg}
+\Msg{* \space\space language.dat}
+\Msg{* \space\space and files with hyphenation patterns}
+\Msg{*}
+\Msg{* To produce source listings you can run files with names}
+\Msg{* ending in .dtx through LaTeX}
+\Msg{*}
+\Msg{* To produce the complete source listing MakeIndex needs to be}
+\Msg{* able to find the following files}
+\Msg{* \space\space bbind.ist}
+\Msg{* \space\space bbglo.ist}
+\Msg{*}
+\Msg{* Happy TeXing}
+\Msg{*}
+\Msg{***********************************************************}

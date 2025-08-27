@@ -1,0 +1,42 @@
+Program: lsfont  (utility for PasTeX)
+
+
+Copyright: 
+  Source/program is FD (freely distributable) © Georg Heﬂmann 1993
+  It's part of the PasTeX distribution.
+
+
+Version history:
+  0.1  18.Jul.93  First try.
+
+
+Why do I need this program?
+
+  If you work with PasTeX and you don't have enough disk space,
+  you might have only the pk-files you really need on your harddisk.
+
+  Here helps this program, together with the MARK option of
+  ShowDVI and DVIprint. Start ShowDVI and DVIprint always
+  with the MARK option (put it into ENVARC:SHOWDVI and 
+  ENVARC:DVIPRINT) and the drivers will mark every font they
+  used with an use-count and a date-stamp.
+
+  After some time, if you want get rid of old, seldom used fonts,
+  start "lsfont TeX:pk TO ram:fontlist" and look into the generated
+  list. The first number is the use count. So often is the font
+  used from a driver (started with MARK).
+
+  If you want delete some fonts of the list, do 
+  "lsfont TeX:pk TO ram:fontlist DELETE" and edit the file (delete all
+  fonts out of the file which you *don't* want delete from your
+  harddisk). After that, you can "execute ram:fontlist" delete the
+  old fonts.
+
+  Other idea to use the list:
+  Do copy the fonts first on some floppy-disks and delete them after
+  that from the hard-disk. Now, if you put your backup floppies into
+  TeX:config/FontVols, the drivers will find them on your floppies.
+  
+
+Georg Heﬂmann (18.Jul.93)
+hessmann@Informatik.Uni-Hamburg.De

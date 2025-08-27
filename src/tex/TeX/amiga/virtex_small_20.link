@@ -1,0 +1,13 @@
+TO virtex 
+FROM lib:cres.o 
+tex0.o tex1.o tex2.o tex3.o tex4.o tex5.o tex6.o tex7.o tex8.o
+/amiga/amiasm0.o
+shipout.o scanning.o mltex.o help.o overflow.o getmem.o
+math.o buildbox.o gettoken.o arith.o mainctrl.o filename.o
+linebrk.o dump.o texextra.o itex.o init.o readfont.o
+/common/fileio.o /common/extra.o banner.o
+/amiga/arexx.o /amiga/evpaths.o /amiga/SNPrintf.o
+LIB lib:scmieee.lib lib:sc.lib
+SMALLCODE
+SMALLDATA
+ADDSYM

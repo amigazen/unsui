@@ -1,0 +1,126 @@
+\relax
+
+\metrics
+
+\needsfontinstversion{1.315}
+
+% \shiftglyph takes four parameters:
+%
+% #1 the name of the glyph
+% #2 the amount of extra space at the left
+% #3 the amount of extra space at the right
+% #4 the amount of extra space for subscripts
+
+\setcommand\shiftglyph#1#2#3#4{
+   \resetglyph{#1}
+      \movert{#2}
+      \glyph{#1}{1000}
+      \movert{#4}
+      \resetitalic{\add{\italic{#1}}{\sub{#3}{#4}}}
+   \endresetglyph
+}
+
+% \skewkern sets a skewchar kern, assuming that tie is the skewchar.
+
+\setcommand\skewkern#1#2{\setkern{#1}{tie}{#2}}
+
+\shiftglyph{C}{-50}{0}{-25}
+\shiftglyph{E}{0}{50}{0}
+\shiftglyph{F}{0}{50}{-100}
+\shiftglyph{H}{0}{25}{-25}
+\shiftglyph{I}{0}{0}{-25}
+\shiftglyph{K}{0}{0}{-25}
+\shiftglyph{J}{0}{0}{-25}
+\shiftglyph{N}{0}{0}{-25}
+\shiftglyph{P}{0}{0}{-100}
+\shiftglyph{T}{0}{50}{-75}
+\shiftglyph{U}{-50}{50}{-25}
+\shiftglyph{V}{-50}{50}{-50}
+\shiftglyph{W}{-50}{50}{-50}
+\shiftglyph{X}{0}{50}{-25}
+\shiftglyph{Y}{-50}{50}{-50}
+\shiftglyph{b}{0}{-25}{0}
+\shiftglyph{d}{0}{25}{0}
+\shiftglyph{f}{150}{0}{25}
+\shiftglyph{g}{0}{-50}{0}
+\shiftglyph{j}{150}{25}{0}
+\shiftglyph{l}{0}{50}{0}
+\shiftglyph{o}{0}{-50}{0}
+\shiftglyph{p}{75}{-25}{0}
+\shiftglyph{t}{-25}{50}{0}
+\skewkern{A}{75}
+\skewkern{B}{100}
+\skewkern{C}{100}
+\skewkern{D}{50}
+\skewkern{E}{75}
+\skewkern{F}{75}
+\skewkern{G}{100}
+\skewkern{H}{50}
+\skewkern{I}{100}
+\skewkern{J}{200}
+\skewkern{K}{75}
+\skewkern{M}{100}
+\skewkern{N}{25}
+\skewkern{O}{100}
+\skewkern{P}{100}
+\skewkern{Q}{100}
+\skewkern{R}{100}
+\skewkern{S}{100}
+\skewkern{T}{50}
+\skewkern{U}{50}
+\skewkern{X}{50}
+\skewkern{Z}{50}
+\skewkern{a}{75}
+\skewkern{c}{75}
+\skewkern{d}{200}
+\skewkern{e}{75}
+\skewkern{f}{150}
+\skewkern{g}{75}
+\skewkern{i}{75}
+\skewkern{j}{150}
+\skewkern{l}{100}
+\skewkern{m}{50}
+\skewkern{n}{50}
+\skewkern{o}{75}
+\skewkern{p}{100}
+\skewkern{q}{75}
+\skewkern{r}{50}
+\skewkern{s}{100}
+\skewkern{t}{50}
+\skewkern{u}{75}
+\skewkern{v}{75}
+\skewkern{w}{75}
+\skewkern{x}{75}
+\skewkern{y}{75}
+\skewkern{z}{50}
+\skewkern{dotlessi}{50}
+\skewkern{dotlessj}{50}
+\skewkern{upsilon}{25}
+\skewkern{iota}{-50}
+\skewkern{lambda}{-75}
+
+\setglyph{dotlessj}
+   \moveup{\neg{\depth{j}}}
+   \glyphrule{\width{j}}{\add{\depth{j}}{\height{dotlessi}}}
+   \resetitalic{\italic{dotlessi}}
+   \moveup{\depth{j}}
+   \glyphwarning{missing glyph `dotlessj'}
+\endsetglyph
+
+\unfakable{rho1}
+
+\setglyph{pi1} 
+   \glyph{omega1}{1000} 
+\endsetglyph
+
+\setglyph{epsilon1} 
+   \glyph{epsilon}{1000} 
+\endsetglyph
+
+\resetglyph{vector} 
+   \movert{-100} 
+   \glyph{vector}{1000} 
+   \movert{100}
+\endresetglyph
+
+\endmetrics

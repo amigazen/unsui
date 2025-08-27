@@ -1,0 +1,380 @@
+% \iffalse meta-comment
+%
+% Copyright 1989-1995 Johannes L. Braams and any individual authors
+% listed elsewhere in this file.  All rights reserved.
+% 
+% For further copyright information any other copyright notices in this
+% file.
+% 
+% This file is part of the Babel system release 3.5.
+% --------------------------------------------------
+%   This system is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+% 
+%   For error reports concerning UNCHANGED versions of this file no more
+%   than one year old, see bugs.txt.
+% 
+%   Please do not request updates from me directly.  Primary
+%   distribution is through the CTAN archives.
+% 
+% 
+% IMPORTANT COPYRIGHT NOTICE:
+% 
+% You are NOT ALLOWED to distribute this file alone.
+% 
+% You are allowed to distribute this file under the condition that it is
+% distributed together with all the files listed in manifest.txt.
+% 
+% If you receive only some of these files from someone, complain!
+% 
+% Permission is granted to copy this file to another file with a clearly
+% different name and to customize the declarations in that copy to serve
+% the needs of your installation, provided that you comply with
+% the conditions in the file legal.txt from the LaTeX2e distribution.
+% 
+% However, NO PERMISSION is granted to produce or to distribute a
+% modified version of this file under its original name.
+%  
+% You are NOT ALLOWED to change this file.
+% 
+% 
+% \fi
+% \CheckSum{287}
+%\iffalse
+%    Tell the \LaTeX\ system who we are and write an entry on the
+%    transcript.
+%<*dtx>
+\ProvidesFile{esperant.dtx}
+%</dtx>
+%<code>\ProvidesFile{esperant.ldf}
+        [1995/07/10 v1.4g Esperanto support from the babel system]
+%
+% Babel package for LaTeX version 2e
+% Copyright (C) 1989 - 1995
+%           by Johannes Braams, TeXniek
+%
+% Please report errors to: J.L. Braams
+%                          JLBraams@cistron.nl
+%
+%    This file is part of the babel system, it provides the source
+%    code for the Esperanto language definition file.  A contribution
+%    was made by Ruiz-Altaba Marti (ruizaltb@cernvm.cern.ch) Code from
+%    esperant.sty version 1.1 by Joerg Knappen
+%    (\texttt{knappen@vkpmzd.kph.uni-mainz.de}) was included in
+%    version 1.2.
+%<*filedriver>
+\documentclass{ltxdoc}
+\newcommand*\TeXhax{\TeX hax}
+\newcommand*\babel{\textsf{babel}}
+\newcommand*\langvar{$\langle \it lang \rangle$}
+\newcommand*\note[1]{}
+\newcommand*\Lopt[1]{\textsf{#1}}
+\newcommand*\file[1]{\texttt{#1}}
+\begin{document}
+ \DocInput{esperant.dtx}
+\end{document}
+%</filedriver>
+%\fi
+% \GetFileInfo{esperant.dtx}
+%
+% \changes{esperanto-1.0a}{1991/07/15}{Renamed \file{babel.sty} in
+%    \file{babel.com}}
+% \changes{esperanto-1.1}{1992/02/15}{Brought up-to-date with
+%    babel~3.2a}
+% \changes{esperanto-1.2}{1992/02/18}{Included code from
+%    \texttt{esperant.sty}}
+% \changes{esperanto-1.4a}{1994/02/04}{Updated for \LaTeXe}
+% \changes{esperanto-1.4d}{1994/06/25}{Removed the use of
+%    \cs{filedate}, moved Identification after loading of
+%    \file{babel.def}}
+% \changes{esperanto-1.4e}{1995/02/09}{Moved identification code to
+%    the top of the file}
+% \changes{esperant-1.4f}{1995/06/14}{Corrected typos (PR1652)}
+%
+%  \section{The Esperanto language}
+%
+%    The file \file{\filename}\footnote{The file described in this
+%    section has version number \fileversion\ and was last revised on
+%    \filedate. A contribution was made by Ruiz-Altaba Marti
+%    (\texttt{ruizaltb@cernvm.cern.ch}). Code from the file
+%    \texttt{esperant.sty} by J\"org Knappen
+%    (\texttt{knappen@vkpmzd.kph.uni-mainz.de}) was included.} defines
+%    all the language-specific macros for the Esperanto language.
+%
+%    For this language the character |^| is made active.
+%    In table~\ref{tab:esp-act} an overview is given of its purpose.
+% \begin{table}[htb]
+%    \centering
+%     \begin{tabular}{lp{8cm}}
+%      |^u| & gives \u u, with hyphenation in the rest of the word
+%                   allowed\\
+%      |^U| & gives \u U, with hyphenation in the rest of the word
+%                   allowed\\
+%      |^h| & prevents h\llap{\^{}} from becoming too tall\\
+%      |^j| & gives \^\j\\
+%      \verb=^|= & inserts a |\discretionary{-}{}{}|\\
+%      |^a| & gives \^a with hyphenation in the rest of the word
+%                   allowed, this works for all other letters as
+%                   well.\\
+%      \end{tabular}
+%      \caption{The funtions of the active character for Esperanto.}
+%    \label{tab:esp-act}
+% \end{table}
+%
+%  \StopEventually{}
+%
+%    As this file needs to be read only once, we check whether it was
+%    read before. If it was, the command |\captionsesperanto| is already
+%    defined, so we can stop processing.
+%
+% \changes{esperanto-1.0a}{1991/07/15}{Added reset of catcode of @
+%    before \cs{endinput}.}
+% \changes{esperanto-1.0b}{1991/10/29}{Removed use of
+%    \cs{@ifundefined}}
+%    \begin{macrocode}
+%<*code>
+\ifx\undefined\captionsesperanto
+\else
+  \selectlanguage{esperanto}
+  \expandafter\endinput
+\fi
+%    \end{macrocode}
+%
+% \begin{macro}{\atcatcode}
+%    This file, \file{esperant.ldf}, may have been read while \TeX\ is
+%    in the middle of processing a document, so we have to make sure
+%    the category code of \texttt{@} is `letter' while this file is
+%    being read. We save the category code of the @-sign in
+%    |\atcatcode| and make it `letter'. Later the category code can be
+%    restored to whatever it was before.
+%
+% \changes{esperanto-1.0a}{1991/07/15}{Modified handling of catcode of
+%    @ again.}
+% \changes{esperanto-1.0b}{1991/10/29}{Removed use of `makeatletter and
+%    hence the need to load \file{latexhax.com}}
+%    \begin{macrocode}
+\chardef\atcatcode=\catcode`\@
+\catcode`\@=11\relax
+%    \end{macrocode}
+% \end{macro}
+%
+%    Now we determine whether the the common macros from the file
+%    \file{babel.def} need to be read. We can be in one of two
+%    situations: either another language option has been read earlier
+%    on, in which case that other option has already read
+%    \file{babel.def}, or \texttt{esperanto} is the first language
+%    option to be processed. In that case we need to read
+%    \file{babel.def} right here before we continue.
+%
+% \changes{esperanto-1.1}{1992/02/15}{Added \cs{relax} after the
+%    argument of \cs{input}}
+%    \begin{macrocode}
+\ifx\undefined\babel@core@loaded\input babel.def\relax\fi
+%    \end{macrocode}
+%
+%    Another check that has to be made, is if another language
+%    definition file has been read already. In that case its
+%    definitions have been activated. This might interfere with
+%    definitions this file tries to make. Therefore we make sure that
+%    we cancel any special definitions. This can be done by checking
+%    the existence of the macro |\originalTeX|. If it exists we simply
+%    execute it, otherwise it is |\let| to |\empty|.
+% \changes{esperanto-1.0a}{1991/07/15}{Added
+%    \cs{let}\cs{originalTeX}\cs{relax} to test for existence}
+% \changes{esperanto-1.1}{1992/02/15}{\cs{originalTeX} should be
+%    expandable, \cs{let} it to \cs{empty}}
+%    \begin{macrocode}
+\ifx\undefined\originalTeX \let\originalTeX\empty \else\originalTeX\fi
+%    \end{macrocode}
+%
+%    When this file is read as an option, i.e. by the |\usepackage|
+%    command, \texttt{esperanto} will be an `unknown' language in
+%    which case we have to make it known. So we check for the
+%    existence of |\l@esperanto| to see whether we have to do
+%    something here.
+%
+% \changes{esperanto-1.0b}{1991/10/29}{Removed use of
+%    \cs{makeatletter}}
+% \changes{esperanto-1.1}{1992/02/15}{Added a warning when no
+%    hyphenation patterns were loaded.}
+% \changes{esperanto-1.4d}{1994/06/25}{Use \cs{@nopatterns} for the
+%    warning}
+%    \begin{macrocode}
+\ifx\undefined\l@esperanto
+  \@nopatterns{Esperanto}
+  \adddialect\l@esperanto0\fi
+%    \end{macrocode}
+%
+%    The next step consists of defining commands to switch to the
+%    Esperanto language. The reason for this is that a user might want
+%    to switch back and forth between languages.
+%
+% \begin{macro}{\captionsesperanto}
+%    The macro |\captionsesperanto| defines all strings used
+%    in the four standard documentclasses provided with \LaTeX.
+% \changes{esperanto-1.1}{1992/02/15}{Added \cs{seename},
+%    \cs{alsoname} and \cs{prefacename}}
+% \changes{esperanto-1.3}{1993/07/10}{Repaired a number of mistakes,
+%    indicated by D. Ederveen}
+% \changes{esperanto-1.3}{1993/07/15}{\cs{headpagename} should be
+%    \cs{pagename}}
+% \changes{esperanto-1.4a}{1994/02/04}{added missing closing brace}
+% \changes{esperanto-1.4g}{1995/07/04}{Added \cs{proofname} for
+%    AMS-\LaTeX}
+%    \begin{macrocode}
+\addto\captionsesperanto{%
+  \def\prefacename{Anta\u{u}parolo}%
+  \def\refname{Cita\^\j{}oj}%
+  \def\abstractname{Resumo}%
+  \def\bibname{Bibliografio}%
+  \def\chaptername{{\^C}apitro}%
+  \def\appendixname{Apendico}%
+  \def\contentsname{Enhavo}%
+  \def\listfigurename{Listo de figuroj}%
+  \def\listtablename{Listo de tabeloj}%
+  \def\indexname{Indekso}%
+  \def\figurename{Figuro}%
+  \def\tablename{Tabelo}%
+  \def\partname{Parto}%
+  \def\enclname{Aldono(j)}%
+  \def\ccname{Kopie al}%
+  \def\headtoname{Al}%
+  \def\pagename{Pa\^go}%
+  \def\subjectname{Temo}%
+  \def\seename{vidu}%   a^u: vd.
+  \def\alsoname{vidu anka\u{u}}% a^u vd. anka\u{u}
+  \def\proofname{Proof}%  <-- needs translation
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\dateesperanto}
+%    The macro |\dateesperanto| redefines the command |\today| to
+%    produce Esperanto dates.
+% \changes{esperanto-1.}{1993/07/10}{Removed the capitals from
+%    \cs{today}}
+%    \begin{macrocode}
+\def\dateesperanto{%
+\def\today{\number\day{--a}~de~\ifcase\month\or
+  januaro\or februaro\or marto\or aprilo\or majo\or junio\or
+  julio\or a\u{u}gusto\or septembro\or oktobro\or novembro\or
+  decembro\fi,\space \number\year}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\extrasesperanto}
+% \begin{macro}{\noextrasesperanto}
+%    The macro |\extrasesperanto| performs all the extra definitions
+%    needed for the Esperanto language. The macro |\noextrasesperanto|
+%    is used to cancel the actions of |\extrasesperanto|.
+%
+%    For Esperanto the |^| character is made active. This is done
+%    once, later on its definition may vary.
+%
+%    \begin{macrocode}
+\initiate@active@char{^}
+\addto\extrasesperanto{\languageshorthands{esperanto}}
+\addto\extrasesperanto{\bbl@activate{^}}
+\addto\noextrasesperanto{\bbl@deactivate{^}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+%    And here are the uses of the active |^|:
+%    \begin{macrocode}
+\declare@shorthand{esperanto}{^u}{\u u\allowhyphens}
+\declare@shorthand{esperanto}{^U}{\u U\allowhyphens}
+\declare@shorthand{esperanto}{^h}{h\llap{\^{}}\allowhyphens}
+\declare@shorthand{esperanto}{^j}{\^{\j}\allowhyphens}
+\declare@shorthand{esperanto}{^|}{\discretionary{-}{}{}\allowhyphens}
+%    \end{macrocode}
+%
+% \begin{macro}{\Esper}
+% \begin{macro}{\esper}
+%    In \file{esperant.sty} J\"org Knappen provides the macros
+%    |\esper| and |\Esper| that can be used instead of |\alph| and
+%    |\Alph|. These macros are available in this file as well.
+%
+%    Their definition takes place in three steps. First the toplevel.
+%    \begin{macrocode}
+\def\esper#1{\@esper{\@nameuse{c@#1}}}
+\def\Esper#1{\@Esper{\@nameuse{c@#1}}}
+%    \end{macrocode}
+%    Then the first five occasions that are probably used the most.
+%    \begin{macrocode}
+\def\@esper#1{\ifcase#1\or a\or b\or c\or \^c\or d\else\@iesper{#1}\fi}
+\def\@Esper#1{\ifcase#1\or A\or B\or C\or \^C\or D\else\@Iesper{#1}\fi}
+%    \end{macrocode}
+%    And the 33 other cases.
+%    \begin{macrocode}
+\def\@iesper#1{\ifcase#1\or \or \or \or \or \or e\or f\or g\or \^g\or
+    h\or h\llap{\^{}}\or i\or j\or \^\j\or k\orl\or m\or n\or o\or
+    p\or s\or \^s\or t\or u\or \u{u}\or v\or z\else\@ctrerr\fi}
+%    \end{macrocode}
+%    \begin{macrocode}
+\def\@Iesper#1{\ifcase#1\or \or \or \or \or \or E\or F\or G\or \^G\or
+    H\or \^H\or I\or J\or \^\J\or K\or L\or M\or N\or O\or
+    P\or S\or \^S\or T\or U\or \u{U}\or V\or Z\else\@ctrerr\fi}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\hodiau}
+% \begin{macro}{\hodiaun}
+%    In \file{esperant.sty} J\"org Knappen provides two alternative
+%    macros for |\today|, |\hodiau| and |\hodiaun|. The second macro
+%    produces an accusative version of the date in Esperanto.
+%    \begin{macrocode}
+\addto\dateesperanto{\def\hodiau{la \today}}
+\def\hodiaun{la \number\day --an~de~\ifcase\month\or
+  januaro\or februaro\or marto\or aprilo\or majo\or junio\or
+  julio\or a\u{u}gusto\or septembro\or oktobro\or novembro\or
+  decembro\fi, \space \number\year}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+%    It is possible that a site might need to add some extra code to
+%    the babel macros. To enable this we load a local configuration
+%    file, \file{esperant.cfg} if it is found on \TeX' search path.
+% \changes{esperanto-1.4g}{1995/07/04}{Added loading of configuration
+%    file}
+%    \begin{macrocode}
+\loadlocalcfg{esperant}
+%    \end{macrocode}
+%
+%    Our last action is to make a note that the commands we have just
+%    defined, will be executed by calling the macro |\selectlanguage|
+%    at the beginning of the document.
+%    \begin{macrocode}
+\main@language{esperanto}
+%    \end{macrocode}
+%    Finally, the category code of \texttt{@} is reset to its original
+%    value. The macrospace used by |\atcatcode| is freed.
+% \changes{esperanto-1.0a}{1991/07/15}{Modified handling of catcode of
+%    the @-sign.}
+%    \begin{macrocode}
+\catcode`\@=\atcatcode \let\atcatcode\relax
+%</code>
+%    \end{macrocode}
+%
+% \Finale
+%%
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\endinput

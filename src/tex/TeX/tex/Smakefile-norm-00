@@ -1,0 +1,180 @@
+
+# Fags for normal TeX
+BGFLAG		=
+INILNKFILE	= /amiga/initex_small_00.link
+VIRLNKFILE	= /amiga/virtex_small_00.link
+
+# Flags for BigTeX
+#BGFLAG		= DEF=BIG
+#INILNKFILE	= /amiga/initex.link
+#VIRLNKFILE	= /amiga/virtex.link
+
+
+COMMONFLAGS	= $(BGFLAG)
+
+# Bei BIG darf 'math.c' *nicht* mit -O uebersetzt werden!
+# Dafuer gibt es die CFLAGSNO.
+
+
+
+# Routines used everywhere.
+# 
+commonh=/common/extra.h
+commono=/common/extra.o
+
+# Routines used in both TeX and Metafont.
+# 
+extrac=/common/texmf.c
+extrah=/common/texmf.h
+extrao=texmf.o
+
+# Routines used in TeX, Metafont, and BibTeX.
+# 
+fileioc=/common/fileio.c
+fileioh=/common/fileio.h
+fileioo=/common/fileio.o
+
+# Routines used for the AMIGA
+#
+arexxc=/amiga/arexx.c
+arexxo=/amiga/arexx.o
+ldivc=/amiga/ldivc
+ldivo=/amiga/ldivo
+ami0asm=/amiga/amiasm0.asm
+ami0o=/amiga/amiasm0.o
+ami0bigasm=/amiga/amiasm0b.asm
+ami0bigo=/amiga/amiasm0b.o
+evpathsc=/amiga/EVPaths.c
+evpathso=/amiga/EVPaths.o
+SNPrintfasm=/amiga/SNPrintf.a
+SNPrintfo=/amiga/SNPrintf.o
+
+# Object-Files we need for specific TeX
+#
+amigao=$(arexxo) $(ami0o)		# normal TeX
+#amigao=$(arexxo)			# BIG TeX
+#### the following needs conditional changes in `getmem.c' first
+#### then test the assembler routines in `amiasm0b.asm'
+#amigao=$(arexxo) $(ami0bigo)		# BIG TeX
+
+###amigao=$(ldivo) $(arexxo) $(ami0o)	# normal TeX
+####amigao=$(ldivo) $(arexxo)		# BIG TeX
+
+
+#
+# We don't add `$(commono)' here, since it doesn't depend on anything in
+# this directory, and we write a dependency for `$(objs)' below.
+# 
+
+objs1=$(evpathso) $(SNPrintfo) $(amigao) math.o buildbox.o gettoken.o arith.o mainctrl.o filename.o
+objs2=$(fileioo) shipout.o scanning.o mltex.o help.o overflow.o getmem.o
+objs3=tex0.o tex1.o tex2.o tex3.o tex4.o tex5.o tex6.o tex7.o tex8.o readfont.o
+objs=$(objs1) $(objs2) $(objs3)
+iobjs=initprim.o ilinebrk.o idump.o iextra.o initex.o initini.o $(objs)
+vobjs=linebrk.o dump.o texextra.o itex.o init.o $(objs)
+
+default:	all
+
+all:		initex virtex
+
+initex:		$(iobjs) $(commono) ibanner.o
+		Slink WITH $(INILNKFILE)
+
+virtex:		$(vobjs) $(commono) banner.o
+		Slink WITH $(VIRLNKFILE)
+
+
+
+iextra.o:	$(extrac) texd.h $(extrah) $(commonh)
+		$(CC) $(CFLAGS) DEF=INITEX DEF=INI OBJNAME=iextra.o $(extrac)
+
+initex.o:       itex.c texd.h $(extrah) $(commonh)
+		$(CC) $(CFLAGS) DEF=INITEX OBJNAME=initex.o itex.c
+
+ilinebrk.o:	linebrk.c texd.h $(extrah) $(commonh)
+		$(CC) $(CFLAGS) DEF=INITEX  OBJNAME=ilinebrk.o linebrk.c
+
+initprim.o:	initprim.c texd.h $(extrah) $(commonh)
+		$(CC) $(CFLAGS) DEF=INITEX initprim.c
+
+initini.o:      init.c texd.h $(extrah) $(commonh)
+		$(CC) $(CFLAGS) DEF=INITEX OBJNAME=initini.o init.c
+
+idump.o:	dump.c texd.h $(extrah) $(commonh)
+		$(CC) $(CFLAGS) DEF=INITEX  OBJNAME=idump.o dump.c
+
+
+
+texextra.o:	$(extrac) texd.h
+		$(CC) $(CFLAGS) OBJNAME=texextra.o $(extrac)
+
+$(fileioo):	$(fileioc) $(fileioh)
+		$(CC) $(CFLAGS) $(fileioc)
+
+banner.o:	banner.c touch-banner
+		$(CC) $(CFLAGS) $(BGFLAG) banner.c
+
+ibanner.o:	banner.c touch-banner
+		$(CC) $(CFLAGS) $(BGFLAG) DEF=INITEX OBJNAME=ibanner.o banner.c
+
+touch-banner:
+		@echo "" NOLINE
+
+
+$(ldivo):	$(ldivasm)
+		asm $(ldivasm)
+
+$(ami0o):	$(ami0asm)
+		asm $(ami0asm)
+
+$(ami0bigo):	$(ami0bigasm)
+		asm $(ami0bigasm)
+
+$(SNPrintfo):	$(SNPrintfasm)
+		asm $(SNPrintfasm)
+
+$(evpathso):	$(evpathsc)
+
+$(arexxo):	$(arexxc)
+
+arith.o:	arith.c
+linebrk.o:	linebrk.c
+shipout.o:	shipout.c
+hlistout.o:	hlistout.c
+gettoken.o:	gettoken.c
+scanning.o:	scanning.c
+buildbox.o:	buildbox.c
+math.o:		math.c
+mltex.o:	mltex.c
+help.o:		help.c
+overflow.o:	overflow.c
+getmem.o:	getmem.c
+
+filename.o:	filename.c
+readfont.o:	readfont.c
+mainctrl.o:	mainctrl.c
+
+readfont.o:	readfont.c
+
+init.o:		init.c
+dump.o:		dump.c
+tex0.o:		tex0.c
+tex1.o:		tex1.c
+tex2.o:		tex2.c
+tex3.o:		tex3.c
+tex4.o:		tex4.c
+tex5.o:		tex5.c
+tex6.o:		tex6.c
+tex7.o:		tex7.c
+tex8.o:		tex8.c
+
+$(objs):	texd.h
+
+clean:
+		delete stamp-\#? \#?.o triptex initex virtex
+		delete \#?.log \#?.fmt \#?.aux
+		delete 8terminal.tex trip.\#? tripos.tex dvitype.out
+
+veryclean:	clean
+		delete tex?.c itex.c tex.p tex.pool texput.\#?
+		delete \#?.bak \#?.ckp core

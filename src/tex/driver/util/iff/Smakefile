@@ -1,0 +1,16 @@
+CFLAGS	=
+
+PACKER	=	apack.o
+OBJ	=	TestIFF.o parse.o ilbmw.o saveilbm.o $(PACKER)
+
+TestIFF: $(OBJ)
+	slink FROM lib:c.o $(OBJ) TO TestIFF LIB lib:sc.lib lib:amiga.lib lib:debug.lib ADDSYM
+
+TestIFF.o:	TestIFF.c
+parse.o:	parse.c
+packer.o:	packer.c packer.h
+ilbmw.o:	ilbmw.c
+saveilbm.o:	saveilbm.c
+iffpstrings.o:	iffpstrings.c
+apack.o:	apack.asm
+	asm apack.asm

@@ -1,0 +1,33 @@
+
+PasTeX 1.4 Source Tree
+----------------------
+
+ - driver
+	Source of the TeX drivers 'ShowDVI' and 'DVIprint'.
+
+ - flib
+	Source of the font library tool 'flib'.
+
+ - LSfont
+	Source of the little pk-font usage statistic tool.
+	(You have to use the MARK option with ShowDVI and DVIprint)
+
+ - ptofront
+	Tiny tool to get a public-screen to front.
+
+ - SpecialHost
+	Source of the graphic tool for 'ShowDVI' and 'DVIprint'.
+
+ - TeX
+	Source of the TeX programs 'initex' and 'virtex'.
+
+
+All programs are released under the term of the GNU general public
+license. See file COPYING.
+
+And, if not other noted they are copyright Georg Heﬂmann.
+
+
+Georg Heﬂmann (hessmann@informatik.uni-hamburg.de)
+26.May.95
+

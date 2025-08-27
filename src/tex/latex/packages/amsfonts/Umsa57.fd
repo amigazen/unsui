@@ -1,0 +1,62 @@
+%% 
+%% This is file `Umsa57.fd', generated 
+%% on <1995/1/6> with the docstrip utility (2.2i).
+%% 
+%% The original source files were:
+%% 
+%% amsfonts.fdd  (with options: `57,msa')
+%%% ====================================================================
+%%%  @LaTeX-file{
+%%%     author          = "American Mathematical Society",
+%%%     version         = "2.2e",
+%%%     date            = "1995/01/05",
+%%%     time            = "11:48:06 EST",
+%%%     filename        = "amsfonts.fdd",
+%%%     copyright       = "Copyright (C) 1994 American Mathematical Society,
+%%%                        all rights reserved.  Copying of this file is
+%%%                        authorized only if either:
+%%%                        (1) you make absolutely no changes to your copy,
+%%%                        including name; OR
+%%%                        (2) if you do make changes, you first rename it
+%%%                        to some other name.",
+%%%     address         = "American Mathematical Society,
+%%%                        Technical Support,
+%%%                        Electronic Products and Services,
+%%%                        P. O. Box 6248,
+%%%                        Providence, RI 02940,
+%%%                        USA",
+%%%     telephone       = "401-455-4080 or (in the USA and Canada)
+%%%                        800-321-4AMS (321-4267)",
+%%%     FAX             = "401-331-3842",
+%%%     checksum        = "20746 270 1255 9876",
+%%%     email           = "tech-support@math.ams.org (Internet)",
+%%%     codetable       = "ISO/ASCII",
+%%%     keywords        = "latex, amslatex, ams-latex, amsfonts, msam,
+%%%                        msbm, eufm, blackboard bold",
+%%%     supported       = "yes",
+%%%     abstract        = "This file is part of the AMS-\LaTeX{} package,
+%%%                        It is a \LaTeX{} font definition file package
+%%%                        that unpacks into the .fd files which make
+%%%                        available to \LaTeX{} the fonts in the AMSFonts
+%%%                        (version 2.0+) font package, including two math
+%%%                        symbol fonts and four Euler fonts. See the
+%%%                        AMSFonts user's guide for more information.",
+%%%     docstring       = "The checksum field above contains a CRC-16
+%%%                        checksum as the first value, followed by the
+%%%                        equivalent of the standard UNIX wc (word
+%%%                        count) utility output of lines, words, and
+%%%                        characters.  This is produced by Robert
+%%%                        Solovay's checksum utility.",
+%%%  }
+%%% ====================================================================
+\ProvidesFile{Umsa57.fd}
+  [1995/01/05 v2.2e AMS font definitions%
+   (for Y&Y/BSR PS AMSFonts set)%
+  ]
+\DeclareFontFamily{U}{msa}{}
+\DeclareFontShape{U}{msa}{m}{n}{
+  <-6> msam5 <6-8> msam7 <8-> msam10
+  }{}
+\endinput
+%% 
+%% End of file `Umsa57.fd'.

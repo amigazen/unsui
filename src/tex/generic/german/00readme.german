@@ -1,0 +1,150 @@
+%% 00readme.german
+%%
+%% README for package `german', Version 2.5c of 96/05/01
+%%
+%% Copyright (C) 1995, 1996 by B.Raichle and DANTE e.V.
+%%                          All rights reserved.
+%%
+
+Zur Installation der Style-Option ``german'' und der deutschen
+Trennmuster werden die Dateien
+
+	german.ins	-- Installationsskript fuer `docstrip'
+	german.dtx	-- `docstrip'-Archiv mit "german.sty"
+	germdoc.tex	-- Dokumentation
+	ghyph31.tex	-- deutsche Trennmuster
+und
+	docstrip.tex
+
+benoetigt.  Achten Sie darauf, dass "german.dtx" und "germdoc.tex" die
+oben angegebene Versionsnummer und Datum besitzen, da auch aeltere
+Versionen in Umlauf sind.
+  Fehlt Ihnen die Datei
+
+	docstrip.tex
+
+so koennen Sie sie in der aktuellen LaTeX2e-Release finden -- Sie
+muessen dazu LaTeX2e _nicht_ installieren!  Aus dem LaTeX2e-Release
+benoetigen Sie die beiden Dateien "docstrip.dtx" und "docstrip.ins",
+die Sie mit der Anweisung "tex docstrip.ins" entpacken.
+
+
+Docstrip-Archiv auspacken und Style-Option installieren:
+--------------------------------------------------------
+
+Mit der Anweisung
+
+  tex german.ins
+
+wird das `docstrip'-Archiv ausgepackt.  Sie erhalten die drei Dateien
+
+	german.sty	-- die Style-Option
+        hyphxmpl.cfg    -- Beispiel fuer die Konfigurationsdatei
+			   "hyphen.cfg" zum Laden der Trennmuster
+			   in LaTeX2e (naeheres siehe "germdoc.tex")
+	german.drv	-- Treiberdatei fuer Impl.-dokumentation
+			   (nur fuer neugierige TeX-Makro-Hacker!)
+
+Kopieren Sie die Datei "german.sty" in ein Verzeichnis, in denen TeX
+nach Makrodateien sucht.
+
+Hinweis: Wenn Sie im Moment keinen Zugriff auf `docstrip.tex' haben,
+erhalten Sie auch durch Umbenennen der Datei "german.dtx" in
+"german.sty" einen verwendbaren German-Style.
+
+
+Dokumentation:
+--------------
+
+Die Dokumentation zur Nutzung der Style-Option und zur Installation
+der Trennmuster finden Sie in der Datei
+
+	germdoc.tex
+
+Uebersetzen Sie diese mit LaTeX (LaTeX2e oder LaTeX 2.09, eine mit
+plain-TeX uebersetzbare Version existiert leider nicht):
+
+  latex germdoc
+
+Lesen Sie diese Anleitung durch und ueberpruefen Sie bitte, ob Sie die
+deutschen Trennmuster in der Datei
+
+	ghyph31.tex
+
+korrekt installiert haben.  Insbesondere sollten Sie darauf achten,
+dass die `control sequence' \l@german definiert und auf den korrekten
+Wert gesetzt wurde.  Wollen Sie auch die (US-)englischen Trennmuster
+verwenden, sollten Sie ebenso darauf achten, dass die `control
+sequences' \l@USenglish bzw. \l@english korrekt definiert wurden.
+Andernfalls trennt TeX nicht oder mit den Trennmustern fuer eine
+andere Sprache!  Beispiele, wie dies zu geschehen hat, finden Sie in
+der Anleitung `germdoc.tex'.  Ein verwendbares Beispiel finden Sie in
+der Datei "hyphxmpl.tex", die Sie eventuell geringfuegig an Ihre
+verwendeten Satz von Trennmustern anpassen muessen.
+  Haben Sie statt "ghyph31.tex" noch eine aeltere Version der
+deutschen Trennmuster, so sollten Sie diese durch die neue Version
+ersetzen und neue Formatdateien erstellen.
+
+
+Die Dokumentation, die die Implementierung der Style-Option
+beschreibt, erhalten Sie durch Uebersetzen der Datei "german.drv" mit
+LaTeX:
+
+  latex german.drv
+
+Als ``normaler'' (La)TeX-Benutzer benoetigen Sie diese Dokumentation
+_nicht_.  Sie ist nur zur internen Dokumentation gedacht und es werden
+zum Verstaendnis einige tiefere TeX-Kenntnisse vorausgesetzt.
+
+
+!!! AENDERUNGEN !!! Achtung !!! AENDERUNGEN !!! Achtung !!!
+-----------------------------------------------------------
+
+Wichtige Aenderungen im Vergleich zu Version 2.4:
+
+ * \language = 1 wird nicht mehr als Default fuer die deutschen
+   Trennmuster angenommen, falls die `control sequence' \l@german
+   nicht definiert wurde.
+   Fuer diesen Fall werden Sie beim Laden der Style-Option ``german''
+   durch eine entsprechende Warnung darauf hingewiesen.
+
+   Ist \l@german undefiniert, wird __nicht__ getrennt!!
+
+   Deshalb muessen Sie jetzt beim Installieren der deutschen
+   Trennmuster die `control sequence' \l@german definieren.
+   Dasselbe gilt auch fuer die (US-)englische Trennung.  Mehr
+   dazu erfahren Sie in der Dokumentation "germdoc.tex".
+
+
+ * Nach der Installation von "german.sty" kann der erste
+   Formatierlauf Fehler beim Lesen von *.aux-, *.toc-, *.lof-,
+   *.lot-, u.a. -Datei erzeugen, da sich ein kleines Detail
+   geaendert hat.
+
+   Sie koennen diese Fehler, die nur beim Lesen dieser Dateien
+   und beim ersten Formatierlauf auftreten sollten, ignorieren oder
+   Sie loeschen einfach diese Dateien nach dem Installieren der neuen
+   Version der Style-Option ``german''.
+
+
+Unterschiede zwischen Version 2.5a/b und 2.5c:
+
+ * Mit "ff erhaelt man nun eine ff-Ligatur.
+
+ * Die schliessenden Anfuehrungszeichen wurden mit den DC-Fonts
+   Version 1.2 zu nah an das Wort gerueckt.  Dies wurde verbessert.
+
+ * Fuer das Paket `bibgerm', das ein internes Makro aus German-Style
+   umdefiniert hat und deshalb mit neueren Versionen nicht mehr
+   funktionierte, wurde in German-Style ein Patch eingebaut.  Somit
+   kann man dieses Paket jetzt wieder zusammen mit German-Style
+   verwenden.  (Besser waere es aber, wenn man `bibgerm' aendern und
+   "sauber" implementieren wuerde.  Bitte nicht auf den Patch in
+   German-Style vertrauen, da dieser sicher in spaeteren Versionen
+   entfernt wird!)
+
+ * Verschiedene kleinere Fehler (u.a. bei Verwendung mit AMS-TeX)
+   wurden berichtigt.
+
+
+-- Copyright 1996 by B.Raichle and DANTE e.V.  All rights reserved. --

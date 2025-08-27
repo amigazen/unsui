@@ -1,0 +1,233 @@
+\def\fileversion{5.2}
+\def\filedate{1995/08/16}
+\def\docdate {1995/03/12}
+%
+% \iffalse
+%<*driver>
+\documentclass{ltxdoc}
+\begin{document}
+ \title{The \textsf{psfonts} package\thanks{This file
+        has version number \fileversion, last
+        revised \filedate.}}
+ \author{Sebastian Rahtz\\S.Rahtz@elsevier.co.uk}
+ \date{\filedate}
+ \maketitle
+ \DocInput{psfonts.dtx}
+\end{document}
+%</driver>
+% \fi
+% \CheckSum{256}
+%
+% \section{Introduction}
+%
+% This file contains suitable package files to load
+% the standard PostScript fonts. The font definition files and
+% font metrics are available in both T1 and OT1 form in the companion
+% CTAN fonts/psfonts collection.
+%
+% \StopEventually{}
+%
+% \section{The {\tt docstrip} modules}
+%
+% \subsection{Adobe Symbol font}
+%    \begin{macrocode}
+%<*Upsy>
+\typeout{File \space Upsy.fd\space loading \space Adobe\space Symbol}%
+\DeclareFontFamily{U}{psy}{}%
+\DeclareFontShape{U}{psy}{m}{n}{<->psyr}{}%
+\DeclareFontShape{U}{psy}{m}{i}{<->ssub * psy/m/n}{}%
+%</Upsy>
+%    \end{macrocode}
+% \subsection{Adobe Zapf Dingbats}
+%    \begin{macrocode}
+%<*Upzd>
+\typeout{File \space Upzd.fd\space loading \space Adobe\space ZapfDingbats}%
+\DeclareFontFamily{U}{pzd}{}%
+\DeclareFontShape{U}{pzd}{m}{n}{<->pzdr}{}%
+%</Upzd>
+%    \end{macrocode}
+% \section{Package files for PostScript fonts}
+%    \begin{macrocode}
+%<*times>
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{times}[\filedate\space\fileversion\space
+ Times PSNFSS2e package]
+\renewcommand{\sfdefault}{phv}
+\renewcommand{\rmdefault}{ptm}
+\renewcommand{\ttdefault}{pcr}
+%</times>
+%<*palatino>
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{palatino}[\filedate\space\fileversion\space
+Palatino PSNFSS2e package]
+\renewcommand{\rmdefault}{ppl}
+\renewcommand{\sfdefault}{phv}
+\renewcommand{\ttdefault}{pcr}
+%</palatino>
+%<*helvet>
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{helvet}[\filedate\space\fileversion\space
+Helvetica PSNFSS2e package]
+\renewcommand{\sfdefault}{phv}
+%</helvet>
+%<*avant>
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{avant}[\filedate\space\fileversion\space
+AvantGarde PSNFSS2e package]
+\renewcommand{\sfdefault}{pag}
+%</avant>
+%<*newcent>
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{newcent}[\filedate\space\fileversion\space
+NewCenturySchoolbook PSNFSS2e package]
+\renewcommand{\rmdefault}{pnc}
+\renewcommand{\sfdefault}{pag}
+\renewcommand{\ttdefault}{pcr}
+%</newcent>
+%<*bookman>
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{bookman}[\filedate\space\fileversion\space
+Bookman PSNFSS2e package]
+\renewcommand{\rmdefault}{pbk}
+\renewcommand{\sfdefault}{pag}
+\renewcommand{\ttdefault}{pcr}
+%</bookman>
+%<*pifont>
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{pifont}[\filedate\space\fileversion\space
+Pi font PSNFSS2e package]
+%    \end{macrocode}
+% Now some useful commands for Pi fonts (Dingbats, Symbol etc); they
+% all assume you know the character number of the (unmapped) font
+%    \begin{macrocode}
+\newcommand{\Pifont}[1]{\fontfamily{#1}\fontencoding{U}%
+\fontseries{m}\fontshape{n}\selectfont}
+\newcommand{\Pisymbol}[2]{{\Pifont{#1}\char#2}}
+\newcommand{\Pifill}[2]{\leaders\hbox{\makebox[0.2in]{%
+       \Pisymbol{#1}{#2}}}\hfill\kern\z@}
+\newcommand{\Piline}[2]{\par\noindent\hspace{0.5in}\Pifill{#1}{#2}%
+       \hspace{0.5in}\kern\z@\par}
+\newenvironment{Pilist}[2]%
+{\begin{list}{\Pisymbol{#1}{#2}}{}}%
+{\end{list}}%
+%    \end{macrocode}
+% A Pi number generator (from ideas by David Carlisle), for use in
+% lists where items are suffixed by symbols taken in sequence from a
+% Pi font. Usage is in lists just like enumerate.
+%
+% |\Pinumber| outputs the appropriate symbol, where |#2| is the name of a
+% \LaTeX\ counter  and |#1| is the font family.
+%    \begin{macrocode}
+\def\Pinumber#1#2{\protect\Pisymbol{#1}{\arabic{#2}}}
+\newenvironment{Piautolist}[2]{%
+\ifnum \@enumdepth >3 \@toodeep\else
+      \advance\@enumdepth \@ne
+%    \end{macrocode}
+% We force the labels and cross-references into a very plain style (eg
+% no brackets around `numbers', or dots after them).
+%    \begin{macrocode}
+      \edef\@enumctr{enum\romannumeral\the\@enumdepth}%
+  \expandafter\def\csname p@enum\romannumeral\the\@enumdepth\endcsname{}%
+  \expandafter\def\csname labelenum\romannumeral\the\@enumdepth\endcsname{%
+     \csname theenum\romannumeral\the\@enumdepth\endcsname}%
+  \expandafter\def\csname theenum\romannumeral\the\@enumdepth\endcsname{%
+     \Pinumber{#1}{enum\romannumeral\the\@enumdepth}}%
+  \list{\csname label\@enumctr\endcsname}{%
+        \@nmbrlisttrue
+        \def\@listctr{\@enumctr}%
+        \setcounter{\@enumctr}{#2}%
+        \addtocounter{\@enumctr}{-1}%
+        \def\makelabel##1{\hss\llap{##1}}}
+\fi
+}{\endlist}
+%    \end{macrocode}
+% All the old Dingbat commands still work.
+%    \begin{macrocode}
+\newcommand{\ding}{\Pisymbol{pzd}}
+\def\dingfill#1{\leaders\hbox{\makebox[0.2in]{\Pisymbol{pzd}{#1}}}\hfill}
+\def\dingline#1{\Piline{pzd}{#1}}
+\newenvironment{dinglist}[1]{\begin{Pilist}{pzd}{#1}}%
+  {\end{Pilist}}
+\newenvironment{dingautolist}[1]{\begin{Piautolist}{pzd}{#1}}%
+  {\end{Piautolist}}
+{\Pifont{pzd}}
+{\Pifont{psy}}
+%</pifont>
+%<*chancery>
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{chancery}[\filedate\space\fileversion\space
+Zapf Chancery PSNFSS2e package]
+\renewcommand{\rmdefault}{pzc}
+%</chancery>
+%<*mathptm>
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mathptm}[\filedate{} Times + math package from fontinst]
+%    \end{macrocode}
+%This package loads the Adobe Times fonts and the mathptm fonts;
+%The virtual fonts are produced by fontinst; they 
+%can be built by running tex on
+%fontptcm.tex from the fontinst package.
+%    \begin{macrocode}
+% The main text family is Times Roman
+\def\rmdefault{ptm}
+\DeclareSymbolFont{operators}   {OT1}{ptmcm}{m}{n}
+\DeclareSymbolFont{letters}     {OML}{ptmcm}{m}{it}
+\DeclareSymbolFont{symbols}     {OMS}{pzccm}{m}{n}
+\DeclareSymbolFont{largesymbols}{OMX}{psycm}{m}{n}
+\DeclareSymbolFont{bold}        {OT1}{ptm}{bx}{n}
+\DeclareSymbolFont{italic}      {OT1}{ptm}{m}{it}
+%    \end{macrocode}
+% If we're in compatibility mode, defined |\mathbf| and |\mathit|.
+%    \begin{macrocode}
+\@ifundefined{mathbf}{}{\DeclareMathAlphabet{\mathbf}{OT1}{ptm}{bx}{n}}
+\@ifundefined{mathit}{}{\DeclareMathAlphabet{\mathit}{OT1}{ptm}{m}{it}}
+%    \end{macrocode}
+% An |\omicron| command, to fill the gap.
+%    \begin{macrocode}
+\DeclareMathSymbol{\omicron}{0}{operators}{`\o}
+%    \end{macrocode}
+% Reduce the space around math operators
+%    \begin{macrocode}
+\thinmuskip=2mu
+\medmuskip=2.5mu plus 1mu minus 1mu
+\thickmuskip=4mu plus 1.5mu minus 1mu
+%    \end{macrocode}
+% No bold math.
+%    \begin{macrocode}
+\def\boldmath{%
+   \@warning{there is no bold Symbol font}%
+   \global\let\boldmath=\relax
+}
+\DeclareMathSizes{5}{5}{5}{5}
+\DeclareMathSizes{6}{6}{5}{5}
+\DeclareMathSizes{7}{7}{5}{5}
+\DeclareMathSizes{8}{8}{6}{5}
+\DeclareMathSizes{9}{9}{7}{5}
+\DeclareMathSizes{10}{10}{7.4}{6}
+\DeclareMathSizes{10.95}{10.95}{8}{6}
+\DeclareMathSizes{12}{12}{9}{7}
+\DeclareMathSizes{14.4}{14.4}{10.95}{8}
+\DeclareMathSizes{17.28}{17.28}{12}{10}
+\DeclareMathSizes{20.74}{20.74}{14.4}{12}
+\DeclareMathSizes{24.88}{24.88}{17.28}{14.4}
+%</mathptm>
+%    \end{macrocode}
+% \Finale
+%
+\endinput
+%
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}

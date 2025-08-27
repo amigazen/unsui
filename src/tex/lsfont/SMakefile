@@ -1,0 +1,12 @@
+
+
+lsfont: lsfont.c lsfont.gst SMakefile SCOPTIONS
+	sc LINK lsfont.c
+
+lsfont.gst: lsfont.h
+	sc MGST=lsfont.gst lsfont.c
+
+clean:
+	delete lsfont.o lsfont.gst lsfont.lnk \#?.bak
+
+

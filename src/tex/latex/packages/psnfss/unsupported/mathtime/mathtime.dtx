@@ -1,0 +1,346 @@
+\def\fileversion{2}
+\def\filedate{1995/03/07}
+\def\docdate {1995/03/07}
+%
+% \iffalse
+%% File: mathtime.dtx Copyright (C) 1994 Aloysius Helminck
+%
+%<*driver>
+\documentclass{ltxdoc}
+\begin{document}
+ \title{The \textsf{mathtime} package\thanks{This file
+        has version number \fileversion, last
+        revised \filedate.}}
+ \author{Aloysius G. Helminck}
+ \date{\filedate}
+ \maketitle
+ \DocInput{mathtime.dtx}
+\end{document}
+%</driver>
+% \fi
+% \CheckSum{725}
+%
+% \section{Introduction}
+%
+%  This file provides support for the MathTime fonts from the
+%  TeXplorators corporation for use with \LaTeX2e.
+%  There are a number of problems with using |\boldmath| within a subsection
+%  statement. For this see the comments later on in this file. 
+%
+%  There exists another (better) input file, called {\bf timesmt.sty}, 
+%  for using the MathTime fonts. This file uses a set of virtual math fonts
+%  which remap the characters in the mathtime fonts to the same position
+%  as the Computer Modern fonts. This solves all incompatabilities. 
+%  This file (including virtual fonts) can be found in the fonts/metrics 
+%  directory on CTAN. 
+% 
+%  |\rmdefault| is the Times family.
+%  |\sfdefault| is the Helvetia family.
+%  |\ttdefault| is the Courier family.
+%  These can be changed in the preamble by redefining the following:
+%  \begin{verbatim}
+%  \renewcommand{\sfdefault}{phv} % Times
+%  \renewcommand{\rmdefault}{ptm} % Helvetica
+%  \renewcommand{\ttdefault}{pcr} % Courier
+%  \end{verbatim}
+%  Portions of this file are adapted from Michael Spivak's mtmacs.tex
+% \StopEventually{}
+%    \begin{macrocode}
+%<*mathtime>
+\ProvidesPackage{mathtime}[\filedate\space\fileversion\space
+ PSNFSS2e LaTeX2e package]
+\renewcommand{\sfdefault}{phv}
+\renewcommand{\rmdefault}{ptm}
+\renewcommand{\ttdefault}{pcr}
+\def\bfdefault{b}
+\def\encodingdefault{OT1}% 
+\fontencoding{OT1}% 
+\DeclareSymbolFont{operators}{\encodingdefault}{\rmdefault}{m}{n}
+\DeclareSymbolFont{letters}{OML}{mtt}{m}{it}
+\DeclareSymbolFont{symbols}{OMS}{mtt}{m}{n}
+\DeclareSymbolFont{largesymbols}{OMX}{mtt}{m}{n}
+\DeclareSymbolFont{italics}{\encodingdefault}{\rmdefault}{m}{it}
+\SetSymbolFont{operators}{normal}{\encodingdefault}{\rmdefault}{m}{n}
+\SetSymbolFont{letters}{normal}{OML}{mtt}{m}{it}
+\SetSymbolFont{symbols}{normal}{OMS}{mtt}{m}{n}
+\SetSymbolFont{largesymbols}{normal}{OMX}{mtt}{m}{n}
+\SetMathAlphabet{\mathbf}{normal}{\encodingdefault}{\rmdefault}{b}{n}% 
+\SetMathAlphabet{\mathsf}{normal}{\encodingdefault}{\sfdefault}{m}{n}% 
+\SetMathAlphabet{\mathrm}{normal}{\encodingdefault}{\rmdefault}{m}{n}% 
+\SetSymbolFont{operators}{bold}{\encodingdefault}{cmr}{bx}{n}
+\SetSymbolFont{letters}{bold}{OML}{cmm}{b}{it}
+\SetSymbolFont{symbols}{bold}{OMS}{cmsy}{b}{n}
+\SetSymbolFont{largesymbols}{bold}{OMX}{mtt}{m}{n}
+\SetMathAlphabet{\mathbf}{bold}{\encodingdefault}{\rmdefault}{m}{n}% 
+\SetMathAlphabet{\mathsf}{bold}{\encodingdefault}{\sfdefault}{b}{n}% 
+\SetMathAlphabet{\mathrm}{bold}{\encodingdefault}{\rmdefault}{b}{n}% 
+% 
+%  German fraktuur from EUFM 
+\DeclareMathAlphabet\mathfrak{U}{euf}{m}{n}
+\SetMathAlphabet \mathfrak{normal}{U}{euf}{m}{n}
+\SetMathAlphabet \mathfrak{bold}{U}{euf}{b}{n}
+%  Blackboard Bold
+\DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
+\DeclareSymbolFontAlphabet{\mathbb}{AMSb}
+%  Caligraphic  from cmsy
+\DeclareSymbolFont{cal}{OMS}{cmsy}{m}{n}
+\SetMathAlphabet \mathcal{normal}{OMS}{cmsy}{m}{n}
+\SetMathAlphabet \mathcal{bold}{OMS}{cmsy}{b}{n}
+% 
+\def\frak{\mathfrak}
+\def\Bbb{\mathbb}
+\def\bold{\mathbf}
+\def\cal{\mathcal}
+% 
+\DeclareMathSymbol\varGamma    {\mathord}{letters}{"00}
+\DeclareMathSymbol\varDelta    {\mathord}{letters}{"01}
+\DeclareMathSymbol\varTheta    {\mathord}{letters}{"02}
+\DeclareMathSymbol\varLambda    {\mathord}{letters}{"03}
+\DeclareMathSymbol\varXi       {\mathord}{letters}{"04}
+\DeclareMathSymbol\varPi       {\mathord}{letters}{"05}
+\DeclareMathSymbol\varSigma    {\mathord}{letters}{"06}
+\DeclareMathSymbol\varUpsilon   {\mathord}{letters}{"07}
+\DeclareMathSymbol\varPhi      {\mathord}{letters}{"08}
+\DeclareMathSymbol\varPsi      {\mathord}{letters}{"09}
+\DeclareMathSymbol\varOmega    {\mathord}{letters}{"0A}
+\def\space@.{\futurelet\space@\relax}
+  \space@. %                        
+\begingroup
+  \catcode`\_=\active
+  \def_{\protect\pUS}
+  \def\pUS{\ifmmode\expandafter\sb@\else
+   \expandafter\csname subscript character \string_\endcsname\fi}
+  \let\sb_
+%  \ifnum\catcode`\^^A=8 \catcode`\^^A\active\let^^A_\fi
+  \def\sb@#1{\csname subscript character \string_\endcsname
+   {\futurelet\next\sb@@#1}}
+  \def\sb@@{% 
+   \ifx\next\space@\def\next@. {\futurelet\next\sb@@}\else
+    \def\next@.{% 
+    \ifx\next j\mkern-\tw@ mu\else
+    \ifx\next f\mkern-\tw@ mu\else
+    \ifx\next p\mkern-\@ne mu
+    \fi\fi\fi}% 
+   \fi
+   \next@.}
+\endgroup
+\def\pvdots{\vbox{\baselineskip4\p@ \lineskiplimit\z@
+ \kern6\p@\hbox{$\m@th.$}\hbox{$\m@th.$}\hbox{$\m@th.$}}}
+\def\pddots{\mathinner{\mkern1mu\raise7\p@\vbox{\kern7\p@
+ \hbox{$\m@th.$}}\mkern2mu
+ \raise4\p@\hbox{$\m@th.$}\mkern2mu\raise\p@\hbox{$\m@th.$}\mkern1mu}}
+\def\pangle{{\vbox{\ialign{$\m@th\scriptstyle##$\crcr
+       \not\mathrel{\mkern14mu}\crcr
+       \noalign{\nointerlineskip}
+       \mkern2.5mu\leaders\hrule height.48pt\hfill\mkern2.5mu\crcr}}}}
+\def\pt#1{{\edef\next{\the\font}\the\textfont2\accent"41\next#1}}
+\def\pdot{\ifnum\fam=\m@ne
+ \mathaccent"0250 \else\mathaccent"70C7 \fi}
+\def\pgrave{\ifnum\fam=\m@ne
+ \mathaccent"024A \else\mathaccent"7012 \fi}
+\def\pacute{\ifnum\fam=\m@ne
+ \mathaccent"024B \else\mathaccent"7013 \fi}
+\def\pcheck{\ifnum\fam=\m@ne
+ \mathaccent"024C \else\mathaccent"7014 \fi}
+\def\pbreve{\ifnum\fam=\m@ne
+ \mathaccent"024D \else\mathaccent"7015 \fi}
+\def\pbar{\ifnum\fam=\m@ne
+ \mathaccent"024E \else\mathaccent"7016 \fi}
+\def\phat{\ifnum\fam=\m@ne
+ \mathaccent"024F \else\mathaccent"705E \fi}
+\def\pdot{\ifnum\fam=\m@ne
+ \mathaccent"0250 \else\mathaccent"70C7 \fi}
+\def\ptilde{\ifnum\fam=\m@ne
+ \mathaccent"0251 \else\mathaccent"707E \fi}
+\def\pddot{\ifnum\fam=\m@ne
+ \mathaccent"0252 \else\mathaccent"707F \fi}
+%
+\def\qvdots{\vbox{\baselineskip4\p@ \lineskiplimit\z@
+  \kern6\p@\hbox{.}\hbox{.}\hbox{.}}}
+\def\qddots{\mathinner{\mkern1mu\raise7\p@\vbox{\kern7\p@\hbox{.}}\mkern2mu
+  \raise4\p@\hbox{.}\mkern2mu\raise\p@\hbox{.}\mkern1mu}}
+\def\angle{{\vbox{\ialign{$\m@th\scriptstyle##$\crcr
+     \not\mathrel{\mkern14mu}\crcr
+     \noalign{\nointerlineskip}
+     \mkern2.5mu\leaders\hrule height.34pt\hfill\mkern2.5mu\crcr}}}}
+\def\qt#1{{\edef\next{\the\font}\the\textfont1\accent"7F\next#1}}
+\def\qvec{\mathaccent"017E}
+\def\qacute{\mathaccent"7013 }
+\def\qgrave{\mathaccent"7012 }
+\def\qddot{\mathaccent"707F }
+\def\qtilde{\mathaccent"707E }
+\def\qbar{\mathaccent"7016 }
+\def\qbreve{\mathaccent"7015 }
+\def\qcheck{\mathaccent"7014 }
+\def\qhat{\mathaccent"705E }
+\def\qdot{\mathaccent"705F }
+\def\qRelbar{\mathrel=}
+\def\qhbar{{\mathchar'26\mkern-9muh}}
+%\def\qS{\mathhexbox278}
+%\def\qP{\mathhexbox27B}
+% 
+\mathcode`\+="202B
+% 
+%% dagger, ddagger, \P and \S from cmsy instead of Times. This has the 
+%% advantage that their definitions are independent of the fontencoding of
+%% the Times fonts used.
+\DeclareMathSymbol{\pS}{3}{cal}{"78}
+\DeclareMathSymbol{\pP}{3}{cal}{"7B}
+\DeclareMathSymbol{\dagger}{3}{cal}{"79}
+\DeclareMathSymbol{\ddagger}{3}{cal}{"7A}
+\def\unboldmath{\@nomath\boldmath
+\mathchardef\Gamma="0130
+\mathchardef\Delta="0131
+\mathchardef\Theta="0132
+\mathchardef\Lambda="0133
+\mathchardef\Xi="0134
+\mathchardef\Pi="0135
+\mathchardef\Sigma="0136
+\mathchardef\Upsilon="0137
+\mathchardef\Phi="0138
+\mathchardef\Psi="0139
+\mathchardef\Omega="017F
+\def\grave{\protect\pgrave}
+\def\acute{\protect\pacute}
+\def\check{\protect\pcheck}
+\def\breve{\protect\pbreve}
+\def\bar{\protect\pbar}
+\def\hat{\protect\phat}
+\def\dot{\protect\pdot}
+\def\tilde{\protect\ptilde}
+\def\ddot{\protect\pddot}
+\def\hbar{{\mathchar'26\mkern-6.7muh}}
+\def\vec{\mathaccent"0245 }
+\def\widebar{\mathaccent"0253 }
+\def\dag{\hbox{$\dagger$}}
+\def\ddag{\hbox{$\ddagger$}}
+\def\S{\hbox{$\pS$}}
+\def\P{\hbox{$\pP$}}
+\def\t{\protect\pt}
+\def\jadjust{\mkern-\tw@ mu}
+\mathchardef\ldotp="613A
+\mathchardef\triangleleft="2247
+\mathchardef\triangleright="2246
+\mathchardef\Relbar="3248
+\mathchardef\varkappa="017E
+\mathchardef\comp="2242
+\def\vdots{\pvdots}
+\def\ddots{\pddots}
+\def\t{\protect\pt}
+\def\angle{\pangle}
+\mathcode`\=="3244
+\mathcode`\(="412E
+\mathcode`\)="512F
+\delcode`\(="12E300
+\delcode`\)="12F301
+\mathcode`\.="013A
+\mathcode`\,="613B
+\mathcode`\;="6249
+\mathcode`\+="2243
+  \mathversion{normal}
+}
+\def\boldmath{\@nomath\unboldmath
+\mathchardef\Gamma="7000
+\mathchardef\Delta="7001
+\mathchardef\Theta="7002
+\mathchardef\Lambda="7003
+\mathchardef\Xi="7004
+\mathchardef\Pi="7005
+\mathchardef\Sigma="7006
+\mathchardef\Upsilon="7007
+\mathchardef\Phi="7008
+\mathchardef\Psi="7009
+\mathchardef\Omega="700A
+\let\comp=\relax
+\let\widebar\bar
+\let\varkappa=\kappa
+\mathchardef\ldotp="613A
+\mathchardef\triangleleft="212F
+\mathchardef\triangleright="212E
+\mathchardef\ddagger="227A
+\mathchardef\dagger="2279
+%    \end{macrocode}
+% The following  definitions give problems in the toc line. Comment
+% them out if you want a Table of contents, or make 2 versions of the
+% mathtime style (mathtime.sty and mathtime-toc.sty). The first
+% one with all the definitions. The second with the following
+% commented out. To obtain the final version one can use |\nofiles| and
+% nfmathtime.sty. One might need to edit the *.toc file by hand to
+% correct a few of the missing characters. 
+%    \begin{macrocode}
+\mathcode`\(="4028
+\mathcode`\)="5029
+\delcode`\(="028300
+\delcode`\)="029301
+\mathcode`\.="013A
+\mathcode`\,="613B
+\mathcode`\=="303D
+\mathcode`\;="603B
+%    \end{macrocode}
+% For the following we use |\let| so that we do not get 1 inch of space in
+% the subsection heading, when we use |\boldmath|. 
+%    \begin{macrocode}
+\let\Relbar=\qRelbar
+\let\grave=\qgrave
+\let\acute=\qacute
+\let\check=\qcheck
+\let\breve=\qbreve
+\let\bar=\qbar
+\let\hat=\qhat
+\let\dot=\qdot
+\let\tilde=\qtilde
+\let\vec=\qvec
+\let\t=\qt
+\let\hbar=\qhbar
+\let\ddot=\qddot
+\let\ddots=\qddots
+\let\vdots=\qvdots
+%    \end{macrocode}
+% The following does not work when |\boldmath| is used in a subsection
+% heading. In that case comment it out, if not needed, or define it outside
+% the definitions of |\boldmath| (resp. |\unboldmath|) as:
+% |\mathcode`\+="202B|. Then + will be taken from Times instead of the
+% mathtime fonts. Another option is to ignore the warnings, since it
+% will typeset correctly.  
+%    \begin{macrocode}
+\mathcode`\+="202B
+%    \end{macrocode}
+% When using AmsLaTeX styles the following two need to be commented out. 
+% \let\S=\qS
+% \let\P=\qP
+%    \begin{macrocode}
+  \mathversion{bold}
+}
+\unboldmath
+%</mathtime>
+%<*OMLmtt>
+\DeclareFontFamily{OML}{mtt}{\skewchar\font'055}
+\DeclareFontShape{OML}{mtt}{m}{it}{<->mtmi}{}
+%</OMLmtt>
+%<*OMSmtt>
+\DeclareFontFamily{OMS}{mtt}{\skewchar\font'060}
+\DeclareFontShape{OMS}{mtt}{m}{n}{<->mtsy}{}
+%</OMSmtt>
+%<*OMXmtt>
+\DeclareFontFamily{OMX}{mtt}{}
+\DeclareFontShape{OMX}{mtt}{m}{n}{<->mtex}{}
+%</OMXmtt>
+%    \end{macrocode}
+% \Finale
+% 
+\endinput
+% \CharacterTable
+%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%   Digits       \0\1\2\3\4\5\6\7\8\9
+%   Exclamation   \!    Double quote  \"    Hash (number) \#
+%   Dollar       \$    Percent      \%     Ampersand    \&
+%   Acute accent  \'    Left paren    \(    Right paren   \)
+%   Asterisk     \*    Plus        \+    Comma        \,
+%   Minus        \-    Point        \.    Solidus      \/
+%   Colon        \:    Semicolon    \;    Less than    \<
+%   Equals       \=    Greater than  \>    Question mark \?
+%   Commercial at \@    Left bracket  \[    Backslash    \\
+%   Right bracket \]    Circumflex    \^    Underscore    \_
+%   Grave accent  \`    Left brace    \{    Vertical bar  \|
+%   Right brace   \}    Tilde        \~}

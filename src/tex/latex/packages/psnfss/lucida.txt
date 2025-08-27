@@ -1,0 +1,52 @@
+Hlsrt8a		lstr	LucidaSans-Typewriter
+hlsrot8a	lsto	LucidaSans-TypewriterOblique
+hlsbot8a	lstbo	LucidaSans-TypewriterBoldOblique
+hlsbt8a		lstb	LucidaSans-TypewriterBold
+
+hlsdi8a		lsdi	LucidaSans-DemiItalic
+hlsd8a		lsd	LucidaSans-Demi
+hlsri8a		lsi	LucidaSans-Italic
+hlsr8a		lsr	LucidaSans
+hlsb8a		lsb	LucidaSans-Bold
+hlsbi8a		lsbi	LucidaSans-BoldItalic
+
+hlxd8a		lfd	LucidaFax-Demi
+hlxdi8a		lfdi	LucidaFax-DemiItalic
+hlxr8a		lfr	LucidaFax
+hlxri8a		lfi	LucidaFax-Italic
+
+hlhd8a		lbd	LucidaBright-Demi
+hlhdi8a		lbdi	LucidaBright-DemiItalic
+hlhr8a		lbr	LucidaBright
+hlhri8a		lbi	LucidaBright-Italic
+hlhro8a		lbsl	LucidaBrightSlanted
+hlhrc8a		lbrsc	LucidaBrightSmallcaps
+hlhdc8a		lbdsc	LucidaBrightSmallcaps-Demi
+
+hlcrf8a		lbl	LucidaBlackletter
+
+hlcriw8a	lbh	LucidaHandwriting-Italic
+
+hlcrie8a	lbc	LucidaCalligraphy-Italic
+
+hlcrn8a		lbkr	LucidaCasual
+hlcrin8a	lbki	LucidaCasual-Italic
+
+hlcrt8a		lbtr	LucidaTypewriter
+hlcbt8a		lbtb	LucidaTypewriterBold
+hlcrot8a	lbto	LucidaTypewriterOblique
+hlcbot8a	lbtbo	LucidaTypewriterBoldOblique
+
+hlcra		lbma	LucidaNewMath-Arrows
+hlcda		lbmad	LucidaNewMath-Arrows-Demi
+hlcrv		lbme	LucidaNewMath-Extension
+hlcry		lbms	LucidaNewMath-Symbol
+hlcdy		lbmsd	LucidaNewMath-Symbol-Demi
+hlcrim		lbmi	LucidaNewMath-Italic
+hlcrima		lbmo	LucidaNewMath-AltItalic
+hlcdim		lbmdi	LucidaNewMath-DemiItalic
+hlcdima		lbmdo	LucidaNewMath-AltDemiItalic
+hlcrm		lbmr	LucidaNewMath-Roman
+hlcdm		lbmd	LucidaNewMath-Demibold
+
+

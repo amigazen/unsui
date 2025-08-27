@@ -1,0 +1,267 @@
+% \iffalse meta-comment
+%
+% Copyright 1989-1995 Johannes L. Braams and any individual authors
+% listed elsewhere in this file.  All rights reserved.
+% 
+% For further copyright information any other copyright notices in this
+% file.
+% 
+% This file is part of the Babel system release 3.5.
+% --------------------------------------------------
+%   This system is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+% 
+%   For error reports concerning UNCHANGED versions of this file no more
+%   than one year old, see bugs.txt.
+% 
+%   Please do not request updates from me directly.  Primary
+%   distribution is through the CTAN archives.
+% 
+% 
+% IMPORTANT COPYRIGHT NOTICE:
+% 
+% You are NOT ALLOWED to distribute this file alone.
+% 
+% You are allowed to distribute this file under the condition that it is
+% distributed together with all the files listed in manifest.txt.
+% 
+% If you receive only some of these files from someone, complain!
+% 
+% Permission is granted to copy this file to another file with a clearly
+% different name and to customize the declarations in that copy to serve
+% the needs of your installation, provided that you comply with
+% the conditions in the file legal.txt from the LaTeX2e distribution.
+% 
+% However, NO PERMISSION is granted to produce or to distribute a
+% modified version of this file under its original name.
+%  
+% You are NOT ALLOWED to change this file.
+% 
+% 
+% \fi
+%%% ====================================================================
+%%%  @TeX-file{
+%%%     author          = "Johannes L. Braams",
+%%%     version         = "1.1",
+%%%     date            = "03 May 1995",
+%%%     time            = "15:34:34 MET",
+%%%     filename        = "tb1401.tex",
+%%%     address         = "Kooienswater 62
+%%%                        2715 AJ Zoetermeer
+%%%                        The Netherlands",
+%%%     telephone       = "(79) 522819",
+%%%     FAX             = "(70) 3432395",
+%%%     checksum        = "14954 225 1187 9154",
+%%%     email           = "J.L.Braams@research.ptt.nl (Internet)",
+%%%     codetable       = "ISO/ASCII",
+%%%     keywords        = "",
+%%%     supported       = "yes",
+%%%     abstract        = "",
+%%%     docstring       = "The update article on babel that appeared
+%%%                        in TUGboat Volume 14 No 1.
+%%%
+%%%                        The checksum field above contains a CRC-16
+%%%                        checksum as the first value, followed by the
+%%%                        equivalent of the standard UNIX wc (word
+%%%                        count) utility output of lines, words, and
+%%%                        characters.  This is produced by Robert
+%%%                        Solovay's checksum utility.",
+%%%  }
+%%% ====================================================================
+\documentclass{ltugboat}
+\usepackage{shortvrb}
+\MakeShortVerb{\|}
+%
+\def\rtitlex{TUGboat, Volume 14 (1993), No. 1}
+\def\midrtitle{}
+\def\PrelimDraftfooter{}
+\let\TBmaketitle\maketitle
+%\SelfDocumenting
+\setcounter{page}{60}
+\newcommand{\file}[1]{\texttt{#1}}
+\newcommand{\Lopt}[1]{\textsf{#1}}
+\newcommand{\babel}{\textsf{babel}}
+\makeatletter
+%  -------------------------------------------------
+%  Definitions copied from doc.sty by FMi
+%  -------------------------------------------------
+{\obeyspaces%
+\gdef\meta{\begingroup\obeyspaces%
+\def {\egroup\space\hbox\bgroup\it}\m@ta}}
+\def\m@ta#1{\hbox\bgroup$\langle$\it#1\/$\rangle$\egroup\endgroup}
+%
+{\catcode`\|=\z@ \catcode`\\=12|gdef|bslash{\}}
+%
+\makeatother
+\newcommand{\bsl}{\protect\bslash}
+
+
+\begin{document}
+\title{An update on the \babel\ system}
+\address{PTT Research Neher laboratories\\
+         P.O. Box 421\\
+         2260 AK Leidschendam}
+\netaddress{J.L.Braams@research.ptt.nl}
+\date{03 May 1995}
+\maketitle
+
+\begin{abstract}
+  This article describes the changes that have been made to the
+  \babel\ system, since the article describing the system appeared in
+  \TUB\ Volume 12, number 2. This article announces the release of a
+  new version of the \babel\ system.
+\end{abstract}
+
+\section{Introduction}
+
+Since the publication of the \babel\ system in \TUB~\cite{bab} several
+changes have occurred. With the new release of \LaTeX\ -- which
+appeared at the end of 1991 -- the internationalised version I\LaTeX,
+prepared by Joachim Schrod~\cite{ilatex} was withdrawn. But some of
+its functionality was still needed, so a modification of the \babel\
+system was necessary.
+
+Besides this a couple of bugs were reported and had to be fixed. The
+major problem was that the language changing commands were not
+`local', they contained global definitions. In the current version
+these commands obey grouping correctly.
+
+Some macros that formerly were in language-specific files have been
+moved to the core of the system, because they are being used in
+several language-specific files.
+
+\section{Changes to the core of \babel}
+
+The changes to the core of the \babel\ system are the most extensive.
+
+\subsection*{{\tt\bsl selectlanguage}}
+The \babel\ user-command |\selectlanguage| now also accepts a control
+sequence as its argument. This was included to provide compatibility
+for users who were used to the syntax of the original
+\file{german.tex}, but wanted to switch to \babel.  The escape
+character is `peeled off' and the name of the control sequence is then
+used as the name of the language to select.
+
+Another change to the |\selectlanguage| macro is that it now stores
+the name of the current language in the control sequence
+|\languagename|. The contents of this control sequence could be tested
+in the following way:
+
+\begin{verbatim}
+  \edef\tmp{\string english}
+  \ifx\languagename\tmp
+    ...
+  \else
+    ...
+  \fi
+\end{verbatim}
+
+The construction with |\string| is necessary because
+|\languagename| returns the name with characters of category code
+\texttt{12} (other).
+
+\subsection*{Saving macro definitions}
+
+A new way of handling macros that are temporarily \emph{re}defined was
+developed by Bernd Raichle and included in the core of the \babel\
+system. Two new macros, for use in the language-specific files have
+been introduced.\\
+These macros, |\babel@savevariable|\meta{register} and
+|\babel@save|\meta{macro}, append code to |\originalTeX|.  This code
+restores the value (or meaning) of what was saved when |\originalTeX|
+was executed.
+
+\subsection*{Special characters}
+
+Some of the language-specific files introduce one or more characters
+that are special in some way. Such characters have to be added to
+|\dospecials| (and |\@sanitize| too for \LaTeX) whenever their special
+meaning is activated. But, they may have to be removed again when
+another language, which doesn't use them, is in effect.
+
+To this end two new control sequences, that are meant to be used in
+the language-specific files are introduced. They are
+|\babel@add@special| and |\babel@remove@special| and perform the
+necessary tasks.
+
+\subsection*{Additional facilities}
+
+A specific request from Joachim Schrod for \babel, was the possibility
+to extend the definition of a control sequence on the fly. It should,
+for instance, be possible that the user adds a macro of his own to the
+definition of |\extrasenglish|.
+
+This feature is now provided by the macro\\
+ |\addto{|\meta{control sequence}|}{|\meta{\TeX\ code}|}|.
+ It is now used throughout the
+language-specific files to build the macros |\extras|\meta{lang} and
+|\noextras|\meta{lang}.
+
+The support macros |\allowhyphens|,\\ |\set@low@box| and |\save@sf@q|
+have been moved from the language-specific files to the core of the
+\babel\ system.
+
+\subsection{The files}
+
+In the previous release a file called \file{latexhax.com} was
+provided.  This was needed to provide some macros normally defined by
+\LaTeX, to \plain~\TeX\ users. The need for this file has been removed
+in the current release of the \babel\ system.
+
+In the previous release of the system, four different files were
+provided (all derived from \file{hyphen.doc} that were needed for
+different combinations of versions of \TeX\ and \file{plain.tex} or
+\file{lplain.tex}. This has been changed. In the current version only
+two different files are derived from \file{hyphen.doc}. They are
+\file{babel.switch} and \file{babel.hyphen}.\\
+The file \file{babel.switch} is needed for people who can't build a
+new format or don't have \TeX\ version 3. The file \file{babel.hyphen}
+should be loaded into the format by ini\TeX. It provides the macros
+from \file{babel.switch}, but additionally it reads the file
+\file{language.dat}, which specifies the languages for which
+hyphenation patterns should be loaded.
+
+In the previous release the file \file{babel.com} contained
+redefinitions for a lot of \LaTeX\ macros to replace texts with
+control sequences. This has been removed, because it is no longer
+necessary for releases of \LaTeX\ dated december 1991 or later.  Those
+who still have an older release of \LaTeX\ can produce a special
+version of \file{babel.com} by including the docstrip option
+\meta{names} when stripping the file \file{babel.doc}.
+
+With the release of the new version of Frank Mittelbach's \texttt{doc}
+package the stripped files are no longer distributed. The distribution
+of babel now includes a file \file{install.babel} with which you can
+produce them (give the command \file{tex install.babel}).
+
+\section{Changes to the language specific files}
+
+Bernd Raichle has invented a solution for things like |\char"45|
+when the |"| is active. His solution (from german 2.3e) has been
+included in germanb and is copied for other language specific files
+that have an active |"|.
+
+A few terms have been added to the |\captions|\meta{...} macros,
+again following \file{german.tex}. These terms are |\prefacename|,
+|\seename| and |\seealsoname|. I don't have the correct
+translations for all languages yet, but that will be repaired as soon
+as someone provides them to me.
+
+For the dutch language the behaviour of the active double quote has
+been slightly modified. It has been noted that there is a difference
+between |"e|, where a `trema' should be produced and |\"u|, where we
+should get an `umlaut'. The difference between the two is that the
+`trema' should disappear at a hyphenation point, whereas the `umlaut'
+should not.
+
+\begin{thebibliography}{9}
+  \bibitem{bab} Johannes Braams,
+    \emph{Babel, a multilingual style-option system for use with
+      \LaTeX's standard document styles},
+    \emph{TUGboat} 12 (1991) \#2, p.~291--301.
+ \bibitem{ilatex}Joachim Schrod,
+  \emph{International \LaTeX\ is ready to use},
+  \emph{TUGboat} 11 (1990) \#1, p.~87--90.
+\end{thebibliography}
+\end{document}

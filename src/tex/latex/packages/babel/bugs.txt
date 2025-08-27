@@ -1,0 +1,53 @@
+                         Babel Error Reports
+ 
+                             5 July 1995
+
+ERROR REPORTS
+
+Before you report an error please check that:
+
+ * The error is not caused by using an obsolete version of any file or
+   of other software. 
+
+ * You are using the original version of all files, not one that has
+   been modified elsewhere.
+
+If you think you have found a genuine bug in a recent version of the
+Babel software please report it in the same way as bugs for LaTeX2e
+are reported:
+
+ * Generate a bug report template by running the file
+   latexbug.tex through LaTeX2e.
+
+ * Fill in the spaces in the generated template file.
+ 
+ * Include all necessary information, especially a complete input
+   file, a complete transcript file, and all other files used (if they
+   are not standard).
+
+   Please check carefully to ensure that any non-standard files are
+   essential to the bug; and remember that I cannot debug files not
+   supplied by me.
+
+   Any such non-standard files should be included in a `filecontents'
+   environment at the start of your input file.
+
+ * Please note that it is important to make the input file as small
+   as possible since this will enable me to find and fix the error
+   quickly.  It also helps me because then I can often use it as test
+   file for future releases.
+   
+   I would expect most files to be less than 60 lines, and very
+   rarely to be longer than 100 lines.
+   
+   This can often be achieved by defining a command to be some
+   arbitrary text and using this several times if it is necessary to
+   generate longer bits of text.
+
+Error reports concerning UNCHANGED versions of Babel files should be
+sent by E-mail to:
+
+  latex-bugs@uni-mainz.de
+
+ 
+--- Copyright 1995 Johannes Braams.  All rights reserved ---

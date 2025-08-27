@@ -1,0 +1,164 @@
+;***************************************************************************
+;
+; PostScript interpreter file "postasm.a" - assembler routines (Amiga)
+; (C) Adrian Aylward 1989, 1991
+;
+; This file contains the assembler support routines for the main program.
+; It is Lattice specific.
+;
+;***************************************************************************
+
+FUNCDEF		 MACRO
+_LVO\1		 EQU	FUNC_CNT
+FUNC_CNT	 SET	FUNC_CNT-6	* Standard offset-6 bytes each
+FUNC_CNT	 EQU	LIB_USERDEF	* Skip 4 standard vectors
+		 ENDM
+
+        include "exec/execbase.i"
+        include "exec/tasks.i"
+        include "exec/exec_lib.i"
+        include "libraries/dos.i"
+
+;***************************************************************************
+;
+; The text segment
+;
+;***************************************************************************
+
+        csect   text,0
+
+        xref    sigint
+        xref    sigfpe
+
+        xdef    insertbreak
+        xdef    deletebreak
+        xdef    insertftrap
+        xdef    deleteftrap
+
+;***************************************************************************
+;
+; Insert the break exception handler
+;
+;***************************************************************************
+
+insertbreak:
+        move.l  4,a0                    ; Get ExecBase
+        move.l  ThisTask(a0),a0         ; Locate our task
+        move.l  TC_EXCEPTCODE(a0),sxcode  ; Save old hanmdler
+        move.l  #hbreak,TC_EXCEPTCODE(a0) ; Insert new handler
+        rts
+
+;***************************************************************************
+;
+; Delete the break exception handler
+;
+;***************************************************************************
+
+deletebreak:
+        move.l  4,a0                    ; Get ExecBase
+        move.l  ThisTask(a0),a0         ; Locate our task
+        move.l  sxcode,TC_EXCEPTCODE(a0)  ; Restore old hanmdler
+        rts
+
+;***************************************************************************
+;
+; The break exception handler
+;
+;***************************************************************************
+
+hbreak:
+        btst    #SIGBREAKB_CTRL_C,d0    ; if this a CTRL/C
+        beq.b   hb1
+        movem.l d0/d1/a0/a1,-(sp)
+        moveq   #1,d0
+        move.l  d0,-(sp)
+        jsr     sigint                  ; signal interrupt
+        addq.l  #4,sp
+        movem.l (sp)+,d0/d1/a0/a1
+hb1:    rts
+
+;***************************************************************************
+;
+; Insert the floating point trap handler
+;
+;***************************************************************************
+
+insertftrap:
+        move.l  a6,-(sp)
+        move.l  4,a6                    ; Get ExecBase
+        btst    #4,AttnFlags+1(a6)      ; See if we have an FPU
+        beq.b   if1
+        move.l  ThisTask(a6),a0         ; Locate our task
+        move.l  TC_TRAPCODE(a0),stcode  ; Save old hanmdler
+        move.l  #sftrap,TC_TRAPCODE(a0) ; Insert new handler
+        fmove.l fpcr,d0
+        move.l  d0,sfpcr                ; Save fpcr
+        or.w    #$fd90,d0               ; Set trap flags in fpcr
+        fmove.l d0,fpcr
+if1:    move.l  (sp)+,a6
+        rts
+
+;***************************************************************************
+;
+; Delete the floating point trap handler
+;
+;***************************************************************************
+
+deleteftrap:
+        move.l  a6,-(sp)
+        move.l  4,a6                    ; Get ExecBase
+        btst    #4,AttnFlags+1(a6)      ; See if we have an FPU
+        beq.b   df1
+        move.l  sfpcr,d0                ; Restore fpcr
+        fmove.l d0,fpcr
+        move.l  ThisTask(a6),a0         ; Locate our task
+        move.l  stcode,TC_TRAPCODE(a0)  ; Restore old hanmdler
+df1:    move.l  (sp)+,a6
+        rts
+
+;***************************************************************************
+;
+; The floating point trap handler
+;
+;***************************************************************************
+
+sftrap: cmp.l   #48,(sp)                ; fp traps are 48 - 54
+        blo.b   ht1
+        cmp.l   #54,(sp)
+        bls.b   ht2
+ht1:    move.l  stcode,-(sp)            ; not fp, jump to old handler
+        rts
+
+ht2:    move.l  d0,-(sp)
+        fsave   -(a7)                   ; save FPU internal state
+        move.b  0(a7),d0                ; first byte of FPU state frame
+        beq.b   ht3                     ; branch on null state frame
+
+        moveq   #0,D0
+        move.b  1(a7),d0                ; load state frame size (in bytes)
+        bset    #3,0(a7,d0.l)           ; set FPU exception pending bit (27)
+
+ht3:    frestore (a7)+                  ; restore FPU internal state
+        addq.l  #4,sp                   ; discard trap number
+        move.l  #uftrap,2(sp)           ; update pc with user trap handler
+        rte                             ; return to user state, enter trap
+
+uftrap: move.l  4,a6                    ; Get ExecBase
+        jsr     sigfpe                  ; signal fp error, no return
+
+;***************************************************************************
+;
+; The data segment (bss)
+;
+;***************************************************************************
+
+        CSECT   __MERGED,2        ; BSS
+
+sxcode: ds.b    4                 ; Saved exception code
+stcode: ds.b    4                 ; Saved trap code
+
+sfpcr:  ds.b    4                 ; Saved fpcr
+
+        end
+
+; End of file "postasm.a"

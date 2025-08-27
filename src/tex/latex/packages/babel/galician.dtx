@@ -1,0 +1,510 @@
+% \iffalse meta-comment
+%
+% Copyright 1989-1995 Johannes L. Braams and any individual authors
+% listed elsewhere in this file.  All rights reserved.
+% 
+% For further copyright information any other copyright notices in this
+% file.
+% 
+% This file is part of the Babel system release 3.5.
+% --------------------------------------------------
+%   This system is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+% 
+%   For error reports concerning UNCHANGED versions of this file no more
+%   than one year old, see bugs.txt.
+% 
+%   Please do not request updates from me directly.  Primary
+%   distribution is through the CTAN archives.
+% 
+% 
+% IMPORTANT COPYRIGHT NOTICE:
+% 
+% You are NOT ALLOWED to distribute this file alone.
+% 
+% You are allowed to distribute this file under the condition that it is
+% distributed together with all the files listed in manifest.txt.
+% 
+% If you receive only some of these files from someone, complain!
+% 
+% Permission is granted to copy this file to another file with a clearly
+% different name and to customize the declarations in that copy to serve
+% the needs of your installation, provided that you comply with
+% the conditions in the file legal.txt from the LaTeX2e distribution.
+% 
+% However, NO PERMISSION is granted to produce or to distribute a
+% modified version of this file under its original name.
+%  
+% You are NOT ALLOWED to change this file.
+% 
+% 
+% \fi
+% \CheckSum{282}
+% \iffalse
+%    Tell the \LaTeX\ system who we are and write an entry on the
+%    transcript.
+%<*dtx>
+\ProvidesFile{galician.dtx}
+%</dtx>
+%<code>\ProvidesFile{galician.ldf}
+        [1995/07/08 v1.2c Galician support from the babel system]
+%
+% Babel package for LaTeX version 2e
+% Copyright (C) 1989 - 1995
+%           by Johannes Braams, TeXniek
+%
+% Galician Language Definition File
+% Copyright (C) 1989 - 1995
+%           by Manuel Carriba <mcarriba@eunetcom.net>
+%              Johannes Braams, TeXniek
+%
+% Please report errors to: J.L. Braams
+%                          JLBraams@cistron.nl
+%
+%    This file is part of the babel system, it provides the source
+%    code for the Galician language definition file.
+%
+%    The 'galician' style was originally adopted from the 'spanish'
+%    style.
+%
+%    All the macrocodes have been translated from the spanish language
+%    into the galician language, using the spanish-galician
+%    dictionary:
+%
+%           X.L. Franco Grande
+%           Diccionario Galego-Castelan e Vocabulario Castelan-Galego
+%           Editorial Galaixa, Vigo 1968
+%
+%    The hyphenation patterns for the galician language should be the
+%    same as the spanish language. I've inspected some galician essays
+%    and nothing strange seems to point out that both languages might
+%    use different hyphenation patterns. This still has to been
+%    proved. I will check it anyway, and hope to report more as soon
+%    as possible.
+%
+%    A small note to the months in the galician language:
+%
+%    'outono' will be used sometimes instead of 'outubro', but this
+%    word will be used more to assign the season.
+%
+%    'nadal' will be used sometimes instead of 'decembro', but this
+%    word will be used more for the event on Christmas.
+%
+%    Manuel Carriba (mcarriba@eunetcom.net)
+%
+%    The file spanish.sty was written by Julio Sanchez,
+%    (jsanchez@gmv.es)
+%<*filedriver>
+\documentclass{ltxdoc}
+\newcommand*\TeXhax{\TeX hax}
+\newcommand*\babel{\textsf{babel}}
+\newcommand*\langvar{$\langle \it lang \rangle$}
+\newcommand*\note[1]{}
+\newcommand*\Lopt[1]{\textsf{#1}}
+\newcommand*\file[1]{\texttt{#1}}
+\begin{document}
+ \DocInput{galician.dtx}
+\end{document}
+%</filedriver>
+%\fi
+% \GetFileInfo{galician.dtx}
+%
+% \changes{galician-1.1}{1994/02/27}{Update for \LaTeXe}
+% \changes{galician-1.1c}{1994/06/26}{Removed the use of \cs{filedate}
+%    and moved identification after the loading of \file{babel.def}}
+%
+%  \section{The Galician language}
+%
+%    The file \file{\filename}\footnote{The file described in this
+%    section has version number \fileversion\ and was last revised on
+%    \filedate.}  defines all the language definition macros for the
+%    Galician language.
+%
+%    For this language the characters |'| |~| and |"| are made
+%    active. In table~\ref{tab:galician-quote} an overview is given of
+%    their purpose.
+%    \begin{table}[htb]
+%     \centering
+%     \begin{tabular}{lp{8cm}}
+%      \verb="|= & disable ligature at this position.\\
+%      |"-| & an explicit hyphen sign, allowing hyphenation
+%             in the rest of the word.\\
+%      |\-| & like the old |\-|, but allowing hyphenation
+%             in the rest of the word. \\
+%      |'a| & an accent that allows hyphenation. Valid for all
+%             vowels uppercase and lowercase.\\
+%      |'n| & a n with a tilde. This is included to
+%             improve compatibility with FTC. Works for uppercase too.\\
+%      |"u| & a u with dieresis allowing hyphenation.\\
+%      |"a| & feminine ordinal as in
+%             1{\raise1ex\hbox{\underbar{\scriptsize a}}}.\\
+%      |"o| & masculine ordinal as in
+%             1{\raise1ex\hbox{\underbar{\scriptsize o}}}.\\
+%      |~n| & a n with tilde. Works for uppercase too.
+%     \end{tabular}
+%     \caption{The extra definitions made by \texttt{galician.ldf}}
+%     \label{tab:galician-quote}
+%    \end{table}
+%    These active accents character behave according to their original
+%    definitions if not followed by one of the characters indicated in
+%    that table.
+%
+% \StopEventually{}
+%
+%    As this file needs to be read only once, we check whether it was
+%    read before. If it was, the command |\captionsgalician| is already
+%    defined, so we can stop processing. If this command is undefined
+%    we proceed with the various definitions and first show the
+%    current version of this file.
+%
+%    \begin{macrocode}
+%<*code>
+\ifx\undefined\captionsgalician
+\else
+  \selectlanguage{galician}
+  \expandafter\endinput
+\fi
+%    \end{macrocode}
+%
+% \begin{macro}{\atcatcode}
+%    This file, \file{galician.ldf}, may have been read while \TeX\ is
+%    in the middle of processing a document, so we have to make sure
+%    the category code of \texttt{@} is `letter' while this file is
+%    being read.  We save the category code of the @-sign in
+%    |\atcatcode| and make it `letter'. Later the category code can be
+%    restored to whatever it was before.
+%    \begin{macrocode}
+\chardef\atcatcode=\catcode`\@
+\catcode`\@=11\relax
+%    \end{macrocode}
+% \end{macro}
+%
+%    Now we determine whether the the common macros from the file
+%    \file{babel.def} need to be read. We can be in one of two
+%    situations: either another language option has been read earlier
+%    on, in which case that other option has already read
+%    \file{babel.def}, or \texttt{galician} is the first language option
+%    to be processed. In that case we need to read \file{babel.def}
+%    right here before we continue.
+%
+%    \begin{macrocode}
+\ifx\undefined\babel@core@loaded\input babel.def\relax\fi
+%    \end{macrocode}
+%
+%    Another check that has to be made, is if another language
+%    definition file has been read already. In that case its definitions
+%    have been activated. This might interfere with definitions this
+%    file tries to make. Therefore we make sure that we cancel any
+%    special definitions. This can be done by checking the existence
+%    of the macro |\originalTeX|. If it exists we simply execute it.
+%    \begin{macrocode}
+\ifx\undefined\originalTeX
+  \let\originalTeX\empty
+\fi
+\originalTeX
+%    \end{macrocode}
+%
+%    When this file is read as an option, i.e. by the |\usepackage|
+%    command, \texttt{galician} could be an `unknown' language in which
+%    case we have to make it known.  So we check for the existence of
+%    |\l@galician| to see whether we have to do something here.
+%
+% \changes{galician-1.1c}{1994/06/26}{Now use \cs{@nopatterns} to
+%    produce the warning}
+%    \begin{macrocode}
+\ifx\undefined\l@galician
+  \@nopatterns{Galician}
+  \adddialect\l@galician0\fi
+%    \end{macrocode}
+%
+%    The next step consists of defining commands to switch to (and
+%    from) the Galician language.
+%
+% \begin{macro}{\captionsgalician}
+%    The macro |\captionsgalician| defines all strings used
+%    in the four standard documentclasses provided with \LaTeX.
+% \changes{galician-1.1d}{1994/11/09}{Added a few missing
+%    translations}
+% \changes{galician-1.2b}{1995/07/02}{Added \cs{proofname} for
+%    AMS-\LaTeX}
+%    \begin{macrocode}
+\addto\captionsgalician{%
+  \def\prefacename{Prefacio}%
+  \def\refname{Referencias}%
+  \def\abstractname{Resumo}%
+  \def\bibname{Bibliograf\'{\i}a}%
+  \def\chaptername{Cap\'{\i}tulo}%
+  \def\appendixname{Ap\'endice}%
+  \def\contentsname{\'Indice Xeral}%
+  \def\listfigurename{\'Indice de Figuras}%
+  \def\listtablename{\'Indice de T\'aboas}%
+  \def\indexname{\'Indice de Materias}%
+  \def\figurename{Figura}%
+  \def\tablename{T\'aboa}%
+  \def\partname{Parte}%
+  \def\enclname{Adxunto}%
+  \def\ccname{Copia a}%
+  \def\headtoname{A}%
+  \def\pagename{P\'axina}%
+  \def\seename{v\'exase}%
+  \def\alsoname{v\'exase tam\'en}%
+  \def\proofname{Proof}%  <-- Needs Translation!
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\dategalician}
+%    The macro |\dategalician| redefines the command |\today| to
+%    produce Galician dates.
+% \changes{galician1.1d}{1994/11/09}{Corrected the name of the month
+%    marzo from marzal}
+%    \begin{macrocode}
+\def\dategalician{%
+  \def\today{\number\day~de\space\ifcase\month\or
+    xaneiro\or febreiro\or marzo\or abril\or maio\or xu\~no\or
+    xullo\or agosto\or setembro\or outubro\or novembro\or decembro\fi
+    \space de~\number\year}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\extrasgalician}
+% \changes{galician-1.2a}{1995/03/14}{Handling of active characters
+%    completely rewritten}
+% \begin{macro}{\noextrasgalician}
+%
+%    The macro |\extrasgalician| will perform all the extra
+%    definitions needed for the Galician language. The macro
+%    |\noextrasgalician| is used to cancel the actions of
+%    |\extrasgalician|. 
+%
+%    For Galician, some characters are made active or are
+%    redefined. In particular, the \texttt{"} character and the |~|
+%    character receive new meanings this can also happen for the
+%    \texttt{'} character when the option \Lopt{activeacute} is
+%    specified.
+%
+% \changes{galician-1.2c}{1995/07/08}{Make active accent optional}
+%    \begin{macrocode}
+\addto\extrasgalician{\languageshorthands{galician}}
+\initiate@active@char{"}
+\initiate@active@char{~}
+\addto\extrasgalician{%
+  \bbl@activate{"}\bbl@activate{~}}
+\@ifpackagewith{babel}{activeacute}{%
+  \initiate@active@char{'}
+  \addto\extrasgalician{\bbl@activate{'}}}{}
+%\addto\noextrasgalician{%
+%  \bbl@deactivate{"}\bbl@deactivate{~}\bbl@deactivate{'}}
+%    \end{macrocode}
+%
+% \changes{galician-1.2a}{1995/03/14}{All the code for handling active
+%    characters is now moved to \file{babel.def}}
+%
+%    Apart from the active characters some other macros get a new
+%    definition. Therefore we store the current one to be able to
+%    restore them later.
+%
+%    \begin{macrocode}
+\addto\extrasgalician{%
+  \babel@save\"\babel@save\~
+  \def\"{\protect\@umlaut}%
+  \def\~{\protect\@tilde}}
+\@ifpackagewith{babel}{activeacute}{%
+  \babel@save\'
+  \addto\extrasgalician{\def\'{\protect\@acute}}
+  }{}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+%    All the code above is necessary because we need a few extra
+%    active characters. These characters are then used as indicated in
+%    table~\ref{tab:galician-quote}.
+%
+%    This option includes some support for working with extended,
+%    8-bit fonts, if available. This assumes that the user has some
+%    macros predefined. For instance, if the user has a |\@ac@a| macro
+%    defined, the sequence |\'a| or |'a| will both expand to whatever
+%    |\@ac@a| is defined to expand, presumably \texttt{\'a}.  The
+%    names of these macros are the same as those in Ferguson's
+%    ML-\TeX{} compatibility package on purpose. Using this method,
+%    and provided that adequate hyphenation patterns exist, it is
+%    possible to get better hyphenation for Galician than before. If
+%    the user has a terminal able to produce these codes directly, it
+%    is possible to do so.  If the need arises to send the document to
+%    someone who does not have such support, it is possible to
+%    mechanically translate the document so that the receiver can make
+%    use of it.
+%
+%    To be able to define the function of the new accents, we first
+%    define a couple of `support' macros.
+%
+%  \begin{macro}{\dieresis}
+%  \begin{macro}{\textacute}
+% \changes{galician-1.1c}{1994/06/26}{Renamed from \cs{acute} as that
+%    is a \cs{mathaccent}}
+%  \begin{macro}{\texttilde}
+% \changes{galician-1.1c}{1994/06/26}{Renamed from \cs{tilde} as that
+%    is a \cs{mathaccent}}
+%
+%    The original definition of |\"| is stored as |\dieresis|, because
+%    the definition of |\"| might not be the default plain \TeX\
+%    one. If the user uses \textsc{PostScript} fonts with the Adobe
+%    font encoding the \texttt{"} character is not in the same
+%    position as in Knuth's font encoding. In this case |\"| will not
+%    be defined as |\accent"7F #1|, but as |\accent'310 #1|. Something
+%    similar happens when using fonts that follow the Cork
+%    encoding. For this reason we save the definition of |\"| and use
+%    that in the definition of other macros. We do likewise for |\'|
+%    and |\~|.
+%    \begin{macrocode}
+\let\dieresis\"
+\let\texttilde\~
+\@ifpackagewith{babel}{activeacute}{\let\textacute\'}{}
+%    \end{macrocode}
+%  \end{macro}
+%  \end{macro}
+%  \end{macro}
+%
+%  \begin{macro}{\@umlaut}
+%  \begin{macro}{\@acute}
+%  \begin{macro}{\@tilde}
+%    If the user setup has extended fonts, the Ferguson macros are
+%    required to be defined. We check for their existance and, if
+%    defined, expand to whatever they are defined to. For instance,
+%    |\'a| would check for the existance of a |\@ac@a| macro. It is
+%    assumed to expand to the code of the accented letter.  If it is
+%    not defined, we assume that no extended codes are available and
+%    expand to the original definition but enabling hyphenation beyond
+%    the accent. This is as best as we can do. It is better if you
+%    have extended fonts or ML-\TeX{} because the hyphenation
+%    algorithm can work on the whole word. The following macros are
+%    directly derived from ML-\TeX{}.\footnote{A problem is perceived
+%    here with these macros when used in a multilingual environment
+%    where extended hyphenation patterns are available for some but
+%    not all languages. Assume that no extended patterns exist at some
+%    site for French and that \file{french.sty} would adopt this
+%    scheme too. In that case, \texttt{'e} in French would
+%    produce the combined accented letter, but hyphenation around it
+%    would be suppressed. Both language options would need an
+%    independent method to know whether they have extended patterns
+%    available. The precise impact of this problem and the possible
+%    solutions are under study.}
+%
+%    \begin{macrocode}
+\def\@umlaut#1{\allowhyphens\dieresis{#1}\allowhyphens}
+\def\@tilde#1{\allowhyphens\texttilde{#1}\allowhyphens}
+\@ifpackagewith{babel}{activeacute}{%
+  \def\@acute#1{\allowhyphens\textacute{#1}\allowhyphens}}{}
+%    \end{macrocode}
+%  \end{macro}
+%  \end{macro}
+%  \end{macro}
+%
+%    Now we can define our shorthands: the umlauts,
+%    \begin{macrocode}
+\declare@shorthand{galician}{"-}{\allowhyphens-\allowhyphens}
+\declare@shorthand{galician}{"|}{\discretionary{-}{}{\kern.03em}}
+\declare@shorthand{galician}{"u}{\@umlaut{u}}
+\declare@shorthand{galician}{"U}{\@umlaut{U}}
+%    \end{macrocode}
+%     ordinals\footnote{The code for the ordinals was taken from the
+%    answer provided by Raymond Chen
+%    {\texttt(raymond@math.berkeley.edu}) to a question by Joseph Gil
+%    (\texttt{yogi@cs.ubc.ca}) in \texttt{comp.text.tex}.},
+%    \begin{macrocode}
+\declare@shorthand{galician}{"o}{%
+  \raise1ex\hbox{\underbar{\scriptsize o}}}
+\declare@shorthand{galician}{"a}{%
+  \raise1ex\hbox{\underbar{\scriptsize a}}}
+%    \end{macrocode}
+%     acute accents,
+% \changes{galician-1.2b}{1995/07/03}{Changed mathmode definition of
+%    acute shorthands to expand to a single prime followed by the next
+%    character in the input}
+%    \begin{macrocode}
+\@ifpackagewith{babel}{activeacute}{%
+  \declare@shorthand{galician}{'a}{\textormath{\@acute a}{^{\prime} a}}
+  \declare@shorthand{galician}{'e}{\textormath{\@acute e}{^{\prime} e}}
+  \declare@shorthand{galician}{'i}{\textormath{\@acute \i{}}{^{\prime} i}}
+  \declare@shorthand{galician}{'o}{\textormath{\@acute o}{^{\prime} o}}
+  \declare@shorthand{galician}{'u}{\textormath{\@acute u}{^{\prime} u}}
+  \declare@shorthand{galician}{'A}{\textormath{\@acute A}{^{\prime} A}}
+  \declare@shorthand{galician}{'E}{\textormath{\@acute E}{^{\prime} E}}
+  \declare@shorthand{galician}{'I}{\textormath{\@acute I}{^{\prime} I}}
+  \declare@shorthand{galician}{'O}{\textormath{\@acute O}{^{\prime} O}}
+  \declare@shorthand{galician}{'U}{\textormath{\@acute U}{^{\prime} U}}
+%    \end{macrocode}
+%         tildes,
+%    \begin{macrocode}
+  \declare@shorthand{galician}{'n}{\textormath{\~n}{^{\prime} n}}
+  \declare@shorthand{galician}{'N}{\textormath{\~N}{^{\prime} N}}
+  }{}
+\declare@shorthand{galician}{~n}{\textormath{\~n}{\@tilde n}}
+\declare@shorthand{galician}{~N}{\textormath{\~N}{\@tilde N}}
+%    \end{macrocode}
+%
+%  \begin{macro}{\-}
+%
+%    All that is left now is the redefinition of |\-|. The new version
+%    of |\-| should indicate an extra hyphenation position, while
+%    allowing other hyphenation positions to be generated
+%    automatically. The standard behaviour of \TeX\ in this respect is
+%    unfortunate for Galician but not as much as for Dutch or German,
+%    where long compound words are quite normal and all one needs is a
+%    means to indicate an extra hyphenation position on top of the
+%    ones that \TeX\ can generate from the hyphenation
+%    patterns. However, the average length of words in Galician makes
+%    this desirable and so it is kept here.
+%
+%    \begin{macrocode}
+\addto\extrasgalician{%
+  \babel@save{\-}%
+  \def\-{\allowhyphens\discretionary{-}{}{}\allowhyphens}}
+%    \end{macrocode}
+%  \end{macro}
+%
+%    It is possible that a site might need to add some extra code to
+%    the babel macros. To enable this we load a local configuration
+%    file, \file{galician.cfg} if it is found on \TeX' search path.
+% \changes{galician-1.2b}{1995/07/02}{Added loading of configuration
+%    file}
+%    \begin{macrocode}
+\loadlocalcfg{galician}
+%    \end{macrocode}
+%
+%    Our last action is to make a note that the commands we have just
+%    defined, will be executed by calling the macro |\selectlanguage|
+%    at the beginning of the document.
+%    \begin{macrocode}
+\main@language{galician}
+%    \end{macrocode}
+%
+%    Finally, the category code of \texttt{@} is reset to its original
+%    value. The macrospace used by |\atcatcode| is freed.
+%
+%    \begin{macrocode}
+\catcode`\@\atcatcode \let\atcatcode\relax
+%</code>
+%    \end{macrocode}
+%
+% \Finale
+%
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\endinput

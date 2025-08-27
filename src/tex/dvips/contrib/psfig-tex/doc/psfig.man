@@ -1,0 +1,261 @@
+.TH Psfig/TeX 1
+.SH NAME
+Psfig/TeX (1.10) \- PostScript figures in TeX
+.SH SYNTAX
+\\\fBinput psfig\fP
+.SH DESCRIPTION
+.B Psfig/TeX
+is a macro package for TeX, as well as LaTeX, that facilitates the
+inclusion of PostScript figures into (La)TeX documents.
+With the help of a compatible postprocessor, PostScript figures are
+automatically scaled and positioned on the page, and the proper amount
+of space is reserved.
+Figures can be presented as traditional broken-out displays,
+and Custom characters may be created and used freely throughout a document.
+.PP
+The \fBdvips\fP program developed by Tomas Rokicki has full
+\fBpsfig\fP support. The \fBOzTeX\fP package has support for
+all \fBpsfig\fp functions except compressed figures.
+.PP
+.SH USAGE
+To include a figure with \fBpsfig\fP, include the \fBpsfig\fP style at
+the top of your document.
+In LaTeX: ``\\\fBdocumentstyle\fP[psfig,...]{article}''; in TeX:
+``\\\fBinput\fP psfig''.
+Then invoke the macro ``\\\fBpsfig\fP{figure=\fIfilename\fP}'', where
+\fIfilename\fP is the name of a PostScript file.
+.B Psfig
+will automatically position the figure at the current
+point on the page, and reserve the proper amount of space.
+.PP
+.SH OPTIONS
+Options may be specified in the form
+``\\\fBpsfig\fP{figure=\fIfilename\fP,\fIoption\fP=\fIvalue\fP,\fIoption\fP=\fIvalue\fP,...}'';
+recognized options include \fBheight\fP, \fBwidth\fP, \fBrheight\fP,
+\fBrwidth\fP, \fBclip\fP, and \fBangle\fP.
+.IP height 9
+The ``\fBheight\fP=\fIdimen\fP'' option specifies how tall the
+figure should be on the page.
+When no \fBwidth\fP is specified, the figure is scaled equally
+in both dimensions.
+.IP width
+The ``\fBwidth\fP=\fIdimen\fP'' option specifies how wide the
+figure should be on the page.
+When no \fBheigth\fP is specified, the figure is scaled equally
+in both dimensions.
+.IP
+If no \fBheight\fP or \fBwidth\fP option is given, the figure's
+`natural' size will be used.
+By listing both a \fBheight\fP and \fBwidth\fP, figures can be scaled
+disproportionately.
+.IP rheight
+There are two sizes associated with each \fBpsfig\fP figure: the size
+at which it is to be printed on the page and the size it reserves
+in TeX.
+This latter size is appropriately termed the reserved size, and is
+expressed as an option of the form ``\fBrheight\fP=\fIdimen\fP'',
+to reserve a vertical size of \fIdimen\fP.
+If omitted, the reserved size defaults to the real size.
+Some special effects need to be transparent to TeX and thus have a
+zero reserved size, such as a grey box enclosing a paragraph.
+.IP rwidth
+To reserve a width in TeX, the ``\fBrwidth\fP=\fIdimen\fP''
+option is used.
+.IP clip
+The ``\fBclip\fP=t'' option sets the PostScript clipping path
+so that no marks will show up outside the declared bounding box.
+This option allows the user to isolate part of a larger figure,
+by specifying a new bounding box:
+``\\\fBpsfig\fP{figure=figs/piechart.ps,height=2in,bbllx=306bp,%
+bblly=396bp,bburx=486bp,bbury=546bp,clip=}''
+.IP angle
+Figures can be rotated by \fBpsfig\fP using the ``\fBangle\fP=\fIdegrees\fP''
+option.
+Example:
+``\\\fBpsfig\fP{figure=figs/rosette.ps,height=1.0in,angle=90}''.
+.PP
+.SH AUTOSCALING
+With autoscaling, some rotated figures come out smaller because the
+diagonal of their bounding box is longer than their \fBheight\fP
+or \fBwidth\fP alone.
+This behavior can be disabled with \\\fBpsscalefirst\fP, and re-enabled
+with  \\\fBpsrotatefirst\fP.
+With \\\fBpsscalefirst\fP a new \fBheight\fP and \fBwidth\fP are
+computed after the bounding box.
+While the rotated figures will all come out at the same size, their
+reserved sizes will be different, thus they may not be aligned
+correctly.
+.PP
+.SH SOURCES OF FIGURES
+Any PostScript program can be used as a
+\fBpsfig\fP figure, as long as it adheres to the
+Encapsulated PostScript Format (EPSF), which
+dictates a set of forbidden operators and a comment
+structuring convention. \fBPsfig\fP
+is actually less restrictive than the EPSF requirements; it can handle
+some of the "non-compliant" postscript operators, and the only
+required comment is the Bounding Box comment (see below).
+.PP
+.SH BOUNDING BOXES
+To properly translate and scale a figure \fBpsfig\fP must know
+its `natural' position on the page; this information is present
+in the `bounding box comment' of a PostScript program.
+This is a line of the form
+``%%BoundingBox: \fIbbllx bblly bburx bbury\fP'' in the header of
+the file.
+.PP
+The  bounding box specifies four coordinates of a rectangle that
+defines the outermost edges of the PostScript figure: the lower-left
+\fIx\fP coordinate (\fIbbllx\fP), the lower-left \fIy\fP coordinate
+(\fIbblly\fP), the upper-right \fIx\fP coordinate (\fIbburx\fP), and
+the upper-right \fIy\fP coordinate (\fIbbury\fP).
+This rectangle must be present in any file to be used as a
+\fBpsfig\fP figure.
+Most modern graphics packages produce (encapsulated) PostScript
+files which contain a ``%%BoundingBox:'' comment line in the header.
+All \fIbb...\fP values are in  points, relative to the default
+transformation matrix.
+.PP
+.SH MISSING BOUNDING BOX
+When no bounding box comment line is present in your PostScript file,
+you can edit one in.
+The only mandatory PostScript convention is that the first line of
+the file should begin with the characters `%!'.
+A good place for the bounding box comment is the second line of
+the file.
+.PP
+The bounding box values may also be specified directly in the
+\\\fBpsfig\fP argument, using clauses of the form
+``bbllx=\fIbbllx\fP,bblly=\fIbblly\fP,...'', in which case
+the figure file is not searched for the bounding box.
+.PP
+To control the amount of white space around a figure in a (La)TeX
+document, it may be necessary to experiment with the bounding box
+parameters \fIbb...\fP, also in cases where the bounding box is
+provided by the plot or graphics package.
+.PP
+.SH DRAFT FIGURES
+Some PostScript figures take quite a long time to transmit and print;
+for these figures a draft mode is available to speed printing of draft
+versions of the document.
+A figure printed in draft mode will appear as an empty box.
+The macro \\\fBpsdraft\fP will switch into draft mode, and all
+subsequent \fBpsfig\fP macros will produce draft figures until reaching
+the macro  \\\fBpsfull\fP, which switches out of draft mode.
+.PP
+No \\\fBspecial\fP commands are used in draft mode, so a draft document
+can be previewed using \fIany\fP DVI viewer.
+The printing of boxes in draft mode can be disabled/enabled with 
+\\\fBpsnodraftbox\fP and  \\\fBpsdraftbox\fP.
+.PP
+.SH SILENT MODE
+Normally, \fBpsfig\fP will print advisory messages to remind you that it is
+including figures as (La)TeX processes a document. This behavior can
+be disabled with \\\fBpssilent\fP, and re-enabled with \\\fBpsnoisy\fP.
+.PP
+.SH COMPRESSED POSTSCRIPT FILES
+As off version 1.9, \fBpsfig\fP allows the inclusion of compressed
+PostScript files (when using \fBdvips\fP).
+.PP
+To compress PostScript files, the shell script \fBpscompress\fP is used.
+\fBPscompress\fP produces two files: \fIfilename\fP.bb and \fIfilename\fP.Z.
+The first file contains the bounding box comment only, while the second
+file contains the actual compressed PostScript file.
+Usage: ``% \fBpscompress\fP \fIfilename\fP''.
+.PP
+When (La)TeX is run on \fIyour_document\fP.tex, the file \fIfilename\fP.bb
+is scanned for the bounding box comment, to allow (La)TeX to properly
+reserve the right size for the figure.
+Only when the file \fIyour_document\fP.dvi is printed by means of \fBdvips\fP,
+the actual PostScript file \fIfilename\fP.Z is decompressed (\fBzcat\fP-ed)
+and included in \fIyour_document\fP.ps.
+.PP
+.SH MACINTOSH FIGURES
+Since the Macintosh drawing applications produce PostScript, they can
+be used to create figures.
+However, the PostScript produced by most Macintosh applications is often
+not well
+suited to be included directly as a \fBpsfig\fP figure, unless it is
+saved as an "EPSF compliant" file. If the file is not "EPSF compliant"
+then the postscript may have to be edited before being used
+as an included figure. See the \fBpsfig\fP tool \fBcleanfig\fP
+and the sample document \fBmacdemo.tex\fP for guidance.
+.PP
+Non-EPSF Macintosh PostScript files often
+require a ``Laserprep'' prolog in order to
+be properly printed.
+A laserprep prolog can be included with the \fBdvips\fP special
+header command at the top of your (La)TeX file:
+``\\\fBspecial\fP{header=lprep70.procs}''.
+\fBPsfig\fP provides `lprep68.procs', as well as `lprep70.procs',
+to suit various versions of the Macintosh applications.
+.PP
+.SH FIGURE SEARCH PATH
+Psfig first searches in the current directory for a figure (or
+in the specified directory if given an absolute path). If it fails
+to find the figure in the current directory, it optionally searches
+a search path of figure directories to see if the figure is
+present. To specify the figure search path, use
+"\\psfigurepath{dir1:dir2:...:dirn}",
+where dir1...dirn are the directories figures are to be found in.
+.PP
+.SH PROBLEMS
+.IP Problem: 10
+The page with graphics is not printed.
+.IP Solution: 10
+Remove lines containing `\fBshowpage\fP' and/or `\fBstop\fP'
+from the PostScript graphics file.
+Lines of this kind are usually found near the end of the file.
+.IP Problem: 10
+The figure is positioned in weird places.
+.IP
+Generally, this is an indication that the PostScript ``%%BoundingBox:''
+comment is missing.
+It may also be that a translation takes places \fIafter\fP the
+bounding box was determined.
+.RE
+.IP Solution:  10
+Edit a bounding box comment into the PostScript file
+and/or experiment with the \fIbb...\fP values (see: MISSING BOUNDING
+BOX above).
+.PP
+.SH BUGS
+The \\\fBpsfig\fP macro is (unfortunately) sensitive to whitespace,
+and will be confused by any extra spaces or newlines in its argument.
+.PP
+The LaTeX \fBletter\fP style must be loaded after the
+\\\fBpsfig\fP macros due to naming conflicts. This can be
+forced by including psfig with an explicit \\\fBinput\fP
+command before the \\\fBdocumentstyle\fP command.
+.PP
+.SH ACKNOWLEDGEMENTS
+This work was done while the author was with the Department of
+Computer and Information Science, University of Pennsylvania.  Ned
+Batchelder co-developed the original troff version of this
+program with the author, and was responsible for much of the overall
+design.  For more detailed information on the original version of 
+see \fIPsfig \- A Ditroff Preprocessor for PostScript Figures\fP in
+the USENIX 87 proceedings, or \fIBringing troff up to speed\fP in the
+July 1987 issue of Unix Review.
+.PP
+Greg Hager provided the initial pure-TeX implementation of \fBpsfig\fP.
+J. Daniel Smith of Schlumberger CAD/CAM implemented the rotation
+feature and improved the file scanning routines, using certain code
+fragments from Tom Rokicki's \fBdvips\fP program.
+.PP
+Thanks to Sake Hogeveen (hogeveen.fys.ruu.nl) for editing this man page.
+.SH AUTHOR
+Trevor Darrell
+.PP
+.SH SEE ALSO
+tex(1), latex(1), dvips(1), psfig-troff(1)
+.PP
+A printed version of the psfig-tex manual may be obtained by typing
+.br
+``% \fBlatex\fP psfig-doc'', then ``% \fBdvips\fP psfig-doc'',
+.br
+and finally printing the resulting psfig-doc.ps file on your nearest
+PostScript printer.
+The manual provides many examples with real-life PostScript graphics,
+see the text of psfig-doc.tex for more usage examples.
+

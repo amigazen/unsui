@@ -1,0 +1,14 @@
+VERSION		EQU	1
+REVISION	EQU	28
+DATE	MACRO
+		dc.b	'13.06.95'
+	ENDM
+VERS	MACRO
+		dc.b	'SpecialHost 1.28'
+	ENDM
+VSTRING	MACRO
+		dc.b	'SpecialHost 1.28 (13.06.95)',13,10,0
+	ENDM
+VERSTAG	MACRO
+		dc.b	0,'$VER: SpecialHost 1.28 (13.06.95)',0
+	ENDM

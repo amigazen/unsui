@@ -1,0 +1,26 @@
+/* "locale.library"*/
+#pragma libcall LocaleBase ParseARexx 1E 0
+#pragma libcall LocaleBase CloseCatalog 24 801
+#pragma libcall LocaleBase CloseLocale 2A 801
+#pragma libcall LocaleBase ConvToLower 30 0802
+#pragma libcall LocaleBase ConvToUpper 36 0802
+#pragma libcall LocaleBase FormatDate 3C BA9804
+#pragma libcall LocaleBase FormatString 42 BA9804
+#pragma libcall LocaleBase GetCatalogStr 48 90803
+#pragma libcall LocaleBase GetLocaleStr 4E 0802
+#pragma libcall LocaleBase IsAlNum 54 0802
+#pragma libcall LocaleBase IsAlpha 5A 0802
+#pragma libcall LocaleBase IsCntrl 60 0802
+#pragma libcall LocaleBase IsDigit 66 0802
+#pragma libcall LocaleBase IsGraph 6C 0802
+#pragma libcall LocaleBase IsLower 72 0802
+#pragma libcall LocaleBase IsPrint 78 0802
+#pragma libcall LocaleBase IsPunct 7E 0802
+#pragma libcall LocaleBase IsSpace 84 0802
+#pragma libcall LocaleBase IsUpper 8A 0802
+#pragma libcall LocaleBase IsXDigit 90 0802
+#pragma libcall LocaleBase OpenCatalogA 96 A9803
+#pragma libcall LocaleBase OpenLocale 9C 801
+#pragma libcall LocaleBase ParseDate A2 BA9804
+#pragma libcall LocaleBase StrConvert A8 10A9805
+#pragma libcall LocaleBase StrnCmp AE 10A9805

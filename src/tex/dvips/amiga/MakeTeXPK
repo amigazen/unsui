@@ -1,0 +1,72 @@
+.key NAME/a,DPI/a,BDPI/a,MAG/a,MODE/a
+
+; This script file makes a new TeX PK font, because one wasn't
+; found.  Parameters are:
+;
+; name dpi bdpi magnification mode
+;
+; `NAME'  - is the name of the font, such as `cmr10'.
+; `DPI'   - is the resolution the font is needed at.
+; `BDPI'  - is the base resolution, useful for figuring out the mode
+;           to make the font in.
+; `MAG'   - is a string to pass to Metafont as the magnification.
+; `MODE'  - is the mode to pass to Metafont.
+;
+; Note that this file must execute Metafont, and then gftopk,
+; and place the result in the correct location for the PostScript
+; driver to find it subsequently. If this doesn't work, it will
+; be evident because MF will be invoked over and over again.
+;
+
+; some paths:
+;
+; TFMDIR  = directory where tfm files are located.
+;           (e.g., TeX:texfonts/tfm/ or TeX:fonts/)
+; PKDIR   = directory where pk are located
+;           (e.g., TeX:texfonts/pk/ or TeX:pk/)
+; DESTDIR = directory 
+
+Set METAFONT 		MF:bin/VirMF
+Set GFTOPK		MF:bin/GFtoPK
+Set TFMDIR 		TeX:texfonts/tfm/
+Set PKDIR 		TeX:texfonts/pk/<MODE>/
+Set TMPDIR 		T:
+Set DESTDIR		$PKDIR/<DPI>
+Set FULLFONTNAME	$DESTDIR/<NAME>.<DPI>pk
+Set FULLTFMNAME		$TFMDIR<NAME>.tfm
+
+If EXISTS $FULLFONTNAME
+ Echo "file $FULLFONTNAME already exists!"
+ Skip EndMakeTeXPK
+EndIf
+
+If NOT EXISTS $DESTDIR
+ Makedir $DESTDIR
+ Echo "Directory $DESTDIR created!"
+EndIf
+
+cd $TMPDIR
+
+; Execute Metafont
+$METAFONT "\mode:=<MODE>; mag:=<MAG>; scrollmode; input <NAME>"
+
+; Convert GF file into PK file
+$GFTOPK -v <NAME>.<DPI>gf $DESTDIR/<NAME>.<DPI>pk
+
+If NOT EXISTS $FULLTFMNAME
+ Copy <NAME>.tfm $FULLTFMNAME clone
+ Echo "TFM file for <NAME> copied!"
+EndIf
+
+delete <NAME>.tfm <NAME>.<DPI>gf <NAME>.log quiet
+
+Lab EndMakeTeXPK
+
+UnSet METAFONT
+UnSet GFTOPK
+UnSet TFMDIR
+UnSet PKDIR
+UnSet TMPDIR
+UnSet DESTDIR
+UnSet FULLFONTNAME
+UnSet FULLTFMNAME

@@ -1,0 +1,29 @@
+;
+; Environment variables for dvips.
+;
+; Default:
+;
+; setenv TEXCONFIG	.,TeX:ps
+; setenv DVIPSHEADERS	.,TeX:ps
+; setenv TEXFONTS	.,texfonts/tfm,TeX:texfonts/tfm,TeX:fonts/tfm,TeX:fonts
+; setenv TEXFONTS_SUBDIR
+; setenv VFFONTS	.,texfonts/vf,TeX:texfonts/vf,TeX:fonts/vf,TeX:fonts
+; setenv TEXINPUTS	.,TeX:texinputs
+; setenv TEXPICTS	.
+; setenv MAKETEXPK	MakeTeKPK %n %d %b %m
+; setenv PRINTER
+; setenv TEXPKS		.,texfonts/pk,TeX:texfonts/pk,TeX:fonts/pk,TeX:pk
+; setenv TEXPACKED	.,texfonts/pk,TeX:texfonts/pk,TeX:fonts/pk,TeX:pk
+; setenv PKFONTS	.,texfonts/pk,TeX:texfonts/pk,TeX:fonts/pk,TeX:pk
+;
+; Note that TEXPKS, TEXPACKED and PKFONTS define the same path for
+; pk fonts. TEXPKS overrides TEXPACKED which overrides PKFONTS.
+;
+;
+; Some variables...
+;
+setenv DVIPSHEADERS TeX:ps,TeX:texfonts/type-1,.
+setenv TEXFONTS .,TeX:texfonts/tfm,TeX:texfonts/tfm/PStfms
+setenv TEXFONTS_SUBDIR TeX:texfonts
+setenv TEXCONFIG .,TeX:config,TeX:ps,TeX:
+setenv MAKETEXPK rx MF:rexx/MakeBatch %n %d %b %y PS %d/%n.%dpk %P/

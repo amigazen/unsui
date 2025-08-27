@@ -1,0 +1,151 @@
+READ.ME file for AMS-LaTeX 1.2, 23-Feb-1995
+
+[This file resides in the `amslatex' parent directory of the AMS-LaTeX
+distribution; for the moment, however, a copy is also placed in the
+`math' subdirectory to ensure that the READ.ME file is found on CTAN
+(pending resolution of some mirroring complications). 23-Feb-1995 mjd]
+
+AMS-LaTeX is a collection of various extensions for LaTeX to provide
+support for sophisticated mathematical typesetting. It has been
+developed by the American Mathematical Society and released for general
+use as a service to the mathematical community. It is in many cases
+distributed at no extra charge with LaTeX, as well as being available
+through standard sources of TeX-related software such as the
+Comprehensive TeX Archive Network (CTAN) (addresses ftp.shsu.edu (USA),
+ftp.dante.de (Germany), ftp.tex.ac.uk (UK), and others). Technical
+support for AMS-LaTeX is provided by the AMS:
+
+  American Mathematical Society
+  Electronic Products and Services
+  P. O. Box 6248
+  Providence, RI 02940
+  Phone: 800-321-4AMS (321-4267) or (USA/Canada) 401-455-4080
+  tech-support@math.ams.org
+
+UPGRADING FROM VERSIONS 1.0, 1.1, OR 1.2beta
+
+If you are upgrading from an earlier version of AMS-LaTeX, you will want
+to print and read diff12.tex, which describes the changes done for
+version 1.2. In particular, all LaTeX support that is concerned only
+with fonts in the AMSFonts collection has been moved to the AMSFonts
+distribution, and the amstex package has been succeeded by a package
+called amsmath (although a frozen copy of amstex.sty is provided for use
+with existing documents).
+
+Instructions for using AMS documentclasses are no longer included in the
+`AMS-LaTeX User's Guide', amsldoc.tex. They are now found instead in
+instr-l.tex in the `classes' subdirectory (`Instructions for Preparation
+of Papers and Monographs: AMS-LaTeX'). This is a copy of the file
+instr-l.tex that is found in the author-info area of e-math.ams.org,
+which contains information pertaining specifically to the submission of
+LaTeX or AMSTeX documents to AMS publications.
+
+INSTALLATION
+
+To use version 1.2 of AMS-LaTeX it is necessary for you to have a recent
+version of LaTeX (June 1994 or later, "LaTeX2e"). If you're not sure
+about the version, look at the startup message that is printed on screen
+and in the TeX log when you run LaTeX. It should mention the LaTeX
+version number and date somewhere in the first ten lines. If your
+version of LaTeX is older than June 1994, we suggest getting the latest
+version from the Comprehensive TeX Archive Network (CTAN), directory
+tex-archive/macros/latex, ftp addresses as given above. If ftp file
+transfer is not an option for you, contact the source from which you
+originally obtained LaTeX. If you are unable for some reason to upgrade
+from version 2.09 of LaTeX, you could try using version 1.1 of
+AMS-LaTeX, which is available in a separate area (on e-math.ams.org:
+/pub/tex/amsltx11).
+
+Files in the AMS-LaTeX distribution:
+
+  amsldoc.tex     users' guide
+  amslatex.faq    frequently asked questions, with answers
+  amslatex.bug    history of reported bugs, bug fixes, and other changes
+  diff12.tex      description of differences between versions 1.1 and 1.2
+  technote.tex    some technical notes
+  testmath.tex    test file for general math features
+  subeqn.tex      test file for `subequations' environment
+  amslatex.ins    installation file for unpacking .dtx files
+
+  amsbsy.dtx      for \boldsymbol and \pmb
+  amscd.dtx       for commutative diagrams
+  amsgen.dtx      auxiliary file
+  amsintx.dtx     alternative syntax for integrals, sums
+  amsmath.dtx     equations and other math
+  amsopn.dtx      for `operator names'
+  amstext.dtx     \text command
+  amsxtra.dtx     misc rarely used commands
+  amsdtx.dtx      document class for printing AMS .dtx files
+
+  amsclass.dtx    source for amsart, amsproc, amsbook documentclasses
+  instr-l.tex     instructions on using AMS documentclasses
+  amsthm.dtx      provides \theoremstyle, \newtheorem*
+  upref.dtx       makes \ref always produce roman/upright numbers
+
+  amsalpha.bst    AMS BibTeX style for alphabetic citation labels
+  amsplain.bst    AMS BibTeX style for numeric citation labels
+  mrabbrev.bib    BibTeX abbreviations for MR journal names
+  amsclass.ins    installation file for unpacking .dtx files
+  thmtest.tex     test file for amsthm package
+
+Additional, more specific information on preparing a LaTeX document for
+submission to the AMS is found in the `author-info' area of the AMS ftp
+archive (e-math.ams.org).
+
+PUTTING FILES IN A SUITABLE PLACE ON YOUR SYSTEM:
+
+There are two `areas' (directories or folders) on your system that are
+involved in installing AMS-LaTeX: an AMS-LaTeX source files area, and a
+LaTeX input files area. All files in the `inputs' subdirectory of the
+AMS-LaTeX distribution should be placed in the LaTeX input directory or
+folder on your system. Consult your TeX documentation if you don't know
+where this is. (You could also try looking for the file article.cls; the
+place where you find it is almost surely your LaTeX input files area.)
+Some representative examples:
+
+PC/DOS/emTeX:
+
+  LaTeX input files area --- c:\emtex\latex\inputs
+  AMS-LaTeX source files --- c:\emtex\latex\packages\amslatex
+
+Macintosh/Textures:
+
+  LaTeX input files area --- Folder `TeX inputs' or bullet+`LaTeX'
+  AMS-LaTeX source files --- Folder `AMS-LaTeX' in `Textures' folder
+
+Unix:
+
+  LaTeX input files area --- /texmf/tex/latex/inputs
+  AMS-LaTeX source files --- /texmf/tex/latex/packages/amslatex
+
+All other files in the AMS-LaTeX distribution (the ones in the `math'
+and `classes' subdirectories) can be placed in an AMS-LaTeX source files
+area; if you are installing AMS-LaTeX on a new system, you may need
+to create a new folder or directory for this purpose.
+
+TESTING
+
+For a quick test of the installation, try printing the test file
+subeqn.tex. For more extensive tests print the AMS-LaTeX user's
+guide (amsldoc.tex) or testmath.tex.
+
+NOTES FOR USERS OF AMS-LaTeX 1.1:
+
+Some AMS-LaTeX 1.1 users whose TeX implementation has relatively limited
+memory capacities may not be able to use AMS-LaTeX 1.2. For example,
+there is an upper limit of 3500 control sequence names (hash size) in
+emTeX's tex286. This was marginally sufficient for LaTeX 2.09 +
+AMS-LaTeX 1.1, but is not enough for current LaTeX + AMS-LaTeX 1.2.
+
+Support for LaTeX's `compatibility mode'---that is, reproducing exactly
+the same results as version 1.1 for existing documents that use
+\documentstyle instead of \documentclass---is incomplete. Most
+compatibility-mode documents should run through without error messages
+at least, but there will be some observable differences in the results.
+
+ACKNOWLEDGMENTS
+
+Many thanks to David M. Jones for contributing the changes needed in the
+amsmath package to support `flush-left equations' (the fleqn option),
+and for overhauling align, alignat, and related environments to fix a
+number of miscellaneous problems with equation number placement.

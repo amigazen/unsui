@@ -1,0 +1,88 @@
+psfig/tex -- TeX macros for the inclusion of postscript figures
+
+==================================================================
+
+COPYRIGHT NOTICE
+
+All software, documentation, and related files in this distribution of
+psfig/tex are Copyright 1993 Trevor J. Darrell
+
+Permission is granted for use and non-profit distribution of psfig/tex 
+providing that this notice be clearly maintained, but the right to
+distribute any portion of psfig/tex for profit or as part of any commercial
+product is specifically reserved for the author.
+
+Thanks to Ned Batchelder, Greg Hager, J. Daniel Smith, Tom Rokicki,
+Robert Russell, George V. Reilly, Ken McGlothlen, Dr. Baron Grey,
+Gerhard Tobermann and all others who have contributed code and
+comments to this project!
+
+==================================================================
+
+NEW IN VERSION 1.10
+
+- Support for OzTeX (derived from Baron Grey's OzTeX version of psfig)
+
+- New searching path algorithm (from Gerhard Tobermann); looks in
+  multiple directories; looks for file.ps before file.ps.bb...
+
+- Many small bug fixes (underscore in draft mode, angle/clip interaction)
+
+- Improved documentation and man page
+
+==================================================================
+
+SYSTEM REQUIREMENTS
+
+Psfig/tex uses \special calls to manipulate the PostScript environment
+within a document, and include figure files. To use psfig, you must
+therefore be using a postscript device for your output. This version
+of psfig/tex works with the unix "dvips" PostScript driver, which is
+available from labrea.stanford.edu, and with OzTeX.  
+
+It may also work with the ArborText "dvips" driver, and with the
+"dvi2ps" written by Tony Li <tli@sargar.usc.edy>; see the
+"unsupported" directory.
+
+==================================================================
+
+INSTALLATION
+
+To install psfig, simply copy psfig.sty into a directory on your TeX
+include path (e.g. /usr/lib/tex/macros).
+
+If you are using OzTeX, change the driver line at the top of
+the psfig.sty file to read
+	\def\setDriver{\OzTeXDriver} 
+instead of 
+	\def\setDriver{\DvipsDriver} 
+
+
+A users guide and manual page can be found in the "doc" directory.
+
+For tips on dealing with Macintosh postscript, see the directory
+"unsupported/macdemo/README".
+
+==================================================================
+
+BUGS
+
+If you use the letter style, make sure you include the psfig style
+first.
+
+If you have an old version of dvips, you may need to make a patch to
+use the compressed figure option, and to handle magnification
+correctly.  The files "unsupported/dospecial.[patch,frag]" contain a
+patch and a corresponding code fragment for dvips' dospecial.c file.
+To apply the patch copy dospecial.patch into your dvips directory and
+run "patch < dospecial.patch", and then recompile. "dospcial.frag"
+contains the modified portion of the code as it should appear in the
+patched file.  To use magnification with psfig and dvips, you need to
+change the line
+	/magscale false def
+in special.pro to 
+	/magscale true def
+in order to have the figures scaled correctly.
+
+
+

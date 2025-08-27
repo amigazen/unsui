@@ -1,0 +1,446 @@
+Lattice AMIGA 68000-68020 OBJ Module Disassembler V5.04.039
+Copyright © 1988, 1989 Lattice Inc.  All Rights Reserved.
+
+
+Amiga Object File Loader V1.00
+68000 Instruction Set
+
+EXTERNAL DEFINITIONS
+
+@SetChar 0000-00    @SetRule 02BC-00
+
+SECTION 00 "sfast_cp.c" 000004A4 BYTES
+       | 0000  4E55 FFC8                      LINK      A5,#FFC8
+       | 0004  48E7 3F32                      MOVEM.L   D2-D7/A2-A3/A6,-(A7)
+       | 0008  206C  0000-XX.2                MOVEA.L   _cfontptr(A4),A0
+       | 000C  2668 0414                      MOVEA.L   0414(A0),A3
+       | 0010  2E00                           MOVE.L    D0,D7
+       | 0012  2B40 FFD8                      MOVE.L    D0,FFD8(A5)
+       | 0016  2007                           MOVE.L    D7,D0
+       | 0018  2B41 FFDC                      MOVE.L    D1,FFDC(A5)
+       | 001C  720A                           MOVEQ     #0A,D1
+       | 001E  4EBA  0000-XX.1                JSR       __CXM33(PC)
+       | 0022  224B                           MOVEA.L   A3,A1
+       | 0024  D3C0                           ADDA.L    D0,A1
+       | 0026  4DE9 0024                      LEA       0024(A1),A6
+       | 002A  2F4E 0030                      MOVE.L    A6,0030(A7)
+       | 002E  70FF                           MOVEQ     #FF,D0
+       | 0030  B0AE 0002                      CMP.L     0002(A6),D0
+       | 0034  666E                           BNE.B     00A4
+       | 0036  0CAD 0000 0083 FFDC            CMPI.L    #00000083,FFDC(A5)
+       | 003E  6E00 0244                      BGT.W     0284
+       | 0042  2007                           MOVE.L    D7,D0
+       | 0044  7200                           MOVEQ     #00,D1
+       | 0046  4601                           NOT.B     D1
+       | 0048  C081                           AND.L     D1,D0
+       | 004A  E580                           ASL.L     #2,D0
+       | 004C  2E00                           MOVE.L    D0,D7
+       | 004E  4A28 0418                      TST.B     0418(A0)
+       | 0052  6624                           BNE.B     0078
+       | 0054  2268 0414                      MOVEA.L   0414(A0),A1
+       | 0058  2F49 0024                      MOVE.L    A1,0024(A7)
+       | 005C  206F 0024                      MOVEA.L   0024(A7),A0
+       | 0060  2250                           MOVEA.L   (A0),A1
+       | 0062  D3C7                           ADDA.L    D7,A1
+       | 0064  2011                           MOVE.L    (A1),D0
+       | 0066  206C  0000-XX.2                MOVEA.L   _cfontptr(A4),A0
+       | 006A  2228 0008                      MOVE.L    0008(A0),D1
+       | 006E  4EBA  0000-XX.1                JSR       @scalewidth(PC)
+       | 0072  D1AC  0000-XX.2                ADD.L     D0,_h(A4)
+       | 0076  600C                           BRA.B     0084
+       | 0078  2248                           MOVEA.L   A0,A1
+       | 007A  D3C7                           ADDA.L    D7,A1
+       | 007C  2029 0014                      MOVE.L    0014(A1),D0
+       | 0080  D1AC  0000-XX.2                ADD.L     D0,_h(A4)
+       | 0084  202C  0000-XX.2                MOVE.L    _hconv(A4),D0
+       | 0088  2200                           MOVE.L    D0,D1
+       | 008A  E281                           ASR.L     #1,D1
+       | 008C  242C  0000-XX.2                MOVE.L    _h(A4),D2
+       | 0090  D481                           ADD.L     D1,D2
+       | 0092  2002                           MOVE.L    D2,D0
+       | 0094  222C  0000-XX.2                MOVE.L    _hconv(A4),D1
+       | 0098  4EBA  0000-XX.1                JSR       __CXD33(PC)
+       | 009C  2940  0000-XX.2                MOVE.L    D0,_hh(A4)
+       | 00A0  6000 01E2                      BRA.W     0284
+       | 00A4  206F 0030                      MOVEA.L   0030(A7),A0
+       | 00A8  2468 0006                      MOVEA.L   0006(A0),A2
+       | 00AC  200A                           MOVE.L    A2,D0
+       | 00AE  6632                           BNE.B     00E2
+       | 00B0  102B 0A26                      MOVE.B    0A26(A3),D0
+       | 00B4  7203                           MOVEQ     #03,D1
+       | 00B6  B001                           CMP.B     D1,D0
+       | 00B8  6704                           BEQ.B     00BE
+       | 00BA  5500                           SUBQ.B    #2,D0
+       | 00BC  6608                           BNE.B     00C6
+       | 00BE  206C  0000-XX.2                MOVEA.L   _cfontptr(A4),A0
+       | 00C2  4EBA  0000-XX.1                JSR       @Load_really(PC)
+       | 00C6  202D FFD8                      MOVE.L    FFD8(A5),D0
+       | 00CA  48C0                           EXT.L     D0
+       | 00CC  206C  0000-XX.2                MOVEA.L   _cfontptr(A4),A0
+       | 00D0  4EBA  0000-XX.1                JSR       @unpack_char(PC)
+       | 00D4  206F 0030                      MOVEA.L   0030(A7),A0
+       | 00D8  2468 0006                      MOVEA.L   0006(A0),A2
+       | 00DC  200A                           MOVE.L    A2,D0
+       | 00DE  6700 012E                      BEQ.W     020E
+       | 00E2  202C  0000-XX.2                MOVE.L    _hh(A4),D0
+       | 00E6  90AA 0004                      SUB.L     0004(A2),D0
+       | 00EA  D0AC  0000-XX.2                ADD.L     _hoffset(A4),D0
+       | 00EE  222C  0000-XX.2                MOVE.L    _vv(A4),D1
+       | 00F2  92AA 0008                      SUB.L     0008(A2),D1
+       | 00F6  D2AC  0000-XX.2                ADD.L     _voffset(A4),D1
+       | 00FA  2C01                           MOVE.L    D1,D6
+       | 00FC  7200                           MOVEQ     #00,D1
+       | 00FE  3212                           MOVE.W    (A2),D1
+       | 0100  7800                           MOVEQ     #00,D4
+       | 0102  382A 0002                      MOVE.W    0002(A2),D4
+       | 0106  2F40 002C                      MOVE.L    D0,002C(A7)
+       | 010A  2F41 0028                      MOVE.L    D1,0028(A7)
+       | 010E  4A80                           TST.L     D0
+       | 0110  6B00 00FC                      BMI.W     020E
+       | 0114  2401                           MOVE.L    D1,D2
+       | 0116  D480                           ADD.L     D0,D2
+       | 0118  262C  0000-XX.2                MOVE.L    _map(A4),D3
+       | 011C  B483                           CMP.L     D3,D2
+       | 011E  6C00 00EE                      BGE.W     020E
+       | 0122  242C  0000-XX.2                MOVE.L    _lower_limit(A4),D2
+       | 0126  BC82                           CMP.L     D2,D6
+       | 0128  6C00 00E4                      BGE.W     020E
+       | 012C  2A04                           MOVE.L    D4,D5
+       | 012E  DA86                           ADD.L     D6,D5
+       | 0130  262C  0000-XX.2                MOVE.L    _upper_limit(A4),D3
+       | 0134  BA83                           CMP.L     D3,D5
+       | 0136  6D00 00D6                      BLT.W     020E
+       | 013A  7E00                           MOVEQ     #00,D7
+       | 013C  BA82                           CMP.L     D2,D5
+       | 013E  6D06                           BLT.B     0146
+       | 0140  9486                           SUB.L     D6,D2
+       | 0142  2802                           MOVE.L    D2,D4
+       | 0144  5384                           SUBQ.L    #1,D4
+       | 0146  2404                           MOVE.L    D4,D2
+       | 0148  2B42 FFE0                      MOVE.L    D2,FFE0(A5)
+       | 014C  262C  0000-XX.2                MOVE.L    _upper_limit(A4),D3
+       | 0150  BC83                           CMP.L     D3,D6
+       | 0152  6C06                           BGE.B     015A
+       | 0154  2203                           MOVE.L    D3,D1
+       | 0156  9286                           SUB.L     D6,D1
+       | 0158  2E01                           MOVE.L    D1,D7
+       | 015A  222C  0000-XX.2                MOVE.L    _map(A4),D1
+       | 015E  E881                           ASR.L     #4,D1
+       | 0160  2400                           MOVE.L    D0,D2
+       | 0162  E882                           ASR.L     #4,D2
+       | 0164  D482                           ADD.L     D2,D2
+       | 0166  2006                           MOVE.L    D6,D0
+       | 0168  9083                           SUB.L     D3,D0
+       | 016A  D087                           ADD.L     D7,D0
+       | 016C  2F41 0024                      MOVE.L    D1,0024(A7)
+       | 0170  4EBA  0000-XX.1                JSR       __CXM33(PC)
+       | 0174  D080                           ADD.L     D0,D0
+       | 0176  206C  0008-XX.2                MOVEA.L   _map+00000008(A4),A0
+       | 017A  D1C0                           ADDA.L    D0,A0
+       | 017C  D1C2                           ADDA.L    D2,A0
+       | 017E  2648                           MOVEA.L   A0,A3
+       | 0180  2B4B FFE4                      MOVE.L    A3,FFE4(A5)
+       | 0184  202F 002C                      MOVE.L    002C(A7),D0
+       | 0188  2A00                           MOVE.L    D0,D5
+       | 018A  700F                           MOVEQ     #0F,D0
+       | 018C  CA80                           AND.L     D0,D5
+       | 018E  202F 0028                      MOVE.L    0028(A7),D0
+       | 0192  720F                           MOVEQ     #0F,D1
+       | 0194  D081                           ADD.L     D1,D0
+       | 0196  7210                           MOVEQ     #10,D1
+       | 0198  4EBA  0000-XX.1                JSR       __CXD33(PC)
+       | 019C  2800                           MOVE.L    D0,D4
+       | 019E  2007                           MOVE.L    D7,D0
+       | 01A0  2204                           MOVE.L    D4,D1
+       | 01A2  4EBA  0000-XX.1                JSR       __CXM33(PC)
+       | 01A6  D080                           ADD.L     D0,D0
+       | 01A8  204A                           MOVEA.L   A2,A0
+       | 01AA  D1C0                           ADDA.L    D0,A0
+       | 01AC  45E8 000C                      LEA       000C(A0),A2
+       | 01B0  7001                           MOVEQ     #01,D0
+       | 01B2  B880                           CMP.L     D0,D4
+       | 01B4  6624                           BNE.B     01DA
+       | 01B6  282D FFE0                      MOVE.L    FFE0(A5),D4
+       | 01BA  2C2F 0024                      MOVE.L    0024(A7),D6
+       | 01BE  6014                           BRA.B     01D4
+       | 01C0  7000                           MOVEQ     #00,D0
+       | 01C2  301A                           MOVE.W    (A2)+,D0
+       | 01C4  4840                           SWAP      D0
+       | 01C6  4240                           CLR.W     D0
+       | 01C8  EAA8                           LSR.L     D5,D0
+       | 01CA  8193                           OR.L      D0,(A3)
+       | 01CC  2006                           MOVE.L    D6,D0
+       | 01CE  D080                           ADD.L     D0,D0
+       | 01D0  D7C0                           ADDA.L    D0,A3
+       | 01D2  5287                           ADDQ.L    #1,D7
+       | 01D4  BE84                           CMP.L     D4,D7
+       | 01D6  6DE8                           BLT.B     01C0
+       | 01D8  6034                           BRA.B     020E
+       | 01DA  2C07                           MOVE.L    D7,D6
+       | 01DC  602A                           BRA.B     0208
+       | 01DE  7E00                           MOVEQ     #00,D7
+       | 01E0  6012                           BRA.B     01F4
+       | 01E2  204B                           MOVEA.L   A3,A0
+       | 01E4  548B                           ADDQ.L    #2,A3
+       | 01E6  7000                           MOVEQ     #00,D0
+       | 01E8  301A                           MOVE.W    (A2)+,D0
+       | 01EA  4840                           SWAP      D0
+       | 01EC  4240                           CLR.W     D0
+       | 01EE  EAA8                           LSR.L     D5,D0
+       | 01F0  8190                           OR.L      D0,(A0)
+       | 01F2  5287                           ADDQ.L    #1,D7
+       | 01F4  BE84                           CMP.L     D4,D7
+       | 01F6  6DEA                           BLT.B     01E2
+       | 01F8  202F 0024                      MOVE.L    0024(A7),D0
+       | 01FC  D080                           ADD.L     D0,D0
+       | 01FE  D1AD FFE4                      ADD.L     D0,FFE4(A5)
+       | 0202  266D FFE4                      MOVEA.L   FFE4(A5),A3
+       | 0206  5286                           ADDQ.L    #1,D6
+       | 0208  BCAD FFE0                      CMP.L     FFE0(A5),D6
+       | 020C  6DD0                           BLT.B     01DE
+       | 020E  0CAD 0000 0083 FFDC            CMPI.L    #00000083,FFDC(A5)
+       | 0216  6E6C                           BGT.B     0284
+       | 0218  7000                           MOVEQ     #00,D0
+       | 021A  4600                           NOT.B     D0
+       | 021C  C0AD FFD8                      AND.L     FFD8(A5),D0
+       | 0220  E580                           ASL.L     #2,D0
+       | 0222  2E00                           MOVE.L    D0,D7
+       | 0224  206C  0000-XX.2                MOVEA.L   _cfontptr(A4),A0
+       | 0228  4A28 0418                      TST.B     0418(A0)
+       | 022C  663C                           BNE.B     026A
+       | 022E  2268 0414                      MOVEA.L   0414(A0),A1
+       | 0232  2C51                           MOVEA.L   (A1),A6
+       | 0234  DCFC 0400                      ADDA.W    #0400,A6
+       | 0238  7000                           MOVEQ     #00,D0
+       | 023A  1029 0A26                      MOVE.B    0A26(A1),D0
+       | 023E  2F00                           MOVE.L    D0,-(A7)
+       | 0240  2F10                           MOVE.L    (A0),-(A7)
+       | 0242  2F0E                           MOVE.L    A6,-(A7)
+       | 0244  487A 0046                      PEA       0046(PC)
+       | 0248  4EBA  0000-XX.1                JSR       _Warning(PC)
+       | 024C  206C  0000-XX.2                MOVEA.L   _cfontptr(A4),A0
+       | 0250  4EBA  0000-XX.1                JSR       @setup_ctfmw(PC)
+       | 0254  4FEF 0010                      LEA       0010(A7),A7
+       | 0258  206C  0000-XX.2                MOVEA.L   _cfontptr(A4),A0
+       | 025C  2248                           MOVEA.L   A0,A1
+       | 025E  D3C7                           ADDA.L    D7,A1
+       | 0260  2029 0014                      MOVE.L    0014(A1),D0
+       | 0264  D1AC  0000-XX.2                ADD.L     D0,_h(A4)
+       | 0268  600A                           BRA.B     0274
+       | 026A  D1C7                           ADDA.L    D7,A0
+       | 026C  2028 0014                      MOVE.L    0014(A0),D0
+       | 0270  D1AC  0000-XX.2                ADD.L     D0,_h(A4)
+       | 0274  206F 0030                      MOVEA.L   0030(A7),A0
+       | 0278  3010                           MOVE.W    (A0),D0
+       | 027A  48C0                           EXT.L     D0
+       | 027C  D1AC  0000-XX.2                ADD.L     D0,_hh(A4)
+       | 0280  4EBA  0000-XX.1                JSR       @setmotion(PC)
+       | 0284  4CDF 4CFC                      MOVEM.L   (A7)+,D2-D7/A2-A3/A6
+       | 0288  4E5D                           UNLK      A5
+       | 028A  4E75                           RTS
+       | 028C  496E 7465                      PEA       7465(A6)
+       | 0290  726E                           MOVEQ     #6E,D1
+       | 0292  616C                           BSR.B     0300
+       | 0294  2065                           MOVEA.L   -(A5),A0
+       | 0296  7272                           MOVEQ     #72,D1
+       | 0298  6F72                           BLE.B     030C
+       | 029A  3A20                           MOVE.W    -(A0),D5
+       | 029C  2763 7466                      MOVE.L    -(A3),7466(A3)
+       | 02A0  6D77                           BLT.B     0319
+       | 02A2  5F76 616C 6964                 SUBQ.W    #7,([6964,A6])
+       | 02A8  2720                           MOVE.L    -(A0),-(A3)
+       | 02AA  2825                           MOVE.L    -(A5),D4
+       | 02AC  732C                           
+       | 02AE  2023                           MOVE.L    -(A3),D0
+       | 02B0  2564 2C20                      MOVE.L    -(A4),2C20(A2)
+       | 02B4  5374 3A25                      SUBQ.W    #1,25(A4,D3.L*2)
+       | 02B8  6429                           BCC.B     02E3
+       | 02BA  0000 4E55                      ORI.B     #55,D0
+       | 02BE  FFC8 48E7                      F????
+       | 02C2  3F30 2E00                      MOVE.W    00(A0,D2.L*8),-(A7)
+       | 02C6  202C  0000-XX.2                MOVE.L    _hconv(A4),D0
+       | 02CA  2401                           MOVE.L    D1,D2
+       | 02CC  D480                           ADD.L     D0,D2
+       | 02CE  5382                           SUBQ.L    #1,D2
+       | 02D0  2002                           MOVE.L    D2,D0
+       | 02D2  2B41 FFE4                      MOVE.L    D1,FFE4(A5)
+       | 02D6  222C  0000-XX.2                MOVE.L    _hconv(A4),D1
+       | 02DA  4EBA  0000-XX.1                JSR       __CXD33(PC)
+       | 02DE  2F40 0032                      MOVE.L    D0,0032(A7)
+       | 02E2  222D FFE4                      MOVE.L    FFE4(A5),D1
+       | 02E6  4A81                           TST.L     D1
+       | 02E8  6F00 0198                      BLE.W     0482
+       | 02EC  4A87                           TST.L     D7
+       | 02EE  6F00 0192                      BLE.W     0482
+       | 02F2  222C  0000-XX.2                MOVE.L    _hh(A4),D1
+       | 02F6  D2AC  0000-XX.2                ADD.L     _hoffset(A4),D1
+       | 02FA  2C01                           MOVE.L    D1,D6
+       | 02FC  2A00                           MOVE.L    D0,D5
+       | 02FE  2207                           MOVE.L    D7,D1
+       | 0300  242C  0000-XX.2                MOVE.L    _vconv(A4),D2
+       | 0304  D282                           ADD.L     D2,D1
+       | 0306  5381                           SUBQ.L    #1,D1
+       | 0308  2001                           MOVE.L    D1,D0
+       | 030A  2202                           MOVE.L    D2,D1
+       | 030C  4EBA  0000-XX.1                JSR       __CXD33(PC)
+       | 0310  2800                           MOVE.L    D0,D4
+       | 0312  2004                           MOVE.L    D4,D0
+       | 0314  5380                           SUBQ.L    #1,D0
+       | 0316  222C  0000-XX.2                MOVE.L    _vv(A4),D1
+       | 031A  D2AC  0000-XX.2                ADD.L     _voffset(A4),D1
+       | 031E  9280                           SUB.L     D0,D1
+       | 0320  2E01                           MOVE.L    D1,D7
+       | 0322  4A86                           TST.L     D6
+       | 0324  6A04                           BPL.B     032A
+       | 0326  DA86                           ADD.L     D6,D5
+       | 0328  7C00                           MOVEQ     #00,D6
+       | 032A  2005                           MOVE.L    D5,D0
+       | 032C  D086                           ADD.L     D6,D0
+       | 032E  222C  0000-XX.2                MOVE.L    _map(A4),D1
+       | 0332  B081                           CMP.L     D1,D0
+       | 0334  6D06                           BLT.B     033C
+       | 0336  2001                           MOVE.L    D1,D0
+       | 0338  9086                           SUB.L     D6,D0
+       | 033A  2A00                           MOVE.L    D0,D5
+       | 033C  2005                           MOVE.L    D5,D0
+       | 033E  2B40 FFE8                      MOVE.L    D0,FFE8(A5)
+       | 0342  4A85                           TST.L     D5
+       | 0344  6F00 013C                      BLE.W     0482
+       | 0348  242C  0000-XX.2                MOVE.L    _upper_limit(A4),D2
+       | 034C  BE82                           CMP.L     D2,D7
+       | 034E  6C08                           BGE.B     0358
+       | 0350  2602                           MOVE.L    D2,D3
+       | 0352  9687                           SUB.L     D7,D3
+       | 0354  9883                           SUB.L     D3,D4
+       | 0356  2E02                           MOVE.L    D2,D7
+       | 0358  2604                           MOVE.L    D4,D3
+       | 035A  D687                           ADD.L     D7,D3
+       | 035C  202C  0000-XX.2                MOVE.L    _lower_limit(A4),D0
+       | 0360  B680                           CMP.L     D0,D3
+       | 0362  6D04                           BLT.B     0368
+       | 0364  9087                           SUB.L     D7,D0
+       | 0366  2800                           MOVE.L    D0,D4
+       | 0368  4A84                           TST.L     D4
+       | 036A  6F00 0116                      BLE.W     0482
+       | 036E  E881                           ASR.L     #4,D1
+       | 0370  2A01                           MOVE.L    D1,D5
+       | 0372  2005                           MOVE.L    D5,D0
+       | 0374  2206                           MOVE.L    D6,D1
+       | 0376  E881                           ASR.L     #4,D1
+       | 0378  D281                           ADD.L     D1,D1
+       | 037A  2607                           MOVE.L    D7,D3
+       | 037C  9682                           SUB.L     D2,D3
+       | 037E  2F40 002E                      MOVE.L    D0,002E(A7)
+       | 0382  2003                           MOVE.L    D3,D0
+       | 0384  2F41 0036                      MOVE.L    D1,0036(A7)
+       | 0388  2205                           MOVE.L    D5,D1
+       | 038A  4EBA  0000-XX.1                JSR       __CXM33(PC)
+       | 038E  D080                           ADD.L     D0,D0
+       | 0390  206C  0008-XX.2                MOVEA.L   _map+00000008(A4),A0
+       | 0394  D1C0                           ADDA.L    D0,A0
+       | 0396  202F 0036                      MOVE.L    0036(A7),D0
+       | 039A  D1C0                           ADDA.L    D0,A0
+       | 039C  2648                           MOVEA.L   A0,A3
+       | 039E  2006                           MOVE.L    D6,D0
+       | 03A0  720F                           MOVEQ     #0F,D1
+       | 03A2  C081                           AND.L     D1,D0
+       | 03A4  7410                           MOVEQ     #10,D2
+       | 03A6  2602                           MOVE.L    D2,D3
+       | 03A8  9680                           SUB.L     D0,D3
+       | 03AA  2F43 002A                      MOVE.L    D3,002A(A7)
+       | 03AE  7601                           MOVEQ     #01,D3
+       | 03B0  242F 002A                      MOVE.L    002A(A7),D2
+       | 03B4  E5A3                           ASL.L     D2,D3
+       | 03B6  5383                           SUBQ.L    #1,D3
+       | 03B8  2406                           MOVE.L    D6,D2
+       | 03BA  222D FFE8                      MOVE.L    FFE8(A5),D1
+       | 03BE  D481                           ADD.L     D1,D2
+       | 03C0  720F                           MOVEQ     #0F,D1
+       | 03C2  C481                           AND.L     D1,D2
+       | 03C4  7210                           MOVEQ     #10,D1
+       | 03C6  3F43 0028                      MOVE.W    D3,0028(A7)
+       | 03CA  2601                           MOVE.L    D1,D3
+       | 03CC  9682                           SUB.L     D2,D3
+       | 03CE  2F42 0024                      MOVE.L    D2,0024(A7)
+       | 03D2  7401                           MOVEQ     #01,D2
+       | 03D4  E7A2                           ASL.L     D3,D2
+       | 03D6  5382                           SUBQ.L    #1,D2
+       | 03D8  4682                           NOT.L     D2
+       | 03DA  244B                           MOVEA.L   A3,A2
+       | 03DC  D0AD FFE8                      ADD.L     FFE8(A5),D0
+       | 03E0  2E00                           MOVE.L    D0,D7
+       | 03E2  3F42 0022                      MOVE.W    D2,0022(A7)
+       | 03E6  BE81                           CMP.L     D1,D7
+       | 03E8  6C24                           BGE.B     040E
+       | 03EA  302F 0028                      MOVE.W    0028(A7),D0
+       | 03EE  2200                           MOVE.L    D0,D1
+       | 03F0  C242                           AND.W     D2,D1
+       | 03F2  7E00                           MOVEQ     #00,D7
+       | 03F4  3F41 0020                      MOVE.W    D1,0020(A7)
+       | 03F8  600E                           BRA.B     0408
+       | 03FA  302F 0020                      MOVE.W    0020(A7),D0
+       | 03FE  8152                           OR.W      D0,(A2)
+       | 0400  2005                           MOVE.L    D5,D0
+       | 0402  D080                           ADD.L     D0,D0
+       | 0404  D5C0                           ADDA.L    D0,A2
+       | 0406  5287                           ADDQ.L    #1,D7
+       | 0408  BE84                           CMP.L     D4,D7
+       | 040A  6DEE                           BLT.B     03FA
+       | 040C  6074                           BRA.B     0482
+       | 040E  7020                           MOVEQ     #20,D0
+       | 0410  BE80                           CMP.L     D0,D7
+       | 0412  6C2A                           BGE.B     043E
+       | 0414  2C05                           MOVE.L    D5,D6
+       | 0416  5386                           SUBQ.L    #1,D6
+       | 0418  7E00                           MOVEQ     #00,D7
+       | 041A  601C                           BRA.B     0438
+       | 041C  302F 0028                      MOVE.W    0028(A7),D0
+       | 0420  8152                           OR.W      D0,(A2)
+       | 0422  302F 0022                      MOVE.W    0022(A7),D0
+       | 0426  816A 0002                      OR.W      D0,0002(A2)
+       | 042A  2006                           MOVE.L    D6,D0
+       | 042C  D080                           ADD.L     D0,D0
+       | 042E  204A                           MOVEA.L   A2,A0
+       | 0430  D1C0                           ADDA.L    D0,A0
+       | 0432  45E8 0002                      LEA       0002(A0),A2
+       | 0436  5287                           ADDQ.L    #1,D7
+       | 0438  BE84                           CMP.L     D4,D7
+       | 043A  6DE0                           BLT.B     041C
+       | 043C  6044                           BRA.B     0482
+       | 043E  7A00                           MOVEQ     #00,D5
+       | 0440  603C                           BRA.B     047E
+       | 0442  302F 0028                      MOVE.W    0028(A7),D0
+       | 0446  8152                           OR.W      D0,(A2)
+       | 0448  548A                           ADDQ.L    #2,A2
+       | 044A  7E00                           MOVEQ     #00,D7
+       | 044C  202D FFE8                      MOVE.L    FFE8(A5),D0
+       | 0450  90AF 002A                      SUB.L     002A(A7),D0
+       | 0454  90AF 0024                      SUB.L     0024(A7),D0
+       | 0458  720F                           MOVEQ     #0F,D1
+       | 045A  D081                           ADD.L     D1,D0
+       | 045C  E880                           ASR.L     #4,D0
+       | 045E  2C00                           MOVE.L    D0,D6
+       | 0460  6006                           BRA.B     0468
+       | 0462  34FC FFFF                      MOVE.W    #FFFF,(A2)+
+       | 0466  5287                           ADDQ.L    #1,D7
+       | 0468  BE86                           CMP.L     D6,D7
+       | 046A  6DF6                           BLT.B     0462
+       | 046C  302F 0022                      MOVE.W    0022(A7),D0
+       | 0470  8152                           OR.W      D0,(A2)
+       | 0472  202F 002E                      MOVE.L    002E(A7),D0
+       | 0476  D080                           ADD.L     D0,D0
+       | 0478  D7C0                           ADDA.L    D0,A3
+       | 047A  244B                           MOVEA.L   A3,A2
+       | 047C  5285                           ADDQ.L    #1,D5
+       | 047E  BA84                           CMP.L     D4,D5
+       | 0480  6DC0                           BLT.B     0442
+       | 0482  4AAD 0008                      TST.L     0008(A5)
+       | 0486  6714                           BEQ.B     049C
+       | 0488  202D FFE4                      MOVE.L    FFE4(A5),D0
+       | 048C  D1AC  0000-XX.2                ADD.L     D0,_h(A4)
+       | 0490  202F 0032                      MOVE.L    0032(A7),D0
+       | 0494  D1AC  0000-XX.2                ADD.L     D0,_hh(A4)
+       | 0498  4EBA  0000-XX.1                JSR       @setmotion(PC)
+       | 049C  4CDF 0CFC                      MOVEM.L   (A7)+,D2-D7/A2-A3
+       | 04A0  4E5D                           UNLK      A5
+       | 04A2  4E75                           RTS

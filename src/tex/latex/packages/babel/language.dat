@@ -1,0 +1,7 @@
+% File    : language.dat
+% Purpose : specify which hypenation patterns to load 
+%           while running iniTeX 
+english hyphen.tex
+%ukenglish ukhyphen.tex
+%dutch   hyphen.dutch
+%german  hyphen.german

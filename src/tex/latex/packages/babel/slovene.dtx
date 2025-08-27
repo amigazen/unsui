@@ -1,0 +1,364 @@
+% \iffalse meta-comment
+%
+% Copyright 1989-1995 Johannes L. Braams and any individual authors
+% listed elsewhere in this file.  All rights reserved.
+% 
+% For further copyright information any other copyright notices in this
+% file.
+% 
+% This file is part of the Babel system release 3.5.
+% --------------------------------------------------
+%   This system is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+% 
+%   For error reports concerning UNCHANGED versions of this file no more
+%   than one year old, see bugs.txt.
+% 
+%   Please do not request updates from me directly.  Primary
+%   distribution is through the CTAN archives.
+% 
+% 
+% IMPORTANT COPYRIGHT NOTICE:
+% 
+% You are NOT ALLOWED to distribute this file alone.
+% 
+% You are allowed to distribute this file under the condition that it is
+% distributed together with all the files listed in manifest.txt.
+% 
+% If you receive only some of these files from someone, complain!
+% 
+% Permission is granted to copy this file to another file with a clearly
+% different name and to customize the declarations in that copy to serve
+% the needs of your installation, provided that you comply with
+% the conditions in the file legal.txt from the LaTeX2e distribution.
+% 
+% However, NO PERMISSION is granted to produce or to distribute a
+% modified version of this file under its original name.
+%  
+% You are NOT ALLOWED to change this file.
+% 
+% 
+% \fi
+% \CheckSum{179}
+% \iffalse
+%    Tell the \LaTeX\ system who we are and write an entry on the
+%    transcript.
+%<*dtx>
+\ProvidesFile{slovene.dtx}
+%</dtx>
+%<code>\ProvidesFile{slovene.ldf}
+        [1995/07/04 v1.2g Slovene support from the babel system]
+%    \end{macrocode}
+%
+% Babel package for LaTeX version 2e
+% Copyright (C) 1989 - 1995
+%           by Johannes Braams, TeXniek
+%
+% Please report errors to: J.L. Braams
+%                          JLBraams@cistron.nl
+%
+%    This file is part of the babel system, it provides the source
+%    code for the Slovanian language definition file.  The Slovanian
+%    words were contributed by Danilo Zavrtanik, University of
+%    Ljubljana (YU).
+%    The usage of the active " was introduced by
+%        Leon \v{Z}lajpah
+%        Jo\v{z}ef Stefan Institute,
+%        Jamova 39, Ljubljana,
+%        Slovenia
+%        e-mail: leon.zlajpah@ijs.si
+%
+%<*filedriver>
+\documentclass{ltxdoc}
+\newcommand*\TeXhax{\TeX hax}
+\newcommand*\babel{\textsf{babel}}
+\newcommand*\langvar{$\langle \it lang \rangle$}
+\newcommand*\note[1]{}
+\newcommand*\Lopt[1]{{textsf \1}}
+\newcommand*\file[1]{\texttt{#1}}
+\begin{document}
+ \DocInput{slovene.dtx}
+\end{document}
+%</filedriver>
+%\fi
+% \GetFileInfo{slovene.dtx}
+%
+% \changes{slovene-1.0a}{1991/07/15}{Renamed babel.sty in babel.com}
+% \changes{slovene-1.1}{1992/02/16}{Brought up-to-date with babel 3.2a}
+% \changes{slovene-1.2}{1994/02/27}{Update for \LaTeXe}
+% \changes{slovene-1.2d}{1994/06/26}{Removed the use of \cs{filedate}
+%    and moved identification after the loading of \file{babel.def}}
+%
+%  \section{The Slovanian language}
+%
+%    The file \file{\filename}\footnote{The file described in this
+%    section has version number \fileversion\ and was last revised on
+%    \filedate.  Contributions were made by Danilo Zavrtanik,
+%    University of Ljubljana (YU) and Leon \v{Z}lajpah
+%    (\texttt{leon.zlajpah@ijs.si}).}  defines all the
+%    language-specific macros for the Slovanian language.
+%
+%    For this language the character |"| is made active. In
+%    table~\ref{tab:slovene-quote} an overview is given of its
+%    purpose. One of the reasons for this is that in the Slovene
+%    language some special characters are used.
+%
+%    \begin{table}[htb]
+%     \begin{center}
+%     \begin{tabular}{lp{8cm}}
+%      |"c| & |\"c|, also implemented for the 
+%                  lowercase and uppercase s and z.                 \\
+%      |"-| & an explicit hyphen sign, allowing hyphenation
+%                  in the rest of the word.                         \\
+%      |""| & like |"-|, but producing no hyphen sign
+%                  (for compund words with hyphen, e.g.\ |x-""y|). \\
+%      |"`| & for Slovene left double quotes (looks like ,,).   \\
+%      |"'| & for Slovene right double quotes.                  \\
+%      |"<| & for French left double quotes (similar to $<<$). \\
+%      |">| & for French right double quotes (similar to $>>$).\\
+%     \end{tabular}
+%     \caption{The extra definitions made
+%              by \file{slovene.ldf}}\label{tab:slovene-quote}
+%     \end{center}
+%    \end{table}
+%
+% \StopEventually{}
+%
+%    As this file needs to be read only once, we check whether it was
+%    read before. If it was, the command |\captionsslovene| is already
+%    defined, so we can stop processing. If this command is undefined
+%    we proceed with the various definitions and first show the
+%    current version of this file.
+%
+% \changes{slovene-1.0a}{1991/07/15}{Added reset of catcode of @
+%    before \cs{endinput}.}
+% \changes{slovene-1.0b}{1991/10/29}{Removed use of \cs{@ifundefined}}
+%    \begin{macrocode}
+%<*code>
+\ifx\undefined\captionsslovene
+\else
+  \selectlanguage{slovene}
+  \expandafter\endinput
+\fi
+%    \end{macrocode}
+%
+% \changes{slovene-1.0b}{1991/10/29}{Removed code to load
+%    \file{latexhax.com}}
+%
+% \begin{macro}{\atcatcode}
+%    This file, \file{slovene.ldf}, may have been read while \TeX\ is
+%    in the middle of processing a document, so we have to make sure
+%    the category code of \texttt{@} is `letter' while this file is
+%    being read.  We save the category code of the @-sign in
+%    |\atcatcode| and make it `letter'. Later the category code can be
+%    restored to whatever it was before.
+%
+% \changes{slovene-1.0a}{1991/07/15}{Modified handling of catcode of @
+%    again.}
+% \changes{slovene-1.0b}{1991/10/29}{Removed use of 
+% \cs{makeatletter} and hence the need to load \file{latexhax.com}}
+%    \begin{macrocode}
+\chardef\atcatcode=\catcode`\@
+\catcode`\@=11\relax
+%    \end{macrocode}
+% \end{macro}
+%
+%    Now we determine whether the the common macros from the file
+%    \file{babel.def} need to be read. We can be in one of two
+%    situations: either another language option has been read earlier
+%    on, in which case that other option has already read
+%    \file{babel.def}, or \texttt{slovene} is the first language
+%    option to be processed. In that case we need to read
+%    \file{babel.def} right here before we continue.
+%
+% \changes{slovene-1.1}{1992/02/16}{Added \cs{relax} after the
+%    argument of \cs{input}}
+%    \begin{macrocode}
+\ifx\undefined\babel@core@loaded\input babel.def\relax\fi
+%    \end{macrocode}
+%
+%    Another check that has to be made, is if another language
+%    definition file has been read already. In that case its
+%    definitions have been activated. This might interfere with
+%    definitions this file tries to make. Therefore we make sure that
+%    we cancel any special definitions. This can be done by checking
+%    the existence of the macro |\originalTeX|. If it exists we simply
+%    execute it, otherwise it is |\let| to |\empty|.
+% \changes{slovene-1.0a}{1991/07/15}{Added
+%    \cs{let}]cs{originalTeX}\cs{relax} to test for existence}
+% \changes{slovene-1.1}{1992/02/16}{\cs{originalTeX} should be
+%    expandable, {\cs\let} it to \cs{empty}}
+%    \begin{macrocode}
+\ifx\undefined\originalTeX \let\originalTeX\empty \else\originalTeX\fi
+%    \end{macrocode}
+%
+%    When this file is read as an option, i.e. by the |\usepackage|
+%    command, \texttt{slovene} will be an `unknown' language in which
+%    case we have to make it known. So we check for the existence of
+%    |\l@slovene| to see whether we have to do something here.
+%
+% \changes{slovene-1.0b}{1991/10/29}{Removed use of \cs{@ifundefined}}
+% \changes{slovene-1.1}{1992/02/16}{Added a warning when no
+%    hyphenation patterns were loaded.}
+% \changes{slovene-1.2d}{1994/06/26}{Now use \cs{@nopatterns} to
+%    produce the warning}
+%    \begin{macrocode}
+\ifx\undefined\l@slovene
+    \@nopatterns{Slovene}
+    \adddialect\l@slovene0\fi
+%    \end{macrocode}
+%
+%    The next step consists of defining commands to switch to the
+%    Slovanian language. The reason for this is that a user might want
+%    to switch back and forth between languages.
+%
+% \begin{macro}{\captionsslovene}
+%    The macro |\captionsslovene| defines all strings used in the four
+%    standard documentlasses provided with \LaTeX.
+% \changes{slovene-1.1}{1992/02/16}{Added \cs{seename}, \cs{alsoname}
+%    and \cs{prefacename}}
+% \changes{slovene-1.1}{1993/07/15}{\cs{headpagename} should be
+%    \cs{pagename}}
+% \changes{slovene-1.2b}{1994/06/04}{Added extra tranlations from
+%    Josef Leydold, \texttt{leydold@statrix2.wu-wien.ac.at}}
+% \changes{slovene-1.2g}{1995/07/04}{Added \cs{proofname} for
+%    AMS-\LaTeX}
+%    \begin{macrocode}
+\addto\captionsslovene{%
+  \def\prefacename{Predgovor}%
+  \def\refname{Literatura}%
+  \def\abstractname{Povzetek}%
+  \def\bibname{Literatura}%
+  \def\chaptername{Poglavje}%
+  \def\appendixname{Dodatek}%
+  \def\contentsname{Kazalo}%
+  \def\listfigurename{Slike}%
+  \def\listtablename{Tabele}%
+  \def\indexname{Indeks}%
+  \def\figurename{Slika}%
+  \def\tablename{Tabela}%
+  \def\partname{Del}%
+  \def\enclname{Priloge}%
+  \def\ccname{Kopije}%
+  \def\headtoname{Prejme}%
+  \def\pagename{Stran}%
+  \def\seename{glej}%
+  \def\alsoname{glej tudi}%
+  \def\proofname{Proof}%  <-- needs translation
+  }%
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\dateslovene}
+%    The macro |\dateslovene| redefines the command |\today| to
+%    produce Slovanian dates.
+%    \begin{macrocode}
+\def\dateslovene{%
+\def\today{\number\day.~\ifcase\month\or
+  januar\or februar\or marec\or april\or maj\or junij\or
+  julij\or avgust\or september\or oktober\or november\or december\fi
+  \space \number\year}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\extrasslovene}
+% \begin{macro}{\noextrasslovene}
+%    The macro |\extrasslovene| performs all the extra definitions
+%    needed for the Slovanian language. The macro |\noextrasslovene|
+%    is used to cancel the actions of |\extrasslovene|. 
+%
+%    For Slovene the \texttt{"} character is made active. This is done
+%    once, later on its definition may vary. Other languages in the
+%    same document may also use the \texttt{"} character for
+%    shorthands; we specify that the slovanian group of shorthands
+%    should be used.
+%
+% \changes{slovene-1.2f}{1995/06/04}{Introduced the active \texttt{"}}
+%    \begin{macrocode}
+\initiate@active@char{"}
+\addto\extrasslovene{\languageshorthands{slovene}}
+\addto\extrasslovene{\bbl@activate{"}}
+%\addto\noextrasslovene{\bbl@deactivate{"}}
+%    \end{macrocode}
+%    First we define shorthands to facilitate the occurence of letters
+%    such as \v{c}.
+%    \begin{macrocode}
+\declare@shorthand{slovene}{"c}{\textormath{\v c}{\check c}}
+\declare@shorthand{slovene}{"s}{\textormath{\v s}{\check s}}
+\declare@shorthand{slovene}{"z}{\textormath{\v z}{\check z}}
+\declare@shorthand{slovene}{"C}{\textormath{\v C}{\check C}}
+\declare@shorthand{slovene}{"L}{\textormath{\v L}{\check L}}
+\declare@shorthand{slovene}{"S}{\textormath{\v S}{\check S}}
+\declare@shorthand{slovene}{"Z}{\textormath{\v Z}{\check Z}}
+%    \end{macrocode}
+%
+%    Then we define access to two forms of quotation marks, similar
+%    to the german and french quotation marks.
+%    \begin{macrocode}
+\declare@shorthand{slovene}{"`}{%
+  \textormath{\quotedblbase{}}{\mbox{\quotedblbase}}}
+\declare@shorthand{slovene}{"'}{%
+  \textormath{\textquotedblleft{}}{\mbox{\textquotedblleft}}}
+\declare@shorthand{slovene}{"<}{%
+  \textormath{\guillemotleft{}}{\mbox{\guillemotleft}}}
+\declare@shorthand{slovene}{">}{%
+  \textormath{\guillemotright{}}{\mbox{\guillemotright}}}
+%    \end{macrocode}
+%    then we define two shorthands to be able to specify hyphenation
+%    breakpoints that behavew a little different from |\-|.
+%    \begin{macrocode}
+\declare@shorthand{slovene}{"-}{\allowhyphens-\allowhyphens}
+\declare@shorthand{slovene}{""}{\hskip\z@skip}
+%    \end{macrocode}
+%    And we want to have a shorthand for disabling a ligature.
+%    \begin{macrocode}
+\declare@shorthand{slovene}{"|}{%
+  \textormath{\discretionary{-}{}{\kern.03em}}{}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+%    It is possible that a site might need to add some extra code to
+%    the babel macros. To enable this we load a local configuration
+%    file, \file{slovene.cfg} if it is found on \TeX' search path.
+% \changes{slovene-1.2g}{1995/07/02}{Added loading of configuration
+%    file}
+%    \begin{macrocode}
+\loadlocalcfg{slovene}
+%    \end{macrocode}
+%
+%    Our last action is to make a note that the commands we have just
+%    defined, will be executed by calling the macro |\selectlanguage|
+%    at the beginning of the document.
+%    \begin{macrocode}
+\main@language{slovene}
+%    \end{macrocode}
+%    Finally, the category code of \texttt{@} is reset to its original
+%    value. The macrospace used by |\atcatcode| is freed.
+% \changes{slovene-1.0a}{1991/07/15}{Modified handling of catcode of
+%    @-sign.}
+%    \begin{macrocode}
+\catcode`\@=\atcatcode \let\atcatcode\relax
+%</code>
+%    \end{macrocode}
+%
+% \Finale
+%%
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\endinput

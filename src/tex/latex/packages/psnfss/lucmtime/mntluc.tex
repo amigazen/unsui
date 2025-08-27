@@ -1,0 +1,33 @@
+% revised 23/10/95 to specify fontinst 1.5
+\input fontinst.sty
+
+\needsfontinstversion{1.5}
+
+% Some math fonts built from Times and Lucida
+
+\installfonts
+\transformfont{mntr8r}{\reencodefont{8r}{\fromafm{mntr8a}}}
+\transformfont{mntri8r}{\reencodefont{8r}{\fromafm{mntri8a}}}
+\transformfont{mntbi8r}{\reencodefont{8r}{\fromafm{mntbi8a}}}
+\transformfont{mntb8r}{\reencodefont{8r}{\fromafm{mntb8a}}}
+   \installfamily{OML}{mntluc}{\skewchar\font=127}
+   \installfont{mntlucrm}
+      {kernoff,hlcrima scaled 900,kernon,unsetluc,mntri8r,lmathit,lhax}
+      {LOML}{OML}{mntluc}{m}{it}{}
+   \installfont{mntlucbf}
+      {kernoff,hlcdima scaled 900,kernon,unsetluc,mntbi8r,lmathit,lhax}
+      {LOML}{OML}{mntluc}{b}{it}{}
+%
+   \installfamily{OT1}{mntluc}{}
+   \installfont{mntlucmi}
+      {hlcrima scaled 900,unsetluc,mntri8r,latin}
+      {OT1i}{OT1}{mntluc}{m}{it}{}
+   \installfont{mntlucmn}
+      {hlcrm scaled 900,unsetluc,mntr8r,latin}
+      {OT1}{OT1}{mntluc}{m}{n}{}
+   \installfont{mntlucbn}
+      {hlcdm scaled 900,unsetluc,mntb8r,latin}
+      {OT1}{OT1}{mntluc}{b}{n}{}
+ \endinstallfonts
+
+\bye

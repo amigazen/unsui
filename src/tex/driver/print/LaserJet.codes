@@ -1,0 +1,41 @@
+LaserJet:
+
+
+------- einmalige Initialisierung ----------
+
+ESC E			Reset
+
+ESC & l 0 L		Peforationsskip aus
+
+
+-------- einmal am Beginn jeder Seite ----------
+
+ESC & l xxx X		Anzahl der Kopien (xxx)
+
+ESC * p 0 x 0 Y		Initialisiere den Cursor
+
+ESC * t xxx R		Aufloesung einstellen (xxx = '100' oder xxx = '300')
+
+ESC * r 0 f 0 A		Initialisiere Position
+
+
+--------- Ausgabe der Graphik zeilenweise ---------
+
+ESC * b 2 m xxx W ....	Zeile komprimiert ausgeben, xxx Anzahl der Bytes
+
+oder
+
+ESC * b xxx W ...	Zeile unkomprimiert ausgeben
+
+
+-------- am Ende einer jeden Seite ------
+
+ESC * r B		Ende der Rastergraphik
+
+ESC & l 1 X		Anzahl der Kopien zuruecksetzen
+
+
+-------- einmalig am Ende ---------------
+
+ESC E			Reset
+

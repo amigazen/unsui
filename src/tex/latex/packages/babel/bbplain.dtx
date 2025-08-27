@@ -1,0 +1,294 @@
+% \iffalse meta-comment
+%
+% Copyright 1989-1995 Johannes L. Braams and any individual authors
+% listed elsewhere in this file.  All rights reserved.
+% 
+% For further copyright information any other copyright notices in this
+% file.
+% 
+% This file is part of the Babel system release 3.5.
+% --------------------------------------------------
+%   This system is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+% 
+%   For error reports concerning UNCHANGED versions of this file no more
+%   than one year old, see bugs.txt.
+% 
+%   Please do not request updates from me directly.  Primary
+%   distribution is through the CTAN archives.
+% 
+% 
+% IMPORTANT COPYRIGHT NOTICE:
+% 
+% You are NOT ALLOWED to distribute this file alone.
+% 
+% You are allowed to distribute this file under the condition that it is
+% distributed together with all the files listed in manifest.txt.
+% 
+% If you receive only some of these files from someone, complain!
+% 
+% Permission is granted to copy this file to another file with a clearly
+% different name and to customize the declarations in that copy to serve
+% the needs of your installation, provided that you comply with
+% the conditions in the file legal.txt from the LaTeX2e distribution.
+% 
+% However, NO PERMISSION is granted to produce or to distribute a
+% modified version of this file under its original name.
+%  
+% You are NOT ALLOWED to change this file.
+% 
+% 
+% \fi
+% \CheckSum{333}
+%
+% \iffalse
+%<*dtx>
+\ProvidesFile{bbplain.dtx}
+       [1995/07/09 v1.0b Babel support for plain-basewd formats]
+%</dtx>
+%
+% Babel package for LaTeX version 2e
+% Copyright (C) 1989 - 1995
+%           by Johannes Braams
+%
+% Please report errors to: J.L. Braams
+%                          JLBraams@cistron.nl
+%
+%    This file is part of the babel system, it provides the source
+%    code for the extra definitions needed to be able to use babel
+%    with a plain-based format.
+%<*filedriver>
+\documentclass{ltxdoc}
+\font\manual=logo10 % font used for the METAFONT logo, etc.
+\newcommand*\MF{{\manual META}\-{\manual FONT}}
+\newcommand*{\babel}{\textsf{babel}}
+\newcommand*{\langvar}{$\langle \it lang \rangle$}
+\newcommand*{\note}[1]{}
+\newcommand*{\Lopt}[1]{\textsf{#1}}
+\newcommand*{\file}[1]{\texttt{#1}}
+\begin{document}
+ \DocInput{bbplain.dtx}
+\end{document}
+%</filedriver>
+% \fi
+%
+% \GetFileInfo{bbplain.dtx}
+%
+%    A number of \LaTeX\ macro's that are needed later on.
+%    \begin{macrocode}
+%<*code>
+\long\def\@firstofone#1{#1}
+\def\@car#1#2\@nil{#1}
+\def\@cdr#1#2\@nil{#2}
+\let\@typeset@protect\relax
+\long\def\@gobble#1{}
+\def\g@addto@macro#1#2{{%
+  \toks@\expandafter{#1#2}%
+  \xdef#1{\the\toks@}}}
+\def\@namedef#1{\expandafter\def\csname #1\endcsname}
+%    \end{macrocode}
+%    Mimick \LaTeX's |\AtBeginDocument|; for this to work the user
+%    needs to add |\begindocument| to his file.
+%    \begin{macrocode}
+\def\begindocument{}
+\def\AtBeginDocument{\g@addto@macro\begindocument}
+%    \end{macrocode}
+%    \LaTeX\ needs to be able to switch off writing to its auxiliary
+%    files; plain doesn't have them by default.
+%    \begin{macrocode}
+\let\if@filesw\iffalse
+%    \end{macrocode}
+%    Mimick \LaTeX's robust commands
+%    \begin{macrocode}
+\def\DeclareRobustCommand#1{%
+  \def#1{\csname #1 \endcsname}
+  \expandafter\def\csname\expandafter\@gobble\string#1 \endcsname}
+%    \end{macrocode}
+%
+%    \LaTeX\ has a macro to check whether a certain package was loaded
+%    with specific options. The command has two extra arguments which
+%    are code to be executed in either the true or false case.
+%    This is used to detect whether the document needs one ov the
+%    accents to be activated (\Lopt{activegrave} and
+%    \Lopt{activeacute}). For plain \TeX\ we assume that the user
+%    wants them to be active by default. Therefore the only thing we
+%    do is execute the third argument (the code for the true case).
+% 
+%    \begin{macrocode}
+\def\@ifpackagewith#1#2#3#4{%
+  #3}
+%    \end{macrocode}
+%    Code from \file{ltoutenc.dtx}, adapted for use in the plain \TeX\
+%    environment. 
+%    \begin{macrocode}
+\def\DeclareTextCommand{%
+   \@dec@text@cmd\def
+}
+\def\ProvideTextCommand{%
+   \@dec@text@cmd\def
+}
+\def\DeclareTextSymbol#1#2#3{%
+   \@dec@text@cmd\chardef#1{#2}#3\relax
+}
+\def\@dec@text@cmd#1#2#3{%
+   \expandafter\def\expandafter#2%
+      \expandafter{%
+         \csname#3-cmd\expandafter\endcsname
+         \expandafter#2%
+         \csname#3\string#2\endcsname
+      }%
+%   \let\@ifdefinable\@rc@ifdefinable
+   \expandafter#1\csname#3\string#2\endcsname
+}
+\def\@current@cmd#1{%
+  \ifx\protect\@typeset@protect\else
+      \noexpand#1\expandafter\@gobble
+  \fi
+}
+\def\@changed@cmd#1#2{%
+   \ifx\protect\@typeset@protect
+      \expandafter\ifx\csname\cf@encoding\string#1\endcsname\relax
+         \expandafter\ifx\csname ?\string#1\endcsname\relax
+            \expandafter\def\csname ?\string#1\endcsname{%
+               \@changed@x@err{#1}%
+            }%
+         \fi
+         \ifmmode\else
+            \expandafter\let
+               \csname\cf@encoding \string#1\expandafter\endcsname
+               \csname ?\string#1\endcsname
+         \fi
+         \csname ?\string#1%
+            \expandafter\expandafter\expandafter\endcsname
+      \else
+         \csname\cf@encoding\string#1%
+            \expandafter\expandafter\expandafter\endcsname
+      \fi
+   \else
+      \noexpand#1%
+   \fi
+}
+\def\@changed@x@err#1{%
+    \errhelp{Your command will be ignored, type <return> to proceed}%
+    \errmessage{Command \protect#1 undefined in encoding \cf@encoding}}
+\def\DeclareTextCommandDefault#1{%
+   \DeclareTextCommand#1?%
+}
+\def\ProvideTextCommandDefault#1{%
+   \ProvideTextCommand#1?%
+}
+\expandafter\let\csname OT1-cmd\endcsname\@current@cmd
+\expandafter\let\csname?-cmd\endcsname\@changed@cmd
+\def\DeclareTextAccent#1#2#3{%
+  \DeclareTextCommand#1{#2}##1{\accent#3 ##1}
+}
+\def\DeclareTextCompositeCommand#1#2#3#4{%
+   \expandafter\let\expandafter\reserved@a\csname#2\string#1\endcsname
+   \edef\reserved@b{\string##1}%
+   \edef\reserved@c{%
+     \expandafter\@strip@args\meaning\reserved@a:-\@strip@args}%
+   \ifx\reserved@b\reserved@c
+      \expandafter\expandafter\expandafter\ifx
+         \expandafter\@car\reserved@a\relax\relax\@nil
+         \@text@composite
+      \else
+         \edef\reserved@b##1{%
+            \def\expandafter\noexpand
+               \csname#2\string#1\endcsname####1{%
+               \noexpand\@text@composite
+                  \expandafter\noexpand\csname#2\string#1\endcsname
+                  ####1\noexpand\@empty\noexpand\@text@composite
+                  {##1}%
+            }%
+         }%
+         \expandafter\reserved@b\expandafter{\reserved@a{##1}}%
+      \fi
+      \expandafter\def\csname\expandafter\string\csname
+         #2\endcsname\string#1-\string#3\endcsname{#4}
+   \else
+     \errhelp{Your command will be ignored, type <return> to proceed}%
+     \errmessage{\string\DeclareTextCompositeCommand\space used on
+         inappropriate command \protect#1}
+   \fi
+}
+\def\@text@composite#1#2#3\@text@composite{%
+   \expandafter\@text@composite@x
+      \csname\string#1-\string#2\endcsname
+}
+\def\@text@composite@x#1#2{%
+   \ifx#1\relax
+      #2%
+   \else
+      #1%
+   \fi
+}
+%
+\def\@strip@args#1:#2-#3\@strip@args{#2}
+\def\DeclareTextComposite#1#2#3#4{%
+   \def\reserved@a{\DeclareTextCompositeCommand#1{#2}{#3}}%
+   \bgroup
+      \lccode`\@=#4%
+      \lowercase{%
+   \egroup
+      \reserved@a @%
+   }%
+}
+%
+\def\UseTextSymbol#1#2{%
+%   \let\@curr@enc\cf@encoding
+%   \@use@text@encoding{#1}%
+   #2%
+%   \@use@text@encoding\@curr@enc
+}
+\def\UseTextAccent#1#2#3{%
+%   \let\@curr@enc\cf@encoding
+%   \@use@text@encoding{#1}%
+%   #2{\@use@text@encoding\@curr@enc\selectfont#3}%
+%   \@use@text@encoding\@curr@enc
+}
+\def\@use@text@encoding#1{%
+%   \edef\f@encoding{#1}%
+%   \xdef\font@name{%
+%      \csname\curr@fontshape/\f@size\endcsname
+%   }%
+%   \pickup@font
+%   \font@name
+%   \@@enc@update
+}
+\def\DeclareTextSymbolDefault#1#2{%
+   \DeclareTextCommandDefault#1{\UseTextSymbol{#2}#1}%
+}
+\def\DeclareTextAccentDefault#1#2{%
+   \DeclareTextCommandDefault#1{\UseTextAccent{#2}#1}%
+}
+\def\cf@encoding{OT1}
+%    \end{macrocode}
+%    Currently we only use the \LaTeXe\ method for accents for those
+%    that are known to be made active in \emph{some} language
+%    definition file.
+%    \begin{macrocode}
+\DeclareTextAccent{\"}{OT1}{127}
+\DeclareTextAccent{\'}{OT1}{19}
+\DeclareTextAccent{\^}{OT1}{94}
+\DeclareTextAccent{\`}{OT1}{18}
+\DeclareTextAccent{\~}{OT1}{126}
+%</code>
+%    \end{macrocode}
+\endinput
+%%
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}

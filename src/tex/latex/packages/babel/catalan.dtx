@@ -1,0 +1,662 @@
+% \iffalse meta-comment
+%
+% Copyright 1989-1995 Johannes L. Braams and any individual authors
+% listed elsewhere in this file.  All rights reserved.
+% 
+% For further copyright information any other copyright notices in this
+% file.
+% 
+% This file is part of the Babel system release 3.5.
+% --------------------------------------------------
+%   This system is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+% 
+%   For error reports concerning UNCHANGED versions of this file no more
+%   than one year old, see bugs.txt.
+% 
+%   Please do not request updates from me directly.  Primary
+%   distribution is through the CTAN archives.
+% 
+% 
+% IMPORTANT COPYRIGHT NOTICE:
+% 
+% You are NOT ALLOWED to distribute this file alone.
+% 
+% You are allowed to distribute this file under the condition that it is
+% distributed together with all the files listed in manifest.txt.
+% 
+% If you receive only some of these files from someone, complain!
+% 
+% Permission is granted to copy this file to another file with a clearly
+% different name and to customize the declarations in that copy to serve
+% the needs of your installation, provided that you comply with
+% the conditions in the file legal.txt from the LaTeX2e distribution.
+% 
+% However, NO PERMISSION is granted to produce or to distribute a
+% modified version of this file under its original name.
+%  
+% You are NOT ALLOWED to change this file.
+% 
+% 
+% \fi
+% \CheckSum{491}
+%
+% \iffalse
+%    Tell the \LaTeX\ system who we are and write an entry on the
+%    transcript.
+%<*dtx>
+\ProvidesFile{catalan.dtx}
+%</dtx>
+%<code>\ProvidesFile{catalan.ldf}
+        [1995/07/10 v2.2d Catalan support from the babel system]
+%
+% Babel package for LaTeX version 2e
+% Copyright (C) 1989 - 1995
+%           by Johannes Braams, TeXniek
+%
+% Catalan Language Definition File
+% Copyright (C) 1991 - 1995
+%           by Goncal Badenes <badenes@imec.be>
+%              Johannes Braams, TeXniek
+%
+% Please report errors to: J.L. Braams <JLBraams@cistron.nl>
+%
+%    This file is part of the babel system, it provides the source
+%    code for the Catalan language definition file.
+%    This file was developped out of spanish.sty and suggestions by
+%    Goncal Badenes <badenes@imec.be> and Joerg Knappen
+%    <knappen@vkpmzd.kph.uni-mainz.de>.
+%
+%    The file spanish.sty was written by Julio Sanchez,
+%    (jsanchez@gmv.es) The code for the catalan language has been
+%    removed and now is in this file.
+%<*filedriver>
+\documentclass{ltxdoc}
+\newcommand*\TeXhax{\TeX hax}
+\newcommand*\babel{\textsf{babel}}
+\newcommand*\langvar{$\langle \it lang \rangle$}
+\newcommand*\note[1]{}
+\newcommand*\Lopt[1]{\textsf{#1}}
+\newcommand*\file[1]{\texttt{#1}}
+\begin{document}
+ \DocInput{catalan.dtx}
+\end{document}
+%</filedriver>
+%\fi
+%
+% \GetFileInfo{catalan.dtx}
+%
+% \changes{catalan-2.0b}{1993/09/23}{Incorporated the changes from
+%    \file{spanish.sty}}
+% \changes{catalan-2.1}{1994/02/27}{Update for \LaTeXe}
+% \changes{catalan-2.1d}{1994/06/26}{Removed the use of \cs{filedate}
+%    and moved identification after the loading of \file{babel.def}}
+% \changes{catalan-2.2b}{1995/07/04}{Made the activation of the grave
+%    and acute accents optional}
+% \changes{catalan-2.2c}{1995/07/08}{Removed the use of the tilde for
+%    catalan}
+%
+%  \section{The Catalan language}
+%
+%    The file \file{\filename}\footnote{The file described in this
+%    section has version number \fileversion\ and was last revised on
+%    \filedate.}  defines all the language-specific macro's for the
+%    Catalan language.
+%
+%    For this language only the double quote character (|"|) is made
+%    active by default. In table~\ref{tab:catalan-quote-def} an
+%    overview is given of the new macros defined and the new meanings of
+%    |"|. Additionally to that, the user can explicitly activate the
+%    acute accent or apostrophe (|'|) and/or the grave accent (|`|)
+%    characters by using the \Lopt{activeacute} and \Lopt{activegrave}
+%    options. In that case, the definitions shown in
+%    table~\ref{tab:catalan-quote-opt} become also
+%    available\footnote{Please note that if the acute accent
+%    character is active, it is necessary to take special care of coding
+%    apostrophes in a way which cannot be confounded with
+%    accents. Therefore, it is necessary, for example, to type
+%    \texttt{l'\{\}\{\}astre} instead of \texttt{l'astre}.}.
+%
+%    \begin{table}[htb]
+%     \centering
+%     \begin{tabular}{lp{8cm}}
+%      |\lgem|  & geminated-l digraph (similar to
+%               l$\cdot$l). |\Lgem| produces the uppercase version.\\
+%      |\up| & Macro to help typing raised ordinals, like {1\raise
+%               1ex\hbox{\small er}}. Takes one argument.\\
+%      |\-| & like the old |\-|, but allowing hyphenation
+%               in the rest of the word. \\
+%      |"i| & i with diaeresis, allowing hyphenation
+%             in the rest of the word. Valid for the following vowels:
+%               i, u (both lowercase and uppercase).\\
+%      |"c| & c-cedilla (\c{c}). Valid for both uppercase and
+%               lowercase c.\\
+%      |"l| & geminated-l digraph (similar to
+%               l$\cdot$l). Valid for both uppercase and lowercase l.\\
+%      |"<| & French left double quotes (similar to $<<$).\\
+%      |">| & French right double quotes (similar to $>>$).\\
+%      |"-| & explicit hyphen sign, allowing hyphenation
+%               in the rest of the word.\\
+%      \verb="|= & disable ligature at this position.
+%     \end{tabular}
+%     \caption{Extra definitions made by file \file{catalan.ldf}
+%       (activated by default)}
+%     \label{tab:catalan-quote-def}
+%    \end{table}
+%
+%    \begin{table}[htb]
+%     \centering
+%     \begin{tabular}{lp{8cm}}
+%      |'e| & acute accented a, allowing hyphenation
+%             in the rest of the word. Valid for the following
+%             vowels: e, i, o, u (both lowercase and uppercase).\\
+%      |`a| & grave accented a, allowing hyphenation
+%             in the rest of the word. Valid for the following
+%             vowels: a, e, o (both lowercase and uppercase).
+%     \end{tabular}
+%     \caption{Extra definitions made by file \file{catalan.ldf}
+%       (activated only when using the options \Lopt{activeacute} and
+%       \Lopt{activegrave})}
+%     \label{tab:catalan-quote-opt}
+%    \end{table}
+%    These active accents characters behave according to their original
+%    definitions if not followed by one of the characters indicated in
+%    that table.
+%
+% \StopEventually{}
+%
+% \changes{catalan-2.0}{1993/07/11}{Removed code to load
+%    \file{latexhax.com}}
+%
+%    As this file needs to be read only once, we check whether it was
+%    read before. If it was, the command |\captionscatalan| is already
+%    defined, so we can stop processing. If this command is undefined
+%    we proceed with the various definitions and first show the
+%    current version of this file.
+%
+%    \begin{macrocode}
+%<*code>
+\ifx\undefined\captionscatalan
+\else
+  \selectlanguage{catalan}
+  \expandafter\endinput
+\fi
+%    \end{macrocode}
+%
+% \begin{macro}{\atcatcode}
+%    This file, \file{catalan.ldf}, may have been read while \TeX\ is
+%    in the middle of processing a document, so we have to make sure
+%    the category code of \texttt{@} is `letter' while this file is
+%    being read.  We save the category code of the @-sign in
+%    |\atcatcode| and make it `letter'. Later the category code can be
+%    restored to whatever it was before.
+%
+%    \begin{macrocode}
+\chardef\atcatcode=\catcode`\@
+\catcode`\@=11\relax
+%    \end{macrocode}
+% \end{macro}
+%
+%    Now we determine whether the common macros from the file
+%    \file{babel.def} need to be read. We can be in one of two
+%    situations: either another language option has been read earlier
+%    on, in which case that other option has already read
+%    \file{babel.def}, or \texttt{catalan} is the first language
+%    option to be processed. In that case we need to read
+%    \file{babel.def} right here before we continue.
+%
+%    \begin{macrocode}
+\ifx\undefined\babel@core@loaded\input babel.def\fi
+%    \end{macrocode}
+%
+%    Another check that has to be made, is if another language
+%    definition file has been read already. In that case its
+%    definitions have been activated. This might interfere with
+%    definitions this file tries to make. Therefore we make sure that
+%    we cancel any special definitions. This can be done by checking
+%    the existence of the macro |\originalTeX|. If it exists we simply
+%    execute it, otherwise it is |\let| to |\empty|.
+%    \begin{macrocode}
+\ifx\undefined\originalTeX
+  \let\originalTeX\empty
+\fi
+\originalTeX
+%    \end{macrocode}
+%
+%    When this file is read as an option, i.e. by the |\usepackage|
+%    command, \texttt{catalan} could be an `unknown' language in which
+%    case we have to make it known.  So we check for the existence of
+%    |\l@catalan| to see whether we have to do something here.
+%
+% \changes{catalan-2.1d}{1994/06/26}{Now use \cs{@nopatterns} to
+%    produce the warning}
+%    \begin{macrocode}
+\ifx\undefined\l@catalan
+  \@nopatterns{Catalan}
+  \adddialect\l@catalan0
+\fi
+%    \end{macrocode}
+%
+%    The next step consists of defining commands to switch to (and
+%    from) the Catalan language.
+%
+% \begin{macro}{\captionscatalan}
+%    The macro |\captionscatalan| defines all strings used
+%    in the four standard documentclasses provided with \LaTeX.
+% \changes{catalan-1.1}{1993/07/11}{\cs{headpagename} should be
+%    \cs{pagename}}
+% \changes{catalan-2.0}{1993/07/11}{Added some names}
+% \changes{catalan-2.1d}{1994/11/09}{Added a few missing translations}
+% \changes{catalan-2.2b}{1995/07/03}{Added \cs{proofname} for
+%    AMS-\LaTeX}
+% \changes{catalan-2.2d}{1995/07/10}{added translation of Proof}
+%    \begin{macrocode}
+\addto\captionscatalan{%
+  \def\prefacename{Prefaci}%
+  \def\refname{Refer\`encies}%
+  \def\abstractname{Resum}%
+  \def\bibname{Bibliografia}%
+  \def\chaptername{Cap\'{\i}tol}%
+  \def\appendixname{Ap\`endix}%
+  \def\contentsname{\'Index}%
+  \def\listfigurename{\'Index de figures}%
+  \def\listtablename{\'Index de taules}%
+  \def\indexname{\'Index de mat\`eries}%
+  \def\figurename{Figura}%
+  \def\tablename{Taula}%
+  \def\partname{Part}%
+  \def\enclname{Adjunt}%
+  \def\ccname{C\`opia a}%
+  \def\headtoname{A}%
+  \def\pagename{P\`agina}%
+  \def\seename{veure}%
+  \def\alsoname{veure tamb\'e}%
+  \def\proofname{Demostraci\'o}%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\datecatalan}
+%    The macro |\datecatalan| redefines the command |\today| to
+%    produce Catalan dates. Months are written in
+%    lowercase\footnote{This seems to be the common practice. See for
+%    example: E.~Coromina, \emph{El 9 Nou: Manual de redacci\'o i
+%    estil}, Ed.~Eumo, Vic, 1993}.
+% \changes{catalan-2.2b}{1995/06/18}{Month names in lowercase}
+%    \begin{macrocode}
+\def\datecatalan{%
+  \def\today{\number\day~\ifcase\month\or
+    de gener\or de febrer\or de mar\c{c}\or d'abril\or de maig\or
+    de juny\or de juliol\or d'agost\or de setembre\or d'octubre\or
+    de novembre\or de desembre\fi
+    \space de~\number\year}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\extrascatalan}
+% \changes{catalan-2.0}{1993/07/11}{Macro completely rewritten}
+% \changes{catalan-2.2a}{1995/03/11}{Handling of active characters
+%    completely rewritten}
+%
+% \begin{macro}{\noextrascatalan}
+% \changes{catalan-2.0}{1993/07/11}{Macro completely rewritten}
+%
+%    The macro |\extrascatalan| will perform all the extra definitions
+%    needed for the Catalan language.  The macro |\noextrascatalan| is
+%    used to cancel the actions of |\extrascatalan|.
+%
+%    For Catalan, some characters are made active or are redefined. In
+%    particular, the \texttt{"} character receives a new meaning; this
+%    can also happen for the \texttt{'} character and the \texttt{`}
+%    character when the options \Lopt{activegrave} and/or
+%    \Lopt{activeacute} are specified.
+%
+% \changes{catalan-2.2b}{1995/07/07}{Make activating the accent
+%    characters optional}
+%    \begin{macrocode}
+\addto\extrascatalan{\languageshorthands{catalan}}
+\initiate@active@char{"}
+\addto\extrascatalan{\bbl@activate{"}}
+\@ifpackagewith{babel}{activegrave}{%
+  \initiate@active@char{`}
+  \addto\extrascatalan{\bbl@activate{`}}}{}
+\@ifpackagewith{babel}{activeacute}{%
+  \initiate@active@char{'}
+  \addto\extrascatalan{\bbl@activate{'}}}{}
+%\addto\noextrascatalan{%
+%  \bbl@deactivate{"}
+%  \bbl@deactivate{`}\bbl@deactivate{'}}
+%    \end{macrocode}
+%
+% \changes{catalan-2.2a}{1995/03/11}{All the code for handling active
+%    characters is now moved to \file{babel.def}}
+%
+%    Apart from the active characters some other macros get a new
+%    definition. Therefore we store the current ones to be able
+%    to restore them later.
+%    When their current meanings are saved, we can safely redefine
+%    them.
+%
+%    We provide new definitions for the accent macros when one or
+%    boith of the options \Lopt{activegrave} or \Lopt{activeacute}
+%    were specified.
+%
+%    \begin{macrocode}
+\addto\extrascatalan{%
+  \babel@save\"
+  \def\"{\protect\@umlaut}}%
+\@ifpackagewith{babel}{activegrave}{%
+  \babel@save\`
+  \addto\extrascatalan{\def\`{\protect\@grave}}
+  }{}
+\@ifpackagewith{babel}{activeacute}{%
+  \babel@save\'
+  \addto\extrascatalan{\def\'{\protect\@acute}}
+  }{}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+%    All the code above is necessary because we need a few extra
+%    active characters. These characters are then used as indicated in
+%    tables~\ref{tab:catalan-quote-def}
+%    and~\ref{tab:catalan-quote-opt}.
+%
+%  \begin{macro}{\dieresis}
+%  \begin{macro}{\textacute}
+% \changes{catalan-2.1d}{1994/06/26}{Renamed from \cs{acute} as that
+%    is a \cs{mathaccent}}
+%  \begin{macro}{\textgrave}
+%
+%    The original definition of |\"| is stored as |\dieresis|, because
+%    the definition of |\"| might not be the default plain \TeX\
+%    one. If the user uses \textsc{PostScript} fonts with the Adobe
+%    font encoding the \texttt{"} character is not in the same
+%    position as in Knuth's font encoding. In this case |\"| will not
+%    be defined as |\accent"7F 1|, but as |\accent'310 #1|. Something
+%    similar happens when using fonts that follow the Cork
+%    encoding. For this reason we save the definition of |\"| and use
+%    that in the definition of other macros. We do likewise for |\`|,
+%    and |\'|.
+%    \begin{macrocode}
+\let\dieresis\"
+\@ifpackagewith{babel}{activegrave}{\let\textgrave\`}{}
+\@ifpackagewith{babel}{activeacute}{\let\textacute\'}{}
+%    \end{macrocode}
+%  \end{macro}
+%  \end{macro}
+%  \end{macro}
+%
+%  \begin{macro}{\@umlaut}
+%  \begin{macro}{\@acute}
+%  \begin{macro}{\@grave}
+%    We check the encoding and if not using T1, we make the accents
+%    expand but enabling hyphenation beyond the accent. If this is the
+%    case, not all break positions will be found in words that contain
+%    accents, but this is a limitation in \TeX. An unsolved problem
+%    here is that the encoding can change at any time. The definitions
+%    below are made in such a way that a change between two 256-char
+%    encodings are supported, but changes between a 128-char and a
+%    256-char encoding are not properly supported. We check if T1 is
+%    in use. If not, we will give a warning and proceed redefining the
+%    accent macros so that \TeX{} at least finds the breaks that are
+%    not too close to the accent. The warning will only be printed to
+%    the log file.
+%
+%    \begin{macrocode}
+\ifx\DeclareFontShape\undefined
+  \wlog{Warning: You are using an old LaTeX}
+  \wlog{Some word breaks will not be found.}
+  \def\@umlaut#1{\allowhyphens\dieresis{#1}\allowhyphens}
+  \@ifpackagewith{babel}{activeacute}{%
+    \def\@acute#1{\allowhyphens\textacute{#1}\allowhyphens}}{}
+  \@ifpackagewith{babel}{activegrave}{%
+    \def\@grave#1{\allowhyphens\textgrave{#1}\allowhyphens}}{}
+\else
+  \edef\next{T1}
+  \ifx\f@encoding\next
+    \let\@umlaut\dieresis
+    \@ifpackagewith{babel}{activeacute}{%
+      \let\@acute\textacute}{}
+    \@ifpackagewith{babel}{activegrave}{%
+      \let\@grave\textgrave}{}
+  \else
+    \wlog{Warning: You are using encoding \f@encoding\space
+      instead of T1.}
+    \wlog{Some word breaks will not be found.}
+    \def\@umlaut#1{\allowhyphens\dieresis{#1}\allowhyphens}
+    \@ifpackagewith{babel}{activeacute}{%
+      \def\@acute#1{\allowhyphens\textacute{#1}\allowhyphens}}{}
+    \@ifpackagewith{babel}{activegrave}{%
+      \def\@grave#1{\allowhyphens\textgrave{#1}\allowhyphens}}{}
+  \fi
+\fi
+%    \end{macrocode}
+%    If the user setup has extended fonts, the Ferguson macros are
+%    required to be defined. We check for their existance and, if
+%    defined, expand to whatever they are defined to. For instance,
+%    |\'a| would check for the existance of a |\@ac@a| macro. It is
+%    assumed to expand to the code of the accented letter.  If it is
+%    not defined, we assume that no extended codes are available and
+%    expand to the original definition but enabling hyphenation beyond
+%    the accent. This is as best as we can do. It is better if you
+%    have extended fonts or ML-\TeX{} because the hyphenation
+%    algorithm can work on the whole word. The following macros are
+%    directly derived from ML-\TeX{}.\footnote{A problem is perceived
+%    here with these macros when used in a multilingual environment
+%    where extended hyphenation patterns are available for some but
+%    not all languages. Assume that no extended patterns exist at some
+%    site for French and that \file{french.sty} would adopt this
+%    scheme too. In that case, \mbox{\texttt{'e}} in French would
+%    produce the combined accented letter, but hyphenation around it
+%    would be suppressed. Both language options would need an
+%    independent method to know whether they have extended patterns
+%    available. The precise impact of this problem and the possible
+%    solutions are under study.}
+%  \end{macro}
+%  \end{macro}
+%  \end{macro}
+%
+% \changes{catalan-2.2a}{1995/03/14}{All the code to deal with active
+%    characters is now in \file{babel.def}} 
+%
+%    Now we can define our shorthands: the diaeresis and ``ela
+%    geminada'' support,
+%    \begin{macrocode}
+\declare@shorthand{catalan}{"i}{\textormath{\@umlaut\i}{\ddot\imath}}
+\declare@shorthand{catalan}{"l}{\lgem{}}
+\declare@shorthand{catalan}{"u}{\textormath{\@umlaut u}{\ddot u}}
+\declare@shorthand{catalan}{"I}{\textormath{\@umlaut I}{\ddot I}}
+\declare@shorthand{catalan}{"L}{\Lgem{}}
+\declare@shorthand{catalan}{"U}{\textormath{\@umlaut U}{\ddot U}}
+%    \end{macrocode}
+%    cedille,
+% \changes{catalan-2.2c}{1995/07/08}{cedile now produced by double
+%    quote shorthand}
+%    \begin{macrocode}
+\declare@shorthand{catalan}{"c}{\textormath{\c c}{^{\prime} c}}
+\declare@shorthand{catalan}{"C}{\textormath{\c C}{^{\prime} C}}
+%    \end{macrocode}
+%    `french' quote characters,
+% \changes{catalan-2.2c}{1995/07/08}{Added shorthands for guillemets}
+%    \begin{macrocode}
+\declare@shorthand{catalan}{"<}{%
+  \textormath{\guillemotleft{}}{\mbox{\guillemotleft}}}
+\declare@shorthand{catalan}{">}{%
+  \textormath{\guillemotright{}}{\mbox{\guillemotright}}}
+%    \end{macrocode}
+%     grave accents,
+%    \begin{macrocode}
+\@ifpackagewith{babel}{activegrave}{%
+  \declare@shorthand{catalan}{`a}{\textormath{\@grave a}{\grave a}}
+  \declare@shorthand{catalan}{`e}{\textormath{\@grave e}{\grave e}}
+  \declare@shorthand{catalan}{`o}{\textormath{\@grave o}{\grave o}}
+  \declare@shorthand{catalan}{`A}{\textormath{\@grave A}{\grave A}}
+  \declare@shorthand{catalan}{`E}{\textormath{\@grave E}{\grave E}}
+  \declare@shorthand{catalan}{`O}{\textormath{\@grave O}{\grave O}}
+  }{}
+%    \end{macrocode}
+%     acute accents,
+% \changes{catalan-2.2b}{1995/07/03}{Changed mathmode definition of
+%    acute shorthands to expand to a single prime followed by the next
+%    character in the input}
+%    \begin{macrocode}
+\@ifpackagewith{babel}{activeacute}{%
+  \declare@shorthand{catalan}{'a}{\textormath{\@acute a}{^{\prime} a}}
+  \declare@shorthand{catalan}{'e}{\textormath{\@acute e}{^{\prime} e}}
+  \declare@shorthand{catalan}{'i}{\textormath{\@acute\i{}}{^{\prime} i}}
+  \declare@shorthand{catalan}{'o}{\textormath{\@acute o}{^{\prime} o}}
+  \declare@shorthand{catalan}{'u}{\textormath{\@acute u}{^{\prime} u}}
+  \declare@shorthand{catalan}{'A}{\textormath{\@acute A}{^{\prime} A}}
+  \declare@shorthand{catalan}{'E}{\textormath{\@acute E}{^{\prime} E}}
+  \declare@shorthand{catalan}{'I}{\textormath{\@acute I}{^{\prime} I}}
+  \declare@shorthand{catalan}{'O}{\textormath{\@acute O}{^{\prime} O}}
+  \declare@shorthand{catalan}{'U}{\textormath{\@acute U}{^{\prime} U}}
+%    \end{macrocode}
+%         the acute accent,
+% \changes{catalan-2.2c}{1995/07/08}{Added '{}' as an axtra shorthand,
+%    removed 'n as a shorthand}
+%    \begin{macrocode}
+  \declare@shorthand{catalan}{''}{%
+    \textormath{\textquotedblright}{\sp\bgroup\prim@s'}}
+  }{}
+%    \end{macrocode}
+%    and finally, some support definitions
+%    \begin{macrocode}
+\declare@shorthand{catalan}{"-}{\allowhyphens-\allowhyphens}
+\declare@shorthand{catalan}{"|}{%
+  \textormath{\penalty\@M\discretionary{-}{}{\kern.03em}%
+              \allowhyphens}{}}
+%    \end{macrocode}
+%
+%  \begin{macro}{\-}
+%
+%    All that is left now is the redefinition of |\-|. The new version
+%    of |\-| should indicate an extra hyphenation position, while
+%    allowing other hyphenation positions to be generated
+%    automatically. The standard behaviour of \TeX\ in this respect is
+%    unfortunate for Catalan but not as much as for Dutch or German,
+%    where long compound words are quite normal and all one needs is a
+%    means to indicate an extra hyphenation position on top of the
+%    ones that \TeX\ can generate from the hyphenation
+%    patterns. However, the average length of words in Catalan makes
+%    this desirable and so it is kept here.
+%
+%    \begin{macrocode}
+\addto\extrascatalan{%
+  \babel@save{\-}%
+  \def\-{\allowhyphens\discretionary{-}{}{}\allowhyphens}}
+%    \end{macrocode}
+%  \end{macro}
+%
+%  \begin{macro}{\lgem}
+%  \begin{macro}{\Lgem}
+% \changes{catalan-2.2b}{1995/06/18}{Added support for typing the
+%    catalan ``ela geminada'' with the macros \cs{lgem} and \cs{Lgem}}
+%
+%     Here we define a macro for typing the catalan ``ela geminada''
+%    (geminated l). The macros |\lgem| and |\Lgem| have been chosen
+%    for its lowercase and uppercase representation,
+%    respectively\footnote{The macro names \cs{ll} and \cs{LL} were
+%    not taken because of the fact that \cs{ll} is already used in
+%    mathematical mode.}.
+%
+%    The code used in the actual macro used is a combination of the
+%    one proposed by Feruglio and Fuster\footnote{G.V.~Valiente and
+%    R.~Fuster, Typesetting Catalan Texts with \TeX, \emph{TUGboat}
+%    \textbf{14}(3), 1993.} and the proposal from Valiente to appear
+%    in the next \TeX\ Users Group Annual Meeting (1995). This last
+%    proposal has not been fully implemented due to its limitation to
+%    CM fonts.
+%    \begin{macrocode}
+\newskip\zzz
+\newdimen\leftllkern \newdimen\rightllkern \newdimen\raiselldim
+\def\lgem{\relax\ifmmode\orig@ll
+  \else
+    \leftllkern=0pt\rightllkern=0pt\raiselldim=0pt%
+    \setbox0\hbox{l}\setbox1\hbox{l\/}\setbox2\hbox{.}%
+    \advance\raiselldim by \the\fontdimen5\the\font
+    \advance\raiselldim by -\ht2%
+    \leftllkern=-.25\wd0%
+    \advance\leftllkern by \wd1%
+    \advance\leftllkern by -\wd0%
+    \rightllkern=-.25\wd0%
+    \advance\rightllkern by -\wd1%
+    \advance\rightllkern by \wd0%
+    \allowhyphens\discretionary{l-}{l}%
+      {\hbox{l}\kern\leftllkern\raise\raiselldim\hbox{.}%
+      \kern\rightllkern\hbox{l}}\allowhyphens
+    }
+\def\Lgem{\leftllkern=0pt\rightllkern=0pt\raiselldim=0pt%
+  \setbox0\hbox{L}\setbox1\hbox{L\/}\setbox2\hbox{.}%
+  \advance\raiselldim by .5\ht0%
+  \advance\raiselldim by -.5\ht2%
+  \leftllkern=-.125\wd0%
+  \advance\leftllkern by \wd1%
+  \advance\leftllkern by -\wd0%
+  \rightllkern=-\wd0%
+  \divide\rightllkern by 6%
+  \advance\rightllkern by -\wd1%
+  \advance\rightllkern by \wd0%
+  \allowhyphens\discretionary{L-}{L}%
+    {\hbox{L}\kern\leftllkern\raise\raiselldim\hbox{.}%
+    \kern\rightllkern\hbox{L}}\allowhyphens}
+%    \end{macrocode}
+%  \end{macro}
+%  \end{macro}
+%
+%  \begin{macro}{\up}
+%
+% \changes{catalan-2.2b}{1995/06/18}{Added definition of macro
+%    \cs{up}, which can be used to type ordinals}
+%    A macro for typesetting things like 1\raise1ex\hbox{\small er} as
+%    proposed by Raymon Seroul\footnote{This macro has been borrowed
+%    from francais.dtx}.
+%    \begin{macrocode}
+\def\up#1{\raise 1ex\hbox{\small#1}}
+%    \end{macrocode}
+%  \end{macro}
+%
+%    It is possible that a site might need to add some extra code to
+%    the babel macros. To enable this we load a local configuration
+%    file, \file{catalan.cfg} if it is found on \TeX' search path.
+% \changes{catalan-2.2b}{1995/07/02}{Added loading of configuration
+%    file}
+%    \begin{macrocode}
+\loadlocalcfg{catalan}
+%    \end{macrocode}
+%
+%    Our last action is to make a note that the commands we have just
+%    defined, will be executed by calling the macro |\selectlanguage|
+%    at the beginning of the document.
+%    \begin{macrocode}
+\main@language{catalan}
+%    \end{macrocode}
+%
+%    Finally, the category code of \texttt{@} is reset to its original
+%    value. The macrospace used by |\atcatcode| is freed.
+%
+%    \begin{macrocode}
+\catcode`\@=\atcatcode \let\atcatcode\relax
+%</code>
+%    \end{macrocode}
+%
+% \Finale
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\endinput

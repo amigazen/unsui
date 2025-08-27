@@ -1,0 +1,20 @@
+
+default: extra.o
+
+triptrap: all
+all: main.o extra.o
+
+main.o: main.c extra.h /site.h
+
+extra.o: extra.c /site.h extra.h
+
+
+# We don't make `texmf.o', since the TeX and Metafont need to use
+# different names, hence they need different .o files.
+
+
+clean:
+	delete \#?.o
+
+veryclean: clean
+

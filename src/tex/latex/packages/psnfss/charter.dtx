@@ -1,0 +1,123 @@
+\def\fileversion{2}
+\def\filedate{1994/04/07}
+\def\docdate {1994/04/07}
+%
+% \iffalse
+%% File: charter.dtx Copyright (C) 1994 Peter Dyballa
+%
+%<*driver>
+\documentclass{ltxdoc}
+\begin{document}
+ \title{The \textsf{charter} package\thanks{This file
+        has version number \fileversion, last
+        revised \filedate.}}
+ \author{Peter Dyballa}
+ \date{\filedate}
+ \maketitle
+ \DocInput{charter.dtx}
+\end{document}
+%</driver>
+% \fi
+% \CheckSum{66}
+%
+% \section{Introduction}
+%
+% This file contains the external font information needed to load
+% the Charter font, and a suitable package file to utilize it.
+%
+% From this file all {\tt.fd} files (font definition files) for the
+% PostScript fonts with {\em old} encoding (|OT1|) are created, as well as
+% those with the new encoding (|T1|).
+%
+% \section{Customization}
+% The usual customization will be to add support for additional combinations
+% in this file, such as a derived bold slanted font.
+%
+% \StopEventually{}
+%
+% \section{The {\tt docstrip} modules}
+%
+%    As always we begin by identifying the latest version of the files
+%    in the {\sf log} file. The explicit spaces are necessary in an
+%    |.fd| file and the |\string| guards against situations where |`|
+%    is active.
+%    \begin{macrocode}
+%<*package>
+\ProvidesPackage{charter}[\filedate\space\fileversion\space
+ PSNFSS2e LaTeX2e package]
+\renewcommand{\rmdefault}{bch}
+\def\bfdefault{b}
+%</package>
+% \subsection{EC-encoded Bitstream Charter}
+%
+%<*T1>
+\typeout{File\space T1bch.fd\space loading \space Bitstream\space Charter}%
+\DeclareFontFamily{T1}{bch}{}%
+\DeclareFontShape{T1}{bch}{m}{n}{<->bchr8t}{}%
+\DeclareFontShape{T1}{bch}{m}{sc}{<->bchrc8t}{}%
+\DeclareFontShape{T1}{bch}{m}{it}{<->bchri8t}{}%
+\DeclareFontShape{T1}{bch}{m}{sl}{<->bchro8t}{}%
+\DeclareFontShape{T1}{bch}{m}{u}{<->bchru8t}{}%
+\DeclareFontShape{T1}{bch}{b}{n}{<->bchb8t}{}%
+\DeclareFontShape{T1}{bch}{b}{it}{<->bchbi8t}{}%
+\DeclareFontShape{T1}{bch}{b}{sc}{<->bchbc8t}{}%
+\DeclareFontShape{T1}{bch}{b}{sl}{<->bchbo8t}{}%
+\DeclareFontShape{T1}{bch}{b}{u}{<->bchbu8t}{}%
+\DeclareFontShape{T1}{bch}{bx}{n}{<->bchbre8t}{}%
+\DeclareFontShape{T1}{bch}{bx}{it}{<->bchbie8t}{}%
+\DeclareFontShape{T1}{bch}{bx}{sc}{<->bchbce8t}{}%
+\DeclareFontShape{T1}{bch}{bx}{sl}{<->bchboe8t}{}%
+\DeclareFontShape{T1}{bch}{bx}{u}{<->bchbue8t}{}%
+\DeclareFontShape{T1}{bch}{mn}{n}{<->bchrrn8t}{}%
+\DeclareFontShape{T1}{bch}{mn}{sc}{<->bchrcn8t}{}%
+\DeclareFontShape{T1}{bch}{mn}{it}{<->bchrin8t}{}%
+\DeclareFontShape{T1}{bch}{bn}{n}{<->bchbrn8t}{}%
+\DeclareFontShape{T1}{bch}{bn}{it}{<->bchbin8t}{}%
+\DeclareFontShape{T1}{bch}{bn}{sc}{<->bchbcn8t}{}%
+%</T1>
+% \subsection{Old \TeX-encoded Bitstream Charter}
+%
+%<*OT1>
+\typeout{File\space OT1bch.fd\space loading \space Bitstream\space Charter}%
+\DeclareFontFamily{OT1}{bch}{}%
+\DeclareFontShape{OT1}{bch}{m}{n}{<->bchr7t}{}%
+\DeclareFontShape{OT1}{bch}{m}{sc}{<->bchrc7t}{}%
+\DeclareFontShape{OT1}{bch}{m}{it}{<->bchri7t}{}%
+\DeclareFontShape{OT1}{bch}{m}{sl}{<->bchro7t}{}%
+\DeclareFontShape{OT1}{bch}{m}{u}{<->bchru7t}{}%
+\DeclareFontShape{OT1}{bch}{b}{n}{<->bchb7t}{}%
+\DeclareFontShape{OT1}{bch}{b}{it}{<->bchbi7t}{}%
+\DeclareFontShape{OT1}{bch}{b}{sc}{<->bchbc7t}{}%
+\DeclareFontShape{OT1}{bch}{b}{sl}{<->bchbo7t}{}%
+\DeclareFontShape{OT1}{bch}{b}{u}{<->bchbu7t}{}%
+\DeclareFontShape{OT1}{bch}{bx}{n}{<->bchbre7t}{}%
+\DeclareFontShape{OT1}{bch}{bx}{it}{<->bchbie7t}{}%
+\DeclareFontShape{OT1}{bch}{bx}{sc}{<->bchbce7t}{}%
+\DeclareFontShape{OT1}{bch}{bx}{sl}{<->bchboe7t}{}%
+\DeclareFontShape{OT1}{bch}{bx}{u}{<->bchbue7t}{}%
+\DeclareFontShape{OT1}{bch}{mn}{n}{<->bchrrn7t}{}%
+\DeclareFontShape{OT1}{bch}{mn}{sc}{<->bchrcn7t}{}%
+\DeclareFontShape{OT1}{bch}{mn}{it}{<->bchrin7t}{}%
+\DeclareFontShape{OT1}{bch}{bn}{n}{<->bchbrn7t}{}%
+\DeclareFontShape{OT1}{bch}{bn}{it}{<->bchbin7t}{}%
+\DeclareFontShape{OT1}{bch}{bn}{sc}{<->bchbcn7t}{}%
+%</OT1>
+%    \end{macrocode}
+% \Finale
+\endinput
+%
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}

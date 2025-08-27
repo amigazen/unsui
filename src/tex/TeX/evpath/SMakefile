@@ -1,0 +1,40 @@
+#
+#	EVPaths: Environment Variables Path Routines
+#
+#	© 1994 by Giuseppe Ghibò
+#
+#
+# last revision: 16-Nov-1994
+#
+# Examples:
+#
+#	SMAKE -a all CPU=68040
+
+CPU = ANY
+CFLAGS = OPT NOSTKCHK NOICON
+
+all: EVPaths.lib TeXWhereIs TeXWhereIs2 TeXSaveString
+
+SNPrintf.o:	SNPrintf.a
+	SC SNPrintf.a
+
+EVPaths.o:	EVPaths.c
+	SC CPU=$(CPU) $(CFLAGS) EVPaths.c
+
+EVPaths.lib:	EVPaths.o SNPrintf.o
+	OML EVPaths.lib R EVPaths.o SNPrintf.o
+
+TeXWhereIs:	TeXWhereIs.c EVPaths.lib
+	SC CPU=$(CPU) $(CFLAGS) LINK LIB EVPaths.lib TeXWhereIs
+
+TeXWhereIs2:	TeXWhereIs2.o EVPaths.lib
+	SLINK FROM TeXWhereIs2.o TO TeXWhereIs2 LIB EVPaths.lib LIB:sc.lib
+
+TeXWhereIs2.o:	TeXWhereIs2.c
+	SC CPU=$(CPU) $(CFLAGS) TeXWhereIs2.c
+
+TeXSaveString:	TeXSaveString.o EVPaths.lib
+	SLINK FROM TeXSaveString.o TO TeXSaveString LIB EVPaths.lib LIB:sc.lib
+
+TeXSaveString.o:	TeXSaveString.c
+	SC CPU=$(CPU) $(CFLAGS) TeXSaveString.c

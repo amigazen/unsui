@@ -1,0 +1,411 @@
+% \iffalse meta-comment
+%
+% Copyright 1989-1995 Johannes L. Braams and any individual authors
+% listed elsewhere in this file.  All rights reserved.
+% 
+% For further copyright information any other copyright notices in this
+% file.
+% 
+% This file is part of the Babel system release 3.5.
+% --------------------------------------------------
+%   This system is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+% 
+%   For error reports concerning UNCHANGED versions of this file no more
+%   than one year old, see bugs.txt.
+% 
+%   Please do not request updates from me directly.  Primary
+%   distribution is through the CTAN archives.
+% 
+% 
+% IMPORTANT COPYRIGHT NOTICE:
+% 
+% You are NOT ALLOWED to distribute this file alone.
+% 
+% You are allowed to distribute this file under the condition that it is
+% distributed together with all the files listed in manifest.txt.
+% 
+% If you receive only some of these files from someone, complain!
+% 
+% Permission is granted to copy this file to another file with a clearly
+% different name and to customize the declarations in that copy to serve
+% the needs of your installation, provided that you comply with
+% the conditions in the file legal.txt from the LaTeX2e distribution.
+% 
+% However, NO PERMISSION is granted to produce or to distribute a
+% modified version of this file under its original name.
+%  
+% You are NOT ALLOWED to change this file.
+% 
+% 
+% \fi
+% \CheckSum{330}
+% \iffalse
+%    Tell the \LaTeX\ system who we are and write an entry on the
+%    transcript.
+%<*dtx>
+\ProvidesFile{usorbian.dtx}
+%</dtx>
+%<code>\ProvidesFile{usorbian.ldf}
+        [1995/07/04 v1.0b Upper Sorbian support from the babel system]
+%
+% Babel package for LaTeX version 2e
+% Copyright (C) 1989 - 1995
+%           by Johannes Braams, TeXniek
+%
+% Upper Sorbian Language Definition File
+% Copyright (C) 1994 - 1995
+%           by Eduard Werner
+%           Werner, Eduard",
+%           Serbski institut z. t.,
+%           Dw\'orni\v{s}\'cowa 6
+%           02625 Budy\v{s}in/Bautzen
+%           Germany",
+%           (??)3591 497223",
+%           edi@kaihh.hanse.de",
+%
+% Please report errors to: Eduard Werner <edi@kaihh.hanse.de>
+%
+%    This file is part of the babel system, it provides the source
+%    code for the Upper Sorbian definition file.
+%<*filedriver>
+\documentclass{ltxdoc}
+\newcommand*\TeXhax{\TeX hax}
+\newcommand*\babel{\textsf{babel}}
+\newcommand*\langvar{$\langle \it lang \rangle$}
+\newcommand*\note[1]{}
+\newcommand*\Lopt[1]{\textsf{#1}}
+\newcommand*\file[1]{\texttt{#1}}
+\newfont{\logo}{logo10}
+\newcommand*\MF{{\logo METAFONT}}
+\begin{document}
+ \DocInput{usorbian.dtx}
+\end{document}
+%</filedriver>
+%\fi
+% \GetFileInfo{usorbian.dtx}
+%
+% \changes{usorbian-0.1}{1994/10/10}{First version}
+% \changes{usorbian-0.1b}{1994/10/18}{Made it possible to run through
+%    \LaTeX; added \cs{MF} and removed extra \cs{end{macro}}}
+%
+%  \section{The Upper Sorbian language}
+%
+%    The file \file{\filename}\footnote{The file described in this
+%    section has version number \fileversion\ and was last revised on
+%    \filedate.  It was written by Eduard Werner
+%    (\texttt{edi@kaihh.hanse.de}).}  It defines all the
+%    language-specific macros for Upper Sorbian.
+%
+% \StopEventually{}
+%
+%    As this file needs to be read only once, we check whether it was
+%    read before. If it was, the command |\captionusorbian| is already
+%    defined, so we can stop processing. If this command is undefined
+%    we proceed with the various definitions and first show the
+%    current version of this file.
+%
+%    \begin{macrocode}
+\ifx\undefined\captionsusorbian
+\else
+  \selectlanguage{usorbian}
+  \expandafter\endinput
+\fi
+%    \end{macrocode}
+%
+%  \begin{macro}{\atcatcode}
+%    This file, \file{usorbian.sty}, may have been read while \TeX\ is
+%    in the middle of processing a document, so we have to make sure
+%    the category code of \texttt{@} is `letter' while this file is
+%    being read.  We save the category code of the @-sign in
+%    |\atcatcode| and make it `letter'. Later the category code can be
+%    restored to whatever it was before.
+%
+%    \begin{macrocode}
+\chardef\atcatcode=\catcode`\@
+\catcode`\@=11\relax
+%    \end{macrocode}
+% \end{macro}
+%
+%    Now we determine whether the the common macros from the file
+%    \file{babel.def} need to be read. We can be in one of two
+%    situations: either another language option has been read earlier
+%    on, in which case that other option has already read
+%    \file{babel.def}, or \texttt{usorbian} is the first language
+%    option to be processed. In that case we need to read
+%    \file{babel.def} right here before we continue.
+%
+%    \begin{macrocode}
+\ifx\undefined\babel@core@loaded\input babel.def\relax\fi
+%    \end{macrocode}
+%
+%    Another check that has to be made, is if another language
+%    definition file has been read already. In that case its definitions
+%    have been activated. This might interfere with definitions this
+%    file tries to make. Therefore we make sure that we cancel any
+%    special definitions. This can be done by checking the existence
+%    of the macro |\originalTeX|. If it exists we simply execute it,
+%    otherwise it is |\let| to |\empty|.
+%
+%    \begin{macrocode}
+\ifx\undefined\originalTeX \let\originalTeX\empty \else\originalTeX\fi
+%    \end{macrocode}
+%
+%    When this file is read as an option, i.e. by the |\usepackage|
+%    command, \texttt{usorbian} will be an `unknown' languagein which
+%    case we have to make it known. So we check for the existence of
+%    |\l@usorbian| to see whether we have to do something here.
+%
+%    \begin{macrocode}
+\ifx\undefined\l@usorbian
+    \@nopatterns{Usorbian}
+    \adddialect\l@usorbian0\fi
+%    \end{macrocode}
+%
+%    The next step consists of defining commands to switch to (and
+%    from) the Upper Sorbian language.
+%
+% \begin{macro}{\captionsusorbian}
+%    The macro |\captionsusorbian| defines all strings used in the four
+%    standard documentclasses provided with \LaTeX.
+% \changes{usorbian-0.1c}{1994/11/27}{Removed two typos (Kapitel and
+%    Dodatki)}
+% \changes{usorbian-1.0b}{1995/07/04}{Added \cs{proofname} for
+%    AMS-\LaTeX}
+%    \begin{macrocode}
+\addto\captionsusorbian{%
+  \def\prefacename{Zawod}%
+  \def\refname{Referency}%
+  \def\abstractname{Abstrakt}%
+  \def\bibname{Literatura}%
+  \def\chaptername{Kapitl}%
+  \def\appendixname{Dodawki}%
+  \def\contentsname{Wobsah}%
+  \def\listfigurename{Zapis wobrazow}%
+  \def\listtablename{Zapis tabulkow}%
+  \def\indexname{Indeks}%
+  \def\figurename{Wobraz}%
+  \def\tablename{Tabulka}%
+  \def\partname{D\'z\v el}%
+  \def\enclname{P\v r\l oha}%
+  \def\ccname{CC}%
+  \def\headtoname{Komu}%
+  \def\pagename{Strona}%
+  \def\seename{hl.}%
+  \def\alsoname{hl.~te\v z}
+  \def\proofname{Proof}%  <-- needs translation
+  }%
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\newdateusorbian}
+%    The macro |\newdateusorbian| redefines the command |\today| to
+%    produce Upper Sorbian dates.
+%    \begin{macrocode}
+\def\newdateusorbian{%
+\def\today{\number\day.~\ifcase\month\or
+januara\or februara\or m\v erca\or apryla\or meje\or junija\or
+  julija\or awgusta\or septembra\or oktobra\or
+  nowembra\or decembra\fi
+    \space \number\year}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\olddateusorbian}
+%    The macro |\olddateusorbian| redefines the command |\today| to
+%    produce old-style Upper Sorbian dates.
+%    \begin{macrocode}
+\def\olddateusorbian{%
+\def\today{\number\day.~\ifcase\month\or
+  wulkeho r\'o\v zka\or ma\l eho r\'o\v zka\or nal\v etnika\or
+  jutrownika\or r\'o\v zownika\or  sma\v znika\or pra\v znika\or
+  \v znjenca\or po\v znjenca\or winowca\or nazymnika\or
+  hodownika\fi \space \number\year}}
+%    \end{macrocode}
+% \end{macro}
+%
+%    The default will be the new-style dates.
+%    \begin{macrocode}
+\let\dateusorbian\newdateusorbian
+%    \end{macrocode}
+%
+% \begin{macro}{\extrasusorbian}
+%    The macro |\extrasusorbian| will perform all the extra
+%    definitions needed for the Upper Sorbian language. It's pirated
+%    from |germanb.sty|.  The macro |\noextrasusorbian| is used to
+%    cancel the actions of |\extrasusorbian|.
+%
+%    Because for Upper Sorbian (as well as for Dutch) the \texttt{"}
+%    character is made active. This is done once, later on its
+%    definition may vary.
+%    \begin{macrocode}
+\initiate@active@char{"}
+\addto\extrasusorbian{\languageshorthands{usorbian}}
+\addto\extrasusorbian{\bbl@activate{"}}
+%\addto\noextrasusorbian{\bbl@deactivate{"}}
+%    \end{macrocode}
+%
+%    In order for \TeX\ to be able to hyphenate German Upper Sorbian
+%    words which contain `\ss' we have to give the character a nonzero
+%    |\lccode| (see Appendix H, the \TeX book).
+%    \begin{macrocode}
+\addto\extrasusorbian{\babel@savevariable{\lccode`\^^Y}%
+  \lccode`\^^Y`\^^Y}
+%    \end{macrocode}
+%    The umlaut accent macro |\"| is changed to lower the umlaut dots.
+%    The redefinition is done with the help of |\umlautlow|.
+%    \begin{macrocode}
+\addto\extrasusorbian{\babel@save\"\umlautlow}
+\addto\noextrasusorbian{\umlauthigh}
+%    \end{macrocode}
+%    The Upper Sorbian hyphenation patterns can be used with
+%    |\lefthyphenmin| and |\righthyphenmin| set to~2.
+%    \begin{macrocode}
+\def\usorbianhyphenmins{\tw@\tw@}
+%    \end{macrocode}
+% \end{macro}
+%
+% \changes{usorbian-1.0a}{1995/05/27}{Removed stuff that has been
+%    moved to \file{babel.def}}
+%
+%  \begin{macro}{\dq}
+%    We save the original double quote character in |\dq| to keep it
+%    available, the math accent |\"| can now be typed as |"|.  Also we
+%    store the original meaning of the command |\"| for future use.
+%    \begin{macrocode}
+\begingroup \catcode`\"12
+\def\x{\endgroup
+  \def\@SS{\mathchar"7019 }
+  \def\dq{"}}
+\x
+%    \end{macrocode}
+% \end{macro}
+%
+%    Now we can define the doublequote macros: the umlauts,
+%    \begin{macrocode}
+\declare@shorthand{usorbian}{"a}{\textormath{\"{a}}{\ddot a}}
+\declare@shorthand{usorbian}{"o}{\textormath{\"{o}}{\ddot o}}
+\declare@shorthand{usorbian}{"u}{\textormath{\"{u}}{\ddot u}}
+\declare@shorthand{usorbian}{"A}{\textormath{\"{A}}{\ddot A}}
+\declare@shorthand{usorbian}{"O}{\textormath{\"{O}}{\ddot O}}
+\declare@shorthand{usorbian}{"U}{\textormath{\"{U}}{\ddot U}}
+%    \end{macrocode}
+%    tremas,
+%    \begin{macrocode}
+\declare@shorthand{usorbian}{"e}{\textormath{\"{e}}{\ddot e}}
+\declare@shorthand{usorbian}{"E}{\textormath{\"{E}}{\ddot E}}
+\declare@shorthand{usorbian}{"i}{\textormath{\"{\i}}{\ddot\imath}}
+\declare@shorthand{usorbian}{"I}{\textormath{\"{I}}{\ddot I}}
+%    \end{macrocode}
+%    usorbian es-zet (sharp s),
+%    \begin{macrocode}
+\declare@shorthand{usorbian}{"s}{\textormath{\ss{}}{\@SS{}}}
+\declare@shorthand{usorbian}{"S}{SS}
+%    \end{macrocode}
+%    german and french quotes,
+%    \begin{macrocode}
+\declare@shorthandusorbian{}{"`}{%
+  \textormath{\quotedblbase{}}{\mbox{\quotedblbase}}}
+\declare@shorthand{usorbian}{"'}{%
+  \textormath{\textquotedblleft{}}{\mbox{\textquotedblleft}}}
+\declare@shorthand{usorbian}{"<}{%
+  \textormath{\guillemotleft{}}{\mbox{\guillemotleft}}}
+\declare@shorthand{usorbian}{">}{%
+  \textormath{\guillemotright{}}{\mbox{\guillemotright}}}
+%    \end{macrocode}
+%    discretionary commands
+%    \begin{macrocode}
+\declare@shorthand{usorbian}{"c}{%
+  \textormath{\usorbian@dq@disc ck}{c}}
+\declare@shorthand{usorbian}{"C}{%
+  \textormath{\usorbian@dq@disc CK}{C}}
+\declare@shorthand{usorbian}{"f}{%
+  \textormath{\usorbian@dq@disc f{ff}}{f}}
+\declare@shorthand{usorbian}{"F}{%
+  \textormath{\usorbian@dq@disc F{FF}}{F}}
+\declare@shorthand{usorbian}{"l}{%
+  \textormath{\usorbian@dq@disc l{ll}}{l}}
+\declare@shorthand{usorbian}{"L}{%
+  \textormath{\usorbian@dq@disc L{LL}}{L}}
+\declare@shorthand{usorbian}{"m}{%
+  \textormath{\usorbian@dq@disc m{mm}}{m}}
+\declare@shorthand{usorbian}{"M}{%
+  \textormath{\usorbian@dq@disc M{MM}}{M}}
+\declare@shorthand{usorbian}{"n}{%
+  \textormath{\usorbian@dq@disc n{nn}}{n}}
+\declare@shorthand{usorbian}{"N}{%
+  \textormath{\usorbian@dq@disc N{NN}}{N}}
+\declare@shorthand{usorbian}{"p}{%
+  \textormath{\usorbian@dq@disc p{pp}}{p}}
+\declare@shorthand{usorbian}{"P}{%
+  \textormath{\usorbian@dq@disc P{PP}}{P}}
+\declare@shorthand{usorbian}{"t}{%
+  \textormath{\usorbian@dq@disc t{tt}}{t}}
+\declare@shorthand{usorbian}{"T}{%
+  \textormath{\usorbian@dq@disc T{TT}}{T}}
+%    \end{macrocode}
+%    and some additional commands:
+%    \begin{macrocode}
+\declare@shorthand{usorbian}{"-}{\penalty\@M\-\allowhyphens}
+\declare@shorthand{usorbian}{"|}{%
+  \textormath{\penalty\@M\discretionary{-}{}{\kern.03em}%
+              \allowhyphens}{}}
+\declare@shorthand{usorbian}{""}{\hskip\z@skip}
+%    \end{macrocode}
+%
+%  \begin{macro}{\mdqon}
+%  \begin{macro}{\mdqoff}
+%  \begin{macro}{\ck}
+%    All that's left to do now is to  define a couple of commands
+%    for reasons of compatibility with \file{german.sty}.
+%    \begin{macrocode}
+\def\mdqon{\bbl@activate{"}}
+\def\mdqoff{\bbl@deactivate{"}}
+\def\ck{\allowhyphens\discretionary{k-}{k}{ck}\allowhyphens}
+%    \end{macrocode}
+%  \end{macro}
+%  \end{macro}
+%  \end{macro}
+%
+%    It is possible that a site might need to add some extra code to
+%    the babel macros. To enable this we load a local configuration
+%    file, \file{usorbian.cfg} if it is found on \TeX' search path.
+% \changes{usorbian-1.0b}{1995/07/02}{Added loading of configuration
+%    file}
+%    \begin{macrocode}
+\loadlocalcfg{usorbian}
+%    \end{macrocode}
+%
+%    Our last action is to make a note that the commands we have just
+%    defined, will be executed by calling the macro |\selectlanguage|
+%    at the beginning of the document.
+%    \begin{macrocode}
+\main@language{usorbian}
+%    \end{macrocode}
+%    Finally, the category code of \texttt{@} is reset to its original
+%    value.
+%
+%    \begin{macrocode}
+\catcode`\@=\atcatcode
+%    \end{macrocode}
+%
+% \Finale
+%%
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\endinput

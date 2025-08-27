@@ -1,0 +1,123 @@
+\def\fileversion{2}
+\def\filedate{1994/04/07}
+\def\docdate {1994/04/07}
+%
+% \iffalse
+%% File: utopia.dtx Copyright (C) 1994 Peter Dyballa
+%
+%<*driver>
+\documentclass{ltxdoc}
+\begin{document}
+ \title{The \textsf{utopia} package\thanks{This file
+        has version number \fileversion, last
+        revised \filedate.}}
+ \author{Peter Dyballa}
+ \date{\filedate}
+ \maketitle
+ \DocInput{utopia.dtx}
+\end{document}
+%</driver>
+% \fi
+% \CheckSum{66}
+%
+% \section{Introduction}
+%
+% This file contains the external font information needed to load
+% the Utopia font, and a suitable package file to utilize it.
+%
+% From this file all {\tt.fd} files (font definition files) for the
+% PostScript fonts with {\em old} encoding (|OT1|) are created, as well as
+% those with the new encoding (|T1|).
+%
+% \section{Customization}
+% The usual customization will be to add support for additional combinations
+% in this file, such as a derived bold slanted font.
+%
+% \StopEventually{}
+%
+% \section{The {\tt docstrip} modules}
+%
+%    As always we begin by identifying the latest version of the files
+%    in the {\sf log} file. The explicit spaces are necessary in an
+%    |.fd| file and the |\string| guards against situations where |`|
+%    is active.
+%    \begin{macrocode}
+%<*package>
+\ProvidesPackage{utopia}[\filedate\space\fileversion\space
+ PSNFSS2e LaTeX2e package]
+\renewcommand{\rmdefault}{put}
+\def\bfdefault{b}
+%</package>
+% \subsection{EC-encoded Adobe Utopia-Regular}
+%
+%<*T1>
+\typeout{File\space T1put.fd\space loading \space Adobe\space Utopia-Regular}%
+\DeclareFontFamily{T1}{put}{}%
+\DeclareFontShape{T1}{put}{m}{n}{<->putr8t}{}%
+\DeclareFontShape{T1}{put}{m}{sc}{<->putrc8t}{}%
+\DeclareFontShape{T1}{put}{m}{it}{<->putri8t}{}%
+\DeclareFontShape{T1}{put}{m}{sl}{<->putro8t}{}%
+\DeclareFontShape{T1}{put}{m}{u}{<->putru8t}{}%
+\DeclareFontShape{T1}{put}{b}{n}{<->putb8t}{}%
+\DeclareFontShape{T1}{put}{b}{it}{<->putbi8t}{}%
+\DeclareFontShape{T1}{put}{b}{sc}{<->putbc8t}{}%
+\DeclareFontShape{T1}{put}{b}{sl}{<->putbo8t}{}%
+\DeclareFontShape{T1}{put}{b}{u}{<->putbu8t}{}%
+\DeclareFontShape{T1}{put}{bx}{n}{<->putbre8t}{}%
+\DeclareFontShape{T1}{put}{bx}{it}{<->putbie8t}{}%
+\DeclareFontShape{T1}{put}{bx}{sc}{<->putbce8t}{}%
+\DeclareFontShape{T1}{put}{bx}{sl}{<->putboe8t}{}%
+\DeclareFontShape{T1}{put}{bx}{u}{<->putbue8t}{}%
+\DeclareFontShape{T1}{put}{mn}{n}{<->putrrn8t}{}%
+\DeclareFontShape{T1}{put}{mn}{sc}{<->putrcn8t}{}%
+\DeclareFontShape{T1}{put}{mn}{it}{<->putrin8t}{}%
+\DeclareFontShape{T1}{put}{bn}{n}{<->putbrn8t}{}%
+\DeclareFontShape{T1}{put}{bn}{it}{<->putbin8t}{}%
+\DeclareFontShape{T1}{put}{bn}{sc}{<->putbcn8t}{}%
+%</T1>
+% \subsection{Old \TeX-encoded Adobe Utopia-Regular}
+%
+%<*OT1>
+\typeout{File\space OT1put.fd\space loading \space Adobe\space Utopia-Regular}%
+\DeclareFontFamily{OT1}{put}{}%
+\DeclareFontShape{OT1}{put}{m}{n}{<->putr7t}{}%
+\DeclareFontShape{OT1}{put}{m}{sc}{<->putrc7t}{}%
+\DeclareFontShape{OT1}{put}{m}{it}{<->putri7t}{}%
+\DeclareFontShape{OT1}{put}{m}{sl}{<->putro7t}{}%
+\DeclareFontShape{OT1}{put}{m}{u}{<->putru7t}{}%
+\DeclareFontShape{OT1}{put}{b}{n}{<->putb7t}{}%
+\DeclareFontShape{OT1}{put}{b}{it}{<->putbi7t}{}%
+\DeclareFontShape{OT1}{put}{b}{sc}{<->putbc7t}{}%
+\DeclareFontShape{OT1}{put}{b}{sl}{<->putbo7t}{}%
+\DeclareFontShape{OT1}{put}{b}{u}{<->putbu7t}{}%
+\DeclareFontShape{OT1}{put}{bx}{n}{<->putbre7t}{}%
+\DeclareFontShape{OT1}{put}{bx}{it}{<->putbie7t}{}%
+\DeclareFontShape{OT1}{put}{bx}{sc}{<->putbce7t}{}%
+\DeclareFontShape{OT1}{put}{bx}{sl}{<->putboe7t}{}%
+\DeclareFontShape{OT1}{put}{bx}{u}{<->putbue7t}{}%
+\DeclareFontShape{OT1}{put}{mn}{n}{<->putrrn7t}{}%
+\DeclareFontShape{OT1}{put}{mn}{sc}{<->putrcn7t}{}%
+\DeclareFontShape{OT1}{put}{mn}{it}{<->putrin7t}{}%
+\DeclareFontShape{OT1}{put}{bn}{n}{<->putbrn7t}{}%
+\DeclareFontShape{OT1}{put}{bn}{it}{<->putbin7t}{}%
+\DeclareFontShape{OT1}{put}{bn}{sc}{<->putbcn7t}{}%
+%</OT1>
+%    \end{macrocode}
+% \Finale
+%
+\endinput
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}

@@ -1,0 +1,4912 @@
+%%% ====================================================================
+%%% @LaTeX-file{
+%%%   filename  = "amsmath.dtx",
+%%%   version   = "1.2b",
+%%%   date      = "1995/02/23",
+%%%   time      = "10:06:07 EST",
+%%%   author    = "American Mathematical Society",
+%%%   copyright = "Copyright (C) 1995 American Mathematical Society,
+%%%                all rights reserved.  Copying of this file is
+%%%                authorized only if either:
+%%%                (1) you make absolutely no changes to your copy,
+%%%                including name; OR
+%%%                (2) if you do make changes, you first rename it
+%%%                to some other name.",
+%%%   address   = "American Mathematical Society,
+%%%                Technical Support,
+%%%                Electronic Products and Services,
+%%%                P. O. Box 6248,
+%%%                Providence, RI 02940,
+%%%                USA",
+%%%   telephone = "401-455-4080 or (in the USA and Canada)
+%%%                800-321-4AMS (321-4267)",
+%%%   FAX       = "401-331-3842",
+%%%   checksum  = "36352 4912 17764 171015",
+%%%   email     = "tech-support@math.ams.org (Internet)",
+%%%   codetable = "ISO/ASCII",
+%%%   keywords  = "latex, amslatex, ams-latex, math, amsmath",
+%%%   supported = "yes",
+%%%   abstract  = "This is part of the AMS-\LaTeX{} distribution. It
+%%%                provides a variety of extra mathematical features,
+%%%                largely derived from AMS-\TeX{}.",
+%%%   docstring = "The checksum field above contains a CRC-16 checksum
+%%%                as the first value, followed by the equivalent of
+%%%                the standard UNIX wc (word count) utility output of
+%%%                lines, words, and characters.  This is produced by
+%%%                Robert Solovay's checksum utility.",
+%%% }
+%%% ====================================================================
+%
+%\iffalse
+%<*driver>
+\documentclass{amsdtx}
+\begin{document}
+\title{The \pkg{amsmath} package}
+\author{Frank Mittelbach\and Rainer Sch\"opf\and Michael Downes\and
+  David M. Jones}
+\date{Version \fileversion, \filedate}
+\hDocInput{amsmath.dtx}
+\end{document}
+%</driver>
+%\fi
+%
+% \maketitle
+%
+% \MakeShortVerb\|
+%
+% \section{Introduction}
+%
+%    The \pkg{amsmath} package is an adaptation of \fn{amstex.tex} for
+%    use as a \latex/ package. For technical and historical notes on the
+%    conversion see \fn{amst-hst.tex}. The work was done in 1988--1989
+%    by Frank Mittelbach and Rainer Sch\"opf. Some later maintenance
+%    work has been done by Michael Downes. In 1994 David M. Jones added
+%    the support for the \opt{fleqn} option and did extensive
+%    improvements to the \env{align[at]} family of environments and to
+%    the equation number handling in general. Versions 1.0 and 1.1 of
+%    the package carried the name \pkg{amstex} instead of \pkg{amsmath},
+%    to indicate its origins; the name was changed in 1994 to make it
+%    user-oriented rather than history-oriented.
+%
+%    At the present time (January 1995) user-level documentation of the
+%    commands provided here is found in the \amslatex/ users' guide,
+%    \fn{amsldoc.tex}.
+%
+% \StopEventually{}
+%
+%    Standard file identification.
+%    \begin{macrocode}
+\ProvidesPackage{amsmath}[1995/02/23 v1.2b AMS math features]
+%    \end{macrocode}
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Declare some options}
+%
+%    Handling of limits on integrals, sums, operatornames.
+%    \begin{macrocode}
+\DeclareOption{intlimits}{\let\ilimits@\displaylimits}
+\DeclareOption{nointlimits}{\let\ilimits@\nolimits}
+\DeclareOption{sumlimits}{\let\slimits@\displaylimits}
+\DeclareOption{nosumlimits}{\let\slimits@\nolimits}
+\DeclareOption{namelimits}{\PassOptionsToPackage{namelimits}{amsopn}}
+\DeclareOption{nonamelimits}{%
+  \PassOptionsToPackage{nonamelimits}{amsopn}}
+%    \end{macrocode}
+%
+%    The following two switches might have been defined already by the
+%    documentclass, but it doesn't hurt to re-execute the \cs{newif}'s.
+%    \begin{macrocode}
+\newif\ifctagsplit@
+\newif\iftagsleft@
+%    \end{macrocode}
+%    Right or left placement of equation numbers.
+%    \begin{macrocode}
+\DeclareOption{leqno}{\tagsleft@true}
+\DeclareOption{reqno}{\tagsleft@false}
+\DeclareOption{centertags}{\ctagsplit@true}
+\DeclareOption{tbtags}{\ctagsplit@false}
+%    \end{macrocode}
+%
+%    The \opt{cmex10} option is an escape hatch for people who don't
+%    happen to have sizes 7--9 of the \fn{cmex} fonts available to them
+%    yet. (Strictly speaking they are considered part of a minimum
+%    \latex/ distribution now, i.e., all \LaTeXe{} users should have
+%    them, without needing to get the AMSFonts distrib.)
+%    \begin{macrocode}
+\DeclareOption{cmex10}{%
+  \ifnum\cmex@opt=\@ne \def\cmex@opt{0}%
+  \else \def\cmex@opt{10}\fi
+}
+%    \end{macrocode}
+%    To help things work out better with various package loading orders
+%    of \pkg{amsmath} and \pkg{amsfonts}, we establish a variable to
+%    communicate the status of the cmex font definition. If the
+%    \pkg{amsfonts} package was loaded first this variable might be
+%    already defined, in which case we want to preserve its value.
+%    \begin{macrocode}
+\@ifundefined{cmex@opt}{\def\cmex@opt{7}}{}
+%    \end{macrocode}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%    DMJ: Flushleft equations.
+%
+%    DMJ: The left margin of math enviroments is controlled by
+%    \cs{@mathmargin}.  This can be set to \cs{@centering} to
+%    implement the default behaviour, i.e., centered equations, and to
+%    something else to implement the flushleft style.
+%
+%    DMJ: In theory, all that's needed to activate the flushleft mode
+%    in the AMS document classes is something like this:
+% \begin{verbatim}
+% \DeclareOption{fleqn}{%
+%   \AtBeginDocument{\@mathmargin30pt}%
+% }
+% \end{verbatim}
+%    DMJ: (In fact, unless the document class wants to specify the
+%    \cs{@mathmargin}, it doesn't need to do anything with the \opt{fleqn}
+%    option.)
+%    \begin{macrocode}
+\newif\if@fleqn
+%
+\newskip\@mathmargin
+\@mathmargin\@centering
+%
+\DeclareOption{fleqn}{%
+    \@fleqntrue
+    \@mathmargin = -1sp
+    \AtBeginDocument{%
+        \ifdim\@mathmargin= -1sp
+            \@mathmargin\leftmargini
+        \fi
+    }%
+}
+%    \end{macrocode}
+%
+%    DMJ: This ensures that \cs{@mathmargin} is given some sort of
+%    sensible default if the class doesn't specify one, while still
+%    allowing a user to override the default value in their document
+%    preamble.  (Incidentally, I'm initializing \cs{@mathmargin} to
+%    \cs{leftmargini} for compatibility with \fn{fleqn.clo}, but I'm
+%    not at all convinced that's the right thing to do.)
+%
+%    DMJ: The next question is what happens when amsmath is used with
+%    one of the standard classes.  Unfortunately, \latex/ implements
+%    \opt{fleqn} somewhat clumsily; instead of paramaterizing the
+%    definitions of the math structures (as I've attempted to do
+%    here), \fn{fleqn.clo} declares a dimen \cn{mathindent} that is
+%    much like my \cs{@mathmargin} and then redefines \cn\[, \cn\],
+%    \cn{equation}, and \cn{eqnarray}.  This means that things could
+%    get rather messy in 2.09 compatibility mode, since \fn{fleqn.clo}
+%    might be loaded after \fn{amsmath.sty}, which could cause a real
+%    mess.  (This won't be a problem in 2e native mode, since
+%    \fn{amsmath}.sty would always be loaded after \fn{fleqn.clo}, so
+%    the only question is whether \fn{amsmath.sty} should try to make
+%    sure that \env{eqnarray} gets indented by the same amount as all
+%    the \pkg{amsmath} structures by, for example, saying
+%    |\let\mathindent\@mathmargin|.)  I really don't know what to
+%    do in compatibility mode, though.  Maybe bind \cn{mathindent} to
+%    \cs{@mathmargin} if it's defined and do something like this if
+%    it's not:
+% \begin{verbatim}
+% \@ifundefined{mathindent}{%
+%   \AtBeginDocument{%
+%     \@ifundefined{mathindent}{}%
+%       {warning about loading fleqn.clo after amsmath.sty}}%
+% }{%
+%   \let\mathindent\@mathmargin
+% }
+% \end{verbatim}
+%    This would at least detect when \fn{fleqn.clo} is loaded after
+%    \fn{amsmath.sty}.
+%
+%    \begin{macrocode}
+\ExecuteOptions{nointlimits,sumlimits,namelimits,centertags}
+%    \end{macrocode}
+%    The \cs{relax} after \cs{ProcessOptions} is to ensure the correct
+%    line number on screen if an error occurs during option processing;
+%    otherwise the lookahead for a \qc{\*} option would result in \tex/
+%    showing the following line instead.
+%    \begin{macrocode}
+\ProcessOptions\relax
+%    \end{macrocode}
+%
+%    Processing to handle the \opt{cmex10} option is a little tricky
+%    because of different possible loading orders for \pkg{amsmath} and
+%    \pkg{amsfonts}. The package \pkg{amsmath} sets the \cs{cmex@opt}
+%    flag to 7 or 10, and the package \pkg{amsfonts} sets the flag to 1
+%    or 0.
+%    \begin{macrocode}
+\ifnum\cmex@opt=7 \relax
+  \catcode`\ =9
+  \DeclareFontShape{OMX}{cmex}{m}{n}{%
+    <-8> cmex7%
+    <8> cmex8%
+    <9> cmex9%
+    <10> <10.95> <12> <14.4> <17.28> <20.74> <24.88>cmex10%
+  }{}%
+  \expandafter\let\csname OMX/cmex/m/n/10\endcsname\relax
+  \catcode`\ =10
+\else
+  \ifnum\cmex@opt=\z@ % need to override cmex7 fontdef from amsfonts
+    \input{OMXcmex.fd}%
+    \expandafter\let\csname OMX/cmex/m/n/10\endcsname\relax
+    \def\cmex@opt{10}%
+  \fi
+\fi
+%    \end{macrocode}
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Call some other packages}
+%
+%    The \pkg{amstext} package provides the \cn{text} command. The
+%    \pkg{amsbsy} package provides \cn{boldsymbol} and \cn{pmb}. The
+%    \pkg{amsopn} package provides \cn{DeclareMathOperator}.
+%    \begin{macrocode}
+\RequirePackage{amstext}
+\RequirePackage{amsbsy}
+\RequirePackage{amsopn}
+%    \end{macrocode}
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Miscellaneous}
+%
+%  \begin{macro}{\@amsmath@err}
+%    Defining this error function saves main mem.
+%    \begin{macrocode}
+\def\@amsmath@err{\PackageError{amsmath}}
+%    \end{macrocode}
+%  \end{macro}
+%
+% \begin{macro}{\AmS}
+%    The \cs{AmS} prefix can be used to construct the combination
+%    |\AmS-\LaTeX|. We call cmsy directly in lieu of trying to access it
+%    through the math fonts setup (e.g. |\the\textfont2|) because math
+%    fonts can't be relied on to be properly set up if we are not inside
+%    a math formula. This means that if this command is used in a
+%    document where CM fonts are not wanted, then a font substitution
+%    will need to be declared, e.g.:
+% \begin{verbatim}
+% \DeclareFontShape{OMS}{cmsy}{m}{n}{ <-> sub * xxx/m/n }{}
+% \end{verbatim}
+%    where |xxx| is some alternate font family.
+%    \begin{macrocode}
+\def\AmS{{\protect\AmSfont
+  A\kern-.1667em\lower.5ex\hbox{M}\kern-.125emS}}
+%    \end{macrocode}
+%    Taking the first letter of \cs{f@series} will produce |b| or |m|
+%    for the most common values (|b,bx,m|). It may produce nonsense for
+%    more unusual values of \cs{f@series}, so for safety's sake we have
+%    an additional \cs{if} test. We want to avoid setting the series to
+%    |bx| because in a standard \latex/ installation the combination
+%    |cmsy/bx/n| does not have a font definition, and the user
+%    would get a font substitution warning on screen.
+%    \begin{macrocode}
+\def\AmSfont{%
+  \usefont{OMS}{cmsy}{\if\@xp\@car\f@series\@nil bb\else m\fi}{n}}
+%    \end{macrocode}
+% \end{macro}
+%
+%    We redefine \cs{pr@m@s} to make the possibilities |x^2'| and |x'^2|
+%    equally disallowed instead of allowing one and not the other. Cf
+%    Spivak's commentary on plain \tex/'s support for the latter
+%    possibility in Appendix D of \emph{The Joy of \tex/} (2nd edition,
+%    1990).
+%    \begin{macrocode}
+\def\pr@m@s{%
+  \ifx\@let@token'\DN@##1{\prim@s}\else\let\next@\egroup\fi\next@}
+%    \end{macrocode}
+%    And finally, a slight amendment to \cs{prim@s} is needed
+%    if a June 94 release of \latex/ is in use.
+%    \begin{macrocode}
+\def\prim@s{\prime\futurelet\@let@token\pr@m@s}
+%    \end{macrocode}
+%    We redefine \cs{prime} to add a leading null kern so that something
+%    like |^{\mathcal{A}\prime}| will not erroneously cause the skewchar
+%    kern for the letter $\mathcal{A}$ to be inserted. (In the original
+%    \tex/ font layout for \fn{cmsy10} the prime character serves as the
+%    \cs{skewchar} of the font.) The extra braces allow |^\prime| to
+%    work. (Rule of thumb: the user should be allowed to type a `simple
+%    symbol' superscript without the braces if they wish.)
+%    \begin{macrocode}
+\let\@prime=\prime
+\renewcommand{\prime}{{\kern\z@\@prime}}
+%    \end{macrocode}
+%
+%    Fill in some gaps in the set of spacing commands, and make them
+%    all work equally well in or out of math. Maybe also (or instead?)
+%    users should be told how to use \cs{mkern} or \cs{mskip} for any
+%    unusual spacing in math.
+%
+%    We want all these commands to be robust but declaring them all with
+%    \cs{DeclareRobustCommand} uses up an control sequence name per
+%    command; to avoid this, we define a common command \cs{tmspace}
+%    (text-or-math space) which carries the robustness burden for all of
+%    them. The standard \cs{relax} before the \cs{ifmmode} is not
+%    necessary because of the \cs{protect} added by
+%    \cs{DeclareRobustCommand}.
+%    \begin{macrocode}
+\DeclareRobustCommand{\tmspace}[3]{%
+  \ifmmode\mskip#1#2\else\kern#1#3\fi\relax}
+\renewcommand{\,}{\tmspace+\thinmuskip{.1667em}}
+\let\thinspace\,
+\renewcommand{\!}{\tmspace-\thinmuskip{.1667em}}
+\let\negthinspace\!
+\renewcommand{\:}{\tmspace+\medmuskip{.2222em}}
+\let\medspace\:
+\newcommand{\negmedspace}{\tmspace-\medmuskip{.2222em}}
+\renewcommand{\;}{\tmspace+\thickmuskip{.2777em}}
+\let\thickspace\;
+\newcommand{\negthickspace}{\tmspace-\thickmuskip{.2777em}}
+%    \end{macrocode}
+%
+%  \begin{macro}{\mspace}
+%    And while we're at it, why don't we provide an equivalent of
+%    \cn{hspace} for math mode use. This allows use of |mu| units in
+%    (for example) constructing compound math symbols.
+%    \begin{macrocode}
+\newcommand{\mspace}[1]{\mskip#1\relax}
+%    \end{macrocode}
+%  \end{macro}
+%
+%    Remove the `variable' code 7 at the beginning of cap Greek
+%    mathchardefs. These letters should only be made bold via
+%    \cs{boldsymbol}, for consistency with lowercase Greek. If cap Gamma
+%    does not have the expected definition (|\mathchar"7000|), skip this
+%    section. That probably means a preceding package has changed to a
+%    different set of math fonts (e.g., Euler) and the Gamma definition
+%    has changed.
+%    \begin{macrocode}
+\begingroup\catcode`\"=12
+%    \end{macrocode}
+%    In this test we assume that \cn{Gamma} and the other cap Greek
+%    letters are always mathchardefs, and get the math symbol code
+%    through \cs{meaning}. If the first hex digit is a 7 \emph{and} the
+%    symbol code is not less then four digits, then we change the 7 to a
+%    0.
+%    \begin{macrocode}
+\def\@tempa#1{\expandafter\@tempb\meaning#1\relax\relax\relax\relax"0000\@nil#1}
+\def\@tempb#1"#2#3#4#5#6\@nil#7{%
+  \ifnum#2=7 \count@"1#3#4#5\relax
+    \ifnum\count@<"1000 \else \global\mathchardef#7="0#3#4#5\relax \fi
+  \fi}
+\@tempa\Gamma \@tempa\Delta \@tempa\Theta \@tempa\Lambda \@tempa\Xi
+\@tempa\Pi \@tempa\Sigma \@tempa\Upsilon \@tempa\Phi \@tempa\Psi
+\@tempa\Omega
+%    \end{macrocode}
+%    The variant italic cap Greek letters are not defined by \latex/. If
+%    no preceding package defined these, we will define them now.
+%    \begin{macrocode}
+\@ifundefined{varGamma}{%
+  \DeclareMathSymbol{\varGamma}{\mathord}{letters}{"00}
+  \DeclareMathSymbol{\varDelta}{\mathord}{letters}{"01}
+  \DeclareMathSymbol{\varTheta}{\mathord}{letters}{"02}
+  \DeclareMathSymbol{\varLambda}{\mathord}{letters}{"03}
+  \DeclareMathSymbol{\varXi}{\mathord}{letters}{"04}
+  \DeclareMathSymbol{\varPi}{\mathord}{letters}{"05}
+  \DeclareMathSymbol{\varSigma}{\mathord}{letters}{"06}
+  \DeclareMathSymbol{\varUpsilon}{\mathord}{letters}{"07}
+  \DeclareMathSymbol{\varPhi}{\mathord}{letters}{"08}
+  \DeclareMathSymbol{\varPsi}{\mathord}{letters}{"09}
+  \DeclareMathSymbol{\varOmega}{\mathord}{letters}{"0A}
+}{}
+\endgroup
+%    \end{macrocode}
+%
+%    The reason for redefining \cs{@@sqrt} (used by \latex/'s
+%    definition of \cn{sqrt}) to read an argument is discussed in
+%    Spivak's \fn{amstex.doc}. As an example, if \cn{xD} is defined
+%    as |\not D| then |\sqrt\xD| produces this:
+%    $\catcode`\"=12 \def\xD{\not D}\radical"270370 \xD$, with the slash
+%    separated from the $D$. (The same thing happens with |^\xD|,
+%    by the way, but that is not so easy to fix.) This refinement
+%    doesn't gain much if the user is careful and always puts braces
+%    around the argument of \cn{sqrt}, but it costs little.
+%    \begin{macrocode}
+\begingroup \catcode`\"=12
+\gdef\@@sqrt#1{\radical"270370 {#1}}
+\endgroup
+%    \end{macrocode}
+%
+%    \cs{overline@} replaced by \cs{@@overline}, to be consistent
+%    with the \latex/ name \cs{@@underline}. \cn{overline} is
+%    redefined for the same reason as with \cs{@@sqrt}.
+%    \begin{macrocode}
+\@saveprimitive\overline\@@overline
+\def\overline#1{\@@overline{#1}}
+%    \end{macrocode}
+%
+%    The \cs{boxed} command is specifically intended to put a box around
+%    an equation or piece of an equation. (Not incl. the equation
+%    number.) This isn't trivial for end-users to do it properly
+%    with \cs{fbox} so we provide a command for them.
+%    \begin{macrocode}
+\def\boxed#1{\fbox{\m@th$\displaystyle#1$}}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\def\implies{\DOTSB\;\Longrightarrow\;}
+\def\impliedby{\DOTSB\;\Longleftarrow\;}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\begingroup \catcode`\"=12 % in case activated by a preceding package
+\gdef\And{\DOTSB\;\mathchar"3026 \;}
+%    \end{macrocode}
+%
+%    Add left/right specific versions of \cn{vert}, \cn{Vert}. Don't
+%    assume the delimiter codes are the CM defaults.
+%    \begin{macrocode}
+\@tempcnta=\@xp\@gobble\vert \advance\@tempcnta "4000000
+\xdef\lvert{\delimiter\number\@tempcnta\space }
+\advance\@tempcnta "1000000
+\xdef\rvert{\delimiter\number\@tempcnta\space }
+\@tempcnta=\@xp\@gobble\Vert \advance\@tempcnta "4000000
+\xdef\lVert{\delimiter\number\@tempcnta\space }
+\advance\@tempcnta "1000000
+\xdef\rVert{\delimiter\number\@tempcnta\space }
+\endgroup % restore "
+%    \end{macrocode}
+%
+%    Disable generalized fraction primitives \cs{over}, \cs{atop}, etc.,
+%    because of their bizarre syntax, which is decidedly out of place in
+%    a \latex/ document.
+%    \begin{macrocode}
+\@saveprimitive\over\@@over
+\@saveprimitive\atop\@@atop
+\@saveprimitive\above\@@above
+\@saveprimitive\overwithdelims\@@overwithdelims
+\@saveprimitive\atopwithdelims\@@atopwithdelims
+\@saveprimitive\abovewithdelims\@@abovewithdelims
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\DeclareRobustCommand{\primfrac}[1]{\@amsmath@err{%
+  Foreign command \@backslashchar#1; %
+  use \protect\frac\space or \protect\genfrac\space instead}\@ehc}
+\renewcommand{\over}{\primfrac{over}}
+\renewcommand{\atop}{\primfrac{atop}}
+\renewcommand{\above}{\primfrac{above}}
+\renewcommand{\overwithdelims}{\primfrac{overwithdelims}}
+\renewcommand{\atopwithdelims}{\primfrac{atopwithdelims}}
+\renewcommand{\abovewithdelims}{\primfrac{abovewithdelims}}
+%    \end{macrocode}
+%
+%    \cn{frac} calls \cn{over} directly instead of via \cn{genfrac}, for
+%    better speed because it is so common. \cn{tfrac} and \cn{dfrac} are
+%    abbreviations for some commonly needed mathstyle overrides. To
+%    conserve csnames we avoid making \cn{dfrac} and \cn{tfrac} robust
+%    (\cn{genfrac} is itself robust).
+%    \begin{macrocode}
+\DeclareRobustCommand{\frac}[2]{{#1\@@over#2}}
+\newcommand{\dfrac}{\genfrac{}{}{}0}
+\newcommand{\tfrac}{\genfrac{}{}{}1}
+%    \end{macrocode}
+%    The \cn{binom} command for binomial notation works like \cn{frac}
+%    and has similar variants. Note that we do not use \cs{z@} in
+%    \cn{dbinom} and \cn{tbinom} because they are not top-level robust
+%    like \cn{binom}, and so the \cs{z@} with the potentially
+%    problematic \qc{\@} character would become visible when writing one
+%    of those commands to a \fn{.toc} file.
+%    \begin{macrocode}
+\DeclareRobustCommand{\binom}{\genfrac()\z@{}}
+\newcommand{\dbinom}{\genfrac(){0pt}0}
+\newcommand{\tbinom}{\genfrac(){0pt}1}
+%    \end{macrocode}
+%
+%  \begin{macro}{\genfrac}
+%    This command provides access to \tex/'s generalized fraction
+%    primitives. Args: \arg{1} left delim, \arg{2} right delim, \arg{3}
+%    line thickness, \arg{4} mathstyle override, \arg{5} numerator,
+%    \arg{6} denominator. But we only read the first four args at first,
+%    in order to give us a moment to select the proper generalized
+%    fraction primitive. Any of those four args could be empty, and when
+%    empty the obvious defaults are selected (no delimiters, default
+%    line thickness (normally .4pt), and no mathstyle override).
+%    \begin{macrocode}
+\DeclareRobustCommand{\genfrac}[4]{%
+  \def\@tempa{#1#2}%
+  \edef\@tempb{\@nx\@genfrac\@mathstyle{#4}%
+    \csname @@\ifx @#3@over\else above\fi
+    \ifx\@tempa\@empty \else withdelims\fi\endcsname}
+  \@tempb{#1#2#3}}
+%    \end{macrocode}
+%    \cs{@genfrac} takes the preceding arguments and reads the
+%    numerator and denominator. Note that there's no convenient way to
+%    make the numerator and denominator \emph{contents}
+%    displaystyle, through this interface.
+%    \begin{macrocode}
+\def\@genfrac#1#2#3#4#5{{#1{#4#2#3\relax#5}}}
+%    \end{macrocode}
+%  \end{macro}
+%
+%    Empty mathstyle arg: no change; 0 = displaystyle, 1 = textstyle, 2
+%    = scriptstyle, 3 = scriptscriptstyle.
+%    \begin{macrocode}
+\def\@mathstyle#1{%
+  \ifx\@empty#1\@empty\relax
+  \else\ifcase#1\displaystyle % case 0
+    \or\textstyle\or\scriptstyle\else\scriptscriptstyle\fi\fi}
+%    \end{macrocode}
+%
+%    \cs{colon} is for a colon in math that resembles a text colon: small
+%    space on the left, larger space on the right. The \qc{\:} character
+%    by itself is treated as a \cs{mathrel} i.e. large, equal spacing on
+%    both sides.
+%    \begin{macrocode}
+\def\colon{\nobreak\mskip2mu\mathpunct{}\nonscript
+  \mkern-\thinmuskip{:}\mskip6muplus1mu\relax}
+%    \end{macrocode}
+%
+%    Default value for sum limits is \cs{displaylimits}, see option
+%    `nosumlimits'.
+%
+%    We redefine all the cumulative operator symbols to add a \cs{DOTSB}
+%    token in their expansion so that \cs{dots} can choose the proper
+%    alternative if such a symbol follows. But first we test to make
+%    sure \cn{coprod} and the others are simple mathchars; if not, we'd
+%    better not change them.
+%    \begin{macrocode}
+\begingroup \catcode`\"=12
+\edef\@tempa{\string\mathchar"}
+\def\@tempb#1"#2\@nil{#1"}
+\edef\@tempc{\expandafter\@tempb\meaning\coprod "\@nil}
+\ifx\@tempa\@tempc
+  \global\let\coprod@\coprod
+  \gdef\coprod{\DOTSB\coprod@\slimits@}
+  \global\let\bigvee@\bigvee
+  \gdef\bigvee{\DOTSB\bigvee@\slimits@}
+  \global\let\bigwedge@\bigwedge
+  \gdef\bigwedge{\DOTSB\bigwedge@\slimits@}
+  \global\let\biguplus@\biguplus
+  \gdef\biguplus{\DOTSB\biguplus@\slimits@}
+  \global\let\bigcap@\bigcap
+  \gdef\bigcap{\DOTSB\bigcap@\slimits@}
+  \global\let\bigcup@\bigcup
+  \gdef\bigcup{\DOTSB\bigcup@\slimits@}
+  \global\let\prod@\prod
+  \gdef\prod{\DOTSB\prod@\slimits@}
+  \global\let\sum@\sum
+  \gdef\sum{\DOTSB\sum@\slimits@}
+  \global\let\bigotimes@\bigotimes
+  \gdef\bigotimes{\DOTSB\bigotimes@\slimits@}
+  \global\let\bigoplus@\bigoplus
+  \gdef\bigoplus{\DOTSB\bigoplus@\slimits@}
+  \global\let\bigodot@\bigodot
+  \gdef\bigodot{\DOTSB\bigodot@\slimits@}
+  \global\let\bigsqcup@\bigsqcup
+  \gdef\bigsqcup{\DOTSB\bigsqcup@\slimits@}
+\fi
+\endgroup
+%    \end{macrocode}
+%
+%  \begin{macro}{\nobreakdash}
+%    The command \cn{nobreakdash} is designed only for use before a
+%    hyphen or dash (|-|, |--|, or |---|).
+%    Setting the hyphen in a box and then unboxing it means that the
+%    normal penalty will not be added after it---and if the penalty is
+%    not there a break will not be taken (unless an explicit penalty
+%    or glue follows, thus the final \verb=\nobreak=).
+%    \begin{macrocode}
+\newcommand{\nobreakdash}{\leavevmode
+  \toks@\@emptytoks \def\@tempa##1{\toks@\@xp{\the\toks@-}\FN@\next@}%
+  \DN@{\ifx\@let@token-\@xp\@tempa
+       \else\setboxz@h{\the\toks@\nobreak}\unhbox\z@\fi}%
+  \FN@\next@
+}
+%    \end{macrocode}
+%  \end{macro}
+%
+%    This root stuff needs syntax work and implementation work. Surely
+%    something more compact can be done?? [mjd,5-Sep-1994]
+%    \begin{macrocode}
+\def\leftroot{\@amsmath@err{\Invalid@@\leftroot}\@eha}
+\def\uproot{\@amsmath@err{\Invalid@@\uproot}\@eha}
+\newcount\uproot@
+\newcount\leftroot@
+\def\root{\relaxnext@
+  \DN@{\ifx\@let@token\uproot\let\next@\nextii@\else
+   \ifx\@let@token\leftroot\let\next@\nextiii@\else
+   \let\next@\plainroot@\fi\fi\next@}%
+  \def\nextii@\uproot##1{\uproot@##1\relax\FN@\nextiv@}%
+  \def\nextiv@{\ifx\@let@token\@sptoken\DN@. {\FN@\nextv@}\else
+   \DN@.{\FN@\nextv@}\fi\next@.}%
+  \def\nextv@{\ifx\@let@token\leftroot\let\next@\nextvi@\else
+   \let\next@\plainroot@\fi\next@}%
+  \def\nextvi@\leftroot##1{\leftroot@##1\relax\plainroot@}%
+   \def\nextiii@\leftroot##1{\leftroot@##1\relax\FN@\nextvii@}%
+  \def\nextvii@{\ifx\@let@token\@sptoken
+   \DN@. {\FN@\nextviii@}\else
+   \DN@.{\FN@\nextviii@}\fi\next@.}%
+  \def\nextviii@{\ifx\@let@token\uproot\let\next@\nextix@\else
+   \let\next@\plainroot@\fi\next@}%
+  \def\nextix@\uproot##1{\uproot@##1\relax\plainroot@}%
+  \bgroup\uproot@\z@\leftroot@\z@\FN@\next@}
+\def\plainroot@#1\of#2{\setbox\rootbox\hbox{%
+ $\m@th\scriptscriptstyle{#1}$}%
+ \mathchoice{\r@@t\displaystyle{#2}}{\r@@t\textstyle{#2}}
+ {\r@@t\scriptstyle{#2}}{\r@@t\scriptscriptstyle{#2}}\egroup}
+\def\r@@t#1#2{\setboxz@h{$\m@th#1\@@sqrt{#2}$}%
+ \dimen@\ht\z@\advance\dimen@-\dp\z@
+ \setbox\@ne\hbox{$\m@th#1\mskip\uproot@ mu$}%
+ \advance\dimen@ by1.667\wd\@ne
+ \mkern-\leftroot@ mu\mkern5mu\raise.6\dimen@\copy\rootbox
+ \mkern-10mu\mkern\leftroot@ mu\boxz@}
+%    \end{macrocode}
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Ellipsis dots}
+%
+%    We can't use \cs{newif} for \cs{ifgtest@} because we want
+%    to include \cs{global} in the definitions of
+%    \cs{gtest@true} and \cs{gtest@false}.
+%    \begin{macrocode}
+\let\ifgtest@\iffalse                              % initial value
+\def\gtest@true{\global\let\ifgtest@\iftrue}
+\def\gtest@false{\global\let\ifgtest@\iffalse}
+\let\DOTSI\relax
+\let\DOTSB\relax
+\let\DOTSX\relax
+{\uccode`7=`\\ \uccode`8=`m \uccode`9=`a \uccode`0=`t \uccode`!=`h
+ \uppercase{%
+  \gdef\math@#1#2#3#4#5#6\math@{\gtest@false\ifx 7#1\ifx 8#2%
+  \ifx 9#3\ifx 0#4\ifx !#5\xdef\meaning@{#6}\gtest@true
+  \fi\fi\fi\fi\fi}}}
+{\uccode`7=`c \uccode`8=`h \uccode`9=`\"
+ \uppercase{\gdef\mathch@#1#2#3#4#5#6\mathch@{\gtest@false
+  \ifx 7#1\ifx 8#2\ifx 9#5\gtest@true\xdef\meaning@{9#6}\fi\fi\fi}}}
+\newcount\classnum@
+\def\getmathch@#1.#2\getmathch@{\classnum@#1 \divide\classnum@4096
+ \ifcase\number\classnum@\or\or\gdef\thedots@{\dotsb@}\or
+ \gdef\thedots@{\dotsb@}\fi}
+{\uccode`4=`b \uccode`5=`i \uccode`6=`n
+ \uppercase{\gdef\mathbin@#1#2#3{\relaxnext@
+  \def\nextii@##1\mathbin@{\ifx\@sptoken\@let@token\gtest@true\fi}%
+  \gtest@false\DN@##1\mathbin@{}%
+ \ifx 4#1\ifx 5#2\ifx 6#3\DN@{\FN@\nextii@}\fi\fi\fi\next@}}}
+{\uccode`4=`r \uccode`5=`e \uccode`6=`l
+ \uppercase{\gdef\mathrel@#1#2#3{\relaxnext@
+  \def\nextii@##1\mathrel@{\ifx\@sptoken\@let@token\gtest@true\fi}%
+ \gtest@false\DN@##1\mathrel@{}%
+ \ifx 4#1\ifx 5#2\ifx 6#3\DN@{\FN@\nextii@}\fi\fi\fi\next@}}}
+{\uccode`5=`m \uccode`6=`a \uccode`7=`c
+ \uppercase{\gdef\macro@#1#2#3#4\macro@{\gtest@false
+  \ifx 5#1\ifx 6#2\ifx 7#3\gtest@true
+  \xdef\meaning@{\macro@@#4\macro@@}\fi\fi\fi}}}
+\def\macro@@#1->#2\macro@@{#2}
+\newcount\DOTSCASE@
+{\uccode`6=`\\ \uccode`7=`D \uccode`8=`O \uccode`9=`T \uccode`0=`S
+ \uppercase{\gdef\DOTS@#1#2#3#4#5{\gtest@false\DN@##1\DOTS@{}%
+  \ifx 6#1\ifx 7#2\ifx 8#3\ifx 9#4\ifx 0#5\let\next@\DOTS@@
+  \fi\fi\fi\fi\fi
+  \next@}}}
+{\uccode`3=`B \uccode`4=`I \uccode`5=`X
+ \uppercase{\gdef\DOTS@@#1{\relaxnext@
+  \def\nextii@##1\DOTS@{\ifx\@sptoken\@let@token\gtest@true\fi}%
+  \DN@{\FN@\nextii@}%
+  \ifx 3#1\global\DOTSCASE@\z@\else
+  \ifx 4#1\global\DOTSCASE@\@ne\else
+  \ifx 5#1\global\DOTSCASE@\tw@\else\DN@##1\DOTS@{}%
+  \fi\fi\fi\next@}}}
+{\uccode`5=`\\ \uccode`6=`n \uccode`7=`o \uccode`8=`t
+ \uppercase{\gdef\not@#1#2#3#4{\relaxnext@
+  \def\nextii@##1\not@{\ifx\@sptoken\@let@token\gtest@true\fi}%
+ \gtest@false\DN@##1\not@{}%
+ \ifx 5#1\ifx 6#2\ifx 7#3\ifx 8#4\DN@{\FN@\nextii@}\fi\fi\fi
+ \fi\next@}}}
+\def\keybin@{\gtest@true
+ \ifx\@let@token+\else\ifx\@let@token=\else
+ \ifx\@let@token<\else\ifx\@let@token>\else
+ \ifx\@let@token-\else\ifx\@let@token*\else\ifx\@let@token:\else
+   \gtest@false\fi\fi\fi\fi\fi\fi\fi}
+%    \end{macrocode}
+%    Patch to ensure \cs{@ldots} is defined. (Name changed to
+%    \cn{mathellipsis} in Dec 94 release of \latex/.)
+%    \begin{macrocode}
+\@ifundefined{@ldots}{\def\@ldots{\mathellipsis}}{}
+\DeclareRobustCommand{\dots}{\relax
+  \csname\ifmmode m\else t\fi dots@\endcsname}
+\def\tdots@{\leavevmode\unskip\relaxnext@
+ \DN@{$\m@th\@ldots\,
+   \ifx\@let@token,\,$\else\ifx\@let@token.\,$\else
+   \ifx\@let@token;\,$\else\ifx\@let@token:\,$\else
+   \ifx\@let@token?\,$\else\ifx\@let@token!\,$\else
+     $ \fi\fi\fi\fi\fi\fi}%
+  \ \FN@\next@}
+\def\mdots@{\FN@\mdots@@}
+\def\mdots@@{\gdef\thedots@{\dotso@}%
+ \ifx\@let@token\boldsymbol \gdef\thedots@\boldsymbol{\boldsymboldots@}%
+ \else\ifx,\@let@token \gdef\thedots@{\dotsc}%
+ \else\ifx\not\@let@token \gdef\thedots@{\dotsb@}%
+ \else\keybin@
+ \ifgtest@\gdef\thedots@{\dotsb@}%
+ \else\xdef\meaning@{\meaning\@let@token..........}%
+   \xdef\meaning@@{\meaning@}%
+  \@xp\math@\meaning@\math@
+  \ifgtest@
+   \@xp\mathch@\meaning@\mathch@
+   \ifgtest@\@xp\getmathch@\meaning@\getmathch@\fi
+  \else\@xp\macro@\meaning@@\macro@
+  \ifgtest@
+   \@xp\not@\meaning@\not@\ifgtest@\gdef\thedots@{\dotsb@}%
+  \else\@xp\DOTS@\meaning@\DOTS@
+  \ifgtest@
+   \ifcase\number\DOTSCASE@\gdef\thedots@{\dotsb@}%
+    \or\gdef\thedots@{\dotsi}\else\fi
+  \else\@xp\math@\meaning@\math@
+  \ifgtest@\@xp\mathbin@\meaning@\mathbin@
+  \ifgtest@\gdef\thedots@{\dotsb@}%
+  \else\@xp\mathrel@\meaning@\mathrel@
+  \ifgtest@\gdef\thedots@{\dotsb@}%
+  \fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi
+ \thedots@}
+%    \end{macrocode}
+%
+%    The \qc{\=} character is necessary in the two \cs{let} assignments
+%    in \cs{boldsymboldots@}, because the symbol we are making
+%    bold might be an \qc{\=} sign.
+%    \begin{macrocode}
+\def\boldsymboldots@#1{\bold@true\let\@let@token=#1\let\delayed@=#1\mdots@@
+ \boldsymbol#1\bold@false}
+%    \end{macrocode}
+%
+%    The definition of \cs{@cdots} is merely the \fn{plain.tex}
+%    definition of \cs{cdots}.
+%    \begin{macrocode}
+\def\@cdots{\mathinner{\cdotp\cdotp\cdotp}}
+\def\dotsi{\!\@cdots}
+\let\dotsb@\@cdots
+%    \end{macrocode}
+%
+%    If any new right delimiters are defined, they would need to be
+%    added to the definition of \cs{rightdelim@} in order for \cn{dots}
+%    to work properly in all cases.
+%    \begin{macrocode}
+\def\rightdelim@{\gtest@true
+ \ifx\@let@token)\else
+ \ifx\@let@token]\else
+ \ifx\@let@token\rbrack\else
+ \ifx\@let@token\}\else
+ \ifx\@let@token\rbrace\else
+ \ifx\@let@token\rangle\else
+ \ifx\@let@token\rceil\else
+ \ifx\@let@token\rfloor\else
+ \ifx\@let@token\rgroup\else
+ \ifx\@let@token\rmoustache\else
+ \ifx\@let@token\right\else
+ \ifx\@let@token\bigr\else
+ \ifx\@let@token\biggr\else
+ \ifx\@let@token\Bigr\else
+ \ifx\@let@token\Biggr\else\gtest@false
+ \fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi}
+\def\extra@{%
+ \rightdelim@\ifgtest@
+ \else\ifx\@let@token$\gtest@true
+ \else\xdef\meaning@{\meaning\@let@token..........}%
+ \@xp\macro@\meaning@\macro@\ifgtest@
+ \@xp\DOTS@\meaning@\DOTS@
+ \ifgtest@
+ \ifnum\DOTSCASE@=\tw@\gtest@true\else\gtest@false
+ \fi\fi\fi\fi\fi}
+\newif\ifbold@
+\def\dotso@{\relaxnext@
+ \ifbold@
+  \let\@let@token\delayed@
+  \def\nextii@{\extra@\@ldots\ifgtest@\,\fi}%
+ \else
+  \def\nextii@{\DN@{\extra@\@ldots\ifgtest@\,\fi}\FN@\next@}%
+ \fi
+ \nextii@}
+%    \end{macrocode}
+%    Why not save some tokens? (space vs. time).
+%    \begin{macrocode}
+\def\extrap@#1{%
+ \DN@{#1\,}%
+ \ifx\@let@token,\else
+ \ifx\@let@token;\else
+ \ifx\@let@token.\else\extra@
+ \ifgtest@\else
+ \let\next@#1\fi\fi\fi\fi\next@}
+%    \end{macrocode}
+%
+%    When the \pkg{amsmath} package is loaded \cn{dots} is always the
+%    preferred command instead of \cn{ldots} in text mode, but
+%    \cn{ldots} is allowed in text mode in ordinary \latex/ so we'd
+%    better allow it too in order to avoid inconveniencing users e.g.,
+%    when converting an existing document to use \pkg{amsmath}. This
+%    definition for \cn{ldots} is rather inefficient but since
+%    \cn{ldots} is the not-recommended usage, probably not worthwhile to
+%    seek improvements.
+%    \begin{macrocode}
+\DeclareRobustCommand{\ldots}{\relax
+  \ifmmode \DN@{\extrap@\@ldots}%
+  \else \let\next@\tdots@\fi
+  \FN@\next@}
+\DeclareRobustCommand{\cdots}{\DN@{\extrap@\@cdots}\FN@\next@}
+\let\dotso\ldots
+\let\dotsb\cdots
+\let\dotsm\dotsb
+\DeclareRobustCommand{\dotsc}{%
+  \DN@{\ifx\@let@token;\@ldots\,%
+       \else \ifx\@let@token.\@ldots\,%
+       \else \extra@\@ldots \ifgtest@\,\fi
+       \fi\fi}%
+  \FN@\next@}
+\def\longrightarrow{\DOTSB\relbar\joinrel\rightarrow}
+\def\Longrightarrow{\DOTSB\Relbar\joinrel\Rightarrow}
+\def\longleftarrow{\DOTSB\leftarrow\joinrel\relbar}
+\def\Longleftarrow{\DOTSB\Leftarrow\joinrel\Relbar}
+\def\longleftrightarrow{\DOTSB\leftarrow\joinrel\rightarrow}
+\def\Longleftrightarrow{\DOTSB\Leftarrow\joinrel\Rightarrow}
+\def\mapsto{\DOTSB\mapstochar\rightarrow}
+\def\longmapsto{\DOTSB\mapstochar\longrightarrow}
+\def\hookrightarrow{\DOTSB\lhook\joinrel\rightarrow}
+\def\hookleftarrow{\DOTSB\leftarrow\joinrel\rhook}
+\def\iff{\DOTSB\;\Longleftrightarrow\;}
+%    \end{macrocode}
+%    The \cn{doteq} command formerly used \cs{buildrel}; we avoid that
+%    because it requires `\cn{over}' as part of its syntax.
+%    \begin{macrocode}
+\def\doteq{\DOTSB\mathrel{\mathop{\kern\z@ =}\limits^{\textstyle.}}}
+%    \end{macrocode}
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Integral signs}
+%
+%    The straightforward \cs{ifinner} test to see if the current math
+%    context is non-display, fails if, for instance, we are typesetting
+%    a multiline display within an \cs{halign}, with the pieces going
+%    into constructions like
+%    \begin{verbatim}
+%    $\displaystyle...$
+%    \end{verbatim}
+%    So we need a better test to find out if we are `in a display'. We
+%    therefore create \cs{if@display}.
+%
+%    \begin{macrocode}
+\newif\if@display
+\everydisplay\@xp{\the\everydisplay \@displaytrue}
+%    \end{macrocode}
+%
+%    Default value for integral limits is \cs{nolimits}, see the
+%    definition of the `nointlimits' option.
+%    \begin{macrocode}
+\def\int{\DOTSI\intop\ilimits@}
+\def\oint{\DOTSI\ointop\ilimits@}
+\def\intkern@{\mkern-6mu\mathchoice{\mkern-3mu}{}{}{}}
+\def\intdots@{\mathchoice{\@cdots}%
+ {{\cdotp}\mkern1.5mu{\cdotp}\mkern1.5mu{\cdotp}}%
+ {{\cdotp}\mkern1mu{\cdotp}\mkern1mu{\cdotp}}%
+ {{\cdotp}\mkern1mu{\cdotp}\mkern1mu{\cdotp}}}
+%
+\def\iint{\DOTSI\protect\ints@\tw@}
+\def\iiint{\DOTSI\protect\ints@\thr@@}
+\def\iiiint{\DOTSI\protect\ints@{4}}
+\def\idotsint{\DOTSI\protect\ints@\z@}
+%
+%    #1 = multiplicity
+\def\ints@#1{%
+  \mkern-7mu\mathchoice{\mkern-2mu}{}{}{}%
+  \mathop{\mkern7mu\mathchoice{\mkern2mu}{}{}{}%
+    \intop\ifnum#1=\z@\intdots@
+    \else\intkern@\fi
+    \ifnum#1>\tw@\intop\intkern@\fi
+    \ifnum#1>\thr@@\intop\intkern@\fi
+    \intop
+  }\ilimits@
+}
+%    \end{macrocode}
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Size dependent definitions}
+%
+%    We now define all stuff which has to change whenever a new math
+%    size is to be activated. \latex/ provides a hook called
+%    |\every@math@size| to support such a need. All assignments in the
+%    |\every@math@size| hook that need to take outside effect should be
+%    global.
+%
+% \subsection{Struts for math}
+%
+%    The macros in this section should all be reimplemented because by
+%    now there exist too many concepts which handle the same material in
+%    a slightly different manner. All these ideas should be carefully
+%    studied and everything unnecessary should be removed. This includes
+%    also the {\tt ltplain.dtx} file where a lot of these commands are
+%    still defined. (FMi)
+%
+%    For example perhaps the \cn{bBigg} delimiters could use
+% \begin{verbatim}
+% 1.2\ht\strutbox (1.8, 2.4, 3.0)
+% \end{verbatim}
+%    instead of
+% \begin{verbatim}
+% 1.0\big@size (1.5, 2.0, 2.5)
+% \end{verbatim}
+%    since \cs{strut} is reset with every size change [mjd,7-Oct-1994].
+%    But this change would introduce the possibility of changed line
+%    and page breaks in existing documents, so would need to be
+%    handled with care.
+%
+% \begin{macro}{\Mathstrut@}
+% \begin{macro}{\Mathstrutbox@}
+% \begin{macro}{\resetMathstrut@}
+%    Here comes the code for Spivak's |\Mathstrut@|.
+%    \begin{macrocode}
+\newbox\Mathstrutbox@
+\setbox\Mathstrutbox@=\hbox{}
+\def\Mathstrut@{\copy\Mathstrutbox@}
+%    \end{macrocode}
+%    The setting of the height and depth of the |\Mathstrutbox@|
+%    is done in the |\every@math@size| hook since it depends on the
+%    height of a paren. As \cs{every@math@size} is triggered by |$|
+%    after a font size change, we want to avoid using another math formula
+%    |$...$| to measure the math paren height; instead we go through
+%    the mathcode of the \qc{\(} character. We assume that the
+%    mathcode has a leading hex digit 4 indicating `open delimiter';
+%    this allows us to make a relatively simple function to get the
+%    correct font and character position.
+%    \begin{macrocode}
+\begingroup \catcode`\"=12
+\gdef\resetMathstrut@{%
+  \setbox\z@\hbox{%
+    \mathchardef\@tempa\mathcode`\(\relax
+    \def\@tempb##1"##2##3{\the\textfont"##3\char"}%
+    \expandafter\@tempb\meaning\@tempa \relax
+  }%
+%    \end{macrocode}
+%    These height and depth assignments are implicitly global.
+%    \begin{macrocode}
+  \ht\Mathstrutbox@\ht\z@ \dp\Mathstrutbox@\dp\z@
+}
+\endgroup
+\addto@hook\every@math@size{\resetMathstrut@}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\strut@}
+% \begin{macro}{\strutbox@}
+%    Next follows a special internal strut which is supposed to match
+%    the height and the depth of a normal |\strut| minus
+%    |\normallineskiplimit| according to M. Spivak.
+%    \begin{macrocode}
+\newbox\strutbox@
+\def\strut@{\copy\strutbox@}
+\addto@hook\every@math@size{%
+  \global\setbox\strutbox@\hbox{\lower.5\normallineskiplimit
+         \vbox{\kern-\normallineskiplimit\copy\strutbox}}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \subsection{Big delimiters}
+%
+%    We are now going to redefine the plain \tex/ commands \cn{big},
+%    \cn{bigl}, etc., to produce different results in different sizes.
+%    Actually we only have to define \cn{big}, \cn{Big}, etc., since
+%    they are used to construct the directional versions \cn{bigl},
+%    \cn{bigr}, and the rest.
+%
+% \begin{macro}{\big}
+% \begin{macro}{\Big}
+% \begin{macro}{\bigg}
+% \begin{macro}{\Bigg}
+%     To save token space we put everything into the common macro
+%    |\bBigg@|. The macros are now simply a call to |\bBigg@| with a
+%    factor to determine the correct height of the delimiter as an
+%    argument. This code should better go into a future version of
+%    \fn{ltplain.tex}; the macro |\n@space| is then superfluous (since it
+%    is only used once) and should be removed to avoid wasting hash
+%    table space unnecessarily.
+%    \begin{macrocode}
+\def\big{\bBigg@\@ne}
+\def\Big{\bBigg@{1.5}}
+\def\bigg{\bBigg@\tw@}
+\def\Bigg{\bBigg@{2.5}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\bBigg@}
+%    Now we tackle the macro which has to do the real work. It
+%    actually has two arguments, the factor and the wanted delimiter.
+%    \begin{macrocode}
+\def\bBigg@#1#2{%
+%    \end{macrocode}
+%    We start with an extra set of braces because we want
+%    constructions like |\def\bigl{\mathopen\big}| to work without the
+%    overhead of extra arguments.
+%    \begin{macrocode}
+  {\@mathmeasure\z@{\nulldelimiterspace\z@}%
+     {\left#2\vcenter to#1\big@size{}\right.}%
+   \box\z@}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\big@size}
+%    |\big@size| needs to be set to 1.2 times the height of a math
+%    paren. This height is already recorded in |\Mathstrutbox@|.
+%    \begin{macrocode}
+\addto@hook\every@math@size{%
+  \global\big@size 1.2\ht\Mathstrutbox@
+  \global\advance\big@size 1.2\dp\Mathstrutbox@ }
+\newdimen\big@size
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Math accents}
+%
+%    We want to change the leading digit of math accents to be
+%    \cs{accentclass@} so that it can vary according to certain internal
+%    purposes.
+%    \begin{macrocode}
+\def\accentclass@{7}
+\def\noaccents@{\def\accentclass@{0}}
+%    \end{macrocode}
+%
+%    There are a few \meta{math alphabet}s in the standard fonts where we
+%    have to change the extra macros because the standard definitions
+%    don't account for these accent problems. The first is for the
+%    \cs{mathit} command.
+%    \begin{macrocode}
+\DeclareFontEncoding{OML}{}{\noaccents@}
+%    \end{macrocode}
+%    The next one corrects the \cs{cal} alphabet.
+%    \begin{macrocode}
+\DeclareFontEncoding{OMS}{}{\noaccents@}
+%    \end{macrocode}
+%
+%    Now let's change the accent commands.
+%    \begin{macrocode}
+\begingroup \catcode`\"=12
+\def\@tempa#1#2\@nil{\def\@tempc{#1}}\def\@tempb{\mathaccent}
+\expandafter\@tempa\hat \relax\relax\@nil
+%    \end{macrocode}
+%    If \cs{@tempb} and \cs{@tempc} compare equal, then \cn{hat} appears
+%    to have `normal' definition; OK to change.
+%    \begin{macrocode}
+\ifx\@tempb\@tempc
+%    \end{macrocode}
+%    To be defensive about it, we need to guard against the possibility
+%    that the accent character number is given in decimal (or even
+%    octal??) instead of hexadecimal. Going through \cs{mathchardef}
+%    appears to be the easiest solution.
+%    \begin{macrocode}
+  \def\@tempa#1\@nil{#1}%
+  \def\@tempb#1{\afterassignment\@tempa\mathchardef\@tempc=}%
+  \def\@tempe#1"{}
+  \def\do#1"#2{}
+%    \end{macrocode}
+%    While we're at it we might as well do the double-accent versions
+%    \cn{Hat}, \cn{Tilde}, \ldots, too.
+%    \begin{macrocode}
+  \def\@tempd#1#2{\expandafter\@tempb#1\@nil
+    \ifnum\@tempc<"1000
+      \edef\@tempc{"\@nx\accentclass@
+        \ifnum\@tempc<"100 0\fi
+        \@xp\@tempe\meaning\@tempc\space}%
+    \else
+      \edef\@tempc{"\@nx\@nx\@nx\accentclass@
+        \@xp\do\meaning\@tempc\space}%
+    \fi
+    \xdef#1{\mathaccent\@tempc}%
+    \toks@{%
+      \relax\ifmmode \else\DN@##1##2{\nonmatherr@{#2}}\@xp\next@\fi
+      \mathaccent@}%
+    \xdef#2{\the\toks@{\@tempc}}%
+  }
+  \@tempd\hat\Hat \@tempd\check\Check \@tempd\tilde\Tilde
+  \@tempd\acute\Acute \@tempd\grave\Grave \@tempd\dot\Dot
+  \@tempd\ddot\Ddot \@tempd\breve\Breve \@tempd\bar\Bar
+\fi
+\endgroup
+\newcount\skewcharcount@
+\newcount\familycount@
+\def\theskewchar@{\familycount@\@ne
+ \global\skewcharcount@\the\skewchar\textfont\@ne
+ \ifnum\mathgroup>\m@ne\ifnum\mathgroup<16
+  \global\familycount@\the\mathgroup\relax
+  \global\skewcharcount@\the\skewchar\textfont\the\mathgroup\relax\fi\fi
+ \ifnum\skewcharcount@>\m@ne
+  \ifnum\skewcharcount@<128
+  \multiply\familycount@256
+  \global\advance\skewcharcount@\familycount@
+  \global\advance\skewcharcount@28672
+  \mathchar\skewcharcount@\else
+  \global\skewcharcount@\m@ne\fi\else
+ \global\skewcharcount@\m@ne\fi}
+\newcount\pointcount@
+\def\getpoints@#1.#2\getpoints@{\pointcount@#1 }
+\newdimen\accentdimen@
+\newcount\accentmu@
+\def\dimentomu@{\multiply\accentdimen@ 100
+ \@xp\getpoints@\the\accentdimen@\getpoints@
+ \multiply\pointcount@18
+ \divide\pointcount@\@m
+ \global\accentmu@\pointcount@}
+%
+\def\mathaccent@#1#2{\ifnum\mathgroup=\m@ne\xdef\thefam@{1}\else
+ \xdef\thefam@{\the\mathgroup}\fi
+ \accentdimen@\z@
+ \setboxz@h{\unbracefonts@$\m@th\mathgroup\thefam@\relax#2$}%
+ \ifdim\accentdimen@=\z@\DN@{\mathaccent#1{#2}}%
+  \setbox\@ne\hbox{\unbracefonts@
+    $\m@th\mathgroup\thefam@\relax#2\theskewchar@$}
+  \setbox\tw@\hbox{$\m@th\ifnum\skewcharcount@=\m@ne\else
+   \mathchar\skewcharcount@\fi$}%
+  \global\accentdimen@\wd\@ne\global\advance\accentdimen@-\wdz@
+  \global\advance\accentdimen@-\wd\tw@
+  \global\multiply\accentdimen@\tw@
+  \dimentomu@\global\advance\accentmu@\@ne
+ \else\DN@{{\mathaccent#1{#2\mkern\accentmu@ mu}%
+    \mkern-\accentmu@ mu}{}}\fi
+ \next@}
+%    \end{macrocode}
+%
+% \begin{macro}{\unbracefonts@}
+%    The \cs{unbracefonts@} macro is used to
+%    get rid of the braces of a \meta{math alphabet identifier}.
+%    \begin{macrocode}
+\def\unbracefonts@{\let\math@bgroup\@empty\let\math@egroup\@empty}
+%    \end{macrocode}
+% \end{macro}
+%
+%    This error message about math mode is used several times so we make
+%    an abbreviation for it.
+%    \begin{macrocode}
+\def\nonmatherr@#1{\@amsmath@err{\protect
+  #1 allowed only in math mode}\@ehd}
+%    \end{macrocode}
+%
+%    The commands \cs{Hat}, \cs{Tilde}, \ldots, are not made robust
+%    because they are clearly complex commands, not used that often,
+%    and we dont want to use up the extra string pool/csnames that
+%    robustness would require.
+%    \begin{macrocode}
+\begingroup \catcode`\"=12
+\def\@tempa#1#2{\gdef#1{\RIfM@\DN@{\mathaccent@{"\accentclass@#2 }}%
+  \else\DN@{\nonmatherr@{#1}}\fi\next@}}
+\@tempa\Hat{05E}\@tempa\Check{014}\@tempa\Tilde{07E}\@tempa\Acute{013}
+\@tempa\Grave{012}\@tempa\Dot{05F}\@tempa\Ddot{07F}\@tempa\Breve{015}
+\@tempa\Bar{016}
+\gdef\Vec{\RIfM@\DN@{\mathaccent@{"017E }}\else
+ \DN@{\nonmatherr@\Vec}\fi\next@}
+\endgroup
+%    \end{macrocode}
+%
+%    Triple and quadruple dot accents.
+%    \begin{macrocode}
+\def\dddot#1{{\mathop{#1}\limits^{\vbox to-1.4\ex@{\kern-\tw@\ex@
+ \hbox{\normalfont ...}\vss}}}}
+\def\ddddot#1{{\mathop{#1}\limits^{\vbox to-1.4\ex@{\kern-\tw@\ex@
+ \hbox{\normalfont....}\vss}}}}
+%    \end{macrocode}
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Mods, continued fractions, etc.}
+%
+%    The commands \cn{bmod}, \cn{pmod}, \cn{pod}, \cn{mod} aren't currently
+%    robust. [mjd,5-Sep-1994]
+%    \begin{macrocode}
+\def\bmod{\mskip-\medmuskip\mkern5mu\mathbin
+  {\operator@font mod}\penalty900
+  \mkern5mu\mskip-\medmuskip}
+\def\pod#1{\allowbreak\if@display\mkern18mu\else\mkern8mu\fi(#1)}
+\def\pmod#1{\pod{{\operator@font mod}\mkern6mu#1}}
+\def\mod#1{\allowbreak\if@display\mkern18mu
+  \else\mkern12mu\fi{\operator@font mod}\,\,#1}
+%    \end{macrocode}
+%
+%    Continued fractions. The optional arg l or r controls horizontal
+%    placement of the numerators. The |\kern-\nulldelimiterspace|
+%    is needed in the definition if we want the right-hand sides of the
+%    fraction rules to line up. The \cs{strut} keeps the numerator of
+%    a subsidiary cfrac from coming too close to the fraction rule above
+%    it.
+%    \begin{macrocode}
+\newcommand{\cfrac}[3][c]{{\displaystyle\frac{%
+  \strut\ifx r#1\hfill\fi#2\ifx l#1\hfill\fi}{#3}}%
+  \kern-\nulldelimiterspace}
+%    \end{macrocode}
+%
+%    \cn{overset} and \cn{underset} put symbols above, respectively below,
+%    a symbol that is not a \cs{mathop} and therefore does not naturally
+%    accept limits. \cs{binrel@@} uses information collected by
+%    \cs{binrel@} to make the resulting construction be of type mathrel
+%    or mathbin if the base symbol is either of those types.
+%    \begin{macrocode}
+\def\overset#1#2{\binrel@{#2}%
+  \binrel@@{\mathop{\kern\z@#2}\limits^{#1}}}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\def\underset#1#2{\binrel@{#2}%
+  \binrel@@{\mathop{\kern\z@#2}\limits_{#1}}}
+%    \end{macrocode}
+%
+%    \cn{sideset} allows placing `adscript' symbols at the four
+%    corners of a \cs{mathop}, \emph{in addition to} limits. Left-side
+%    adscripts go into arg \arg{1}, in the form |_{...}^{...}|, and
+%    right-side adscripts go into arg \arg{2}.
+%
+%    As currently written [mjd,21-Jan-1995] this is pretty haphazard.
+%    In order to really make it work properly in full generality we'd
+%    have to read and measure the top and bottom limits and use
+%    mathchoice to always get the right mathstyle for each piece,
+%    etc., etc.
+%    \begin{macrocode}
+\def\sideset#1#2#3{%
+  \@mathmeasure\z@\displaystyle{#3}%
+%    \end{macrocode}
+%    Use a global box assignment here since the depth override is
+%    implicitly global. Then move the constructed box to a local box
+%    register (2) to ensure it won't get destroyed during the next two
+%    mathmeasure statements. This precaution may be more extreme than
+%    necessary in practice.
+%    \begin{macrocode}
+  \global\setbox\@ne\vbox to\ht\z@{}\dp\@ne\dp\z@
+  \setbox\tw@\box\@ne
+  \@mathmeasure4\displaystyle{\copy\tw@#1}%
+  \@mathmeasure6\displaystyle{#3\nolimits#2}%
+  \dimen@-\wd6 \advance\dimen@\wd4 \advance\dimen@\wd\z@
+  \hbox to\dimen@{}\mathop{\kern-\dimen@\box4\box6}%
+}
+%    \end{macrocode}
+%
+% \begin{macro}{\smash}
+%    We add to the \cn{smash} command an optional argument
+%    denoting the part of the formula to be smashed.
+%    \begin{macrocode}
+\renewcommand{\smash}[2][tb]{%
+%    \end{macrocode}
+%    Here we save the value of the optional argument in \cs{smash@}
+%    for later use in \cs{finsm@sh}.
+%    \begin{macrocode}
+  \def\smash@{#1}%
+  \ifmmode\@xp\mathpalette\@xp\mathsm@sh\else
+        \@xp\makesm@sh\fi{#2}}
+%    \end{macrocode}
+%    When we come to this part of the code \cs{mathsm@sh} or
+%    \cs{makesm@sh} have stored their argument in box zero.
+%    Depending on the letters stored in \cs{smash@} we reset either
+%    the height, depth or both of box zero.
+%    \begin{macrocode}
+\def\finsm@sh{\def\mb@t{\ht\z@\z@}\def\mb@b{\dp\z@\z@}%
+  \def\mb@tb{\mb@t\mb@b}%
+  {\csname mb@\smash@\endcsname}%
+  \leavevmode\boxz@}
+%    \end{macrocode}
+% \end{macro}
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Extensible arrows}
+%
+%    The minus sign used in constructing these arrow fills is smashed so
+%    that superscripts above the arrows won't be too high. This
+%    primarily affects the \cn{xleftarrow} and \cn{xrightarrow} arrows.
+%
+%    Only the height of the minus sign box is set to 0 because the depth
+%    is not any greater than the depth of the arrowheads it will be used
+%    with. But placement of mathop `limits' subscript is too far
+%    away---that needs work [mjd,1995/01/24].
+%    \begin{macrocode}
+\def\rightarrowfill@#1{\m@th\setboxz@h{$#1\relbar$}\ht\z@\z@
+  $#1\copy\z@\mkern-6mu\cleaders
+  \hbox{$#1\mkern-2mu\box\z@\mkern-2mu$}\hfill
+  \mkern-6mu\mathord\rightarrow$}
+\def\leftarrowfill@#1{\m@th\setboxz@h{$#1\relbar$}\ht\z@\z@
+  $#1\mathord\leftarrow\mkern-6mu\cleaders
+  \hbox{$#1\mkern-2mu\copy\z@\mkern-2mu$}\hfill
+  \mkern-6mu\box\z@$}
+\def\leftrightarrowfill@#1{\m@th\setboxz@h{$#1\relbar$}\ht\z@\z@
+  $#1\mathord\leftarrow\mkern-6mu\cleaders
+  \hbox{$#1\mkern-2mu\box\z@\mkern-2mu$}\hfill
+  \mkern-6mu\mathord\rightarrow$}
+%
+\def\overarrow@#1#2#3{\vbox{\ialign{##\crcr#1#2\crcr
+ \noalign{\kern-\ex@\nointerlineskip}$\m@th\hfil#2#3\hfil$\crcr}}}
+\def\overrightarrow{\mathpalette{\overarrow@\rightarrowfill@}}
+\def\overleftarrow{\mathpalette{\overarrow@\leftarrowfill@}}
+\def\overleftrightarrow{\mathpalette{\overarrow@\leftrightarrowfill@}}
+%
+\def\underarrow@#1#2#3{%
+ \vtop{\ialign{##\crcr$\m@th\hfil#2#3\hfil$\crcr
+ \noalign{\nointerlineskip\kern-.5\ex@}#1#2\crcr}}}
+\def\underrightarrow{\mathpalette{\underarrow@\rightarrowfill@}}
+\def\underleftarrow{\mathpalette{\underarrow@\leftarrowfill@}}
+\def\underleftrightarrow{\mathpalette{\underarrow@\leftrightarrowfill@}}
+%    \end{macrocode}
+%
+%    Some extensible arrows to serve as mathrels and taking
+%    sub/superscripts.
+%    \begin{macrocode}
+\newcommand{\xrightarrow}[2][]{%
+  \mathrel{\mathop{%
+%    \end{macrocode}
+%    Measure the superscript and subscript.
+%    \begin{macrocode}
+    \setbox\z@\vbox{\m@th
+      \hbox{$\scriptstyle\;{#1}\;\;$}%
+      \hbox{$\m@th\scriptstyle\;{#2}\;\;$}%
+    }%
+    \hbox to\ifdim\wd\z@>\minaw@\wd\z@\else\minaw@\fi{%
+      \rightarrowfill@\displaystyle}}%
+%    \end{macrocode}
+%    We don't want to place an empty subscript since that will produce
+%    too much blank space below the arrow.
+%    \begin{macrocode}
+  \limits^{#2}\@ifnotempty{#1}{_{#1}}}%
+}
+%
+\newcommand{\xleftarrow}[2][]{%
+  \mathrel{\mathop{%
+%    \end{macrocode}
+%    Measure the superscript and subscript.
+%    \begin{macrocode}
+    \setbox\z@\vbox{\m@th
+      \hbox{$\scriptstyle\;\;{#1}\;$}%
+      \hbox{$\m@th\scriptstyle\;\;{#2}\;\;$}%
+    }%
+    \hbox to\ifdim\wd\z@>\minaw@\wd\z@\else\minaw@\fi{%
+      \leftarrowfill@\displaystyle}}%
+  \limits^{#2}\@ifnotempty{#1}{_{#1}}}%
+}
+%    \end{macrocode}
+%
+%    We use an \cs{@ifundefined} test here for \cs{minaw@} so it will
+%    not be reallocated if \pkg{amscd} precedes \pkg{amsmath} in package
+%    loading.
+%    \begin{macrocode}
+\@ifundefined{minaw@}{\newdimen\minaw@\minaw@11pt}{}
+%    \end{macrocode}
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Array-related environments}
+% \subsection{Remarks}
+%
+%    Because these environments can be nested within the equation
+%    structures that allow \cn{tag}, there is some cross-influence in
+%    the internal workings of the \cn{\\} command.
+%
+% \subsection{The \env{substack} environment}
+%
+%    The \env{substack} environment can be used to set subscripts
+%    and superscripts that consist of several lines. Usage:
+% \begin{verbatim}
+% X_{\begin{substack}a=1\\b=2\end{substack}}
+% \end{verbatim}
+%
+% \begin{environment}{subarray}
+%    The \env{subarray} environment makes a small-size array suitable
+%    for use in a subscript or superscript. At the moment the supported
+%    arguments are not the full possibilities of \env{array} but only
+%    |c| or |l| for centered or left-aligned. And only one column.
+%    \begin{macrocode}
+\newenvironment{subarray}[1]{%
+%    \end{macrocode}
+%    Note: The predecessors of \env{subarray} (\env{Sb} and \env{Sp},
+%    inherited from \amstex/) used \cs{vbox} instead of \cs{vcenter}.
+%    But when a multiline subscript is placed in \cs{limits} position
+%    \cs{vcenter} is no worse than \cs{vbox}, and when it is placed
+%    in the \cs{nolimits} position (e.g., for an integral), \cs{vcenter}
+%    provides clearly better positioning than \cs{vbox}.
+%    \begin{macrocode}
+  \vcenter\bgroup
+%    \end{macrocode}
+%    Use \cs{Let@} to set the proper meaning of the \cn{\\} and \cn{\\*}
+%    commands. And restore the meaning of \cs{math@cr@@@} to \cs{cr}
+%    (see above) in case \env{subarray} is used inside one of the more
+%    complicated alignment macros where the meaning of \cs{math@cr@@@} is
+%    different. Similarly, call \cs{default@tag} to ensure that a line
+%    break here doesn't get an equation number!
+%    \begin{macrocode}
+  \Let@ \restore@math@cr \default@tag
+%    \end{macrocode}
+%    Set the line spacing to be the same as \cs{atop} (when \cs{atop}
+%    occurs in \cs{textstyle} or smaller), cf \textit{The \tex/book},
+%    Appendix G.
+%    \begin{macrocode}
+  \baselineskip\fontdimen10 \scriptfont\tw@
+  \advance\baselineskip\fontdimen12 \scriptfont\tw@
+  \lineskip\thr@@\fontdimen8 \scriptfont\thr@@
+  \lineskiplimit\lineskip
+%    \end{macrocode}
+%    Start the \cs{vbox} \cs{halign} structure that encloses the
+%    contents. Notice that we never get \cs{scriptscriptstyle}. That
+%    would require a \cs{mathchoice} (ugh).
+%    \begin{macrocode}
+  \ialign\bgroup\ifx c#1\hfil\fi
+    $\m@th\scriptstyle##$\hfil\crcr
+}{%
+  \crcr\egroup\egroup
+}
+%    \end{macrocode}
+% \end{environment}
+%
+% \begin{macro}{\substack}
+%    The \cn{substack} command is just an abbreviation for the
+%    most common use of \env{subarray}.
+%    \begin{macrocode}
+\newcommand{\substack}[1]{\subarray{c}#1\endsubarray}
+%    \end{macrocode}
+% \end{macro}
+%
+% \subsection{Matrices}
+%
+% \begin{environment}{smallmatrix}
+%    \env{smallmatrix} is again an alignment, this time in a centered
+%    box. The opening incantations are basically the same as those in
+%    \cs{multilimits@}, followed by the alignment itself. A remark:
+%    the baselineskip (|9\ex@|) used in \amstex/ is too large for
+%    use in text with the usual baselineskip of $12$ or $13$ points; we
+%    change it here to |6\ex@| and also adjust the \cs{lineskip}
+%    and \cs{lineskiplimit} slightly to compensate. (MJD)
+%    \begin{macrocode}
+\newenvironment{smallmatrix}{\null\,\vcenter\bgroup
+  \Let@\restore@math@cr\default@tag
+  \baselineskip6\ex@ \lineskip1.5\ex@ \lineskiplimit\lineskip
+  \ialign\bgroup\hfil$\m@th\scriptstyle##$\hfil&&\thickspace\hfil
+  $\m@th\scriptstyle##$\hfil\crcr
+}{%
+  \crcr\egroup\egroup\,%
+}
+%    \end{macrocode}
+% \end{environment}
+%
+% \begin{environment}{matrix}
+% \begin{macro}{\c@MaxMatrixCols}
+%    The \env{matrix} is \env{array} that provides up to ten centered
+%    columns, so that users don't have to give the col-spec argument
+%    explicitly---unless they want some of the columns noncentered, that
+%    is. The maximum number of columns is actually not fixed at ten but
+%    given by the counter |MatrixCols|, and can therefore be increased
+%    by changing that counter.
+%
+%    The extra space of \cn{arraycolsep} that \env{array} adds on each
+%    side is a waste so we remove it here (perhaps we should instead
+%    remove it from \env{array} in general, but that's a harder task).
+%
+%    TODO: Think about re-implementing \cn{matrix} to get rid of the
+%    \cs{c@MatrixCols} limit and have hard-wired preamble that doesn't
+%    have to be rebuilt each time.
+%
+%    We must use \cn{renewenvironment} for \env{matrix} and
+%    \env{pmatrix} because \latex/ doesn't kill the definitions found in
+%    \fn{plain.tex}, even though it probably should because of their
+%    decidedly non-\latex/ syntax.
+%    \begin{macrocode}
+\newcount\c@MaxMatrixCols \c@MaxMatrixCols=10
+\renewenvironment{matrix}{%
+  \hskip -\arraycolsep\array{*\c@MaxMatrixCols c}%
+}{%
+  \endarray \hskip -\arraycolsep
+}
+%    \end{macrocode}
+% \end{macro}
+% \end{environment}
+%
+%    \begin{macrocode}
+\renewenvironment{pmatrix}{\left(\matrix}{\endmatrix\right)}
+\newenvironment{bmatrix}{\left[\matrix}{\endmatrix\right]}
+\newenvironment{vmatrix}{\left\lvert\matrix}{\endmatrix\right\rvert}
+\newenvironment{Vmatrix}{\left\lVert\matrix}{\endmatrix\right\rVert}
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\let\hdots\@ldots
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\newcommand{\hdotsfor}[1]{%
+  \ifx[#1\@xp\shdots@for\else\hdots@for\@ne{#1}\fi}
+\newmuskip\dotsspace@
+\def\shdots@for#1]{\hdots@for{#1}}
+\def\hdots@for#1#2{\multicolumn{#2}c%
+  {\m@th\dotsspace@1.5mu\mkern-#1\dotsspace@
+   \xleaders\hbox{$\m@th\mkern#1\dotsspace@.\mkern#1\dotsspace@$}%
+           \hfill
+   \mkern-#1\dotsspace@}%
+   }
+%    \end{macrocode}
+%
+% \begin{environment}{cases}
+%    The easiest way to produce the \env{cases} environment is to base
+%    it on the \env{array} environment. We must use
+%    \cn{renewenvironment} to override the definition of \cn{cases} that
+%    \latex/ (unwisely) leaves in place from \fn{plain.tex}.
+%    \begin{macrocode}
+\renewenvironment{cases}{%
+  \left\{\def\arraystretch{1.2}%
+  \array{@{}l@{\quad}l@{}}%
+}{%
+  \endarray\right.%
+}
+%    \end{macrocode}
+% \end{environment}
+%
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Equation sub-numbering}
+%
+%    \begin{macrocode}
+\newcounter{parentequation}% Counter for ``parent equation''.
+%    \end{macrocode}
+%
+%    \begin{macrocode}
+\newenvironment{subequations}{%
+%    \end{macrocode}
+%    Before sending down the `equation' counter to the subordinate
+%    level, add 1 using standard \cn{refstepcounter}.
+%    \begin{macrocode}
+  \refstepcounter{equation}%
+%    \end{macrocode}
+%    Define \cn{theparentequation} equivalent to current
+%    \cn{theequation}. \cn{edef} is necessary to expand the current
+%    value of the equation counter. This might in rare cases cause
+%    something to blow up, in which case the user needs to add
+%    \cn{protect}.
+%    \begin{macrocode}
+  \begingroup % conservative approach
+  \let\protect\@nx
+  \edef\@tempa{\def\@nx\theparentequation{\theequation}}%
+  \@xp\endgroup\@tempa
+  \setcounter{parentequation}{\value{equation}}%
+%    \end{macrocode}
+%    And set the equation counter to 0, so that the normal incrementing
+%    processes in the various equation environments will produce the
+%    desired results.
+%    \begin{macrocode}
+  \setcounter{equation}{0}%
+  \def\theequation{\theparentequation\alph{equation}}%
+  \ignorespaces
+}{%
+  \setcounter{equation}{\value{parentequation}}%
+%    \end{macrocode}
+%    Prevent an extra space from creeping in after
+%    |\end{subequations}|:
+%    \begin{macrocode}
+  \global\@ignoretrue
+}
+%    \end{macrocode}
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Equation numbering}
+%
+%    In the multiline equation environments provided here, the task
+%    of equation numbering is linked to the task of line breaking
+%    in the sense that it is the \cn{\\} command that marks where an
+%    equation number for the current line will be processed and added to
+%    the page.
+%
+%    Provide a convenient way to specify that equations should be
+%    numbered within sections.
+%    \begin{macrocode}
+\def\numberwithin#1#2{\@ifundefined{c@#1}{\@nocounterr{#1}}{%
+  \@ifundefined{c@#2}{\@nocnterr{#2}}{%
+  \@addtoreset{#1}{#2}%
+  \toks@\@xp\@xp\@xp{\csname the#1\endcsname}%
+  \@xp\xdef\csname the#1\endcsname
+    {\@xp\@nx\csname the#2\endcsname
+     .\the\toks@}}}}
+%    \end{macrocode}
+%
+%    To make references to equation numbers easier, we provide
+%    \cn{eqref}.  We almost don't need \cn{textup}, except that
+%    \cs{tagform@} doesn't supply the italic correction.
+%    \begin{macrocode}
+\def\eqref#1{\textup{\tagform@{\ref{#1}}}}
+%    \end{macrocode}
+%
+% \subsection{Preliminary macros}
+%
+%    The following macros implement the \latex/ syntax for the
+%    \cn{\\} command, i.e. the possibility to add an asterisk to
+%    inhibit a page break, or an optional argument to denote additional
+%    vertical space. They are modelled more or less after the
+%    corresponding macros for \latex/'s \env{eqnarray} and \env{array}
+%    environments.
+%
+%    [We can perhaps use the eqnarray mechanism if we change it so that
+%    it also uses \cs{openup}.]
+%
+% \begin{macro}{\dspbrk@lvl}
+%    We begin by defining the \cs{dspbrk@lvl} counter. This counter
+%    records the desirability of a break after the current row, as a
+%    number between $0$ and $4$. Its default value is $-1$ meaning that
+%    no explicit \cn{displaybreak} command was given, and the default
+%    \cs{interdisplaylinepenalty} is to be used.
+%    \begin{macrocode}
+\newcount\dspbrk@lvl
+\dspbrk@lvl=-1
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\interdisplaylinepenalty}
+%    We set the \cs{interdisplaylinepenalty} to $10000$.
+%    \begin{macrocode}
+\interdisplaylinepenalty\@M
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\allowdisplaybreaks}
+%    The \cn{allowdisplaybreaks} declaration.
+%    \begin{macrocode}
+\def\allowdisplaybreaks{%
+  \new@ifnextchar[\allowdspbrks@{\allowdspbrks@[4]}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\allowdspbrks@}
+%    Here we simply fetch a suitable value for
+%    \cs{interdisplaylinepenalty}.
+%    \begin{macrocode}
+\def\allowdspbrks@[#1]{%
+  \interdisplaylinepenalty\getdsp@pen{#1}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\getdsp@pen}
+%    Modelled after \latex/'s \cs{@getpen}.  We use higher numbers
+%    than would normally be provided by \cs{@lowpenalty},
+%    \cs{@medpenalty}, and \cs{@highpenalty}, since display
+%    breaks are almost always less desirable.
+%    \begin{macrocode}
+\def\getdsp@pen#1{%
+  \ifcase #1\relax \@M
+    \or 9999
+    \or 6999
+    \or 2999
+    \or \z@\fi}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\displaybreak}
+% \begin{macro}{\displaybreak@}
+% \begin{macro}{\dspbrk@}
+%    For breaks in a certain row of a alignment.
+%    \begin{macrocode}
+\def\displaybreak{\@amsmath@err{\Invalid@@\displaybreak}\@eha}
+
+\def\displaybreak@{%
+  \def\displaybreak{\new@ifnextchar[\dspbrk@{\dspbrk@[4]}}}
+
+\def\dspbrk@[#1]{\global\dspbrk@lvl #1\relax}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\math@cr}
+%    The macro \cs{math@cr} ends a row inside one of the equation
+%    environments, i.e., this is the internal name of the \cn{\\}
+%    commands in these environments. As usual for this kind of macro
+%    inside of alignments we insert a special brace into \tex/'s input
+%    stream.
+%    \begin{macrocode}
+\def\math@cr{{\ifnum0=`}\fi
+%    \end{macrocode}
+%    The first step is now to check whether an asterisk follows.
+%    \cs{@eqpen} is used to hold the penalty value to be put on
+%    the vertical list.
+%    Then we call up \cs{math@cr@} which performs the next step.
+%    If an asterisk is read page breaking is inhibited.
+%    \begin{macrocode}
+  \@ifstar{\global\@eqpen\@M\math@cr@}%
+%    \end{macrocode}
+%    Otherwise we have to check the \cs{dspbrk@lvl} value.
+%    \begin{macrocode}
+          {\global\@eqpen
+             \ifnum\dspbrk@lvl <\z@ \interdisplaylinepenalty
+              \else -\@getpen\dspbrk@lvl \fi
+           \math@cr@}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\math@cr@}
+%    The purpose of \cs{math@cr@} is to check whether an optional
+%    argument follows.  If not it provides \cs{z@} as default
+%    value.
+%    \begin{macrocode}
+\def\math@cr@{\new@ifnextchar[\math@cr@@{\math@cr@@[\z@]}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\math@cr@@}
+%    \cs{math@cr@@} closes the special brace opened in
+%    \cs{math@cr}, and calls \cs{math@cr@@@} which is supposed
+%    the `real' row ending command.  The meaning of this macro depends
+%    on the environment in which it is used.
+%    \begin{macrocode}
+\def\math@cr@@[#1]{\ifnum0=`{\fi}\math@cr@@@
+%    \end{macrocode}
+%    Finally we put the additional space onto the vertical list.
+%    \begin{macrocode}
+  \noalign{\vskip#1\relax}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\Let@}
+%    \cs{Let@} is called by all environments where \cn{\\}
+%    ends a row of an alignment.
+%    \begin{macrocode}
+\def\Let@{\let\\\math@cr}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\restore@math@cr}
+%    We mentioned already that the exact meaning of \cs{math@cr@@@}
+%    depends on the current environment.  Since it is often a simple
+%    \cs{cr} we provide \cs{restore@math@cr} to reset it.
+%    \begin{macrocode}
+\def\restore@math@cr{\def\math@cr@@@{\cr}}
+%    \end{macrocode}
+%    This is also the default case.
+%    \begin{macrocode}
+\restore@math@cr
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\intertext}
+% \begin{macro}{\intertext@}
+%    The intertext command is used for inserting text between the
+%    rows of an alignment.  It's use is only allowed in special
+%    places.
+%
+%    Intertext might better be done as an environment, but the
+%    \cs{begingroup} from \cn{begin} would cause the \cs{noalign} to fail.
+%    \begin{macrocode}
+\def\intertext{\@amsmath@err{\Invalid@@\intertext}\@eha}
+%    \end{macrocode}
+%    \cs{intertext@} is called by all environments that allow
+%    the use of the \cn{intertext} command.
+%    \begin{macrocode}
+\def\intertext@{\def\intertext##1{\noalign{%
+  \penalty\postdisplaypenalty\vskip\belowdisplayskip
+  \vbox{\normalbaselines\noindent##1}%
+  \penalty\predisplaypenalty\vskip\abovedisplayskip}}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+%
+% \subsection{Implementing tags and labels}
+%
+%    In this section we describe some of the macros needed to make the
+%    \cn{tag} command work in various places. We start by defining a
+%    help text to be used when a \cn{tag} command is used somewhere
+%    it should not appear.
+%
+% \begin{macro}{\tag@help}
+%    This is the default error help text provided when \cn{tag}
+%    generates an error message.
+%    Note that \cs{newhelp} generates a control sequence name
+%    from the string given as its argument so that a leading
+%    backslash is provided automatically.
+%    \begin{macrocode}
+\newhelp\tag@help
+  {tag cannot be used at this point.\space
+   If you don't understand why^^Jyou should consult
+   the documentation.^^JBut don't worry: just continue, and I'll
+   forget what happened.}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\gobble@tag}
+%    This macro is to be used when \cn{tag} should silently
+%    skip its argument.
+%    It is made to handle the \qc{\*}-form of \cn{tag} as well.
+%    \begin{macrocode}
+\def\gobble@tag{\@ifstar\@gobble\@gobble}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\invalid@tag}
+%    \cs{invalid@tag} is a macro that should be used whenever
+%    \cn{tag} appears in an illegal place.
+%    It sets up \cs{tag@help} (as defined above) as help message,
+%    prints its argument as error message, and skips \cn{tag}'s
+%    argument.
+%    \begin{macrocode}
+\def\invalid@tag#1{\@amsmath@err{#1}{\the\tag@help}\gobble@tag}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\dft@tag}
+% \begin{macro}{\default@tag}
+%    \cs{dft@tag} provides a convenient way to disallow the
+%    use of \cn{tag} at certain points.
+%    One simply has to write
+%    \begin{verbatim}
+%\let\tag\dft@tag
+%    \end{verbatim}
+%    and the \cn{tag} command will produce an error message,
+%    with a suitable error help text, and discard its argument.
+%    \begin{macrocode}
+\def\dft@tag{\invalid@tag{\string\tag\space not allowed here}}
+%    \end{macrocode}
+%    Since this is used several times we provide an abbreviation for
+%    it.
+%    \begin{macrocode}
+\def\default@tag{\let\tag\dft@tag}
+%    \end{macrocode}
+%    Since this is also the default, i.e.\ the \cn{tag} command
+%    should not be used except in special places, we issue a
+%    \cs{default@tag} command.
+%    \begin{macrocode}
+\default@tag
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+%    Now that we have taken care of the case that \cn{tag} is not
+%    allowed we will provide some macros to process tags appropriately.
+%    As the user documentation states, a \cn{tag} command (without
+%    the asterisk typesets its argument according to the document
+%    styles' conventions, whereas a \cn{tag*} command typesets its
+%    argument exactly as given. We define therefore the following
+%    interface:
+%
+% \begin{macro}{\maketag@@}
+% \begin{macro}{\maketag@@@}
+% \begin{macro}{\tagform@}
+%    \cn{tag} is supposed to call \cs{maketag@@} which checks
+%    whether an asterisk follows. If this is the case it calls up
+%    \cs{maketag@@@} which sets its argument `as is'. Otherwise
+%    \cs{tagform@} is called to do the job. (This macro is to be
+%    defined appropriately by the document style.)
+%    \begin{macrocode}
+\def\maketag@@{\@ifstar\maketag@@@\tagform@}
+%    \end{macrocode}
+%    We define \cs{maketag@@@} to use the normal font of the document
+%    text (since this is the usual practice for numbering of document
+%    elements) and to put a box around the tag. Furthermore we use
+%    \cs{m@th} for exceptional cases where the tag involves a
+%    superscript or some such math. (Probably from an explicit use of
+%    \cs{tag*} rather than from the automatic numbering.)
+%    \begin{macrocode}
+\def\maketag@@@#1{\hbox{\m@th\normalfont#1}}
+%    \end{macrocode}
+%    We use the following default definition for \cs{tagform@}
+%    that puts only parentheses around the tag.
+%    \begin{macrocode}
+\def\tagform@#1{\maketag@@@{(\ignorespaces#1\unskip)}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+%    We need to insinuate \cs{tagform@} into \cs{@eqnnum} in case
+%    \env{eqnarray} is used (probably in a document that was originally
+%    written without use of the \pkg{amsmath} package).
+%    \begin{macrocode}
+\iftagsleft@
+  \def\@eqnnum{\hbox to1sp{}\rlap{\normalfont\normalcolor
+    \hskip -\displaywidth\tagform@\theequation}}
+\else
+  \def\@eqnnum{{\normalfont\normalcolor \tagform@\theequation}}
+\fi
+%    \end{macrocode}
+%
+% \begin{macro}{\thetag}
+%    Sometimes one needs to set a literal tag according to the rules of
+%    the document style. To achieve this we provide the \cn{thetag}
+%    command. It typesets its argument by calling \cs{tagform@} on
+%    it.
+%    \begin{macrocode}
+\def\thetag{\leavevmode\tagform@}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\df@tag}
+% \begin{macro}{\make@df@tag}
+% \begin{macro}{\make@df@tag@@}
+% \begin{macro}{\make@df@tag@@@}
+%    Sometimes it is necessary for a \cn{tag} command to store a tag
+%    in a safe place and to process it later, e.g., for a tag in a row
+%    of an alignment where the tag can only be typeset when the
+%    \cn{\\} at the end of the row was seen. Such a tag is stored in
+%    the macro \cs{df@tag} (for `deferred tag'). For this purpose we
+%    provide the \cs{make@df@tag} macro. It is built very similar to
+%    the \cs{maketag@@} macro above.
+%    \begin{macrocode}
+\def\make@df@tag{\@ifstar\make@df@tag@@\make@df@tag@@@}
+%    \end{macrocode}
+%    \cs{make@df@tag} sets \cs{@currentlabel} and defines
+%    \cs{df@tag} appropriately.
+%
+%    To simplify the task of tracking \cs{tag} and \cs{label}
+%    commands inside math display environments, we defer \cs{label}
+%    commands until the tag is typeset, similar to the way that
+%    \cs{tag}s themselves are deferred.  This allows arbitrary
+%    placement of \cs{label} and \cs{tag} commands and also means we
+%    only increment the \cs{equation} counter when we really need to,
+%    thus avoiding the \cs{setb@ck} nonsense that used to be required.
+%
+%    \begin{macrocode}
+\def\make@df@tag@@#1{%
+  \gdef\df@tag{\maketag@@@{#1}\def\@currentlabel{#1}}}
+%    \end{macrocode}
+%    Autogenerated number:
+%    \begin{macrocode}
+\def\make@df@tag@@@#1{\gdef\df@tag{\tagform@{#1}%
+  \toks@\@xp{\p@equation{#1}}\edef\@currentlabel{\the\toks@}}}
+%    \end{macrocode}
+%    \end{macro}
+%    \end{macro}
+%    \end{macro}
+%    \end{macro}
+%
+%    \begin{macro}{\ltx@label}
+%    \begin{macro}{\label@in@display}
+%    \begin{macro}{\df@label}
+%    Next, we store the default definition of \cs{label} in
+%    \cs{ltx@label} and then define a new version of \cs{label} for
+%    use in math display environments.  \cs{label@in@display} merely
+%    issues a warning message if there is already a pending label
+%    (which will be discarded) and then stores the label in \cs{df@label}.
+%    \begin{macrocode}
+\let\ltx@label\label
+%
+\def\label@in@display{%
+    \ifx\df@label\@empty\else
+        \@amsmath@err{Multiple \string\label's:
+            label '\df@label' will be lost}\@eha
+    \fi
+    \gdef\df@label
+}
+
+\let\df@label\@empty
+%    \end{macrocode}
+%    \end{macro}
+%    \end{macro}
+%    \end{macro}
+%
+%    \begin{macro}{\make@display@tag}
+%    Now we define a macro to process \cs{tag} and \cs{label} commands
+%    in various display environments.  If the |@eqnsw| switch is set,
+%    then we should supply an equation number; otherwise, if the
+%    |@tag| switch is set, we should use the tag stored in
+%    \cs{df@tag}.  Finally, we process any pending \cs{label}s.
+%
+%    TODO: Arguably, \cs{make@display@tag} should issue a warning
+%    message if there is a \cs{label} but neither a tag nor an
+%    equation number.  Also, it would probably be worthwhile to
+%    explore whether \cs{iftag@} could be done away with and replaced
+%    by checks to see if \cs{df@tag} is empty or not.
+%    \begin{macrocode}
+\def\make@display@tag{%
+    \if@eqnsw
+        \refstepcounter{equation}%
+        \tagform@\theequation
+    \else
+        \iftag@
+            \df@tag
+            \global\let\df@tag\@empty
+        \fi
+    \fi
+    \ifx\df@label\@empty\else
+        \ltx@label{\df@label}%
+        \global\let\df@label\@empty
+    \fi
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    Now we define the special versions of \cn{tag} used within the
+%    \env{align} environments.
+%
+% \begin{macro}{\tag@in@align}
+%    The \cn{tag} command may only appear once in a row of
+%    an alignment.  Therefore we first check the switch |tag@|
+%    that is set to false at the begin of every row.
+%    If this switch is true a \cn{tag} was already given in this
+%    row and we define \cs{next@} to expand to a call to
+%    \cs{invalid@tag}.
+%    \begin{macrocode}
+\def\tag@in@align{%
+    \relax
+    \iftag@
+        \DN@{\invalid@tag{Multiple \string\tag}}%
+    \else
+%    \end{macrocode}
+%    Otherwise we set the |tag@| switch.  But there is more to
+%    be done: we must also prevent the automatic generation of a
+%    tag.  Therefore we also reset the |@eqnsw|.
+%    \begin{macrocode}
+    \global\tag@true
+%    \end{macrocode}
+%    Changed to \cs{nonumber}, since that seems to be all that's
+%    required.---dmj, 21 Dec 1994
+%    \begin{macrocode}
+    \nonumber
+%    \end{macrocode}
+%    Within a row of an \env{align} environment the \cn{tag}
+%    command must not typeset the tag immediately since its
+%    position can be determined only later.
+%    Therefore we use the \cs{make@df@tag} macro defined
+%    earlier.
+%    Finally we call \cs{next@} to process the argument
+%    that follows.
+%    \begin{macrocode}
+        \let\next@\make@df@tag
+    \fi
+    \next@
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\raisetag}
+%    Usage: \cn{raisetag} \meta{dimen}
+%
+%    This will shift the next tag by \meta{dimen} in the vertical
+%    direction in \emph{only} the next \cn{equation}, \cn{gather},
+%    \cn{align}, or \cn{multline} environment.
+%
+%    (mjd: Combined \cs{raisetag@} and \cs{raise@tag} in order to save
+%    a dimen register because those tend to get used up by add-on
+%    packages and there's no way around the upper limit of 256.)
+%    \begin{macrocode}
+\def\raisetag#1{\skip@#1\relax
+  \xdef\raise@tag{\vskip\iftagsleft@\else-\fi\the\skip@\relax}%
+}
+%    \end{macrocode}
+%    \cn{raise@tag} will be reemptied at the beginning of each equation,
+%    which might occur at a |\begin{xxx}| or \cn{\\}.
+%    \begin{macrocode}
+\let\raise@tag\@empty
+%    \end{macrocode}
+%    \end{macro}
+%
+% \begin{macro}{\notag}
+%    For consistency we provide \cn{notag}, equivalent to
+%    \cn{nonumber}. The alternative would have been to rename
+%    \cn{tag} as \cn{number} to go along with \cn{nonumber},
+%    but of course \cs{number} is a \tex/ primitive that should not
+%    be redefined.
+%    \begin{macrocode}
+\def\notag{\nonumber}
+%    \end{macrocode}
+% \end{macro}
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Multiline equation environments}
+%
+% \subsection{Remarks}
+%
+%    In late 1994 David M. Jones did a thorough overhaul of these
+%    environments so that the number placement and a few other aspects
+%    are substantially improved over the original versions that were
+%    ported essentially unchanged from \fn{amstex.tex} in 1989. Most of
+%    the commentary in this section is DMJ's, and comments of any
+%    significance that I added are marked by my initials and date
+%    [mjd,1995/01/11].
+%
+% \subsection{Preliminaries}
+%
+% \begin{macro}{\ifinany@}
+% \begin{macro}{\ifinalign@}
+% \begin{macro}{\ifingather@}
+%    We define three switches that are set to true in certain
+%    alignments: |inalign@| and |ingather@| inside of
+%    the \env{align} and \env{gather} environments, respectively,
+%    and |inany@| that is set true in any of these
+%    environments.
+%    These switches are needed to control certain actions that
+%    depend on the surrounding conditions, more specifically:
+%    on the setting already done by the surrounding environments.
+%    \begin{macrocode}
+\newif\ifinany@
+\newif\ifinalign@
+\newif\ifingather@
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\iftag@}
+%    The switch |tag@| is set to false at the beginning of every
+%    row and set to true by a \cn{tag} command.
+%    This allows us to check whether there is more than one tag on
+%    a row.
+%    \begin{macrocode}
+\newif\iftag@
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\ifst@rred}
+%    The switch |st@rred| is set to true by all starred
+%    environments
+%    and set to false by the unstarred versions.
+%    \begin{macrocode}
+\newif\ifst@rred
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\ifmeasuring@}
+%    All display environments get typeset twice---once during a
+%    ``measuring'' phase and then again during a ``production'' phase;
+%    \cs{ifmeasuring@} will be used to determine which case we're in,
+%    so we can take appropriate action.
+%
+%    \begin{macrocode}
+\newif\ifmeasuring@
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macro}{\ifshifttag@}
+%    \cs{ifshifttag@} is used by \env{gather} to communicate between
+%    \cs{calc@shift@gather} and \cs{place@tag@gather} whether an
+%    equation tag should be shifted to a separate line.  It's also
+%    used by \env{multline}.
+%    \begin{macrocode}
+\newif\ifshifttag@
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\row@}
+%    \begin{macrocode}
+\newcount\row@
+%    \end{macrocode}
+%    \end{macro}
+%
+% \begin{macro}{\column@}
+%    The counter \cs{column@} is used by the alignment macros to
+%    keep track of the current column.
+%
+%    \begin{macrocode}
+\newcount\column@
+%    \end{macrocode}
+% \end{macro}
+%
+%  \begin{macro}{\column@plus}
+%    \cs{\column@plus} is a useful abbreviation.
+%    \begin{macrocode}
+\def\column@plus{%
+    \global\advance\column@\@ne
+}
+%    \end{macrocode}
+%  \end{macro}
+%
+%    \begin{macro}{\maxfields@}
+%    \begin{macrocode}
+\newcount\maxfields@
+%    \end{macrocode}
+%    \end{macro}
+%
+%  \begin{macro}{\add@amps}
+%    \begin{macrocode}
+\def\add@amps#1{%
+    \begingroup
+        \count@#1
+        \DN@{}%
+        \loop
+            \ifnum\count@>\column@
+                \edef\next@{&\next@}%
+                \advance\count@\m@ne
+        \repeat
+    \@xp\endgroup
+    \next@
+}
+%    \end{macrocode}
+%  \end{macro}
+%
+% \begin{macro}{\andhelp@}
+%    The help text stored in \cs{andhelp@} is used for errors
+%    generated by too many \qc{\&} characters in a row.
+%    \begin{macrocode}
+\newhelp\andhelp@
+{An extra & here is so disastrous that you should probably exit^^J
+and fix things up.}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macro}{\eqnshift@}
+%    \cs{eqnshift@} is used by \env{align} and \env{gather} as the
+%    indentation of the lines of the environment from the left margin.
+%    \begin{macrocode}
+\newdimen\eqnshift@
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\alignsep@}
+%    \begin{macrocode}
+\newdimen\alignsep@
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\tagshift@}
+%    \begin{macrocode}
+\newdimen\tagshift@
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\mintagsep}
+%    \cs{mintagsep} is the minimum allowable separation between an
+%    equation and its tag.  We set it to half a quad in
+%    \cs{textfont}2, which is \tex/'s built-in value.
+%    \begin{macrocode}
+\def\mintagsep{.5\fontdimen6\textfont2}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\minalignsep}
+%    \begin{macrocode}
+\def\minalignsep{10pt}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\tagwidth@}
+%    \begin{macrocode}
+\newdimen\tagwidth@
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\totwidth@}
+%    \begin{macrocode}
+\newdimen\totwidth@
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\lineht@}
+%    The dimen register \cs{lineht@} is used to keep track of the
+%    height (or depth, if tags are on the right) of a row in an
+%    alignment.
+%    \begin{macrocode}
+\newdimen\lineht@
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macro}{\tag@width}
+%    \begin{macro}{\savetaglength@}
+%    \begin{macro}{\shift@tag}
+%    \begin{macro}{\tag@shifts}
+%    \begin{macrocode}
+\def\tag@width#1{%
+    \ifcase\@xp#1\tag@lengths\fi
+}
+
+\def\savetaglength@{%
+    \begingroup
+        \let\or\relax
+        \xdef\tag@lengths{\tag@lengths\or \the\wdz@}%
+    \endgroup
+}
+
+\def\shift@tag#1{%
+    \ifcase\@xp#1\tag@shifts\fi\relax
+}
+
+\let\tag@shifts\@empty
+%    \end{macrocode}
+%    \end{macro}
+%    \end{macro}
+%    \end{macro}
+%    \end{macro}
+%
+%    \begin{macro}{\saveshift@}
+%    \begin{macrocode}
+\def\saveshift@#1{%
+    \begingroup
+        \let\or\relax
+        \xdef\tag@shifts{\or#1\tag@shifts}%
+    \endgroup
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+% \begin{macro}{\displ@y}
+% \begin{macro}{\displ@y@}
+% \begin{macro}{\@display@init}
+%    \cs{displ@y} is from \fn{plain.tex}, with
+%    \cs{interdisplaylinepenalty} changed to \cs{@eqpen}. Also we
+%    transplanted most of its internal organs to \cs{@display@init} to
+%    support \cs{displ@y@} and other possibilities. Don't try to make
+%    sense of these naming conventions! They are a narrowly calculated
+%    mishmash of Knuth/Spivak/Lamport/Mittelbach precedents. The reason
+%    for not cleaning them up and forcing all names to a consistent
+%    scheme is that then in principle we'd have to do it everywhere else
+%    too. Furthermore we programmers are a feral breed, subject to
+%    primordial fears about incapaciting unknown uses of the old
+%    internal function names in third-party extensions, even when the
+%    possibility seems rather small.
+%    \begin{macrocode}
+\def\displ@y{\@display@init{}}
+\def\@display@init#1{%
+    \global\dt@ptrue
+    \openup\jot\m@th
+    \everycr{%
+        \noalign{%
+            #1%
+            \ifdt@p
+                \global\dt@pfalse
+                \vskip-\lineskiplimit
+                \vskip\normallineskiplimit
+            \else
+                \penalty\@eqpen
+            \fi
+        }%
+    }%
+}
+%    \end{macrocode}
+%    \cs{displ@y@} is nearly the same; it additionally sets the |tag@|
+%    switch and the \cs{column@} and \cs{dspbrk@lvl} counters to their
+%    default values. The argument is normally a bit of code to empty out
+%    \cs{raise@tag}, but in \env{multline} we don't want that to happen
+%    in \cs{everycr}.
+%    \begin{macrocode}
+\def\displ@y@{\@display@init{%
+  \global\column@\z@ \global\dspbrk@lvl\m@ne
+  \global\tag@false \global\let\raise@tag\@empty
+}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\black@}
+%    This macro is made to produce an overfull box message and
+%    possibly (depending on the value of \cs{overfullrule})
+%    a rule in the margin if the total width of an alignment
+%    is larger than the value of \cs{displaywidth}.
+%    \begin{macrocode}
+\def\black@#1{%
+    \noalign{%
+        \ifdim#1>\displaywidth
+            \dimen@\prevdepth
+            \nointerlineskip
+            \vskip-\ht\strutbox@
+            \vskip-\dp\strutbox@
+            \vbox{\noindent\hbox to#1{\strut@\hfill}}%
+            \prevdepth\dimen@
+        \fi
+    }%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macro}{\savecounters@}
+%    \begin{macro}{\restorecounters@}
+%    These are used during the measuring phase of the various display
+%    math environments to save and restore the values of all \latex/
+%    counters. We make these local to a group, so nested environments
+%    works.
+%
+%    Changed \cn{stepcounter} to |\csname c@...\endcsname| to avoid
+%    overhead of ifundefined test [mjd,1995/01/20].
+%    \begin{macrocode}
+\def\savecounters@{%
+    \begingroup
+        \def\@elt##1{%
+          \global\csname c@##1\endcsname\the\csname c@##1\endcsname}%
+        \xdef\@tempa{%
+            \cl@@ckpt
+            \let\@nx\restorecounters@\@nx\@empty
+        }%
+    \endgroup
+    \let\restorecounters@\@tempa
+}
+%
+\let\restorecounters@\@empty
+%    \end{macrocode}
+%    \end{macro}
+%    \end{macro}
+%
+%    \begin{macro}{\savealignstate@}
+%    \begin{macro}{\restorealignstate@}
+%    These are used to save the values of various parameters that are
+%    shared by \env{align} and \env{gather} when the former is used
+%    inside the latter.
+%    \begin{macrocode}
+\def\savealignstate@{%
+    \begingroup
+        \let\or\relax
+        \xdef\@tempa{%
+            \global\totwidth@\the\totwidth@
+            \global\row@\the\row@
+            \gdef\@nx\tag@lengths{\tag@lengths}%
+            \let\@nx\restorealignstate@\@nx\@empty
+        }%
+    \endgroup
+    \let\restorealignstate@\@tempa
+}
+
+\let\restorealignstate@\@empty
+%    \end{macrocode}
+%    \end{macro}
+%    \end{macro}
+%
+%
+% \subsection{Scanning the environment's body}
+%
+%    Several of the math alignment macros must scan their body twice:
+%    once to determine how wide the columns are and then to actually
+%    typeset them. This means that we must collect all text in this body
+%    before calling the environment macros.
+%
+%    \begin{macro}{\@envbody}
+%    We start by defining a token register to contain the body.
+%    \begin{macrocode}
+\newtoks\@envbody
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macro}{\addto@envbody}
+%    Then we define a macro to add something (i.e.\ its argument)
+%    to the token register \cs{@envbody}.
+%    \begin{macrocode}
+\def\addto@envbody#1{\@envbody\@xp{\the\@envbody#1}}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\collect@body}
+%    The macro \cs{collect@body} starts the scan for the
+%    |\end{...}| command of the current environment.
+%    It takes a macro name as argument.  This macro is supposed
+%    to take the whole body of the environment as its argument.
+%    For example, |\begin{align}| would call
+%    |\collect@body\@align| if |@align#1{...}|
+%    is the macro that sets the alignment with body \arg{1}.
+%
+%    \cs{collect@body} first initializes the token register
+%    \cs{@envbody}.
+%    \begin{macrocode}
+\def\collect@body#1{%
+    \@envbody{}%
+%    \end{macrocode}
+%    Then it defines the macro \cs{process@envbody} which is
+%    called when the \cn{end} command was successfully scanned.
+%    It will insert the scanned text as argument to the macro that
+%    is the argument to \cs{collect@body}.
+%    \begin{macrocode}
+    \def\process@envbody{%
+        \@xp#1\@xp{\the\@envbody}%
+    }%
+%    \end{macrocode}
+%    Finally it calls \cs{collect@@body} to perform the scan.
+%    But we use a renaming trick described below.
+%    \begin{macrocode}
+    \@xp\let\csname\@currenvir\endcsname\collect@@body
+    \csname\@currenvir\endcsname
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\collect@@body}
+%    \cs{collect@@body} takes two arguments: the first will consist
+%    of all text up to the next \cn{end} command, the second will
+%    be the \cn{end} command's argument.  Note the underlying
+%    assumption: an environment that uses \cs{collect@@body} cannot
+%    have another environment of the same name nested within it.  This
+%    assumption is true for the major display alignment macros of the
+%    \pkg{amsmath} package.
+%    \begin{macrocode}
+\def\collect@@body#1\end#2{%
+%    \end{macrocode}
+%    This argument is then compared to the name of the current
+%    environment.
+%    \begin{macrocode}
+    \def\@tempa{#2}%
+    \ifx\@tempa\@currenvir
+%    \end{macrocode}
+%    If this is the matching \cn{end} the rest of the environment's
+%    body is collected and the macro \cs{xxxxx} (where `xxxxx' is
+%    the name of the current environment) is redefined to process the
+%    environment's body using the \cs{process@envbody} macro
+%    defined in \cs{collect@body}.  Redefining \cs{xxxxx} in
+%    this way is possible first because we are in a group (from
+%    \cn{begin}\dots\cn{end}) and second because the
+%    environments that call \cs{collect@@body} cannot be nested, as
+%    mentioned above.  And the reason we want to redefine
+%    \cs{xxxxx} is so that the user will get a more understandable
+%    error message if they have a mismatched or misspelled end of the
+%    environment, for example something like
+% \begin{verbatim}
+% \begin{multline*}
+% ...
+% \end{multline}\end{verbatim}
+%    In an earlier implementation the scratch macro \cs{next} was
+%    used instead of \cs{xxxxx}, and the resulting error message
+%    was
+% \begin{verbatim}
+% ! Paragraph ended before \next was complete.\end{verbatim}
+%    Now the error message is
+% \begin{verbatim}
+% ! Paragraph ended before \multline* was complete.\end{verbatim}
+%    \begin{macrocode}
+        \addto@envbody{#1}%
+        \@xp\edef\csname\@currenvir\endcsname{%
+            \@nx\process@envbody\@nx\end{\@tempa}%
+            }%
+%    \end{macrocode}
+%    Otherwise the text just read is collected in our token register.
+%    \begin{macrocode}
+    \else
+        \addto@envbody{#1\end{#2}}%
+    \fi
+%    \end{macrocode}
+%    The only thing that remains to be done is to call up
+%    \cs{@currenvir}.
+%    \begin{macrocode}
+    \csname\@currenvir\endcsname
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \subsection{Simple aligning environments}
+%
+%    \begin{macro}{\start@aligned}
+%    The \env{aligned} and \env{alignedat} environments are identical
+%    except that the latter takes a mandatory argument to specify the
+%    number of align structures, while the former allows any number of
+%    align structures automatically (the use of \env{alignedat} is
+%    deprecated).  So, they will be defined in terms of
+%    \cs{start@aligned}, which will take two arguments.  The first
+%    argument specifies the placement of the environments; it is
+%    either |c|, |t|, or |b|.  The second is the number of align
+%    structures; a value of~$-1$ means that an arbitrary number are
+%    allowed.
+%    \begin{macrocode}
+\newcommand{\start@aligned}[2]{%
+    \RIfM@\else
+        \nonmatherr@{\begin{\@currenvir}}%
+    \fi
+%    \end{macrocode}
+%    Why the \cs{null} here? Need to check Spivak commentary
+%    [mjd,12-Nov-1994].
+%
+%    [Spivak says: to keep the \cs{,} glue from causing the invocation
+%    of the clause in \tex/'s built-in tag placement algorithm that
+%    can cause an equation to be shifted all the way over to the
+%    margin.---dmj, 21 Dec 1994]
+%    \begin{macrocode}
+    \null\,%
+    \if #1t\vtop \else \if#1b \vbox \else \vcenter \fi \fi \bgroup
+        \maxfields@#2\relax
+        \ifnum\maxfields@>\m@ne
+            \multiply\maxfields@\tw@
+%    \end{macrocode}
+%    Introduced new \cs{math@cr@@@} so we can provide standard error
+%    message for too many \qc{\&}'s in \env{alignedat}.
+%    \begin{macrocode}
+            \let\math@cr@@@\math@cr@@@alignedat
+        \else
+            \restore@math@cr
+        \fi
+%    \end{macrocode}
+%    Reset the meaning of \cn{\\}.
+%    \begin{macrocode}
+        \Let@
+%    \end{macrocode}
+%    Restore the default definition of \cn{tag} (error message), in
+%    case \env{aligned} is used inside, e.g., a \env{gather}
+%    environment that accepts \cn{tag}.
+%    \begin{macrocode}
+        \default@tag
+%    \end{macrocode}
+%    Increase the vertical space between rows a bit;
+%    but if we are already inside of another multiline equation
+%    environment this was already done and shouldn't be repeated.
+%    \begin{macrocode}
+        \ifinany@\else\openup\jot\fi
+%    \end{macrocode}
+%    Finally we start the alignment itself.  Unfortunately, there's
+%    nothing sensible we can do about interalign glue: the user will
+%    still have to specify that explicitly.
+%    \begin{macrocode}
+        \column@\z@
+        \ialign\bgroup
+           &\column@plus
+            \hfil
+            \strut@
+            $\m@th\displaystyle{##}$%
+           &\column@plus
+            $\m@th\displaystyle{{}##}$%
+            \hfil
+            \crcr
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\math@cr@@@aligned}
+%    \cs{math@cr@@@aligned} checks to make sure the user hasn't put in
+%    too many \qc{\&}s in \env{alignedat}.  Since \env{alignedat}
+%    doesn't use \cs{displ@y@}, we also reset \cs{column@} here.  Note
+%    than in \env{aligned}, \cs{column@} will increase without bound,
+%    since it never gets reset, but this is harmless.
+%    \begin{macrocode}
+\def\math@cr@@@alignedat{%
+    \ifnum\column@>\maxfields@
+        \begingroup
+          \measuring@false
+          \@amsmath@err{Extra & on this line}%
+            {\the\andhelp@}% "An extra & here is disastrous"
+        \endgroup
+    \fi
+    \column@\z@
+    \cr
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+% \begin{environment}{aligned}
+%    The \env{aligned} environment takes an optional argument that
+%    indicates its vertical position in relation to surrounding
+%    material: |t|, |c|, or |b| for top, center, or bottom.
+%    \begin{macrocode}
+\newenvironment{aligned}[1][c]{%
+    \start@aligned{#1}\m@ne
+}{%
+    \crcr\egroup\egroup
+}
+%    \end{macrocode}
+% \end{environment}
+%
+% \begin{environment}{alignedat}
+%    To get a top or bottom positioned \env{alignedat} structure, you
+%    would write something like
+% \begin{verbatim}
+% \begin{alignedat}[t]{3}\end{verbatim}
+%
+%    We can save three words of memory by using \cs{newcommand} here
+%    and using \cs{let} to define \cs{endalignedat}.---dmj, 26 Dec
+%    1994
+%    \begin{macrocode}
+\newcommand{\alignedat}[2][c]{%
+        \start@aligned{#1}%
+}
+%
+\let\endalignedat\endaligned
+%    \end{macrocode}
+% \end{environment}
+%
+% \begin{environment}{gathered}
+%    The \env{gathered} environment is for several lines that are
+%    centered independently.
+%    \begin{macrocode}
+\newcommand{\gathered}[1][c]{%
+    \RIfM@\else
+        \nonmatherr@{\begin{gathered}}%
+    \fi
+    \null\,%
+    \if #1t\vtop \else \if#1b\vbox \else \vcenter \fi\fi \bgroup
+        \Let@
+        \restore@math@cr
+        \ifinany@\else\openup\jot\fi
+        \ialign\bgroup
+            \hfil\strut@$\m@th\displaystyle##$\hfil
+            \crcr
+}
+%
+\let\endgathered\endaligned
+%    \end{macrocode}
+% \end{environment}
+%
+%
+%    \subsection{The \env{gather} environment}
+%
+% \begin{macro}{\start@gather}
+%    \begin{macrocode}
+\def\start@gather#1{%
+    \RIfM@
+        \nomath@env
+        \DN@{\@namedef{end\@currenvir}{}\@gobble}%
+    \else
+        $$%
+        #1%
+        \ifst@rred\else
+            \global\@eqnswtrue
+        \fi
+        \let\next@\gather@
+    \fi
+    \collect@body\next@
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{environment}{gather}
+%    \begin{environment}{gather*}
+%    \begin{macrocode}
+\def\gather{\start@gather\st@rredfalse}
+
+\@namedef{gather*}{\start@gather\st@rredtrue}
+%    \end{macrocode}
+%    \end{environment}
+%    \end{environment}
+%
+%    \begin{macro}{\gather@}
+%    \begin{macrocode}
+\def\gather@#1{%
+    \ingather@true
+    \inany@true
+    \let\tag\tag@in@align
+    \let\label\label@in@display
+    \displaybreak@
+    \intertext@
+    \displ@y@
+    \Let@
+    \let\math@cr@@@\math@cr@@@gather
+    \gmeasure@{#1}%
+    \global\shifttag@false
+    \tabskip\z@skip
+    \global\row@\@ne
+    \halign to\displaywidth\bgroup
+        \strut@
+        \setboxz@h{$\m@th\displaystyle{##}$}%
+        \calc@shift@gather
+        \set@gather@field
+        \tabskip\@centering
+       &\setboxz@h{\strut@{##}}%
+        \place@tag@gather
+        \tabskip \iftagsleft@ \gdisplaywidth@ \else \z@skip \span\fi
+        \crcr
+        #1%
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\endgather}
+%    \begin{macro}{\endgather*}
+%    Bug fix: changed \cs{math@cr@@@} to \cs{math@cr} so that
+%    \cs{@eqpen} gets reset properly if \cs{displaybreak} is used on
+%    the penultimate line of an \env{align}.
+%    \begin{macrocode}
+\def\endgather{%
+        \math@cr
+        \black@\totwidth@
+    \egroup
+    $$%
+    \global\@ignoretrue
+}
+
+\@xp\let\csname endgather*\endcsname\endgather
+%    \end{macrocode}
+%    \end{macro}
+%    \end{macro}
+%
+%    \begin{macro}{\gmeasure@}
+%    \begin{macrocode}
+\def\gmeasure@#1{%
+    \begingroup
+        \measuring@true
+        \totwidth@\z@
+        \global\let\tag@lengths\@empty
+        \savecounters@
+        \setbox\@ne\vbox{%
+            \everycr{\noalign{\global\tag@false
+              \global\let\raise@tag\@empty \global\column@\z@}}%
+            \let\label\@gobble
+            \halign{%
+                \setboxz@h{$\m@th\displaystyle{##}$}%
+                \ifdim\wdz@>\totwidth@
+                    \global\totwidth@\wdz@
+                \fi
+               &\setboxz@h{\strut@{##}}%
+                \savetaglength@
+                \crcr
+                #1%
+                \math@cr@@@
+            }%
+        }%
+        \restorecounters@
+        \if@fleqn
+            \global\advance\totwidth@\@mathmargin
+        \fi
+        \iftagsleft@
+            \ifdim\totwidth@>\displaywidth
+                \global\let\gdisplaywidth@\totwidth@
+            \else
+                \global\let\gdisplaywidth@\displaywidth
+            \fi
+        \fi
+    \endgroup
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\math@cr@@@gather}
+%    Modified \cs{math@cr@@@gather} so that it always puts in the
+%    final field, which needs to be done under the new method for
+%    determining tag placement.  This is probably more efficient
+%    anyway.
+%
+%    \begin{macrocode}
+\def\math@cr@@@gather{%
+    \ifst@rred\nonumber\fi
+   &\relax
+    \make@display@tag
+    \ifst@rred\else\global\@eqnswtrue\fi
+%    \end{macrocode}
+%    We advance \cs{row@} here, rather than at the beginning of the
+%    preamble, because otherwise the \env{split} environment will
+%    cause \cs{row@} to be advanced twice instead of once.
+%    \begin{macrocode}
+    \global\advance\row@\@ne
+    \cr
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\calc@shift@gather}
+%    \cs{calc@shift@gather} has must make two decisions: (1) whether the
+%    equation tag for the current line should be put on a separate
+%    line and (2) what the distance between the equation and the
+%    equation tag should be.  We implement \tex/'s built-in
+%    tag-placement as well as possible, with one improvement: the
+%    minimum separation between tag and equation is now a
+%    user-settable parameter.
+%
+%    [1995/01/17] Added a check to make sure that the width of the tag
+%    on the current line is $>0$ before testing to see if tagwidth +
+%    linewidth + mintagsep $>$ displaywidth. Since an imbedded align shows
+%    up as line with width \cn{displaywidth}, and even lines without a tag
+%    get processed as if an empty tag were present, the result was that
+%    the empty tag assigned to the line containing the align was being
+%    shifted downwards, creating extra space after the align.
+%    \begin{macrocode}
+\def\calc@shift@gather{%
+    \dimen@\mintagsep\relax
+    \tagwidth@\tag@width\row@\relax
+%    \end{macrocode}
+%    If we're in \opt{fleqn} mode, there is no flexibility about
+%    placement of the equation, so all we can do is see if there's
+%    room for the tag in the given margin.
+%    \begin{macrocode}
+    \if@fleqn
+        \global\eqnshift@\@mathmargin
+        \ifdim\tagwidth@>\z@
+            \advance\dimen@\tagwidth@
+            \iftagsleft@
+                \ifdim\dimen@>\@mathmargin
+                    \global\shifttag@true
+                \fi
+            \else
+                \advance\dimen@\@mathmargin
+                \advance\dimen@\wdz@
+                \ifdim\dimen@>\displaywidth
+                   \global\shifttag@true
+                \fi
+            \fi
+        \fi
+    \else
+        \global\eqnshift@\displaywidth
+        \global\advance\eqnshift@-\wdz@
+        \ifdim\tagwidth@>\z@
+            \multiply\dimen@\tw@
+            \advance\dimen@\wdz@
+            \advance\dimen@\tagwidth@
+            \ifdim\dimen@>\displaywidth
+                \global\shifttag@true
+            \else
+                \ifdim\eqnshift@<4\tagwidth@
+                    \global\advance\eqnshift@-\tagwidth@
+                \fi
+            \fi
+        \fi
+        \global\divide\eqnshift@\tw@
+        \iftagsleft@
+            \global\eqnshift@-\eqnshift@
+            \global\advance\eqnshift@\displaywidth
+            \global\advance\eqnshift@-\wdz@
+        \fi
+        \ifdim\eqnshift@<\z@
+            \global\eqnshift@\z@
+        \fi
+    \fi
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\place@tag@gather}
+%    \begin{macro}{\set@gather@field}
+%    \begin{macrocode}
+\def\place@tag@gather{%
+    \iftagsleft@
+        \kern-\gdisplaywidth@
+        \ifshifttag@
+            \rlap{\vbox{%
+                \normalbaselines
+                \boxz@
+                \vbox to\lineht@{}%
+                \raise@tag
+            }}%
+            \global\shifttag@false
+        \else
+            \rlap{\boxz@}%
+        \fi
+    \else
+        \ifdim\totwidth@>\displaywidth
+            \dimen@\totwidth@
+            \advance\dimen@-\displaywidth
+            \kern-\dimen@
+        \fi
+        \ifshifttag@
+            \llap{\vtop{%
+                \raise@tag
+                \normalbaselines
+                \setbox\@ne\null
+                \dp\@ne\lineht@
+                \box\@ne
+                \boxz@
+            }}%
+            \global\shifttag@false
+        \else
+            \llap{\boxz@}%
+        \fi
+    \fi
+}
+%
+\def\set@gather@field{%
+    \iftagsleft@
+        \global\lineht@\ht\z@
+    \else
+        \global\lineht@\dp\z@
+    \fi
+    \kern\eqnshift@
+    \boxz@
+    \hfil
+}
+%    \end{macrocode}
+%    \end{macro}
+%    \end{macro}
+%
+%
+% \subsection{The \env{align} family of environments}
+%
+%    The \env{align}, \env{flalign}, \env{alignat}, \env{xalignat},
+%    and \env{xxalignat} environments are virtually
+%    identical, and thus will share much code.  We'll refer to the
+%    environments generically as ``\env{align}'' and will
+%    distinguish between them explicitly
+%    only when necessary.
+%
+% \begin{macro}{\ifxxat@}
+% \begin{macro}{\ifcheckat@}
+% \begin{macro}{\xatlevel@}
+%    The \cs{xatlevel@} macro will be used, informally speaking, to
+%    distinguish between the \env{alignat} and \env{xalignat}, and
+%    \env{xxalignat} environments.
+%
+%    \begin{macrocode}
+\newif\ifxxat@
+
+\newif\ifcheckat@
+
+\let\xatlevel@\@empty
+%    \end{macrocode}
+%    \end{macro}
+%    \end{macro}
+%    \end{macro}
+%
+% \begin{macro}{\start@align}
+%    \cs{start@align} will be called by all of the \env{align}-like
+%    environments.  The first argument will be the \cs{xatlevel@},
+%    i.e., 0, 1, or~2; the second argument will be either
+%    \cs{st@rredtrue} or \cs{st@rredfalse}.  The third argument will
+%    be the number of aligned
+%    structures in the environment (either as supplied by the user, or
+%    $-1$ to indicate that checking shouldn't be done).  After
+%    performing the appropriate error detection and initialization,
+%    \cs{start@align} calls \cs{align@}.
+%
+%    Note that the \cs{equation} counter is no longer stepped at the
+%    beginning of these environments.
+%
+%    TODO: Implement \cs{shoveleft} and \cs{shoveright} for
+%    \env{align}.
+%    \begin{macrocode}
+\def\start@align#1#2#3{%
+    \let\xatlevel@#1% always \z@, \@ne, or \tw@
+    \maxfields@#3\relax
+    \ifnum\maxfields@>\m@ne
+        \checkat@true
+        \ifnum\xatlevel@=\tw@
+            \xxat@true
+        \fi
+        \multiply\maxfields@\tw@
+    \else
+        \checkat@false
+    \fi
+    \ifingather@
+        {\ifnum0=`}\fi
+        \DN@{\vcenter\bgroup\savealignstate@\align@#2}%
+    \else
+        \ifmmode
+            \nomath@env
+            \DN@{\@namedef{end\@currenvir}{}\@gobble}%
+        \else
+            $$%
+            \DN@{\align@#2}%
+        \fi
+    \fi
+    \collect@body\next@
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{environment}{align}
+%    \begin{environment}{align*}
+%    \begin{environment}{flalign}
+%    \begin{environment}{flalign*}
+%    \begin{environment}{alignat}
+%    \begin{environment}{alignat*}
+%    \begin{environment}{xalignat}
+%    \begin{environment}{xalignat*}
+%    \begin{environment}{xxalignat}
+%    The definitions of the various \env{align} environments are quite
+%    straight-forward.
+%
+%    \begin{macrocode}
+\def\alignat{\start@align\z@\st@rredfalse}
+\@namedef{alignat*}{\start@align\z@\st@rredtrue}
+\def\xalignat{\start@align\@ne\st@rredfalse}
+\@namedef{xalignat*}{\start@align\@ne\st@rredtrue}
+\def\xxalignat{\start@align\tw@\st@rredtrue}
+\def\align{\start@align\@ne\st@rredfalse\m@ne}
+\@namedef{align*}{\start@align\@ne\st@rredtrue\m@ne}
+\def\flalign{\start@align\tw@\st@rredfalse\m@ne}
+\@namedef{flalign*}{\start@align\tw@\st@rredtrue\m@ne}
+%    \end{macrocode}
+%    \end{environment}
+%    \end{environment}
+%    \end{environment}
+%    \end{environment}
+%    \end{environment}
+%    \end{environment}
+%    \end{environment}
+%    \end{environment}
+%    \end{environment}
+%
+%
+%  \begin{macro}{\align@}
+%    TODO: Some of these sets of initializations show up in multiple
+%    places.  It might be worth making an abbreviation for them.
+%
+%    \begin{macrocode}
+\def\align@#1#2{%
+    \inany@true
+    \inalign@true
+    \displaybreak@
+    \intertext@
+    \ifingather@\else\displ@y@\fi
+    \Let@
+    \let\math@cr@@@\math@cr@@@align
+    \ifxxat@\else
+        \let\tag\tag@in@align
+    \fi
+    \let\label\label@in@display
+    #1% set st@r
+    \ifst@rred\else
+        \global\@eqnswtrue
+    \fi
+    \measure@{#2}%
+    \global\row@\z@
+    \tabskip\eqnshift@
+    \halign\bgroup
+        \span\align@preamble\crcr
+        #2%
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\endalign}
+%    \begin{macro}{\endalign*}
+%    \begin{macro}{\endflalign}
+%    \begin{macro}{\endflalign*}
+%    \begin{macro}{\endalignat}
+%    \begin{macro}{\endalignat*}
+%    \begin{macro}{\endxalignat}
+%    \begin{macro}{\endxalignat*}
+%    \begin{macro}{\endxxalignat}
+%    As with \cs{alignat}, \cs{endalignat} is shared among all
+%    variants of the environment.
+%
+%    Note that \cs{setb@ck} is no longer needed.
+%
+%    Bug fix: changed \cs{math@cr@@@} to \cs{math@cr} so that
+%    \cs{@eqpen} gets reset properly if \cs{displaybreak} is used on
+%    the penultimate line of an \env{align}.
+%    \begin{macrocode}
+\def\endalign{%
+        \math@cr
+        \black@\totwidth@
+    \egroup
+    \ifingather@
+        \restorealignstate@
+        \egroup
+        \nonumber
+        \ifnum0=`{\fi}%
+    \else
+        $$%
+    \fi
+    \global\@ignoretrue
+}
+%
+\@xp\let\csname endalign*\endcsname\endalign
+\let\endxalignat\endalign
+\@xp\let\csname endxalignat*\endcsname\endalign
+\let\endxxalignat\endalign
+\let\endalignat\endalign
+\@xp\let\csname endalignat*\endcsname\endalign
+\let\endflalign\endalign
+\@xp\let\csname endflalign*\endcsname\endalign
+%    \end{macrocode}
+%    \end{macro}
+%    \end{macro}
+%    \end{macro}
+%    \end{macro}
+%    \end{macro}
+%    \end{macro}
+%    \end{macro}
+%    \end{macro}
+%    \end{macro}
+%
+%    \begin{macro}{\math@cr@@@align}
+%    \begin{macrocode}
+\def\math@cr@@@align{%
+    \kern-\alignsep@
+    \ifst@rred\nonumber\fi
+    \if@eqnsw \global\tag@true \fi
+    \global\advance\row@\@ne
+    \iftag@
+        \add@amps\maxfields@
+        \omit
+        \setboxz@h{\@lign\strut@{\make@display@tag}}%
+        \place@tag
+    \fi
+    \ifst@rred\else\global\@eqnswtrue\fi
+    \global\lineht@\z@
+    \cr
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\math@cr@@@align@measure}
+%    \begin{macrocode}
+\def\math@cr@@@align@measure{%
+   &\omit
+    \global\advance\row@\@ne
+    \ifst@rred\nonumber\fi
+    \if@eqnsw \global\tag@true \fi
+    \ifnum\column@>\maxfields@
+        \ifcheckat@
+            \begingroup
+              \measuring@false
+              \@amsmath@err{Extra & on this line}%
+                {\the\andhelp@}% "An extra & here is disastrous"
+            \endgroup
+        \else
+            \global\maxfields@\column@
+        \fi
+    \fi
+    \setboxz@h{\@lign\strut@{%
+        \if@eqnsw
+            \stepcounter{equation}%
+            \tagform@\theequation
+        \else
+            \iftag@\df@tag\fi
+        \fi
+    }}%
+    \savetaglength@
+    \ifst@rred\else\global\@eqnswtrue\fi
+    \cr
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macro}{\field@lengths}
+%    \begin{macro}{\savefieldlength@}
+%    \begin{macro}{\fieldlengths@}
+%    \begin{macrocode}
+\let\field@lengths\@empty
+
+\def\savefieldlength@{%
+    \begingroup
+        \let\or\relax
+        \xdef\field@lengths{%
+            \field@lengths
+            \ifnum\column@=0
+                \or
+            \else
+                ,%
+            \fi
+            \the\wdz@
+        }%
+    \endgroup
+}
+
+\def\fieldlengths@#1{%
+    \ifcase\@xp#1\field@lengths\fi
+}
+%    \end{macrocode}
+%    \end{macro}
+%    \end{macro}
+%    \end{macro}
+%
+%  \begin{macro}{\maxcolumn@widths}
+%    \cs{maxcolumn@widths} will be used to hold the widths of the
+%    fields of the \env{alignat} environment.  The widths will be
+%    separated by the token \cn{or}, making it easy to extract a given
+%    width using \cn{ifcase}.
+%    \begin{macrocode}
+\let\maxcolumn@widths\@empty
+%    \end{macrocode}
+%  \end{macro}
+%
+%  \begin{macro}{\maxcol@width}
+% \cs{maxcol@width} $n$ = maximum width of $n$th column of the current
+%    \env{alignat} (i.e., the $n$th field of \cs{maxcolumn@widths}.)
+%    It expands to a \<dimen>, so it can be used as the right-hand
+%    side of a \<variable assignment> or \<arithmetic> statement.
+%    It's argument can be any \<number>, \<integer variable> or macro
+%    that expands to one of these.  [Check to make sure this is true.]
+%
+%    This is subtler than it looks.
+%    \begin{macrocode}
+\def\maxcol@width#1{%
+    \ifcase\@xp#1\maxcolumn@widths\fi\relax
+}
+%    \end{macrocode}
+%  \end{macro}
+%
+%    Now comes the real fun.  A typical \env{align} environments looks
+%    something like this, where the vertical bars mark the edges of
+%    the fields of the underlying \cs{halign}:
+%    \[
+%    \makeatletter\tabskip\@centering\offinterlineskip
+%    \halign to\displaywidth{&$\strut$\vrule\hfil$\m@th\displaystyle{\@lign#}$\vrule
+%    \tabskip1pt&\vrule$\m@th\displaystyle{\@lign#}$\hfil\vrule\tabskip\@centering\cr
+%    \omit\small\hfil 1\hfil &\omit\small\hfil 2 &\omit\small\hfil
+%    3\hfil &\omit\small\hfil 4\hfil & \omit\small\hfil 5\hfil
+%    &\omit\small\hfil 6\hfil\cr
+%    \noalign{\vskip8pt\relax}
+%    V_i + q_i v_j & =v_i , &  X_i & = x_i - q_i x_j,
+%     &  U_i & = u_i,\qquad
+%      \hbox{for $i\ne j$;} %&\omit\hfill \llap{(3)}
+%    \cr
+%    V_j & = v_j, &  X_j & = x_j,
+%      &  U_j & = u_j + \sum_{i\ne j} q_i u_i. %&\omit\hfill \llap{(4)}
+%    \cr}
+%    \]
+%    Note that each align structure consists of two fields, with no
+%    space between them (a small space has been added here to
+%    highlight the boundaries).  Furthermore, the text inside the
+%    odd-numbered fields is flushright, while the text inside the
+%    even-numbered fields is flushleft.  The equation tags (shown on
+%    the right here) can be on either the right or the left.  If there
+%    is not room (in a sense to be defined shortly) for the tag on the
+%    same line as the equation, the tag will be shifted to a separate
+%    line.
+%
+%    Each environment also has a certain number of ``flexible
+%    spaces,'' meaning spaces whose width we are allowed to adjust to
+%    take up the amount of ``free space'' in the line, meaning the
+%    space not taken up by the equation tag and the fields of the
+%    underlying \cs{halign}.
+%
+%    The flexible spaces come in two flavors: interalign spaces and
+%    margin spaces.  If there are $n$ align structures ($n=3$ in the
+%    illustration above), there are $n-1$ interalign spaces, unless we
+%    are in an \env{alignat} environment, in which case there are no
+%    flexible interalign spaces.
+%
+%    The number of margin spaces is a little more complicated:
+%    Normally, there are two, but if we're in \opt{fleqn} mode, there
+%    is only one.  Furthermore, if we're in an \env{xxalignat} or
+%    \env{flalign} environment (corresponding to $\cs{xatlevel@} = 2$,
+%    then there are no flexible margin spaces.
+%
+%    Calculating the interalign and margin spaces is done in two
+%    stages.
+%
+%    First, the total amount of free space is divided uniformly among
+%    all the flexible spaces, without regard for the lengths of the
+%    tags on the various lines.  For the non-\opt{fleqn} case, this
+%    corresponds to centering the align structures between the margin.
+%    Note that in \opt{fleqn} mode, the right margin is still allowed
+%    to be larger than \cs{@mathmargin}.  This introduces an element
+%    of asymmetry into the appearance of the environment, but it has
+%    the advantage of leaving more space for equation tags in the
+%    right margin.  If the right margin were constrained to be equal
+%    to the left margin in this case, tags would need to be shifted to
+%    a separate line more often than would be desirable.
+%
+%    Ordinarily, all flexible spaces will be given the same width.
+%    However, this is not invariably true, since the interalign spaces
+%    are constrained to be at least \cs{minalignsep} wide, while---in
+%    the absence of equation tags, at least---the margin spaces are
+%    allowed to shrink to zero.  As we shall see in a minute, if there
+%    are tags in the environment, then the margins are also bounded
+%    below by \cs{mintagsep}.
+%
+%    Next, we examine each line of the environment that has a tag to
+%    see if there is a gap of at least \cs{mintagsep} between the
+%    equation and its tag.  If there isn't, we attempt to center the
+%    equation between the tag and the opposite margin, leaving a gap
+%    of at least \cs{mintagsep} on either side, in order to preserve
+%    some symmetry, i.e., we want the equation to \emph{look} like
+%    it's centered between the margin and the tag, so we don't want
+%    the margin space to be less than the gap between the tag and the
+%    equation.  (Arguably, it would be better to allow the margin
+%    space to shrink to zero in this case in order to avoid shifting
+%    the tag to a separate line at any cost, but that would require
+%    all of our calculations to be a little more complicated and hence
+%    a little slower.)  Finally, if no values of the interalign spaces
+%    and the margins (with the constraints outlined above) will
+%    produce an acceptable distance between the equation and its tag,
+%    then the tag will be shifted to a separate line.
+%
+%  \begin{macro}{\measure@}
+%    \cs{measure@} collects the various bits of information that we'll
+%    need to perform the calculations outlined above, namely, the
+%    number of align structures in the environment, the natural
+%    lengths of the fields on each row, the maximum widths of each
+%    column, and the widths of the equation tags on each line.  It
+%    also calculates the number of flexible interalign and margin
+%    spaces and computes the initial values of the parameters
+%    \cs{eqnshift@} and \cs{alignsep@}, which correspond to the widths
+%    of the margins and the interalign spaces, respectively.
+%    \begin{macrocode}
+\def\measure@#1{%
+    \begingroup
+        \measuring@true
+        \eqnshift@\z@
+        \alignsep@\z@
+        \global\let\tag@lengths\@empty
+        \global\let\field@lengths\@empty
+        \savecounters@
+        \global\setbox0\vbox{%
+            \let\math@cr@@@\math@cr@@@align@measure
+            \everycr{\noalign{\global\tag@false
+              \global\let\raise@tag\@empty \global\column@\z@}}%
+            \let\label\@gobble
+            \global\row@\z@
+            \tabskip\z@
+            \halign{\span\align@preamble\crcr
+                #1%
+                \math@cr@@@
+                \column@\z@
+                \add@amps\maxfields@\cr
+            }%
+        }%
+        \restorecounters@
+%    \end{macrocode}
+%    It's convenient to have \cs{maxfields@} rounded up to the nearest
+%    even number, so that \cs{maxfields@} is precisely twice the
+%    number of align structures.
+%    \begin{macrocode}
+        \ifodd\maxfields@
+            \global\advance\maxfields@\@ne
+        \fi
+%    \end{macrocode}
+%    It doesn't make sense to have a single align structure in either
+%    \env{flalign} or \env{xxalignat}.  So, we check for that case now
+%    and, if necessary, switch to an \env{align} or \env{alignat}.
+%    Arguably, we should issue a warning message, but why bother?
+%    \begin{macrocode}
+        \ifnum\xatlevel@=\tw@
+            \ifnum\maxfields@<\thr@@
+                \let\xatlevel@\z@
+            \fi
+        \fi
+%    \end{macrocode}
+%    |\box0| now contains the lines of the \cs{halign}.  After the
+%    following maneuver, |\box1| will contain the last line of the
+%    \cs{halign}, which is what we're interested in.  (Incidentally,
+%    the penalty we're removing is the \cs{@eqpen} inserted by
+%    \cs{math@cr}.  Normally, this is \cs{interdisplaylinepenalty},
+%    unless the user has overriden that with a \cs{displaybreak}
+%    command.)
+%    \begin{macrocode}
+        \setbox0\vbox{%
+            \unvbox0
+            \unpenalty
+            \global\setbox1\lastbox
+        }%
+%    \end{macrocode}
+%    |\box1| begins with \cs{tabskip} glue and contains alternating
+%    \cs{hbox}es (the fields whose widths we're trying to get) and
+%    \cs{tabskip} glue [need better diagram]:
+%    \begin{verbatim}
+%    \hbox{\tabskip\hbox\tabskip...\hbox\tabskip}\end{verbatim}
+%    In fact, all the \cs{tabskip} glue will be 0pt, because all the
+%    \cs{tabskip}s in an \env{alignat} environment have a natural
+%    width of 0pt, and the \cs{halign} has been set in its natural
+%    width.
+%
+%    One nice result of this is that we can read \cs{totwidth@} off
+%    immediately, since it is just the width of |\box1|, plus
+%    \cs{@mathmargin} if we're in \opt{fleqn} mode.  (Actually, we
+%    also have to take \cs{minalignsep} into account, but we'll do
+%    that later):
+%    \begin{macrocode}
+        \global\totwidth@\wd1
+        \if@fleqn
+           \global\advance\totwidth@\@mathmargin
+        \fi
+%    \end{macrocode}
+%    Now we initialize \cs{align@lengths} and start peeling the boxes
+%    off, one by one, and adding their widths to \cs{align@lengths}.
+%    We stop when we run out of boxes, i.e., when \cs{lastbox} returns
+%    a void box.  We're going to build a list using \cs{or} as a
+%    delimiter, so we want to disable it temporarily.
+%    \begin{macrocode}
+        \global\let\maxcolumn@widths\@empty
+        \begingroup
+            \let\or\relax
+            \loop
+               \setbox1\hbox{%
+                   \unhbox1
+                   \unskip
+                   \global\setbox0\lastbox
+               }%
+                \ifhbox0
+                    \xdef\maxcolumn@widths{ \or \the\wd0 \maxcolumn@widths}%
+            \repeat
+        \endgroup
+%    \end{macrocode}
+%    Now we calculate the number of flexible spaces and the initial
+%    values of \cs{eqnshift@} and \cs{alignsep@}.
+%    We start by calculating $\cs{displaywidth}-\cs{totwidth@}$,
+%    which gives us the total amount of ``free space'' in a row.
+%    \begin{macrocode}
+        \dimen@\displaywidth
+        \advance\dimen@-\totwidth@
+%    \end{macrocode}
+%    Next we calculate the number of columns of flexible spaces in the
+%    display, which depends on whether we're in \opt{fleqn} mode and
+%    in which particular environment we are in.
+%
+%    We use \cs{@tempcnta} to store the total number of flexible spaces
+%    in the align and \cs{@tempcntb} for the number of interalign
+%    spaces.
+%    \begin{macrocode}
+        \ifcase\xatlevel@
+%    \end{macrocode}
+%    In \env{alignat}, the interalign spaces are under user control,
+%    not ours.  So, we set \cs{alignsep@} and \cs{minalignsep} both
+%    equal to 0pt.  Later, when calculating a new value for
+%    \cs{alignsep@}, we will only save the new value if it is less
+%    than the current value of \cs{alignsep@} (i.e., \cs{alignsep@}
+%    will never increase).  Since the values we calculate will never
+%    be negative, this will ensure that \cs{alignsep@} remains zero in
+%    \env{alignat}.
+%    \begin{macrocode}
+            \global\alignsep@\z@
+            \let\minalignsep\z@
+            \@tempcntb\z@
+%    \end{macrocode}
+%    In \opt{fleqn} mode, the left margin---and hence the right margin
+%    in this case---is fixed.  Otherwise, we divide the free space
+%    equally between the two margins.
+%    \begin{macrocode}
+            \if@fleqn
+                \@tempcnta\@ne
+                \global\eqnshift@\@mathmargin
+            \else
+                \@tempcnta\tw@
+                \global\eqnshift@\dimen@
+                \global\divide\eqnshift@\@tempcnta
+            \fi
+        \or
+%    \end{macrocode}
+%    In an \env{align} or \env{xalignat} environment with $n$ aligned
+%    structures, there are $n-1$ interalign spaces and either 1 or~2
+%    flexible margins, depending on whether we're in \opt{fleqn} mode
+%    or not.
+%    \begin{macrocode}
+            \@tempcntb\maxfields@
+            \divide\@tempcntb\tw@
+            \@tempcnta\@tempcntb
+            \advance\@tempcntb\m@ne
+%    \end{macrocode}
+%    If we are in \opt{fleqn} mode, we fix the left margin and divide
+%    the free space equally among the interalign spaces and the right
+%    margin.
+%    \begin{macrocode}
+            \if@fleqn
+                \global\eqnshift@\@mathmargin
+                \alignsep@\dimen@
+                \global\divide\alignsep@\@tempcnta
+            \else
+%    \end{macrocode}
+%    Otherwise, we divide the free space equally among the interalign
+%    spaces and both margins.
+%    \begin{macrocode}
+                \global\advance\@tempcnta\@ne
+                \global\eqnshift@\dimen@
+                \global\divide\eqnshift@\@tempcnta
+                \global\alignsep@\eqnshift@
+            \fi
+        \or
+%    \end{macrocode}
+%    Finally, if we're in an \env{flalign} or \env{xxalignat}
+%    environment, there are no flexible margins and $n-1$ flexible
+%    interalign spaces.
+%    \begin{macrocode}
+            \@tempcntb\maxfields@
+            \divide\@tempcntb\tw@
+            \global\advance\@tempcntb\m@ne
+            \global\@tempcnta\@tempcntb
+            \global\eqnshift@\z@
+            \global\alignsep@\dimen@
+%    \end{macrocode}
+%    If we're in \opt{fleqn} mode, we need to add back the
+%    \cs{@mathmargin} that was removed when \cs{dimen@} was originally
+%    calculated above.
+%    \begin{macrocode}
+            \if@fleqn
+                \advance\alignsep@\@mathmargin\relax
+            \fi
+            \global\divide\alignsep@\@tempcntb
+        \fi
+%    \end{macrocode}
+%    Now we make sure \cs{alignsep@} isn't too small.
+%    \begin{macrocode}
+        \ifdim\alignsep@<\minalignsep\relax
+            \global\alignsep@\minalignsep\relax
+            \ifdim\eqnshift@>\z@
+                \if@fleqn\else
+                    \eqnshift@\displaywidth
+                    \advance\eqnshift@-\totwidth@
+                    \advance\eqnshift@-\@tempcntb\alignsep@
+                    \global\divide\eqnshift@\tw@
+                \fi
+            \fi
+        \fi
+        \ifdim\eqnshift@<\z@
+            \global\eqnshift@\z@
+        \fi
+        \calc@shift@align
+%    \end{macrocode}
+%    Next, we calculate the value of \cs{tagshift@}.  This is the glue
+%    that will be inserted in front of the equation tag to make sure
+%    it lines up flush against the appropriate margin.
+%    \begin{macrocode}
+        \tagshift@\totwidth@
+        \advance\tagshift@\@tempcntb\alignsep@
+        \if@fleqn
+            \ifnum\xatlevel@=\tw@
+                \global\advance\tagshift@-\@mathmargin\relax
+            \fi
+        \else
+            \global\advance\tagshift@\eqnshift@
+        \fi
+        \iftagsleft@ \else
+            \global\advance\tagshift@-\displaywidth
+        \fi
+%    \end{macrocode}
+%    Finally, we increase \cs{totwidth@} by an appropriate multiple of
+%    \cs{minalignsep}.  If the result is greater than
+%    \cs{displaywidth}, it means that at least one line in the
+%    \env{align} is overfull and we will issue an appropriate warning
+%    message (via \cs{bl@ck}) at the end of the environment.
+%    \begin{macrocode}
+        \dimen@\minalignsep\relax
+        \advance\totwidth@\@tempcntb\dimen@
+        \ifdim\totwidth@>\displaywidth
+            \global\let\displaywidth@\totwidth@
+        \else
+            \global\let\displaywidth@\displaywidth
+        \fi
+    \endgroup
+}
+%    \end{macrocode}
+%  \end{macro}
+%
+%    The code for calculating the appropriate placement of equation
+%    tags in the \env{align} environments is quite complicated and
+%    varies wildly depending on the settings of the |tagsleft@| and
+%    |@fleqn| switches.  To minimize memory and hash space usage, we
+%    only define the variant appropriate for the current setting of
+%    those switches.
+%
+%    It would be worthwhile to examine this code more closely someday
+%    and see if it could be optimized any.
+%
+%    \paragraph{Tag placement when \cs{tagsleft@true},
+%    \cs{@fleqntrue}.}
+%
+%    We begin with the version of \cs{calc@shift@align} appropriate
+%    for flush-left equations with tags on the left.
+%
+%    \begin{macro}{\calc@shift@align}
+%    This is the simplest case.  Since the left margin is fixed, in
+%    general the only thing to do is check whether there is room for
+%    the tag in the left margin.  The only exception is that if
+%    $\cs{eqnshift@} = 0\,\mathrm{pt}$---meaning that we're in a
+%    \env{flalign} environment and this is the first line with a tag
+%    that we've encountered---then we set $\cs{eqnshift@} =
+%    \cs{@mathmargin}$ and recalculate \cs{alignsep@}.  This is done
+%    by \cs{x@calc@shift@lf}.
+%    \begin{macrocode}
+\iftagsleft@\if@fleqn
+    \def\calc@shift@align{%
+        \global\let\tag@shifts\@empty
+        \begingroup
+%    \end{macrocode}
+%    \cs{@tempdima} is initialized to $\cs{@mathmargin} -
+%    \cs{mintagsep}$, which yields the maximum size of a tag that will
+%    not be shifted to another line.
+%    \begin{macrocode}
+            \@tempdima\@mathmargin\relax
+            \advance\@tempdima-\mintagsep\relax
+%    \end{macrocode}
+%    Now we examine each row in turn.  If the width of the tag on the
+%    line is non-positive---meaning either that there is no tag or
+%    else that the user has forced it to have zero width---we mark the
+%    tag to remain unshifted.  Otherwise, we call \cs{x@calc@shift@lf}
+%    to determine whether any adjustments need to be made to
+%    \cs{eqnshift@} and \cs{alignsep@}.  Note the difference in
+%    treatment of zero-width tags between this code and \tex/'s
+%    built-in algorithm: here, a width of zero prohibits the tag from
+%    being shifted, while in \tex/'s built-in algorithm, a width of
+%    zero forces the tag to be shifted.
+%    \begin{macrocode}
+            \loop
+                \ifnum\row@>0
+                    \ifdim\tag@width\row@>\z@
+                        \x@calc@shift@lf
+                    \else
+                        \saveshift@0%
+                    \fi
+                    \advance\row@\m@ne
+            \repeat
+        \endgroup
+    }
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\x@calc@shift@lf}
+%    As mentioned above, \cs{x@calc@shift@lf} first checks to see if
+%    the current left margin is set to 0 and, if so, resets it to
+%    \cs{@mathmargin} and recalculates \cs{alignsep@}.  Next, it
+%    checks whether the length of the current tag exceeds the
+%    previously calculated limit and, if so, marks the tag to be
+%    shifted to a separate line.
+%    \begin{macrocode}
+    \def\x@calc@shift@lf{%
+        \ifdim\eqnshift@=\z@
+            \global\eqnshift@\@mathmargin\relax
+            \alignsep@\displaywidth
+            \advance\alignsep@-\totwidth@
+            \global\divide\alignsep@\@tempcntb
+            \ifdim\alignsep@<\minalignsep\relax
+                \global\alignsep@\minalignsep\relax
+            \fi
+        \fi
+        \ifdim\tag@width\row@>\@tempdima
+            \saveshift@1%
+        \else
+            \saveshift@0%
+        \fi
+    }
+\fi\fi
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \paragraph{Tag placement when \cs{tagsleft@false},
+%    \cs{@fleqntrue}.}
+%
+%    Next we consider the case when equations are flush-left, but tags
+%    are on the right.  This case is somewhat more complicated than
+%    the previous one, since we can adjust the right margin by varying
+%    the inter-align separatin. Thus, when a tag is found to be too
+%    close to its equation, we first attempt to decrease
+%    \cs{alignsep@} enough to move the equation off to an acceptable
+%    distance.  Only if that would require a value of \cs{alignsep@}
+%    less than \cs{minalignsep} do we move the tag to a separate line.
+%
+%    \begin{macro}{\calc@shift@align}
+%    This version of \cs{calc@shift@align} differs from the previous
+%    version only in calling \cs{x@calc@shift@rf} rather than
+%    \cs{x@calc@shift@lf}.
+%    \begin{macrocode}
+\iftagsleft@\else\if@fleqn
+    \def\calc@shift@align{%
+        \global\let\tag@shifts\@empty
+        \begingroup
+            \loop
+                \ifnum\row@>0
+                    \ifdim\tag@width\row@>\z@
+                        \x@calc@shift@rf
+                    \else
+                        \saveshift@0%
+                    \fi
+                    \advance\row@\m@ne
+            \repeat
+        \endgroup
+    }
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\x@calc@shift@rf}
+%    To start, we need to know two quantities: the number of align
+%    structures in the current row and the ``effective length'' of the
+%    row, defined as the distance from the left margin to the
+%    right edge of the text assuming that \cs{eqnshift@} and
+%    \cs{alignsep@} are both~0.  To get the number of align
+%    structures, we first count the number of columns by counting the
+%    number of entries in the \cs{fieldlengths@} for the current row.
+%    The effective length is calcuated by \cs{x@rcalc@width} and put
+%    in the temporary register \cs{@tempdimc}, using \cs{@tempdimb} as
+%    an auxiliary variable.
+%    \begin{macrocode}
+    \def\x@calc@shift@rf{%
+        \column@\z@
+        \@tempdimb\z@
+        \@tempdimc\z@
+        \edef\@tempb{\fieldlengths@\row@}%
+        \@for\@tempa:=\@tempb\do{%
+            \advance\column@\@ne
+            \x@rcalc@width
+        }%
+        \begingroup
+%    \end{macrocode}
+%    If there are $n$ columns in the current row, then there are
+%    $\lfloor (n+1)/2 \rfloor$ align structures and $\lfloor (n-1)/2
+%    \rfloor$ interalign spaces.
+%    \begin{macrocode}
+            \advance\column@\m@ne
+            \divide\column@\tw@
+%    \end{macrocode}
+%    If this is smaller than the maximum number of interalign spaces
+%    in the environment, then we need to reduce \cs{@tempcnta} (the
+%    total number of flexible spaces in the current line) by
+%    $\cs{@tempcntb} - \cs{column@}$ and reset \cs{@tempcntb} to
+%    \cs{column@}.
+%    \begin{macrocode}
+            \ifnum\@tempcntb>\column@
+                \advance\@tempcnta-\@tempcntb
+                \advance\@tempcnta\column@
+                \@tempcntb\column@
+            \fi
+%    \end{macrocode}
+%    Next, we add the width of the tag and the (fixed) left margin to
+%    the effective length calculated above.  This can be used to
+%    calculate how much ``free space'' there is in the current line
+%    and thus how much leeway we have to increase the amount of space
+%    between the tag and the equation.
+%    \begin{macrocode}
+            \tagwidth@\tag@width\row@\relax
+            \@tempdima\eqnshift@
+            \advance\@tempdima\@tempdimc\relax
+            \advance\@tempdima\tagwidth@
+%    \end{macrocode}
+%    The first thing to check is whether the tag should be shifted to
+%    a separate line.  To do this, we add the minimum interalign
+%    separation and the \cs{mintagsep} to the value of \cs{@tempdima}
+%    just calculated.  This yields the minimum acceptable length of
+%    the current line.  If that is greater than \cs{displaywidth}, we
+%    mark the tag to be calculated.  Otherwise, we mark the tag to be
+%    kept on the same line and then check to see if the \cs{alignsep@}
+%    needs to be reduced to make room for the tag.
+%    \begin{macrocode}
+            \dimen@\minalignsep\relax
+            \multiply\dimen@\@tempcntb
+            \advance\dimen@\mintagsep\relax
+            \advance\dimen@\@tempdima
+            \ifdim\dimen@>\displaywidth
+                \saveshift@1%
+            \else
+                \saveshift@0%
+%    \end{macrocode}
+%    Now we perform essentially the same calculation, but using the
+%    current value of \cs{alignsep@} instead of \cs{minalignsep}.
+%    This gives the current length of the line.  If this is greater
+%    than \cs{displaywidth}, we recalculate \cs{alignsep@} to make
+%    room for the tag.
+%    \begin{macrocode}
+                \dimen@\alignsep@\relax
+                \multiply\dimen@\@tempcntb
+                \advance\dimen@\@tempdima
+                \advance\dimen@\tagwidth@
+                \ifdim\dimen@>\displaywidth
+                    \dimen@\displaywidth
+                    \advance\dimen@-\@tempdima
+                    \ifnum\xatlevel@=\tw@
+                        \advance\dimen@-\mintagsep\relax
+                    \fi
+                    \divide\dimen@\@tempcnta
+                    \ifdim\dimen@<\minalignsep\relax
+                        \global\alignsep@\minalignsep\relax
+                    \else
+                        \global\alignsep@\dimen@
+                    \fi
+                \fi
+            \fi
+        \endgroup
+    }
+\fi\fi
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \paragraph{Tag placement when \cs{tagsleft@false},
+%    \cs{@fleqnfalse}.}
+%
+%    This is similar to the previous case, except for the added
+%    complication that both \cs{alignsep@} and \cs{eqnshift@} can
+%    vary, which makes the computations correspondingly more
+%    complicated.
+%
+%    \begin{macro}{\calc@shift@align}
+%    \begin{macrocode}
+\iftagsleft@\else\if@fleqn\else
+    \def\calc@shift@align{%
+        \global\let\tag@shifts\@empty
+        \begingroup
+            \loop
+                \ifnum\row@>0
+                    \ifdim\tag@width\row@>\z@
+                        \x@calc@shift@rc
+                    \else
+                        \saveshift@0%
+                    \fi
+                    \advance\row@\m@ne
+            \repeat
+        \endgroup
+    }
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\x@calc@shift@rc}
+%    \begin{macrocode}
+    \def\x@calc@shift@rc{%
+        \column@\z@
+        \@tempdimb\z@
+        \@tempdimc\z@
+        \edef\@tempb{\fieldlengths@\row@}%
+        \@for\@tempa:=\@tempb\do{%
+            \advance\column@\@ne
+            \x@rcalc@width
+        }%
+        \begingroup
+            \advance\column@\m@ne
+            \divide\column@\tw@
+            \ifnum\@tempcntb>\column@
+                \advance\@tempcnta-\@tempcntb
+                \advance\@tempcnta\column@
+                \@tempcntb\column@
+            \fi
+            \tagwidth@\tag@width\row@\relax
+            \@tempdima\@tempdimc
+            \advance\@tempdima\tagwidth@
+            \dimen@\minalignsep\relax
+            \multiply\dimen@\@tempcntb
+            \advance\dimen@\mintagsep\relax
+            \ifnum\xatlevel@=\tw@ \else
+                \advance\dimen@\mintagsep\relax
+            \fi
+            \advance\dimen@\@tempdima
+            \ifdim\dimen@>\displaywidth
+                \saveshift@1%
+            \else
+                \saveshift@0%
+                \dimen@\eqnshift@
+                \advance\dimen@\@tempdima
+                \advance\dimen@\@tempcntb\alignsep@
+                \advance\dimen@\tagwidth@
+                \ifdim\dimen@>\displaywidth
+                    \dimen@\displaywidth
+                    \advance\dimen@-\@tempdima
+                    \ifnum\xatlevel@=\tw@
+                        \advance\dimen@-\mintagsep\relax
+                    \fi
+                    \divide\dimen@\@tempcnta
+                    \ifdim\dimen@<\minalignsep\relax
+                        \global\alignsep@\minalignsep\relax
+                        \eqnshift@\displaywidth
+                        \advance\eqnshift@-\@tempdima
+                        \advance\eqnshift@-\@tempcntb\alignsep@
+                        \global\divide\eqnshift@\tw@
+                    \else
+                        \ifdim\dimen@<\eqnshift@
+                            \ifdim\dimen@<\z@
+                                \global\eqnshift@\z@
+                            \else
+                                \global\eqnshift@\dimen@
+                            \fi
+                        \fi
+                        \ifdim\dimen@<\alignsep@
+                            \global\alignsep@\dimen@
+                        \fi
+                    \fi
+                \fi
+            \fi
+        \endgroup
+    }
+\fi\fi
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\x@rcalc@width}
+%    \begin{macrocode}
+\iftagsleft@\else
+    \def\x@rcalc@width{%
+        \ifdim\@tempa > \z@
+            \advance\@tempdimc\@tempdimb
+            \ifodd\column@
+                \advance\@tempdimc\maxcol@width\column@
+                \@tempdimb\z@
+            \else
+                \advance\@tempdimc\@tempa\relax
+                \@tempdimb\maxcol@width\column@
+                \advance\@tempdimb-\@tempa\relax
+            \fi
+        \else
+            \advance\@tempdimb\maxcol@width\column@\relax
+        \fi
+    }
+\fi
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \paragraph{Tag placement when \cs{tagsleft@true},
+%    \cs{@fleqnfalse}.}
+%
+%    \begin{macro}{\calc@shift@align}
+%    \begin{macrocode}
+\iftagsleft@\if@fleqn\else
+    \def\calc@shift@align{%
+        \global\let\tag@shifts\@empty
+        \begingroup
+            \loop
+                \ifnum\row@>\z@
+                    \ifdim\tag@width\row@>\z@
+                        \x@calc@shift@lc
+                    \else
+                        \saveshift@0%
+                    \fi
+                    \advance\row@\m@ne
+            \repeat
+        \endgroup
+    }
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\x@calc@shift@lc}
+%    \begin{macrocode}
+    \def\x@calc@shift@lc{%
+        \column@\z@
+%    \end{macrocode}
+%    \cs{@tempdima} will (eventually) be set to the effective width of
+%    the current row, defined as the distance from the leftmost point
+%    of the current line to the end of the last field of the
+%    \cs{halign}, ignoring any intervening \cs{tabskip}s, plus the
+%    width of the current tag.  That is, it will be the width of the
+%    first non-empty field plus the sum of the maximum widths of all
+%    following fields, plus the tag width.
+%
+%    \cs{@tempdimb} will be the ``indentation'' of leftmost end of
+%    text, ignoring the \cs{tabskip} glue, i.e., it will be the sum of
+%    the maximum widths of any fields to the left of the first
+%    non-empty field, plus whatever empty space there is at the
+%    beginning of the first non-empty field.
+%    \begin{macrocode}
+        \@tempdima\z@ % ``width of equation''
+        \@tempdimb\z@ % ``indent of equation''
+        \edef\@tempb{\fieldlengths@\row@}%
+        \@for\@tempa:=\@tempb\do{%
+            \advance\column@\@ne
+            \x@lcalc@width
+        }%
+        \begingroup
+            \tagwidth@\tag@width\row@\relax
+%    \end{macrocode}
+%    \cs{@tempdima} is now easy to calculate, since it is just
+%    $\cs{totwidth@} - \cs{@tempdimb} + \cs{tagwidth@}$.
+%    \begin{macrocode}
+            \@tempdima\totwidth@
+            \advance\@tempdima-\@tempdimb
+            \advance\@tempdima\tagwidth@
+%    \end{macrocode}
+%    Next, we check to see whether there is room for both the equation
+%    and the tag on the same line, by calculating the minimum
+%    acceptable length of the current row and comparing that to
+%    \cs{displaywidth}.  Note that here we use \cs{@tempcntb}, i.e.,
+%    the number of interalign spaces after the first non-empty align
+%    structure.
+%    \begin{macrocode}
+            \dimen@\minalignsep\relax
+            \multiply\dimen@\@tempcntb
+            \advance\dimen@\mintagsep\relax
+            \ifnum\xatlevel@=\tw@ \else
+                \advance\dimen@\mintagsep\relax
+            \fi
+            \advance\dimen@\@tempdima
+%    \end{macrocode}
+%    If the minimum acceptable width of the current line is greater
+%    than \cs{displaywidth}, we mark the current tag to be shifted to
+%    a separate line.
+%    \begin{macrocode}
+            \ifdim\dimen@>\displaywidth
+                \saveshift@1%
+            \else
+%    \end{macrocode}
+%    Otherwise, the tag can stay on the same line as the equation, but
+%    we need to check whether it is too close to the equation.  So, we
+%    calculate the distance between the left margin and the left side
+%    of the equation, using the current values of \cs{eqnshift@} and
+%    \cs{alignsep@}.  Note that we use \cs{count@} here, not
+%    \cs{@tempcntb}, as above.
+%    \begin{macrocode}
+                \saveshift@0%
+                \dimen@\alignsep@
+                \multiply\dimen@\count@
+                \advance\dimen@\eqnshift@
+                \advance\dimen@\@tempdimb
+%    \end{macrocode}
+%    If the left margin is less than twice the tag width, we calculate
+%    new values of \cs{eqnshift@} and \cs{alignsep@} to move the
+%    equation further away from the tag.  In particular, we center the
+%    current line between its tag and the right margin.  Note that
+%    although we later will need to transform \cs{dimen@} into a value
+%    suitable for use as \cs{eqnshift@}, for the time being it is more
+%    useful to think of it as the space separating the tag from the
+%    equation.
+%    \begin{macrocode}
+                \ifdim\dimen@<2\tagwidth@
+                    \dimen@\displaywidth
+                    \advance\dimen@-\@tempdima
+                    \ifnum\xatlevel@=\tw@
+                        \advance\dimen@-\mintagsep\relax
+                    \fi
+                    \divide\dimen@\@tempcnta
+%    \end{macrocode}
+%    As usual, we check to make sure we don't set \cs{alignsep@}
+%    smaller than \cs{minalignsep} and, in any case, that we don't
+%    replace \cs{alignsep@} by a larger value.
+%    \begin{macrocode}
+                    \ifdim\dimen@<\minalignsep\relax
+                        \global\alignsep@\minalignsep\relax
+                        \dimen@\displaywidth
+                        \advance\dimen@-\@tempdima
+                        \advance\dimen@-\@tempcntb\alignsep@
+                        \global\divide\dimen@\tw@
+                    \else
+                        \ifdim\dimen@<\alignsep@
+                            \global\alignsep@\dimen@
+                        \fi
+                    \fi
+%    \end{macrocode}
+%    Next, we calculate an appropriate value of \cs{eqnshift@},
+%    assuming that \cs{dimen@} is the desired separation between the
+%    tag and equation of the current line.  This means that we first
+%    need to adjust \cs{dimen@} if we're in an \env{flalign}
+%    environment.
+%    \begin{macrocode}
+                    \ifnum\xatlevel@=\tw@
+                        \dimen@\mintagsep\relax
+                    \fi
+%    \end{macrocode}
+%    Now we calculate the value of \cs{eqnshift@} needed to produce a
+%    separation of \cs{dimen@} between the equation tag and the
+%    beginning of the equation.  To do this, we need the following
+%    equation to hold:
+%    \[
+%       \cs{eqnshift@} + n\cs{alignsep@} + \cs{@tempdimb}
+%           = \cs{tagwidth@} + \cs{dimen@}
+%    \]
+%    where $n = \cs{count@}$ is the number of interalign spaces before
+%    the first non-empty field of the current line.
+%    \begin{macrocode}
+                    \advance\dimen@\tagwidth@
+                    \advance\dimen@-\@tempdimb
+                    \advance\dimen@-\count@\alignsep@
+%    \end{macrocode}
+%    The value of \cs{eqnshift@} just calculated is the minimum
+%    acceptable value; thus, we save it only if it is larger than the
+%    current value.
+%    \begin{macrocode}
+                    \ifdim\dimen@>\eqnshift@
+                        \global\eqnshift@\dimen@
+                    \fi
+                \fi
+            \fi
+        \endgroup
+    }
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{macro}{\x@lcalc@width}
+%    This macro calculates the ``indentation'' of the current row, as
+%    defined above under the description of \cs{x@calc@shift@lc}.
+%    This macro is called for each field of the current line, with
+%    \cs{@tempa} set to the width of the current field.  Ideally, the
+%    loop enclosing \cs{x@lcalc@width} would terminate as soon as
+%    \cs{@tempa} is non-zero, but that would be a bit tricky to
+%    arrange.  Instead, we use \cs{@tempdima} as a flag to signal when
+%    we've encountered the first non-empty field.
+%
+%    \begin{macrocode}
+    \def\x@lcalc@width{%
+        \ifdim\@tempdima = \z@
+%    \end{macrocode}
+%    If the current field is empty (i.e., $\cs{@tempa} =
+%    \mathrm{0\,pt}$, then we increment \cs{@tempdimb} by the width of
+%    the current field).  Otherwise, we set $\cs{@tempdima} =
+%    \mathrm{1\,pt}$ as a signal value and increment \cs{@tempdimb} by
+%    the width of whatever empty space there might be at the left of
+%    the current field.
+%    \begin{macrocode}
+            \ifdim\@tempa > \z@
+                \@tempdima\p@
+                \ifodd\column@
+                    \advance\@tempdimb \maxcol@width\column@
+                    \advance\@tempdimb-\@tempa
+                \fi
+%    \end{macrocode}
+%    In addition, we need to adjust the values of \cs{@tempcnta} and
+%    \cs{@tempcntb} to account for any empty align structures that
+%    might occur at the beginning of the current line.  More
+%    specifically, we first set \cs{count@} equal to the number of
+%    interalign spaces preceding the current field (namely, $\lfloor
+%    (\cs{\column@}-1)/2 \rfloor$), and then subtract \cs{count@} from
+%    both \cs{@tempcnta} and \cs{@tempcntb}.  The rationale is that
+%    for the purposes of adjusting the spacing between the tag and the
+%    equation, the only flexible interalign spaces are those after
+%    the first non-empty align structure, so we need to treat those
+%    different from the ones before the first non-empty align
+%    structure.
+%    \begin{macrocode}
+                \count@\column@
+                \advance\count@\m@ne
+                \divide\count@\tw@
+                \advance\@tempcnta-\count@
+                \advance\@tempcntb-\count@
+            \else
+                \advance\@tempdimb \maxcol@width\column@\relax
+            \fi
+        \fi
+    }
+\fi\fi
+%    \end{macrocode}
+%    \end{macro}
+%
+%  \begin{macro}{\place@tag}
+%    \cs{place@tag} takes care of the placment of tags in the
+%    \env{align} environments.
+%    \begin{macrocode}
+\def\place@tag{%
+    \iftagsleft@
+        \kern-\tagshift@
+        \if1\shift@tag\row@\relax
+            \rlap{\vbox{%
+                \normalbaselines
+                \boxz@
+                \vbox to\lineht@{}%
+                \raise@tag
+            }}%
+        \else
+            \rlap{\boxz@}%
+        \fi
+        \kern\displaywidth@
+    \else
+        \kern-\tagshift@
+        \if1\shift@tag\row@\relax
+%    \end{macrocode}
+%    Added depth to correct vertical spacing of shifted
+%    equation tags.---dmj, 29 Dec 1994
+%    \begin{macrocode}
+            \llap{\vtop{%
+                \raise@tag
+                \normalbaselines
+                \setbox\@ne\null
+                \dp\@ne\lineht@
+                \box\@ne
+                \boxz@
+            }}%
+        \else
+            \llap{\boxz@}%
+        \fi
+    \fi
+}
+%    \end{macrocode}
+%  \end{macro}
+%
+% \begin{macro}{\align@preamble}
+%    \begin{macrocode}
+\def\align@preamble{%
+   &\hfil
+    \strut@
+    \setboxz@h{\@lign$\m@th\displaystyle{##}$}%
+    \ifmeasuring@\savefieldlength@\fi
+    \set@field
+    \tabskip\z@skip
+   &\setboxz@h{\@lign$\m@th\displaystyle{{}##}$}%
+    \ifmeasuring@\savefieldlength@\fi
+    \set@field
+    \hfil
+    \tabskip\alignsep@
+}
+%    \end{macrocode}
+%  \end{macro}
+%
+%  \begin{macro}{\set@field}
+%    \cs{set@field} increments the column counter, tracks the value of
+%    \cs{lineht@} and finally inserts the box containing the contents
+%    of the current field.
+%    \begin{macrocode}
+\def\set@field{%
+    \column@plus
+    \iftagsleft@
+        \ifdim\ht\z@>\lineht@
+            \global\lineht@\ht\z@
+        \fi
+    \else
+        \ifdim\dp\z@>\lineht@
+            \global\lineht@\dp\z@
+        \fi
+    \fi
+    \boxz@
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+%
+% \subsection {The \env{split} environment}
+%
+%    \begin{environment}{split}
+%    \begin{macrocode}
+\def\split{%
+    \ifinany@
+        \@xp\insplit@
+    \else
+        \@xp\split@err
+    \fi
+}
+%    \end{macrocode}
+%    \end{environment}
+%
+%    \begin{macro}{\split@err}
+%    A special error function for \env{split} to conserve main mem (at a
+%    cost of string pool/hash size.
+%    \begin{macrocode}
+\edef\split@err{%
+    \@nx\@amsmath@err{%
+        \string\begin{split} won't work here%
+    }{%
+        \@xp\@nx\csname
+  Did you forget a preceding \string\begin{equation}?^^J%
+  If not, perhaps the `aligned' environment is what you want.\endcsname}%
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+% \begin{macro}{\insplit@}
+%    \begin{macrocode}
+\def\insplit@{%
+    \global\setbox\z@\vbox\bgroup
+        \Let@
+        \restore@math@cr
+        \default@tag % disallow use of \tag here
+        \ialign\bgroup
+            \hfil
+            \strut@
+            $\m@th\displaystyle{##}$%
+           &$\m@th\displaystyle{{}##}$%
+            \hfill % Why not \hfil?---dmj, 28 Dec 1994
+            \crcr
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\endsplit}
+%    \begin{macrocode}
+\def\endsplit{%
+            \crcr
+        \egroup
+    \egroup
+    \iftagsleft@
+        \@xp\lendsplit@
+    \else
+        \@xp\rendsplit@
+    \fi
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\rendsplit@}
+%    Moved the box maneuvers inside the \cs{ifinalign@}, since that is
+%    the only place they are needed.---dmj, 28 Dec 1994
+%
+%    TODO: Explore interaction of tag-placement algorithm with
+%    \env{split}.  Is there any way for \env{split} to pass the
+%    relevant information out to the enclosing \env{gather} or
+%    \env{align}?
+%    \begin{macrocode}
+\def\rendsplit@{%
+    \ifinalign@
+%    \end{macrocode}
+%    Changed |\box9| into a \cs{vtop} here for better spacing.
+%    \begin{macrocode}
+        \global\setbox9 \vtop{%
+            \unvcopy\z@
+            \global\setbox8 \lastbox
+            \unskip
+        }%
+        \setbox\@ne\hbox{%
+            \unhcopy8
+            \unskip
+            \global\setbox\tw@\lastbox
+            \unskip
+            \global\setbox\thr@@\lastbox
+        }%
+        \ifctagsplit@
+            \gdef\split@{%
+                \hbox to\wd\thr@@{}%
+               &\vcenter{\vbox{\moveleft\wd\thr@@\boxz@}}%
+            }%
+        \else
+            \global\setbox7 \hbox{\unhbox\tw@\unskip}%
+%    \end{macrocode}
+%    Added \cs{add@amps} to make sure we put the last line of the
+%    \env{split} into the proper column of an \env{align} environment
+%    with multiple align structures.---dmj, 28 Dec 1994
+%
+%    Special care has to be taken in this case because the \env{split}
+%    turns into two lines of the \env{align} instead of just one.  So,
+%    we have to make sure that the first line produced by the
+%    \env{split} doesn't upset our bookkeeping, hence we call
+%    \cs{savetaglength@} to insert 0\,pt as the tag for this
+%    pseudo-line, and we advance the \cs{row@} counter and reset
+%    \cs{lineht@} afterwards.  It would be nice if we could just
+%    replace the \cs{crcr} by \cs{math@cr@@@}, but that would cause
+%    problems with the tag processing.
+%    \begin{macrocode}
+            \gdef\split@{%
+                \global\@tempcnta\column@
+               &\setboxz@h{}%
+                \savetaglength@
+                \global\advance\row@\@ne
+                \vbox{\moveleft\wd\thr@@\box9}%
+                \crcr
+                \noalign{\global\lineht@\z@}%
+                \add@amps\@tempcnta
+                \box\thr@@
+               &\box7
+            }%
+        \fi
+    \else
+        \ifctagsplit@
+            \gdef\split@{\vcenter{\boxz@}}%
+        \else
+%    \end{macrocode}
+%    Changed to just \cs{boxz@}, otherwise last line gets centered
+%    rather than aligned properly with respect to the rest of the
+%    lines.  But this means that we can't see inside of the last line
+%    to decide whether the tag needs to be moved.  Will have to think
+%    about this.---dmj, 28 Dec 1994
+%    \begin{macrocode}
+            \gdef\split@{%
+                \boxz@
+%                \box9
+%                \crcr
+%                \hbox{\box\thr@@\box7}%
+            }%
+        \fi
+    \fi
+    \aftergroup\split@
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\lendsplit@}
+%    \begin{macrocode}
+\def\lendsplit@{%
+    \global\setbox9\vtop{\unvcopy\z@}%
+    \ifinalign@
+%    \end{macrocode}
+%    Moved following two boxes inside the \cs{ifinalign@}, since they
+%    are only used in that case.  In fact, if we just kept track of
+%    the width of the first column, we could dispense with this
+%    entirely.  Surely that would be more efficient than all these box
+%    copies.---dmj, 28 Dec 1994
+%    \begin{macrocode}
+        \setbox\@ne\vbox{%
+            \unvcopy\z@
+            \global\setbox8\lastbox
+        }%
+        \setbox\@ne\hbox{%
+            \unhcopy8%
+            \unskip
+            \setbox\tw@\lastbox
+            \unskip
+            \global\setbox\thr@@\lastbox
+        }%
+        \ifctagsplit@
+            \gdef\split@{%
+                \hbox to\wd\thr@@{}%
+               &\vcenter{\vbox{\moveleft\wd\thr@@\box9}}%
+            }%
+        \else
+            \gdef\split@{%
+                \hbox to\wd\thr@@{}%
+               &\vbox{\moveleft\wd\thr@@\box9}%
+            }%
+        \fi
+    \else
+        \ifctagsplit@
+            \gdef\split@{\vcenter{\box9}}%
+        \else
+            \gdef\split@{\box9}%
+        \fi
+    \fi
+    \aftergroup\split@
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \subsection{The \env{multline} environment}
+%
+%    In the original \amstex/, \cn{multlinegap} is a macro with an
+%    argument that resets an internal dimension (one with an \qc{\@}
+%    character in its name). Here, to save control sequence names, we
+%    define \cn{multlinegap} to be the dimension itself and the
+%    documentation instructs users to use \cn{setlength} if they
+%    need to change it.
+% \begin{macro}{\multlinegap}
+% \begin{macro}{\multlinetaggap}
+%    Changed \cs{multlinegap} and \cs{multlinetaggap} to skip
+%    registers.  Also changed name to \cs{multlinetaggap} from
+%    \cs{multlinetaggap@}.
+%    \begin{macrocode}
+\newskip\multlinegap
+\multlinegap10pt
+\newskip\multlinetaggap
+\multlinetaggap10pt
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+%    \begin{macro}{\start@multline}
+%    \begin{macrocode}
+\def\start@multline#1{%
+    \RIfM@
+        \nomath@env
+        \DN@{\@namedef{end\@currenvir}{}\@gobble}%
+    \else
+        $$%
+        #1%
+        \ifst@rred
+            \nonumber
+        \else
+            \global\@eqnswtrue
+        \fi
+        \let\next@\multline@
+    \fi
+    \collect@body\next@
+}
+%    \end{macrocode}
+%    \end{macro}
+%
+%    \begin{environment}{multline}
+% \begin{environment}{multline*}
+%    \begin{macrocode}
+\def\multline{\start@multline\st@rredfalse}
+%
+\@namedef{multline*}{\start@multline\st@rredtrue}
+%    \end{macrocode}
+% \end{environment}
+% \end{environment}
+%
+% \begin{macro}{\multline@}
+%    \begin{macrocode}
+\def\multline@#1{%
+    \inany@true
+    \Let@
+%    \end{macrocode}
+%    For multline neither \cs{displ@y} no \cs{displ@y@} is quite right;
+%    we want to advance the row number and (I suppose?) the
+%    display-pagebreak level, but we only want to do tag-related stuff
+%    once before the first line, not repeat it for every line. (Recall
+%    that the arg of \cs{@display@init} goes into \cs{everycr}.)
+%    \begin{macrocode}
+    \@display@init{\global\advance\row@\@ne \global\dspbrk@lvl\m@ne}%
+    \displaybreak@
+    \restore@math@cr
+%    \end{macrocode}
+%    The \env{multline} environment is somewhat unusual, in that
+%    \cs{tag} and \cs{label} are enabled only during the measuring
+%    phase and disabled during the production phase.
+%    Here we disable \cs{tag} and \cs{label}; \cs{mmeasure} will
+%    re-enable them temporarily.
+%    \begin{macrocode}
+    \let\tag\tag@in@align
+    \global\tag@false \global\let\raise@tag\@empty
+    \mmeasure@{#1}%
+    \let\label\@gobble
+    \tabskip \if@fleqn \@mathmargin \else \z@skip \fi
+    \totwidth@\displaywidth
+    \if@fleqn
+        \advance\totwidth@-\@mathmargin
+    \fi
+    \halign\bgroup
+        \hbox to\totwidth@{%
+%    \end{macrocode}
+%    In order to get the spacing of the last line right in fleqn
+%    mode, we need to play a little game here.  Normally the
+%    stretchability of the \cs{hskip} here will be suppressed by the
+%    \cs{hfil} at the end of the template, except inside the last line,
+%    when that \cs{hfil} will be removed by the \cs{hfilneg} in
+%    \cs{lendmultline@}.
+%    \begin{macrocode}
+            \if@fleqn
+                \hskip \@centering \relax
+            \else
+                \hfil
+            \fi
+            \strut@
+            $\m@th\displaystyle{}##$%
+            \hfil
+        }%
+        \crcr
+%    \end{macrocode}
+%    In \opt{fleqn} mode, it's the \cs{tabskip} of \cs{@mathmargin}
+%    that needs to be removed in the first line, not the \cs{hfil} at
+%    the beginning of the template.
+%    \begin{macrocode}
+        \if@fleqn
+            \hskip-\@mathmargin
+        \else
+            \hfilneg
+        \fi
+        \iftagsleft@
+            \iftag@
+                \begingroup
+                    \ifshifttag@
+                        \rlap{\vbox{%
+                                \normalbaselines
+                                \hbox{%
+                                    \strut@
+                                    \make@display@tag
+                                }%
+                                \vbox to\lineht@{}%
+                                \raise@tag
+                        }}%
+%    \end{macrocode}
+%    If the equation tag doesn't fit on the same line with the first
+%    line of the display, we'll indent the first line by
+%    \cn{multlinegap}.  This is a change from \pkg{amstex}, where the
+%    first line would have been flush against the left margin in this
+%    case.  A corresponding change will be made in \cs{rendmultline@}.
+%    \begin{macrocode}
+                        \hskip\multlinegap
+                    \else
+                        \make@display@tag
+                        \hskip\multlinetaggap
+                    \fi
+                \endgroup
+            \else
+                \hskip\multlinegap
+            \fi
+        \else
+            \hskip\multlinegap
+        \fi
+    #1%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\endmultline}
+% \begin{macro}{\endmultline*}
+%    We use some expandafters here to reduce the number of tokens in the
+%    replacement text of \cs{endmultline}. \cs{endmultline} and
+%    \cs{endmultline*} are the same.
+%    \begin{macrocode}
+\def\endmultline{%
+    \iftagsleft@
+        \@xp\lendmultline@
+    \else
+        \@xp\rendmultline@
+    \fi
+    \global\@ignoretrue
+}
+%    \end{macrocode}
+%    \begin{macrocode}
+\@xp\let\csname endmultline*\endcsname=\endmultline
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\lendmultline@}
+%    Bug fix: changed \cs{crcr} to \cs{math@cr} so that \cs{@eqpen}
+%    gets reset properly if \cs{displaybreak} is used on the
+%    penultimate line of an \env{align}.
+%    \begin{macrocode}
+\def\lendmultline@{%
+        \hfilneg
+        \hskip\multlinegap
+        \math@cr
+    \egroup
+    $$%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\rendmultline@}
+%    \begin{macrocode}
+\def\rendmultline@{%
+    \iftag@
+        \begingroup
+            \ifshifttag@
+                \hskip\multlinegap
+%    \end{macrocode}
+%    Added depth to correct vertical spacing of shifted equation
+%    tags.---dmj, 29 Dec 1994
+%    \begin{macrocode}
+                \llap{\vtop{%
+                    \raise@tag
+                    \normalbaselines
+                    \setbox\@ne\null
+                    \dp\@ne\lineht@
+                    \box\@ne
+                    \hbox{\strut@\make@display@tag}%
+                }}%
+            \else
+                \hskip\multlinetaggap
+                \make@display@tag
+            \fi
+        \endgroup
+    \else
+        \hskip\multlinegap
+    \fi
+    \hfilneg
+%    \end{macrocode}
+%    Bug fix: changed \cs{crcr} to \cs{math@cr} so that
+%    \cs{@eqpen} gets reset properly if \cs{displaybreak} is used on
+%    the penultimate line of an \env{align}.
+%    \begin{macrocode}
+        \math@cr
+    \egroup$$%
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \begin{macro}{\mmeasure@}
+%    \begin{macrocode}
+\def\mmeasure@#1{%
+    \begingroup
+        \measuring@true
+%    \end{macrocode}
+%    We use \cs{begin/endgroup} rather than |{}| in this definition of
+%    \cn{label} because the latter would create an extra (wasteful of
+%    main mem) null box in the current math list. [mjd,1995/01/17]
+%    \begin{macrocode}
+        \def\label##1{%
+          \begingroup\measuring@false\label@in@display{##1}\endgroup}%
+        \def\math@cr@@@{\cr}%
+        \let\shoveleft\@iden \let\shoveright\@iden
+        \savecounters@
+        \global\row@\z@
+        \setbox\@ne\vbox{%
+            \global\let\df@tag\@empty
+            \halign{%
+                \setboxz@h{\@lign$\m@th\displaystyle{}##$}%
+                \iftagsleft@
+                    \ifnum\row@=\@ne
+                        \global\totwidth@\wdz@
+                        \global\lineht@\ht\z@
+                    \fi
+                \else
+                    \global\totwidth@\wdz@
+                    \global\lineht@\dp\z@
+                \fi
+                \crcr
+                #1%
+                \crcr
+            }%
+        }%
+        \ifx\df@tag\@empty\else\global\tag@true\fi
+        \if@eqnsw\global\tag@true\fi
+        \iftag@
+            \setboxz@h{%
+                \if@eqnsw
+                    \stepcounter{equation}%
+                    \tagform@\theequation
+                \else
+                    \df@tag
+                \fi
+            }%
+            \global\tagwidth@\wdz@
+            \dimen@\totwidth@
+            \advance\dimen@\tagwidth@
+            \advance\dimen@\multlinetaggap
+            \iftagsleft@\else
+                \if@fleqn
+                    \advance\dimen@\@mathmargin
+                \fi
+            \fi
+            \ifdim\dimen@>\displaywidth
+                \global\shifttag@true
+            \else
+                \global\shifttag@false
+            \fi
+        \fi
+        \restorecounters@
+    \endgroup
+}
+%    \end{macrocode}
+% \end{macro}
+%
+%    \begin{macro}{\shoveleft}
+%    \begin{macro}{\shoveright}
+%    \cs{shoveleft} and \cs{shoveright} need to do slightly different
+%    things depending on whether tags are on the left or the right and
+%    whether we're in \opt{fleqn} mode.  For compactness of code, we
+%    make the appropriate decisions at ``compile'' time rather than at
+%    load time.
+%
+%    TODO: Investigate making \cs{shoveright} behave ``properly''(?) if
+%    used on the first line of a \env{multline} and make \cs{shoveleft}
+%    behave properly if used on the last line of a \env{multline}. But
+%    in his \fn{amstex.doc} Spivak indicates those commands should never
+%    be used on a first or last line. Perhaps better to leave the
+%    question open unless/until real-life examples turn up.
+%    \begin{macrocode}
+\iftagsleft@
+    \def\shoveright#1{%
+        #1%
+        \hfilneg
+        \hskip\multlinegap
+    }
+\else
+    \def\shoveright#1{%
+        #1%
+        \hfilneg
+        \iftag@
+            \ifshifttag@
+                \hskip\multlinegap
+            \else
+                \hskip\tagwidth@
+                \hskip\multlinetaggap
+            \fi
+        \else
+            \hskip\multlinegap
+        \fi
+    }
+\fi
+
+\if@fleqn
+    \def\shoveleft#1{#1}%
+\else
+    \iftagsleft@
+        \def\shoveleft#1{%
+            \setboxz@h{$\m@th\displaystyle{}#1$}%
+            \setbox\@ne\hbox{$\m@th\displaystyle#1$}%
+            \hfilneg
+            \iftag@
+                \ifshifttag@
+                    \hskip\multlinegap
+                \else
+                    \hskip\tagwidth@
+                    \hskip\multlinetaggap
+                \fi
+            \else
+                \hskip\multlinegap
+            \fi
+            \hskip.5\wd\@ne
+            \hskip-.5\wdz@
+            #1%
+        }
+    \else
+        \def\shoveleft#1{%
+            \setboxz@h{$\m@th\displaystyle{}#1$}%
+            \setbox\@ne\hbox{$\m@th\displaystyle#1$}%
+            \hfilneg
+            \hskip\multlinegap
+            \hskip.5\wd\@ne
+            \hskip-.5\wdz@
+            #1%
+        }
+    \fi
+\fi
+%    \end{macrocode}
+%    \end{macro}
+%    \end{macro}
+%
+%
+%    \subsection{Miscellaneous}
+%  \begin{macro}{\[}
+%    This is basically just a stripped-down \env{gather}.
+%
+%    \begin{macrocode}
+\def\[{%
+    \RIfM@
+        \@badmath
+    \else
+        \DN@{%
+            $$%
+            \ingather@true
+            \inany@true
+            \def\\{\@amsmath@err{\Invalid@@\\}\@eha}%
+            \tabskip\@mathmargin
+            \halign to\displaywidth\bgroup
+                \if@fleqn\else\hfil\fi
+                \setboxz@h{$\m@th\displaystyle{####}$}%
+                \global\totwidth@\wdz@
+                \boxz@
+                \hfil
+                \tabskip\@centering
+                \cr
+        }%
+        \@xp\next@
+    \fi
+}
+
+\def\]{%
+    \RIfM@
+        \DN@{%
+                \crcr
+            \black@\totwidth@
+            \egroup
+            $$%
+        }%
+        \@xp\next@
+    \else
+        \@badmath
+    \fi
+}
+%    \end{macrocode}
+%  \end{macro}
+% \subsection{Final incantations}
+%
+% \begin{macro}{\@arrayparboxrestore}
+%    Here we must reset a few additional parameters.
+%    \begin{macrocode}
+\@xp\def\@xp\@arrayparboxrestore\@xp{\@arrayparboxrestore
+  \inany@false\ingather@false\inalign@false \default@tag}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\equation}
+% \begin{macro}{\endequation}
+%    The \env{split} environment does not work inside a
+%    \env{displaymath} or \env{equation} environment since it
+%    must be enclosed by an alignment.
+%    We therefore redefine the \env{equation} environment to be
+%    a one-lined \env{gather} environment.
+%    The \cn{\\} command is made inaccessible in an \env{equation}
+%    environment.
+%    \begin{macrocode}
+\def\equation{\gather\def\\{\@amsmath@err{\Invalid@@\\}\@eha}}
+\def\endequation{\endgather}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+% \begin{macro}{\equation*}
+% \begin{macro}{\endequation*}
+%    The \env{equation*} environment is nearly the same; it only
+%    suppresses the automatic generation of a tag.
+%    \begin{macrocode}
+\newenvironment{equation*}{%
+  \equation
+}{%
+  \nonumber\endequation
+}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+%    The usual \cs{endinput} to ensure that random garbage at the end of
+%    the file doesn't get copied by \fn{docstrip}.
+%    \begin{macrocode}
+\endinput
+%    \end{macrocode}
+%
+% \changes{v1.2b}{1995/02/15}{Added kern -alignsep@ to math@cr@@@align}
+% \changes{v1.2b}{1995/02/15}{Modified one piece of measure@}
+% \changes{v1.2b}{1995/02/15}{Cleaned out some obsolete commentary}
+% \changes{v1.2b}{1995/02/15}{Changed kern tagshift@ to kern -tagshift@
+%   in the reqno case of place@tag}
+%
+% \CheckSum{5733}
+% \Finale

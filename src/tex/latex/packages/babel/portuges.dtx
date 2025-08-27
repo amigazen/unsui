@@ -1,0 +1,464 @@
+% \iffalse meta-comment
+%
+% Copyright 1989-1995 Johannes L. Braams and any individual authors
+% listed elsewhere in this file.  All rights reserved.
+% 
+% For further copyright information any other copyright notices in this
+% file.
+% 
+% This file is part of the Babel system release 3.5.
+% --------------------------------------------------
+%   This system is distributed in the hope that it will be useful,
+%   but WITHOUT ANY WARRANTY; without even the implied warranty of
+%   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+% 
+%   For error reports concerning UNCHANGED versions of this file no more
+%   than one year old, see bugs.txt.
+% 
+%   Please do not request updates from me directly.  Primary
+%   distribution is through the CTAN archives.
+% 
+% 
+% IMPORTANT COPYRIGHT NOTICE:
+% 
+% You are NOT ALLOWED to distribute this file alone.
+% 
+% You are allowed to distribute this file under the condition that it is
+% distributed together with all the files listed in manifest.txt.
+% 
+% If you receive only some of these files from someone, complain!
+% 
+% Permission is granted to copy this file to another file with a clearly
+% different name and to customize the declarations in that copy to serve
+% the needs of your installation, provided that you comply with
+% the conditions in the file legal.txt from the LaTeX2e distribution.
+% 
+% However, NO PERMISSION is granted to produce or to distribute a
+% modified version of this file under its original name.
+%  
+% You are NOT ALLOWED to change this file.
+% 
+% 
+% \fi
+% \CheckSum{275}
+% \iffalse
+%    Tell the \LaTeX\ system who we are and write an entry on the
+%    transcript.
+%<*dtx>
+\ProvidesFile{portuges.dtx}
+%</dtx>
+%<code>\ProvidesFile{portuges.ldf}
+        [1995/07/04 v1.2h Portuguese support from the babel system]
+%
+% Babel package for LaTeX version 2e
+% Copyright (C) 1989 - 1995
+%           by Johannes Braams, TeXniek
+%
+% Portuguese Language Definition File
+% Copyright (C) 1989 - 1995
+%           by Johannes Braams, TeXniek
+%
+% Please report errors to: J.L. Braams
+%                          JLBraams@cistron.nl
+%
+%    This file is part of the babel system, it provides the source
+%    code for the Portuguese language definition file.  The Portuguese
+%    words were contributed by Jose Pedro Ramalhete, (JRAMALHE@CERNVM
+%    or Jose-Pedro_Ramalhete@MACMAIL).
+%
+%    Arnaldo Viegas de Lima <arnaldo@VNET.IBM.COM> contributed
+%    brazilian translations and suggestions for enhancements.
+%<*filedriver>
+\documentclass{ltxdoc}
+\newcommand*\TeXhax{\TeX hax}
+\newcommand*\babel{\textsf{babel}}
+\newcommand*\langvar{$\langle \it lang \rangle$}
+\newcommand*\note[1]{}
+\newcommand*\Lopt[1]{\textsf{#1}}
+\newcommand*\file[1]{\texttt{#1}}
+\begin{document}
+ \DocInput{portuges.dtx}
+\end{document}
+%</filedriver>
+%\fi
+%
+% \GetFileInfo{portuges.dtx}
+%
+% \changes{portuges-1.0a}{1991/07/15}{Renamed \file{babel.sty} in
+%    \file{babel.com}}
+% \changes{portuges-1.1}{1992/02/16}{Brought up-to-date with babel 3.2a}
+% \changes{portuges-1.2}{1994/02/26}{Update for \LaTeXe}
+% \changes{portuges-1.2d}{1994/06/26}{Removed the use of \cs{filedate}
+%    and moved identification after the loading of \file{babel.def}}
+% \changes{portuges-1.2g}{1995/06/04}{Enhanced support for brasilian}
+%
+%  \section{The Portuguese language}
+%
+%    The file \file{\filename}\footnote{The file described in this
+%    section has version number \fileversion\ and was last revised on
+%    \filedate.  Contributions were made by Jose Pedro Ramalhete
+%    (\texttt{JRAMALHE@CERNVM} or
+%    \texttt{Jose-Pedro\_Ramalhete@MACMAIL}) and Arnaldo Viegas de
+%    Lima \texttt{arnaldo@VNET.IBM.COM}.}  defines all the
+%    language-specific macros for the Portuguese language as well as
+%    for the Brasilian version of this language.
+%
+%    For this language the character |"| is made active. In
+%    table~\ref{tab:port-quote} an overview is given of its purpose.
+%
+%    \begin{table}[htb]
+%     \centering
+%     \begin{tabular}{lp{8cm}}
+%       \verb="|= & disable ligature at this position.\\
+%        |"-| & an explicit hyphen sign, allowing hyphenation
+%               in the rest of the word.\\
+%        |""| & like \verb="-=, but producing no hyphen sign (for
+%              words that should break at some sign such as
+%              ``entrada/salida.''\\
+%        |"<| & for French left double quotes (similar to $<<$).\\
+%        |">| & for French right double quotes (similar to $>>$).\\
+%        |\-| & like the old |\-|, but allowing hyphenation
+%               in the rest of the word. \\
+%     \end{tabular}
+%     \caption{The extra definitions made by \file{portuges.ldf}}
+%     \label{tab:port-quote}
+%    \end{table}
+%
+% \StopEventually{}
+
+%    As this file needs to be read only once, we check whether it was
+%    read before. If it was, the command |\captionsportuges| is
+%    already defined, so we can stop processing. If this command is
+%    undefined we proceed with the various definitions and first show
+%    the current version of this file.
+%
+% \changes{portuges-1.0a}{1991/07/15}{Added reset of catcode of @
+%    before \cs{endinput}.}
+% \changes{portuges-1.0b}{1991/10/29}{Removed use of
+%    \cs{@ifundefined}}
+%    \begin{macrocode}
+%<*code>
+\ifx\undefined\captionsportuges
+\else
+  \selectlanguage{portuges}
+  \expandafter\endinput
+\fi
+%    \end{macrocode}
+%
+% \changes{portuges-1.0b}{1991/10/29}{Removed code to load
+%    \file{latexhax.com}}
+%
+% \begin{macro}{\atcatcode}
+%    This file, \file{portuges.ldf}, may have been read while \TeX\ is
+%    in the middle of processing a document, so we have to make sure
+%    the category code of \texttt{@} is `letter' while this file is
+%    being read.  We save the category code of the @-sign in
+%    |\atcatcode| and make it `letter'. Later the category code can be
+%    restored to whatever it was before.
+%
+% \changes{portuges-1.0a}{1991/07/15}{Modified handling of catcode of
+%    @ again.}
+% \changes{portuges-1.0b}{1991/10/ 29}{Removed use of
+%    \cs{makeatletter} and hence the need to load \file{latexhax.com}}
+%    \begin{macrocode}
+\chardef\atcatcode=\catcode`\@
+\catcode`\@=11\relax
+%    \end{macrocode}
+% \end{macro}
+%
+%    Now we determine whether the the common macros from the file
+%    \file{babel.def} need to be read. We can be in one of two
+%    situations: either another language option has been read earlier
+%    on, in which case that other option has already read
+%    \file{babel.def}, or \texttt{portuges} is the first language
+%    option to be processed. In that case we need to read
+%    \file{babel.def} right here before we continue.
+%
+% \changes{portuges-1.1}{1992/02/16}{Added \cs{relax} after the
+%    argument of \cs{input}}
+%    \begin{macrocode}
+\ifx\undefined\babel@core@loaded\input babel.def\relax\fi
+%    \end{macrocode}
+%
+%    Another check that has to be made, is if another language
+%    definition file has been read already. In that case its
+%    definitions have been activated. This might interfere with
+%    definitions this file tries to make. Therefore we make sure that
+%    we cancel any special definitions. This can be done by checking
+%    the existence of the macro |\originalTeX|. If it exists we simply
+%    execute it, otherwise it is |\let| to |\empty|.
+% \changes{portuges-1.0a}{1991/07/ 15}{Added
+%    \cs{let}\cs{originalTeX}\cs{relax} to test for existence}
+% \changes{portuges-1.1}{1992/02/16}{\cs{originalTeX} should be
+%    expandable, \cs{let} it to \cs{empty}}
+%    \begin{macrocode}
+\ifx\undefined\originalTeX \let\originalTeX\empty \else\originalTeX\fi
+%    \end{macrocode}
+%
+%    When this file is read as an option, i.e. by the |\usepackage|
+%    command, \texttt{portuges} will be an `unknown' language in which
+%    case we have to make it known. So we check for the existence of
+%    |\l@portuges| to see whether we have to do something here.
+%
+% \changes{portuges-1.0b}{1991/10/29}{Removed use of cs{@ifundefined}}
+% \changes{portuges-1.1}{1992/02/16}{Added a warning when no
+%    hyphenation patterns were loaded.}
+% \changes{portuges-1.2d}{1994/06/26}{Now use \cs{@nopatterns} to
+%    produce the warning}
+%    \begin{macrocode}
+\ifx\undefined\l@portuges
+    \@nopatterns{Portuges}
+    \adddialect\l@portuges0\fi
+%    \end{macrocode}
+%
+%    For the Brasilian version of these definitions we just add a
+%    ``dialect''. Also, the macros |\captionsbrazil| and
+%    |\extrasbrazil| are |\let| to their Portuguese counterparts when
+%    these parts are defined.
+%    \begin{macrocode}
+\adddialect\l@brazil\l@portuges
+%    \end{macrocode}
+%
+%    The next step consists of defining commands to switch to (and from)
+%    the Portuguese language.
+%
+% \begin{macro}{\captionsportuges}
+%    The macro |\captionsportuges| defines all strings used
+%    in the four standard documentclasses provided with \LaTeX.
+% \changes{portuges-1.1}{1992/02/16}{Added \cs{seename}, \cs{alsoname}
+%    and \cs{prefacename}}
+% \changes{portuges-1.1}{1993/07/15}{\cs{headpagename} should be
+%    \cs{pagename}}
+% \changes{portuges-1.2e}{1994/11/09}{Added a few missing
+%    translations}
+% \changes{portuges-1.2h}{1995/07/04}{Added \cs{proofname} for
+%    AMS-\LaTeX}
+%    \begin{macrocode}
+\addto\captionsportuges{%
+  \def\prefacename{Pref\'acio}%
+  \def\refname{Refer\^encias}%
+  \def\abstractname{Resumo}%
+  \def\bibname{Bibliografia}%
+  \def\chaptername{Cap\'{\i}tulo}%
+  \def\appendixname{Ap\^endice}%
+  \def\contentsname{\'Indice}%
+  \def\listfigurename{Lista de Figuras}%
+  \def\listtablename{Lista de Tabelas}%
+  \def\indexname{\'Indice Remissivo}%
+  \def\figurename{Figura}%
+  \def\tablename{Tabela}%
+  \def\partname{Parte}%
+  \def\enclname{Anexos}%
+  \def\ccname{C\'opia a}%
+  \def\headtoname{Para}%
+  \def\pagename{P\'agina}%
+  \def\seename{ver}%
+  \def\alsoname{ver tamb\'em}%
+  \def\proofname{Proof}%  <-- needs translation
+  }%
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\captionsbrazil}
+% \changes{portuges-1.2g}{1995/06/04}{The coptions for brazilian and
+%    portuguese are different now}
+%
+%    The ``captions'' are different for both versions of the language,
+%    so we define the macro |\captionsbrazil| here.
+%    \begin{macrocode}
+\addto\captionsbrazil{%
+  \def\prefacename{Pref\'acio}%
+  \def\refname{Refer\^encias}%
+  \def\abstractname{Resumo}%
+  \def\bibname{Refer\^encias Bibliogr\'aficas}%
+  \def\chaptername{Cap\'{\i}tulo}%
+  \def\appendixname{Ap\^endice}%
+  \def\contentsname{Sum\'ario}%
+  \def\listfigurename{Lista de Figuras}%
+  \def\listtablename{Lista de Tabelas}%
+  \def\indexname{\'Indice}%
+  \def\figurename{Figura}%
+  \def\tablename{Tabela}%
+  \def\partname{Parte}%
+  \def\enclname{Anexo}%
+  \def\ccname{C\'opia para}%
+  \def\headtoname{Para}%
+  \def\pagename{P\'agina}%
+  \def\seename{veja}%
+  \def\alsoname{veja tamb\'em}%
+  }
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\dateportuges}
+%    The macro |\dateportuges| redefines the command |\today| to
+%    produce Portuguese dates.
+%    \begin{macrocode}
+\def\dateportuges{%
+\def\today{\number\day\space de\space\ifcase\month\or
+  Janeiro\or Fevereiro\or Mar\c{c}o\or Abril\or Maio\or Junho\or
+  Julho\or Agosto\or Setembro\or Outubro\or Novembro\or Dezembro\fi
+  \space de\space\number\year}}
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\datebrazil}
+%    The macro |\datebrazil| redefines the command
+%    |\today| to produce Brasilian dates, for which the names
+%    of the months are not capitalized.
+%    \begin{macrocode}
+\def\datebrazil{%
+\def\today{\number\day\space de\space\ifcase\month\or
+  janeiro\or fevereiro\or mar\c{c}o\or abril\or maio\or junho\or
+  julho\or agosto\or setembro\or outubro\or novembro\or dezembro\fi
+  \space de\space\number\year}}
+%    \end{macrocode}
+% \end{macro}
+%
+%  \begin{macro}{\portugeshyphenmins}
+%  \begin{macro}{\brasilhyphenmins}
+% \changes{portuges-1.2g}{1995/06/04}{Added setting of hyphenmin
+%    values}
+%    Set correct values for |\lefthyphenmin| and |\righthyphenmin|.
+%    \begin{macrocode}
+\def\portugeshyphenmins{\tw@\tw@}
+\def\brazilhyphenmins{\tw@\tw@}
+%    \end{macrocode}
+%  \end{macro}
+%  \end{macro}
+%
+% \begin{macro}{\extrasportuges}
+% \changes{portuges-1.2g}{1995/06/04}{Added using some \texttt{"}
+%    shorthands}
+% \begin{macro}{\noextrasportuges}
+%    The macro |\extrasportuges| will perform all the extra
+%    definitions needed for the Portuguese language. The macro
+%    |\noextrasportuges| is used to cancel the actions of
+%    |\extrasportuges|.
+%
+%    For Portuguese the \texttt{"} character is made active. This is
+%    done once, later on its definition may vary. Other languages in
+%    the same document may also use the \texttt{"} character for
+%    shorthands; we specify that the portuguese group of shorthands
+%    should be used.
+%
+%    \begin{macrocode}
+\initiate@active@char{"}
+\addto\extrasportuges{\languageshorthands{portuges}}
+\addto\extrasportuges{\bbl@activate{"}}
+%\addto\noextrasportuges{\bbl@deactivate{"}}
+%    \end{macrocode}
+%    First we define access to the guillemets for quotations,
+%    \begin{macrocode}
+\declare@shorthand{portuges}{"<}{%
+  \textormath{\guillemotleft{}}{\mbox{\guillemotleft}}}
+\declare@shorthand{portuges}{">}{%
+  \textormath{\guillemotright{}}{\mbox{\guillemotright}}}
+%    \end{macrocode}
+%    then we define two shorthands to be able to specify hyphenation
+%    breakpoints that behavew a little different from |\-|.
+%    \begin{macrocode}
+\declare@shorthand{portuges}{"-}{\allowhyphens-\allowhyphens}
+\declare@shorthand{portuges}{""}{\hskip\z@skip}
+%    \end{macrocode}
+%    And we want to have a shorthand for disabling a ligature.
+%    \begin{macrocode}
+\declare@shorthand{portuges}{"|}{%
+  \textormath{\discretionary{-}{}{\kern.03em}}{}}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+%  \begin{macro}{\-}
+%
+%    All that is left now is the redefinition of |\-|. The new version
+%    of |\-| should indicate an extra hyphenation position, while
+%    allowing other hyphenation positions to be generated
+%    automatically. The standard behaviour of \TeX\ in this respect is
+%    very unfortunate for languages such as Dutch and German, where
+%    long compound words are quite normal and all one needs is a means
+%    to indicate an extra hyphenation position on top of the ones that
+%    \TeX\ can generate from the hyphenation patterns.
+%    \begin{macrocode}
+\addto\extrasportuges{\babel@save\-}
+\addto\extrasportuges{\def\-{\allowhyphens
+                          \discretionary{-}{}{}\allowhyphens}}
+%    \end{macrocode}
+%  \end{macro}
+%
+%  \begin{macro}{\ord}
+% \changes{portuges-1.2g}{1995/06/04}{Added macro}
+%  \begin{macro}{\ro}
+% \changes{portuges-1.2g}{1995/06/04}{Added macro}
+%  \begin{macro}{\orda}
+% \changes{portuges-1.2g}{1995/06/04}{Added macro}
+%  \begin{macro}{\ra}
+% \changes{portuges-1.2g}{1995/06/04}{Added macro}
+%    We also provide an easy way to typeset ordinals, both in the male
+%    (|\ord| or |\ro|) and the female (|orda| or |\ra|) form.
+%    \begin{macrocode}
+\def\ord{$^{\rm o}$}
+\def\orda{$^{\rm a}$}
+\let\ro\ord\let\ra\orda
+%    \end{macrocode}
+%  \end{macro}
+%  \end{macro}
+%  \end{macro}
+%  \end{macro}
+%
+% \begin{macro}{\extrasbrazil}
+% \begin{macro}{\noextrasbrazil}
+%    Also for the ``brazil'' variant no extra definitions are needed
+%    at the moment.
+%    \begin{macrocode}
+\let\extrasbrazil\extrasportuges
+\let\noextrasbrazil\noextrasportuges
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%
+%    It is possible that a site might need to add some extra code to
+%    the babel macros. To enable this we load a local configuration
+%    file, \file{portuges.cfg} if it is found on \TeX' search path.
+% \changes{portuges-1.2h}{1995/07/02}{Added loading of configuration
+%    file}
+%    \begin{macrocode}
+\loadlocalcfg{portuges}
+%    \end{macrocode}
+%
+%    Our last action is to make a note that the commands we have just
+%    defined, will be executed by calling the macro |\selectlanguage|
+%    at the beginning of the document.
+% \changes{portuges-1.2f}{1995/03/14}{Use \cs{main@language} instead
+%    of \cs{selectlanguage}}
+%    \begin{macrocode}
+\main@language{portuges}
+%    \end{macrocode}
+%    Finally, the category code of \texttt{@} is reset to its original
+%    value. The macrospace used by |\atcatcode| is freed.
+% \changes{portuges-1.0a}{1991/07/15}{Modified handling of catcode of
+%    @-sign.}
+%    \begin{macrocode}
+\catcode`\@=\atcatcode \let\atcatcode\relax
+%</code>
+%    \end{macrocode}
+%
+% \Finale
+%%
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%%
+\endinput
