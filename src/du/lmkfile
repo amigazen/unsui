@@ -1,0 +1,12 @@
+
+CFLAGS  = -iinclude5: -ja -cifsr -rr -O -ms -v
+LFLAGS  = SMALLCODE SMALLDATA NODEBUG QUIET
+
+
+du: du.o
+	Blink $(LFLAGS) FROM du.o TO du LIB lib5:lc.lib lib5:amiga.lib
+	protect du +p
+
+
+du.o: du.c
+

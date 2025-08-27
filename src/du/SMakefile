@@ -1,0 +1,14 @@
+
+
+du: du.o
+	Slink FROM du.o TO du LIB lib:amiga.lib STRIPDEBUG NOICONS
+	protect du +p
+
+du.o: du.c SMakefile SCOPTIONS
+	sc du.c
+
+
+clean:
+	delete du.o
+
+

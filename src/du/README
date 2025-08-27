@@ -1,0 +1,30 @@
+Short: du (disk-usage) for 2.04 only (PD, with source)
+
+YAND? Yet another new 'du'?
+
+Yes I know, there are much other 'du' programs available
+(`which du all` founds 5 'du's on my disk).
+But I like none of these really.
+Some of them does have strange output, or no wildcard
+support, or a strange block count, or ...
+
+Ok, but why my new 'du' ?
+
+- output is like the output from the UNIX du
+- SHORT and ALL options like the UNIX du
+- wildcard support
+- count of the blocks is the same of c:list (with FFS)
+- supports different block sizes
+- output in bytes or kB instead of blocks
+- don't show .info files if NOINFO is active
+- program is pure (can be made resident)
+
+This all in 2616 bytes (the second smalles of my du-collection).
+
+Program and source are public domain.
+If you improve the program, please send me a copy.
+
+You like/need it?  :-)
+
+	Georg Heﬂmann (hessmann@fmi.uni-passau.de)
+

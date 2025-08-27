@@ -1,0 +1,97 @@
+DU(1)                    USER COMMANDS                      DU(1)
+
+
+NAME
+     du - display the number of disk blocks used per directory or
+     file
+
+SYNOPSIS
+     du DIR/M,BYTE/S,KBYTE/S,ALL/S,SHORT/S,NOINFO/S
+
+DESCRIPTION
+     du  gives  the  number of blocks contained in all files and,
+     recursively,  directories within each specified directory or
+     file DIR.  If DIR is missing `""' (the current directory) is
+     used).
+
+OPTIONS
+     BYTE   Display number of used bytes instead of blocks.
+     KBYTE  Display number of used kB instead of blocks.
+     ALL    Generate an entry for each file.
+     SHORT  Only display the grand total for each of the 
+            specified DIR's.
+     NOINFO Don't show .info files.
+     Entries are generated only for each directory in the absence
+     of options.
+
+NOTE
+     <number of blocks> != <bytes> / <blocksize>
+     The  byte  count  is  only the sum of the size of all files.
+     The  block count contains also the directory and file header
+     blocks.   So  the  block  count  is more meaningfull for the
+     state of a disk.
+
+EXAMPLE
+     % cd ram:
+     % list all
+     ENV                          Dir ----rwed Today     16:09:32
+     Clipboards                   Dir ----rwed Today     16:09:30
+     T                            Dir ----rwed Today     17:11:21
+     3 directories - 6 blocks used
+
+     Directory "ENV" on Monday 02-Nov-92
+     Kickstart                      6 ----rwed Today     16:09:32
+     Workbench                      5 ----rwed Today     16:09:32
+     ...
+     TOTAL: 41 files - 7 directories - 126 blocks used
+     % du
+     2       Ram Disk:ENV/sc
+     4       Ram Disk:ENV/Most
+     4       Ram Disk:ENV/AmigaGuide
+     24      Ram Disk:ENV/Sys
+     82      Ram Disk:ENV
+     0       Ram Disk:Clipboards
+     38      Ram Disk:T
+     126     Ram Disk:
+     % du short
+     126     Ram Disk:
+     % du ENV byte
+     185     env/sc
+     120     env/Most
+     93      env/AmigaGuide
+     3284    env/Sys
+     8455    env
+     %
+
+DIAGNOSTICS
+     *** break: You have pressed Ctrl-C, havn't you? :-)
+     xxx not found: File/directory xxx coudn't be found.
+     Error in pattern xxx: You have used a bogus file pattern.
+     Not enough memory: du need's more memory.
+     Can't lock xxx: (internal error)  Do  you  have  deleted the 
+         file xxx?
+     Can't examine xxx: (internal error)  Can't examine file xxx?
+     Can't get name from lock:  (internal error)  Can't  get  the
+         name of the current directory.
+
+SEE ALSO
+     info(1), cd(1), list(1)
+
+REQUIREMENTS
+     An Amiga with OS version 2.04 or higher.
+
+BUGS
+     The  number  of  blocks,  reported by du is exactly the same
+     like the from c:list (at FFS), but it's not the fully truth.
+     du  doesn't count the file extension blocks, used by greater
+     files.
+
+MORE BUGS
+     Probably.
+
+AUTHOR
+     Georg Hessmann (hessmann@fmi.uni-passau.de)
+
+COPYRIGHT
+     None. This program is in the public domain.
+
