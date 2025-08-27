@@ -1,6 +1,6 @@
 # _unsui_ 
 
-This is unsui, a POSIX environment for Amiga.
+This is _unsui_, a POSIX environment for Amiga.
 
 ## [amigazen project](http://www.amigazen.com)
 
@@ -10,7 +10,7 @@ This is unsui, a POSIX environment for Amiga.
 
 *Minds awaken, free*
 
-**amigazen project** uses modern software development tools and methods to update and rerelease classic Amiga open source software. Our releases include a new AWeb, the _unsui_ platform, and the ToolKit project - a universal SDK for Amiga.
+**amigazen project** uses modern software development tools and methods to update and rerelease classic Amiga open source software. Releases include a new AWeb, the _unsui_ platform, and the ToolKit project - a universal SDK for Amiga.
 
 Key to the amigazen project approach is ensuring every project can be built with the same common set of development tools and configurations, so the ToolKit was created to provide a standard configuration for Amiga development. All *amigazen project* releases will be guaranteed to build against the ToolKit standard so that anyone can download and begin contributing straightaway without having to tailor the toolchain for their own setup.
 
@@ -24,9 +24,9 @@ PRs for all amigazen projects are gratefully received at [GitHub](https://github
 
 ## About _unsui_
 
-The _unsui_ platform represents a collection of individual POSIX command implementations, each referred to as a "koan" - a self-contained unit of wisdom and functionality. Each koan is designed to be built independently while following consistent patterns and standards.
+_unsui_ is a Unix-like runtime environment for Amiga consisting of UnixLib3, a POSIX and C99 standard C library, shami, a POSIX-like shell, and the _koans_ - individual Amiga ports of standard commands found on BSD and Linux operating systems.
 
-The name _unsui_ (雲水) refers to Zen monks who travel from monastery to monastery seeking enlightenment, symbolizing the journey of learning and discovery through individual command implementations. Each koan represents a step on this path.
+The name _unsui_ (雲水) refers to Zen monks who travel from monastery to monastery seeking enlightenment, symbolizing the journey of learning and discovery through individual command implementations. Each _koan_ represents a step on this path.
 
 Rather than forcing Amiga to become Unix, _unsui_ provides a bridge that allows users to access the vast ecosystem of Unix software while preserving the Amiga experience. The focus is on creating a pragmatic, single-user development environment rather than a full multi-user server OS.
 
@@ -48,9 +48,9 @@ The name _shami_ (沙弥) means "Novice Monk" - a dedicated practitioner at the 
 
 ### Shell commands - The _koans_ (公案)
 
-**The Tools of Insight**: A complete set of the most common commands found on Unix-like systems, that are Amiga native on the inside and POSIX compatible on the outside, all _koan_ commands simultaneously support both getops and ReadArgs style command arguments, and running from both the AmigaShell or _shami_ sh shell.
+**The Tools of Insight**: A complete set of the most common commands found on Unix-like systems, that are Amiga native on the inside and POSIX compatible on the outside, all _koan_ commands simultaneously support both getopts and ReadArgs style command arguments, and running from both the AmigaShell or _shami_ sh shell.
 
-In zen buddhism, a _koan_ (公案) is a riddle used to break through conventional thinking. Mastering the cryptic but powerful POSIX commands is a similar journey. Each tool is a practical puzzle that, once solved, grants deeper understanding and control over the system.
+In zen buddhism, a _koan_ (公案) is a riddle used to break through conventional thinking. Mastering the cryptic but powerful POSIX commands is a similar journey. Each tool is a practical puzzle that, once solved, grants deeper understanding and control over the system. In many cases simply porting to Amiga is a _koan_ in itself.
 
 Each _koan_ is designed to be:
 - Self-contained and independently buildable
@@ -108,6 +108,6 @@ To learn more about amigazen project, see AMIGAZEN.md or the Amiga-compatible we
 
 *Amiga* is a trademark of **Amiga Inc**. 
 
-The POSIX utilities included here are based on various open source implementations and standards. Each individual koan maintains its own licensing and attribution as documented in their respective src directories.
+The POSIX utilities included here are based on various open source implementations and standards. Each individual _koan_ maintains its own licensing and attribution as documented in their respective src directories.
 
 The _unsui_ platform concept and implementation is a product of the **amigazen project**
