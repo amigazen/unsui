@@ -9,6 +9,7 @@ du.o: du.c SMakefile SCOPTIONS
 
 
 clean:
-	delete du.o
+	delete du.o du
 
-
+install:
+	copy CLONE du //SDK/C/du

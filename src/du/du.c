@@ -13,16 +13,11 @@
  */
 
 
-#define VERSION "1.0"
+#define VERSION "1.1"
 
-static const char version[] = "\0$VER: du " VERSION " (11/01/92)";
-
-
+static const char version[] = "\0$VER: du " VERSION " (27/08/25)";
 
 
-#define SysBase		pb->pb_SysBase
-#define DOSBase		pb->pb_DOSBase
-#define UtilityBase	pb->pb_UtilityBase
 
 #undef __USE_SYSBASE
 #define NOINFO
@@ -39,20 +34,20 @@ static const char version[] = "\0$VER: du " VERSION " (11/01/92)";
 #include <dos/dosasl.h>
 #include <dos/exall.h>
 
-#include <clib/exec_protos.h>
-#include <clib/dos_protos.h>
-#include <clib/utility_protos.h>
-#if defined(__SASC_60) && defined(__USE_SYSBASE)
-# include <pragmas/exec_sysbase_pragmas.h>
-#else
-# include <pragmas/exec_pragmas.h>
-#endif
-#include <pragmas/dos_pragmas.h>
-#include <pragmas/utility_pragmas.h>
-
+#include <proto/exec.h>
+#include <proto/dos.h>
+#include <proto/utility.h>
 
 #pragma libcall DOSBase ParsePatternNoCase 3C6 32103
 #pragma libcall DOSBase ExAllEnd 3DE 5432105
+
+#undef SysBase
+#undef DOSBase
+#undef UtilityBase
+
+#define SysBase		pb->pb_SysBase
+#define DOSBase		pb->pb_DOSBase
+#define UtilityBase	pb->pb_UtilityBase
 
 
 
