@@ -1,0 +1,15 @@
+time v1.0
+---------
+Similar to UNIX (and SKsh) command of same name, this displays time
+taken for a command to run.
+
+	Usage:	time <command>
+
+If using under the OS2 shell, the command may also be an alias or a
+script (with script bit set). The given command is executed, and when
+finished, the time it took to run is displayed using the format HH:MM:SS.SS,
+where (need I say) HH is hours, MM is minutes, SS.SS is seconds (with
+hundredths). Source is included. AmigaDOS 2.0 required. Finally, this
+program is pure and so can be made resident.
+
+	- Martin W. Scott  (email: mws@castle.ed.ac.uk)
