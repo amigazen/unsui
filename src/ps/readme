@@ -1,0 +1,59 @@
+
+
+                  stat - A replacement for AmigaOS 'status'
+
+
+Original-Readme by James M. Synge:
+
+---------------------------------------------------------------------------
+
+Subject: stat.c
+Organization: Dept. of Atmospheric Sciences, U. of Washington 
+Summary: A replacement for STATUS 
+ 
+I have been trying to figure out some of the dark, hidden secrets of AmigaDOS 
+and my poking around has lead to the following program to replace STATUS. 
+I like it because it tells me a lot more than STATUS. 
+ 
+---------------------------------------------------------------------------
+James M Synge, Department of Atmospheric Sciences, University of Washington
+
+STAT is a replacement for the AmigaDOS command STATUS.  It is far more
+informative about the processes then the current command.  For each AmigaDOS
+process, it prints the Task number, Priority, the Address of the process in
+memory, the Command line being executed, and the current Directory.
+
+Below is an example:
+
+1> run stat > ram:d
+Task Pri  Address Command                         Directory
+  1    0     97b0 run stat > ram:d                 df1:stat
+  2   -5    1af88 stat                             df1:stat
+
+Good luck, and send me a message if you find any bugs.
+
+James M Synge
+
+---------------------------------------------------------------------------
+
+
+I  use this program since I'm working on the Amiga (around 1987) and I'm very
+used  to its output.  But since I upgraded to AmigaOS 2.0 and beyond, I found
+it very annoying, that the program is not able to show me CLI's beyond 20.
+
+It  also  sometimes  messes  up  the  Args  display,  because James used some
+undocumented 'magic', which worked under AmigaOS 1.2 / 1.3 but not under 2.04
+and beyond.  It will fail with an error message under AmigaOS 1.2 and 1.3.
+
+This program was compiled using the wonderful SAS C 6.2 compiler.
+
+This program is free for any non-commercial use and freely distributeable.
+
+If you want to include it in a PD library, it is necessary to get permission
+from the author.
+
+        This permission is herewith given for the Fred Fish Library.
+
+(C) 1986 James M. Synge
+(C) 1993 Henning Schmiedehausen
+
