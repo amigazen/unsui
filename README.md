@@ -103,7 +103,7 @@ Components integrated from other older projects are checked for compatible licen
 
 ### What does the name _unsui_ really mean? Is it meant to be UNix SUIte?
 
-It is left to the imagination of the reader to determine if there is greater meaning in the name _unsui_. Could it mean UNified Standard Unix-specification Implementation? Or UNix SUbsystem Interface? Perhaps _unsui_ is Not a Supported Unix Instance? Is it Unix-like System Userland Interface? What do you think it means? Similarly, is _zafu_ a Zen Amiga Foundation for Unix? What else could that mean?
+It is left to the imagination of the reader to determine if there is greater meaning in the name _unsui_. Could it mean UNified Standard Unix-specification Implementation? Or UNix SUbsystem Interface? Perhaps _unsui_ is Not a Supported Unix Instance? Is it Unix-like System Userland Idiom? What do you think it means? Similarly, is _zafu_ a Zen Amiga Foundation for Unix? What else could that mean?
 
 ### Will _unsui_ be released on Aminet?
 
