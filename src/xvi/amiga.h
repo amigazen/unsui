@@ -11,18 +11,18 @@
  * Amiga specific type definitions are here.
  */
 
-#include <dos.h>
+#include <dos/dos.h>
 #include <workbench/startup.h>
 #include <workbench/workbench.h>
 #include <graphics/text.h>
 #include <intuition/intuition.h>
 #include <intuition/intuitionbase.h>
-#include <pragmas/icon_pragmas.h>
-#include <pragmas/graphics_pragmas.h>
-#include <pragmas/intuition_pragmas.h>
-#include <pragmas/exec_pragmas.h>
-#include <pragmas/dos_pragmas.h>
-#include <pragmas/diskfont_pragmas.h>
+#include <proto/icon.h>
+#include <proto/graphics.h>
+#include <proto/intuition.h>
+#include <proto/exec.h>
+#include <proto/dos.h>
+#include <proto/diskfont.h>
 
 #ifdef OLD_AMIGA_OS /*________________________________________________*/
 #define LIB_REV  34  /* This is 1.3 libs definition. */

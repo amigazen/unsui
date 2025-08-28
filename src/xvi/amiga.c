@@ -1,14 +1,15 @@
 /* Copyright (c) 1990,1991,1992 Chris and John Downey; */
 /* Copyright (c) 1994 Dan Schmelzer                    */
+/* Copyright (c) 2025 amigazen project                 */
 
 /* Filename amiga.c       */
 /* Initial Date:  9/24/94 */
 /* Revised Date: 10/27/94 */
-/* Author: Dan Schmelzer  */
+/* Revised Date: 28/08/25 */
+/* Author: amigazen project */
 
-#ifndef lint
 static char *sccsid_amiga="@(#)amiga.c   2.1 (Dan Schmelzer) 10/27/94";
-#endif
+static const char *verstag = "$VER: xvi 2.15 (28/08/25)";
 
 /*______________________________________________________________________
 * program name:
@@ -85,7 +86,7 @@ int ttygoto_count = 0;
 #ifdef OLD_AMIGA_OS /*________________________________________________*/
 /* For pre-2.0 Amiga OS.  Must be short and sweet (about 58 cols). */
 char amiga_ver_str[] =
- "Generic Xvi V2.15, Amiga Xvi V1.0  (for Amiga OS V1.3)";
+ "Xvi V2.15";
 
 #else /*______________________________________________________________*/
 /* For 2.0 and later Amiga OS. */
@@ -95,10 +96,9 @@ char amiga_ver_str[] =
  "\n"
  "Amiga Conversion for Xvi Editor\n"
  "Copyright \251 1994 Dan Schmelzer\n"
+ "Copyright \251 2025 amigazen project\n"
  "\n"
- "Generic Xvi Version: 2.15\n"
- "  Amiga Xvi Version: 1.0\n"
- "Amiga Version Built: " __DATE__;
+ "Xvi Version: 2.15\n";
 #endif /*_____________________________________________________________*/
 
 
@@ -113,7 +113,7 @@ int Columns;		/* in the current window. */
 /*____________________________________________________________________*/
 /* Library bases.  Variable names must not be altered.                */
 
-struct DiskfontBase   *DiskfontBase = NULL;
+struct Library   *DiskfontBase = NULL;
 struct IntuitionBase  *IntuitionBase = NULL;
 struct GfxBase        *GfxBase = NULL;
 
@@ -123,6 +123,7 @@ extern struct DosLibrary *DOSBase;
 /*____________________________________________________________________*/
 /* External system function declarations.                             */
 
+/*
 extern APTR OpenLibrary();
 extern struct Screen    *OpenScreen();
 extern struct Window    *OpenWindow();
@@ -144,6 +145,7 @@ extern long  SetFont();
 extern void  SendIO();
 extern long  DoIO();
 extern struct Message  *GetMsg();
+*/
 extern VirtScr defscr;
 
 /*____________________________________________________________________*/
@@ -1231,7 +1233,7 @@ int inchar(timeout)
                             0, 0, 320, 50))
 #else /*______________________________________________________________*/
             /* For 2.0 Amiga OS or later. */
-            if (EasyRequestArgs(xvi_window, xvi_exit_requester,
+            if (EasyRequestArgs(xvi_window, &xvi_exit_requester,
                                 NULL, NULL) == 1)
 #endif /*_____________________________________________________________*/
             {
@@ -2366,7 +2368,7 @@ void amiga_version()
                   NULL, xvi_ver_negtext, 0, 0, 630, 50))
 #else /*______________________________________________________________*/
   /* For 2.0 Amiga OS or later. */
-  (void) EasyRequestArgs(xvi_window, xvi_ver_requester, NULL, NULL);
+  (void) EasyRequestArgs(xvi_window, &xvi_ver_requester, NULL, NULL);
 #endif /*_____________________________________________________________*/
 
   repaint = TRUE;
