@@ -1,0 +1,77 @@
+" xvinit file for xvi (Public Domain vi)
+" Revised Date: 10/27/94
+"
+set noshowmatch nowrapscan magic number noremap
+set autosplit=1
+set report=1
+set helpfile=Work:Xvi_Editor/xvi.help
+" Make status line yellow text on dark blue background.
+set statuscolour=0037
+"
+"---Key Mapping-------------------------------------------------
+"
+" Del
+map  x
+"
+" Turn off function keys by mapping them to control-L
+" F1
+map P 
+" F2
+map Q 
+" F3
+map R 
+" F4
+map S 
+" F5
+map T 
+" F6
+map U 
+" F7
+map V 
+" F8
+map W 
+" F9
+map X 
+" F10
+map Y 
+"
+" Shifted F1
+map p 
+" Shifted F2
+map q 
+" Shifted F3
+map r 
+" Shifted F4
+map s 
+" Shifted F5
+map t 
+" Shifted F6
+map u 
+" Shifted F7
+map v 
+" Shifted F8
+map w 
+" Shifted F9
+map x 
+" Shifted F10
+map y 
+"
+" Up Arrow
+map A k
+" Down Arrow
+map B j
+" Right Arrow
+map C l
+" Left Arrow
+map D h
+"
+" Shifted Up Arrow -> Page up
+map a 
+" Shifted Down Arrow -> Page down
+map b 
+" Shifted Right Arrow -> Cursor to right end of line
+map c $
+" Shifted Left Arrow -> Cursor to left end of line
+map d 0
+"
+" End of file.

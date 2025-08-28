@@ -1,0 +1,366 @@
+
+                       XVI AMIGA TEXT EDITOR
+                       _____________________
+
+
+           Amiga Conversion by Dan Schmelzer, October 1994
+
+                     Generic Xvi Version: 2.15
+                       Amiga Xvi Version: 1.0
+
+
+This file documents the Amiga specific features of Xvi, a vi-like
+editor by Chris and John Downey.
+
+************************************************************************
+*  For copyright and distribution details consult file: COPYING.  The  *
+*  Amiga-specific executable code, source code, and auxiliary files    *
+*  are to be distributed along with the original sources for Xvi as    *
+*  specified in the "Xvi copying permission notice" (file COPYING).    *
+*  Please abide by these rules as we would like to allow everyone in   *
+*  the Amiga community access to this excellent editor by Chris and    *
+*  John Downey!                                                        *
+************************************************************************
+
+
+The Amiga implementation of xvi has all of the basic features of the
+original xvi editor (version 2.15) plus some Amiga-specific features.
+
+There are two versions of amiga xvi, one for Amiga OS V1.3 and one
+for Amiga OS V2.0 and later.  Although the OS V1.3 version will run
+under OS V2.0 it is highly recommended that you use the OS V2.0 version
+if possible since it handles certain features, such as requesters, in
+a better fashion.  Also, the OS V2.0 version has had more testing.
+The two versions share the same source code and are built into two
+different executables.
+
+Xvi can be run on the Amiga system from either the CLI (Command Line
+Interface) or from the Workbench.  When run from the CLI it will take
+over the existing CLI window and rename it to "xvi ##x## window" where
+##x## indicates the number of rows and columns being used.  You can
+specify any of the generic-xvi command line options when starting from
+the CLI.   When xvi is exited the window is returned to the original
+CLI shell and original title restored.
+
+Xvi can be started from the Amiga Workbench in one of two ways.  Double
+clicking on the XVI icon will bring up xvi without editing a file (same
+as typing "xvi" in the CLI).  Selecting one or more data (text) files
+using shift-single click, and then shift-double clicking the XVI icon
+will start xvi editing those selected data files in the order they were
+initially clicked.  This is as if you had typed "xvi file1 file2 file3",
+for example, in the CLI.
+
+Since the Amiga is a rather amazing graphical computer it seems only
+fitting that any good program, even a text editor, will take advantage
+of that.  The mouse can be used to position the cursor by clicking on
+the text where you wish the cursor to go.  Note that only locations on
+the screen that contain text can be the destination of the cursor.  If
+you click in a disallowed area the cursor will be placed as close as
+possible.  Also, you must be in "normal" mode within xvi for the cursor
+to respond.
+
+Moving between different xvi-windows (vertically stacked areas in the
+Amiga window, one for each file being edited simultaneously) is easy by
+simply clicking the mouse in the desired xvi-window to move the cursor
+there.  See the generic xvi documentation for details of how to use
+xvi-windows.
+
+Another rather nice feature is the ability to resize the Amiga window
+dynamically.  That is, you can change the size of your text display
+while editing a file and all will remain sane.  You can use the resize
+gadget at the lower right of the window or the alternate size gadget at
+the upper right of the window.
+
+You can also terminate the xvi program by clicking on the close gadget
+at the upper left corner of the Amiga window.  If internal xvi buffers
+have not been saved (you have made changes to the file) and you try to
+terminate xvi this way a requestor will appear asking if you want to
+forget the changes and exit anyway, or return to the xvi program.  Note
+that if you are running xvi from a CLI clicking on the close gadget will
+only exit you from xvi, it will not close the CLI window.  If xvi was
+started from the Workbench the window will also disappear.
+
+To determine which version of xvi you are running just use the :version
+or :ver command.  The generic xvi version will appear on the status line
+and the generic and Amiga xvi versions will also appear in a requestor.
+
+Whether starting from the CLI or from the Workbench, certain global
+attributes of xvi can be altered to fit your preferences.  These are
+specified by the following global environment variables.  The first
+three are generic to xvi, the remaining are Amiga specific.
+
+XVI GENERIC ENVIRONMENT VARIABLES:
+
+  XVINIT       Xvi startup filename.
+  HOME         Directory where xvi ":cd" command sends you.
+  SHELL        Shell command that executes with xvi ":sh" command.
+
+AMIGA-SPECIFIC ENVIRONMENT VARIABLES:
+
+  XVISHSTART   Shell startup filename for use by SHELL.
+
+  XVIFONT      Default font to use.  Only if the font has NOT been
+               overridden by the workbench tool type FONT is the
+               XVIFONT environment variable used.  If XVIFONT and FONT
+               tool type are not set the default Amiga system font will
+               be used by xvi.  The XVIFONT environment variable (or
+               FONT tool type) string must be of the following formats:
+                   [<font_path>]<font_name>.font,<size>
+                   [<font_path>]<font_name>.font <size>
+               For example:
+                   XVIFONT=Fonts:topaz.font,8
+                   XVIFONT=topaz.font 16
+
+  XVIMAP_RET   If this environment variable exists map "\r" to "\r0" in
+               normal mode.  (This cannot be done via the map command.)
+
+Set these environment variables in your Amiga "user-startup" file.
+(You will have to reboot to have them take effect.)  Following is an
+example of what you might want to add to your "user-startup" file:
+
+; For Xvi.
+path Work:Xvi_Editor add
+setenv XVINIT source Work:s/xvinit
+setenv HOME Program:
+setenv SHELL newshell WINDOW=CON:42/68/664/390/xvi_Shell/ALT5/265/145/27/CLOSE
+setenv XVISHSTART Work:s/xvi-shell-start
+setenv XVIMAP_RET 1
+setenv XVIFONT Font:topaz.font,8
+; End of Xvi stuff.
+
+
+When started from the Amiga Workbench certain attributes of xvi can be
+altered on a session by session basis.  Normally the size of the Amiga
+window created when xvi is started from the Workbench is 25 rows by 80
+columns.  The size of the window and other attributes can be changed
+to suit your preferences.  In fact, you can have several copies of xvi,
+each with it's own specific attributes!
+
+The Amiga version of xvi supports the following Amiga Tool Types:
+
+  NAME       Alternate name for Amiga window title.  String specified by
+             "NAME" will replace "xvi" in the title "xvi ##x## window".
+
+  ROWS       Number of text rows in the Amiga window.
+
+  COLUMNS    Number of text columns (including xvi command/status line)
+             in the Amiga window.
+
+  FONT       Font to use.
+
+  PARMS      Generic xvi command line parameters.
+
+  LEFT_EDGE  Number of pixels between left edge of the Amiga Workbench
+             screen and the left edge of the Amiga xvi window.  This is
+             an advanced feature and can cause the window to be not
+             displayable if the value is set too high.  A value of zero
+             is valid.
+
+  TOP_EDGE   Number of pixels between top edge of the Amiga Workbench
+             screen and the top edge of the Amiga xvi window.  This is
+             an advanced feature and can cause the window to be not
+             displayable if the value is set too high.  A value of zero
+             is valid.
+
+
+Following is an example of how you might specify these Amiga Tool Types:
+
+    ROWS=60
+    COLUMNS=132
+    FONT=topaz.font,8
+    PARMS=-s statuscolour=0057 -s nonumber
+    NAME=My Big Xvi
+
+The Amiga version of xvi supports color (colour).  In addition you can
+change font style by using the "set colour", etc commands.  Note that
+you may have only the first four colors if you are running the standard
+4-color Workbench.  The remaining four colors will probably be different
+on your system (assuming you are running an 8-color Workbench) than
+that shown below.
+
+You can change the colors and styles of different parts of the xvi
+display by setting parameters "colour", "statuscolour", "roscolour",
+and "systemcolour".  See the generic xvi documentation for details
+of what each parameter controls.
+
+The color/style number is the following Octal format:
+    0xyz
+where 
+    x is the Style:
+      0 = Plain Text
+      1 = Bold
+      2 = Color Off (use to remove any existing color/style)
+      3 = Italic
+      4 = Underline
+      7 = Inverse Video
+
+    y is the Background Color:
+    z is the Foreground Color:
+      0 = Medium Grey     (default workbench color)
+      1 = Black           (default workbench color)
+      2 = White           (default workbench color)
+      3 = Dark Blue-grey  (default workbench color)
+      4 = Blue            (8-color workbench, user specific color)
+      5 = Lavender        (8-color workbench, user specific color)
+      6 = Teal            (8-color workbench, user specific color)
+      7 = Yellow          (8-color workbench, user specific color)
+
+For example the following will give a Bold, White on Dark Blue-grey
+status line.  Note that you may have to do a screen refresh (cntl-L)
+if you are experimenting with setting the color/style from within xvi
+to get the new color/style to be displayed.
+
+  set statuscolour=0132
+
+Some color combinations give you some rather interesting, and sometimes
+useful effects.  Try the following.  It will give you Black text on
+White background but the background will remain Medium Grey (Amiga
+system default for background) in areas of the display not containing
+text.
+
+  set colour=0021
+
+Be careful not to set both foreground and background to the same color
+or you will not be able to read anything.  One last thing.  The color
+number shown when you do a "set" or "set all" command is in decimal, so
+don't be confused.
+
+
+The Amiga keyboard has a number of function keys and other special keys
+that you might wish to map to some xvi function.  The Amiga version of
+xvi detects the following function/special keys and generates an
+control sequence that you can remap using the xvi "map" command.  If
+you do not want to use a specific key it is best to map that key to
+something safe like CNTL-L (refresh the display).  
+
+    KEY		CONTROL SEQUENCE
+    ----------	----------------
+    Del		CNTL-?
+
+    F1		CNTL-A P
+    F2		CNTL-A Q
+    F3		CNTL-A R
+    F4		CNTL-A S
+    F5		CNTL-A T
+    F6		CNTL-A U
+    F7		CNTL-A V
+    F8		CNTL-A W
+    F9		CNTL-A X
+    F10		CNTL-A Y
+
+    Shift-F1	CNTL-A p
+    Shift-F2	CNTL-A q
+    Shift-F3	CNTL-A r
+    Shift-F4	CNTL-A s
+    Shift-F5	CNTL-A t
+    Shift-F6	CNTL-A u
+    Shift-F7	CNTL-A v
+    Shift-F8	CNTL-A w
+    Shift-F9	CNTL-A x
+    Shift-F10	CNTL-A y
+
+    Up Arrow	CNTL-A A
+    Down Arrow	CNTL-A B
+    Right Arrow	CNTL-A C
+    Left Arrow	CNTL-A D
+
+    Shift-Up Arrow	CNTL-A a
+    Shift-Down Arrow	CNTL-A b
+    Shift-Right Arrow	CNTL-A c
+    Shift-Left Arrow	CNTL-A d
+
+
+The XVINIT environment variable determines the startup file for xvi.
+If you want all of your xvi sessions to have certain attributes it is
+best to set those attributes in the startup file.  Note that any command
+line parameter (or Workbench PARMS tool type) will override these
+settings.
+
+Following is an example of what you might have in your XVINIT file.
+Note that '^?', '^A', '^L', etc represent single control characters in
+the file and must be entered as control characters (using cntl-V).
+
+"================================================================
+" xvinit file for xvi (Public Domain vi)
+" Revised Date: 10/27/94
+"
+set noshowmatch nowrapscan magic number noremap
+set autosplit=1
+set report=1
+set helpfile=Work:Xvi_Editor/xvi.help
+" Make status line yellow text on dark blue background.
+set statuscolour=0037
+"
+"---Key Mapping-------------------------------------------------
+"
+" Del
+map ^? x
+"
+" Turn off function keys by mapping them to control-L
+" F1
+map ^AP 
+" F2
+map ^AQ 
+" F3
+map ^AR 
+" F4
+map ^AS 
+" F5
+map ^AT 
+" F6
+map ^AU 
+" F7
+map ^AV 
+" F8
+map ^AW 
+" F9
+map ^AX 
+" F10
+map ^AY 
+"
+" Shifted F1
+map ^Ap 
+" Shifted F2
+map ^Aq 
+" Shifted F3
+map ^Ar 
+" Shifted F4
+map ^As 
+" Shifted F5
+map ^At 
+" Shifted F6
+map ^Au 
+" Shifted F7
+map ^Av 
+" Shifted F8
+map ^Aw 
+" Shifted F9
+map ^Ax 
+" Shifted F10
+map ^Ay 
+"
+" Up Arrow
+map ^AA k
+" Down Arrow
+map ^AB j
+" Right Arrow
+map ^AC l
+" Left Arrow
+map ^AD h
+"
+" Shifted Up Arrow -> Page up
+map ^Aa 
+" Shifted Down Arrow -> Page down
+map ^Ab 
+" Shifted Right Arrow -> Cursor to right end of line
+map ^Ac $
+" Shifted Left Arrow -> Cursor to left end of line
+map ^Ad 0
+"
+" End of xvinit file.
+
+
+Have fun with xvi for the Amiga!!!
+-- Dan Schmelzer
+
+End of document_________________________________________________________

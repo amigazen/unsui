@@ -1,0 +1,9 @@
+;___user-startup for Xvi._______________________________________________
+;
+;setenv XVINIT source Work:s/xvinit
+setenv HOME Program:
+setenv SHELL newshell WINDOW=CON:42/68/664/390/xvi_Shell/ALT5/265/145/27/CLOSE
+setenv XVISHSTART Work:s/xvi-shell-start
+setenv XVIMAP_RET 1
+;setenv XVIFONT Font:topaz.font,8
+;
