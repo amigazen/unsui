@@ -38,7 +38,7 @@ The following projects are currently Work in Progress and available at https://g
 - _z.library_ - zlib as a shared library - updated to the latest zlib
 - _asyncio.library_ - Martin Taillefer's asyncio shared library - bug fixed
 - _gtlayout.library_ - Olaf Barthel's GadTools layout shared library - updated with SFD file and new style header files
-- _reaction.lib_sasc_ - a link library for Reaction and SAS/C to auto open 
+- _reaction.lib_sasc_ - a link library for Reaction and SAS/C to auto open class libraries
 - _OpenTriton_ - Stefan Zeiger's triton.library GUI framework 
 - _Insight_ - after meditation comes... Insight, a guru error LastAlert tool
 - _CShell_ - Matt Dillon's csh-like CShell
@@ -77,8 +77,15 @@ Reincarnating old Amiga open source projects typically involves steps like:
 - Rewriting code to replace outdated dependencies
 - Refactoring code to compile correctly with the latest version of the relevant compiler
 - Adding support for building with other Amiga compilers
+- Check for compatibility with OS4 Petunia runtime for 68k
 
-And once all that is done new features can be added.
+All projects will be updated over time to use features of the latest version of the operating system such as memory pools, and add new features requested by users.
+
+### What kind of Amiga is needed to run these projects?
+
+All amigazen projects make no compromises to support older versions of Amiga and no apologies for doing so. The purpose is to move forward not look to the past. This is not a retro project. 
+
+Every amigazen project assumes a healthy amount of RAM, harddisk space and CPU speed, and that the user is probably using some kind of enhanced Amiga whether an emulated Amiga or some modern Amiga-like hardware. All projects are built against the latest versions of the C compilers and NDK.
 
 ### Are all amigazen projects Open Source?
 
@@ -87,6 +94,16 @@ Yes amigazen project is committed to free and open source software for the Amiga
 ### Can I submit a Pull Request for some improvements to an amigazen project
 
 Yes please!
+
+### What is the _zen_ of Amiga?
+
+For thoughts from amigazen project on this question please visit http://www.amigazen.com/zen/
+
+What part of Amiga hobby is your _zen_?
+
+### What is the meaning of amigazen?
+
+_ami gazen_ is a poetic way to say 'a web, suddenly' in Japanese and reflects the name of the first amigazen project, a revitalisation of AWeb. 
 
 ## Contact 
 
