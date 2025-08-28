@@ -1,0 +1,1432 @@
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x16): In function `freeup':
+: undefined reference to `found'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1a): In function `freeup':
+: undefined reference to `found'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x28): In function `freeup':
+: undefined reference to `fexpel'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x46): In function `freeup':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4a): In function `freeup':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x56): In function `freeup':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5a): In function `freeup':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x6a): In function `freeup':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x6e): more undefined references to `zfiles' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1de): In function `freeup':
+: undefined reference to `zcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1e2): In function `freeup':
+: undefined reference to `zcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1ea): In function `freeup':
+: undefined reference to `zcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1ee): In function `freeup':
+: undefined reference to `zcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1f2): In function `freeup':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1f6): In function `freeup':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x202): In function `freeup':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x206): In function `freeup':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x216): In function `freeup':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x21a): In function `freeup':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x226): In function `freeup':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x22a): In function `freeup':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x23e): In function `freeup':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x242): In function `freeup':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x24e): In function `freeup':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x252): In function `freeup':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x266): In function `freeup':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x26a): In function `freeup':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x272): In function `freeup':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x276): In function `freeup':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x27a): In function `freeup':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x27e): more undefined references to `pcount' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x28e): In function `freeup':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x292): In function `freeup':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x29e): In function `freeup':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2a6): In function `freeup':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2ea): In function `finish':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2ee): In function `finish':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2fa): In function `finish':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2fe): In function `finish':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x31e): In function `finish':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x322): In function `finish':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x34e): In function `finish':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x352): In function `finish':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x390): In function `finish':
+: undefined reference to `get_ef_ut_ztime'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3b4): In function `finish':
+: undefined reference to `unix2dostime'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x416): In function `finish':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x41a): In function `finish':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x424): In function `finish':
+: undefined reference to `stamp'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x442): In function `finish':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x446): In function `finish':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x452): In function `finish':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x456): In function `finish':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x462): In function `finish':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x46a): more undefined references to `tempath' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x46e): In function `finish':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x472): In function `finish':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x47e): In function `finish':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x482): In function `finish':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x48e): In function `finish':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x496): more undefined references to `zipfile' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x49a): In function `finish':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x49e): In function `finish':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4aa): In function `finish':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4ae): In function `finish':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4ba): In function `finish':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4c2): more undefined references to `zcomment' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4c6): In function `finish':
+: undefined reference to `dispose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4ca): In function `finish':
+: undefined reference to `dispose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4d4): In function `finish':
+: undefined reference to `trash'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x56c): In function `ziperr':
+: undefined reference to `ClearIOErr_exit'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5c6): In function `ziperr':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5ca): In function `ziperr':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5f2): In function `ziperr':
+: undefined reference to `ziperrors'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5f6): In function `ziperr':
+: undefined reference to `ziperrors'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x63a): In function `ziperr':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x63e): In function `ziperr':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x674): In function `ziperr':
+: undefined reference to `destroy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x696): In function `ziperr':
+: undefined reference to `cenbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x69a): In function `ziperr':
+: undefined reference to `cenbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x6b2): In function `ziperr':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x6b6): In function `ziperr':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x6da): In function `ziperr':
+: undefined reference to `cenbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x6de): In function `ziperr':
+: undefined reference to `cenbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x6f2): In function `ziperr':
+: undefined reference to `cenbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x6f6): In function `ziperr':
+: undefined reference to `cenbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x6fa): In function `ziperr':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x6fe): In function `ziperr':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x702): In function `ziperr':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x706): In function `ziperr':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x720): In function `ziperr':
+: undefined reference to `putcentral'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x746): In function `ziperr':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x74a): In function `ziperr':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x756): In function `ziperr':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x75a): In function `ziperr':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x782): In function `ziperr':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x786): more undefined references to `tempzn' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x792): In function `ziperr':
+: undefined reference to `zcomlen'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x796): In function `ziperr':
+: undefined reference to `zcomlen'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x79a): In function `ziperr':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x79e): In function `ziperr':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x7c0): In function `ziperr':
+: undefined reference to `putend'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x7e2): In function `ziperr':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x7e6): In function `ziperr':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x7f2): In function `ziperr':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x7f6): In function `ziperr':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x802): In function `ziperr':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x80a): more undefined references to `key' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x80e): In function `ziperr':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x812): In function `ziperr':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x81e): In function `ziperr':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x822): In function `ziperr':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x82e): In function `ziperr':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x836): more undefined references to `tempath' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x83a): In function `ziperr':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x83e): In function `ziperr':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x84a): In function `ziperr':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x84e): In function `ziperr':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x85a): In function `ziperr':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x862): more undefined references to `zipfile' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x866): In function `ziperr':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x86a): In function `ziperr':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x876): In function `ziperr':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x87a): In function `ziperr':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x886): In function `ziperr':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x88e): more undefined references to `zcomment' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x898): In function `ziperr':
+: undefined reference to `ClearIOErr_exit'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0xac6): In function `zipwarn':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0xaca): In function `zipwarn':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x12d0): In function `version_info':
+: undefined reference to `version_local'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1632): In function `zipstdout':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1636): In function `zipstdout':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x166a): In function `zipstdout':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x166e): In function `zipstdout':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1672): In function `zipstdout':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1676): In function `zipstdout':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1692): In function `zipstdout':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1696): more undefined references to `zipfile' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x16a0): In function `zipstdout':
+: undefined reference to `readzipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x16ba): In function `zipstdout':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x16be): In function `zipstdout':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1722): In function `check_zipfile':
+: undefined reference to `verbose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1726): In function `check_zipfile':
+: undefined reference to `verbose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1782): In function `check_zipfile':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1786): In function `check_zipfile':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x178a): In function `check_zipfile':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x178e): In function `check_zipfile':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x17ba): In function `check_zipfile':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x17be): In function `check_zipfile':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x17ca): In function `check_zipfile':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x17ce): In function `check_zipfile':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x17d2): In function `check_zipfile':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x17d6): In function `check_zipfile':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1842): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x184a): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1952): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1956): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1996): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x199a): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x19a2): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x19a6): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x19aa): In function `get_filters':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x19ae): In function `get_filters':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1a52): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1a56): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1aac): In function `get_filters':
+: undefined reference to `ex2in'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1ac6): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1aca): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1ad6): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1ada): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1ae4): In function `get_filters':
+: undefined reference to `in2ex'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1afe): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b02): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b0e): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b12): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b22): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b26): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b32): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b36): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b52): In function `get_filters':
+: undefined reference to `icount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b56): In function `get_filters':
+: undefined reference to `icount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b5e): In function `get_filters':
+: undefined reference to `icount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b62): In function `get_filters':
+: undefined reference to `icount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b66): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b6a): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b72): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b76): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b7a): In function `get_filters':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b7e): In function `get_filters':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1b84): In function `get_filters':
+: undefined reference to `getnam'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1c04): In function `get_filters':
+: undefined reference to `ex2in'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1c12): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1c16): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1c22): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1c26): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1c40): In function `get_filters':
+: undefined reference to `in2ex'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1c7a): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1c7e): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1c8a): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1c8e): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1caa): In function `get_filters':
+: undefined reference to `icount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1cae): In function `get_filters':
+: undefined reference to `icount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1cb6): In function `get_filters':
+: undefined reference to `icount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1cba): In function `get_filters':
+: undefined reference to `icount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1cbe): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1cc2): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1cca): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1cce): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1ce2): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1ce6): more undefined references to `pcount' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1d76): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1d7a): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1d92): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1d96): In function `get_filters':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1daa): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1dae): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1db2): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1db6): In function `get_filters':
+: undefined reference to `patterns'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1e68): In function `encr_passwd':
+: undefined reference to `getp'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1eea): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1eee): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1f00): In function `main':
+: undefined reference to `init_upper'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1f04): In function `main':
+: undefined reference to `tzset'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1f0a): In function `main':
+: undefined reference to `real_timezone_is_set'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1f0e): In function `main':
+: undefined reference to `real_timezone_is_set'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1f12): In function `main':
+: undefined reference to `zp_tz_is_valid'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1f16): In function `main':
+: undefined reference to `zp_tz_is_valid'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1f1a): In function `main':
+: undefined reference to `zp_tz_is_valid'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1f1e): In function `main':
+: undefined reference to `zp_tz_is_valid'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1f2a): In function `main':
+: undefined reference to `extra_fields'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1f32): In function `main':
+: undefined reference to `extra_fields'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1f34): In function `main':
+: undefined reference to `tzset'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1f48): In function `main':
+: undefined reference to `expand_args'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1f74): In function `main':
+: undefined reference to `ClearIOErr_exit'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x1fe0): In function `main':
+: undefined reference to `ClearIOErr_exit'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2004): In function `main':
+: undefined reference to `envargs'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x201e): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2022): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x215a): In function `main':
+: undefined reference to `method'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2162): In function `main':
+: undefined reference to `method'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2166): In function `main':
+: undefined reference to `level'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x216e): In function `main':
+: undefined reference to `level'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x218a): In function `main':
+: undefined reference to `level'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x218e): In function `main':
+: undefined reference to `level'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2196): In function `main':
+: undefined reference to `adjust'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x219e): In function `main':
+: undefined reference to `adjust'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x221e): In function `main':
+: undefined reference to `dirnames'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2226): In function `main':
+: undefined reference to `dirnames'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x222e): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2232): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x224a): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x224e): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2252): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2256): more undefined references to `key' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x227a): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x227e): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x22ce): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x22d2): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2322): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2326): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x239e): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x23a2): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x23f6): In function `main':
+: undefined reference to `fix'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x23fa): In function `main':
+: undefined reference to `fix'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2402): In function `main':
+: undefined reference to `fix'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2406): In function `main':
+: undefined reference to `fix'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2462): In function `main':
+: undefined reference to `pathput'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x246a): In function `main':
+: undefined reference to `pathput'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2482): In function `main':
+: undefined reference to `dosify'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x248a): In function `main':
+: undefined reference to `dosify'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2492): In function `main':
+: undefined reference to `translate_eol'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2496): In function `main':
+: undefined reference to `translate_eol'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x249e): In function `main':
+: undefined reference to `translate_eol'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x24a2): In function `main':
+: undefined reference to `translate_eol'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x24c2): In function `main':
+: undefined reference to `dispose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x24ca): In function `main':
+: undefined reference to `dispose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x24d2): In function `main':
+: undefined reference to `special'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x24da): In function `main':
+: undefined reference to `special'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x251e): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2522): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x254a): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2552): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2556): In function `main':
+: undefined reference to `verbose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x255a): In function `main':
+: undefined reference to `verbose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2566): In function `main':
+: undefined reference to `verbose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x256a): In function `main':
+: undefined reference to `verbose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2572): In function `main':
+: undefined reference to `verbose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2576): more undefined references to `verbose' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x257e): In function `main':
+: undefined reference to `recurse'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2582): In function `main':
+: undefined reference to `recurse'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x259e): In function `main':
+: undefined reference to `recurse'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x25a6): In function `main':
+: undefined reference to `recurse'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x25ae): In function `main':
+: undefined reference to `recurse'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x25b2): more undefined references to `recurse' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x26b6): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x26be): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x26c2): In function `main':
+: undefined reference to `verbose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x26c6): In function `main':
+: undefined reference to `verbose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x26ce): In function `main':
+: undefined reference to `verbose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x26d2): In function `main':
+: undefined reference to `verbose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x270a): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x270e): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2790): In function `main':
+: undefined reference to `wild'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x27a8): In function `main':
+: undefined reference to `procname'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2806): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x280a): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2810): In function `main':
+: undefined reference to `getnam'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x282e): In function `main':
+: undefined reference to `extra_fields'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2836): In function `main':
+: undefined reference to `extra_fields'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x284a): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x284e): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x286a): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x286e): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2944): In function `main':
+: undefined reference to `wild'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2974): In function `main':
+: undefined reference to `procname'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2a16): In function `main':
+: undefined reference to `special'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2a1a): In function `main':
+: undefined reference to `special'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2a3e): In function `main':
+: undefined reference to `special'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2a42): In function `main':
+: undefined reference to `special'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2a88): In function `main':
+: undefined reference to `wild'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2aa4): In function `main':
+: undefined reference to `procname'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2b90): In function `main':
+: undefined reference to `ziptyp'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2b9a): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2b9e): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2ba2): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2ba6): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2bc0): In function `main':
+: undefined reference to `readzipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2bda): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2bde): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2bf6): In function `main':
+: undefined reference to `recurse'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2bfa): In function `main':
+: undefined reference to `recurse'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2c4a): In function `main':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2c4e): In function `main':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2c52): In function `main':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2c56): In function `main':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2c72): In function `main':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2c76): more undefined references to `tempath' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2c9e): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2ca2): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2e1c): In function `main':
+: undefined reference to `dostime'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2e2e): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2e32): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2eb8): In function `main':
+: undefined reference to `wild'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2ee8): In function `main':
+: undefined reference to `procname'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2fc2): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2fc6): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2fca): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2fce): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2fea): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x2fee): more undefined references to `key' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3016): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x301a): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x30c0): In function `main':
+: undefined reference to `wild'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x30d8): In function `main':
+: undefined reference to `procname'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3136): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x313a): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3140): In function `main':
+: undefined reference to `getnam'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3162): In function `main':
+: undefined reference to `recurse'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3166): In function `main':
+: undefined reference to `recurse'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x31be): In function `main':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x31c2): In function `main':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3238): In function `main':
+: undefined reference to `procname'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x32e6): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x32ea): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x32f6): In function `main':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x32fa): In function `main':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3314): In function `main':
+: undefined reference to `filter'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3350): In function `main':
+: undefined reference to `check_dup'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x339a): In function `main':
+: undefined reference to `zcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x339e): In function `main':
+: undefined reference to `zcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x33aa): In function `main':
+: undefined reference to `zsort'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x33ae): In function `main':
+: undefined reference to `zsort'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x33ba): In function `main':
+: undefined reference to `special'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x33be): In function `main':
+: undefined reference to `special'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x33da): In function `main':
+: undefined reference to `level'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x33de): In function `main':
+: undefined reference to `level'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x33ea): In function `main':
+: undefined reference to `special'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x33ee): In function `main':
+: undefined reference to `special'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x340e): In function `main':
+: undefined reference to `special'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3412): In function `main':
+: undefined reference to `special'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3432): In function `main':
+: undefined reference to `special'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x343a): more undefined references to `special' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x344e): In function `main':
+: undefined reference to `method'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3452): In function `main':
+: undefined reference to `method'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3462): In function `main':
+: undefined reference to `dispose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3466): In function `main':
+: undefined reference to `dispose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3472): In function `main':
+: undefined reference to `recurse'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3476): In function `main':
+: undefined reference to `recurse'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3482): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3486): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x34c6): In function `main':
+: undefined reference to `method'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x34ce): In function `main':
+: undefined reference to `method'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x34d2): In function `main':
+: undefined reference to `dispose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x34da): In function `main':
+: undefined reference to `dispose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x34de): In function `main':
+: undefined reference to `recurse'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x34e6): In function `main':
+: undefined reference to `recurse'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x34ea): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x34ee): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x34fa): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x34fe): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x350a): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3512): more undefined references to `key' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x352e): In function `main':
+: undefined reference to `linkput'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3532): In function `main':
+: undefined reference to `linkput'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x353e): In function `main':
+: undefined reference to `dosify'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3542): In function `main':
+: undefined reference to `dosify'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3562): In function `main':
+: undefined reference to `linkput'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x356a): In function `main':
+: undefined reference to `linkput'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x356e): In function `main':
+: undefined reference to `fix'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3572): In function `main':
+: undefined reference to `fix'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x357e): In function `main':
+: undefined reference to `adjust'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3582): In function `main':
+: undefined reference to `adjust'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x35b2): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x35b6): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3612): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3616): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3646): In function `main':
+: undefined reference to `zcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x364a): In function `main':
+: undefined reference to `zcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3672): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3676): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x368a): In function `main':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x368e): In function `main':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x369a): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x369e): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x36c2): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x36c6): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x370e): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3712): more undefined references to `zipfile' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x372a): In function `main':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x372e): In function `main':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3732): In function `main':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3736): In function `main':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x376e): In function `main':
+: undefined reference to `tempath'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3772): more undefined references to `tempath' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3776): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x377a): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x379a): In function `main':
+: undefined reference to `zp_tz_is_valid'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x379e): In function `main':
+: undefined reference to `zp_tz_is_valid'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x37d6): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x37da): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3820): In function `main':
+: undefined reference to `filetime'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x389c): In function `main':
+: undefined reference to `get_ef_ut_ztime'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3972): In function `main':
+: undefined reference to `verbose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3976): In function `main':
+: undefined reference to `verbose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3982): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3986): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3a0a): In function `main':
+: undefined reference to `found'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3a0e): In function `main':
+: undefined reference to `found'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3a50): In function `main':
+: undefined reference to `filetime'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3aaa): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3aae): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3ab8): In function `main':
+: undefined reference to `namecmp'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3aca): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3ace): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3af0): In function `main':
+: undefined reference to `fexpel'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3b26): In function `main':
+: undefined reference to `found'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3b2a): In function `main':
+: undefined reference to `found'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3b36): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3b3a): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3b56): In function `main':
+: undefined reference to `fix'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3b5a): In function `main':
+: undefined reference to `fix'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3b66): In function `main':
+: undefined reference to `adjust'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3b6a): In function `main':
+: undefined reference to `adjust'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3bb6): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3bba): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3bc6): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3bca): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3bd6): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3bda): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3c3a): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3c3e): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3c5a): In function `main':
+: undefined reference to `fix'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3c5e): In function `main':
+: undefined reference to `fix'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3c6a): In function `main':
+: undefined reference to `adjust'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3c6e): In function `main':
+: undefined reference to `adjust'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3c8a): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3c8e): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3ca2): In function `main':
+: undefined reference to `recurse'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3ca6): In function `main':
+: undefined reference to `recurse'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3cb2): In function `main':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3cb6): In function `main':
+: undefined reference to `pcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3cce): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3cd2): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3d02): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3d06): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3d5a): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3d5e): more undefined references to `errbuf' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3de6): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3dea): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3e12): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3e16): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3e22): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3e26): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3e4e): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3e52): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3e5c): In function `main':
+: undefined reference to `get_crc_table'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3e6e): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3e72): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3ea2): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3ea6): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3eb2): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3eb6): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3ece): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3ed2): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3ede): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3ee2): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3eee): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3ef2): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3f12): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3f16): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3f46): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3f4a): more undefined references to `zipfile' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3f6c): In function `main':
+: undefined reference to `getfileattr'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3f7a): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3f7e): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3f8a): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3f8e): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3f9a): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3f9e): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3fa4): In function `main':
+: undefined reference to `destroy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3fc6): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3fce): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3fda): In function `main':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3fe2): In function `main':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3fe6): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x3fea): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x407e): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4082): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x40aa): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x40ae): more undefined references to `zipfile' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x40da): In function `main':
+: undefined reference to `cenbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x40de): In function `main':
+: undefined reference to `cenbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4126): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x412a): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x413a): In function `main':
+: undefined reference to `cenbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x413e): In function `main':
+: undefined reference to `cenbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4142): In function `main':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4146): In function `main':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x414e): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4152): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x415e): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4162): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x416e): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4172): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x419a): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x419e): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x41ae): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x41b2): more undefined references to `zipfile' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x41b8): In function `main':
+: undefined reference to `tempname'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x427e): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4282): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x42ae): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x42b2): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x42be): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x42c2): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x42d0): In function `main':
+: undefined reference to `fcopy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4306): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x430a): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x431e): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4322): In function `main':
+: undefined reference to `zipbeg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4326): In function `main':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x432a): In function `main':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4336): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x433a): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4366): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x436a): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4386): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x438a): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x43b2): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x43b6): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x43da): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x43de): more undefined references to `mesg' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x43f0): In function `main':
+: undefined reference to `zipup'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4426): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x442a): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4436): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x443a): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x444e): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4452): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4466): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x446a): more undefined references to `mesg' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x453e): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4542): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x455e): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4562): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x458e): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4592): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x459e): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x45a2): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x45b6): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x45ba): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x45ce): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x45d2): more undefined references to `mesg' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4710): In function `main':
+: undefined reference to `zipcopy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4732): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4736): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4752): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4756): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x477a): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x477e): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x478a): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x478e): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x47b2): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x47b6): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x487a): In function `main':
+: undefined reference to `zcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x487e): In function `main':
+: undefined reference to `zcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4886): In function `main':
+: undefined reference to `zcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x488a): In function `main':
+: undefined reference to `zcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x48a8): In function `main':
+: undefined reference to `zipcopy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x48ca): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x48ce): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x48ea): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x48ee): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x491a): In function `main':
+: undefined reference to `found'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x491e): In function `main':
+: undefined reference to `found'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4a1a): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4a1e): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4a2a): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4a2e): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4a52): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4a56): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4a68): In function `main':
+: undefined reference to `zipup'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4a9e): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4aa2): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4aae): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4ab2): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4ac6): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4aca): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4ade): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4ae2): more undefined references to `mesg' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4bb6): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4bba): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4bd6): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4bda): In function `main':
+: undefined reference to `errbuf'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4c06): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4c0a): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4c16): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4c1a): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4c2e): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4c32): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4c46): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4c4a): more undefined references to `mesg' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4db6): In function `main':
+: undefined reference to `zcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4dba): In function `main':
+: undefined reference to `zcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4dc2): In function `main':
+: undefined reference to `zcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4dc6): In function `main':
+: undefined reference to `zcount'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4dcc): In function `main':
+: undefined reference to `fexpel'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4de6): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4dea): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4df6): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4dfa): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4e06): In function `main':
+: undefined reference to `key'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4e0e): more undefined references to `key' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4eae): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4eb2): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4ee8): In function `main':
+: undefined reference to `GetComment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4f92): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4f96): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4fa2): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x4fa6): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x50cc): In function `main':
+: undefined reference to `GetComment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x514e): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5152): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x515e): In function `main':
+: undefined reference to `zcomlen'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5162): In function `main':
+: undefined reference to `zcomlen'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x516e): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5172): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x518e): In function `main':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5192): In function `main':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5196): In function `main':
+: undefined reference to `zcomlen'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x519a): In function `main':
+: undefined reference to `zcomlen'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x519e): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x51a2): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x51ba): In function `main':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x51be): In function `main':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x51c2): In function `main':
+: undefined reference to `zcomlen'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x51c6): In function `main':
+: undefined reference to `zcomlen'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x51e2): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x51e6): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x51fa): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x51fe): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5212): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5216): more undefined references to `mesg' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x52d2): In function `main':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x52d6): In function `main':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x52ee): In function `main':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x52f2): In function `main':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x52f6): In function `main':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x52fa): more undefined references to `zcomment' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5326): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x532a): In function `main':
+: undefined reference to `noisy'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5336): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x533a): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x53ae): In function `main':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x53b2): In function `main':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x53c6): In function `main':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x53ca): In function `main':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5432): In function `main':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5436): more undefined references to `zcomment' follow
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x552e): In function `main':
+: undefined reference to `zcomlen'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5532): In function `main':
+: undefined reference to `zcomlen'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x553e): In function `main':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5542): In function `main':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x555a): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x555e): In function `main':
+: undefined reference to `zfiles'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5570): In function `main':
+: undefined reference to `putcentral'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x55be): In function `main':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x55c2): In function `main':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x55ce): In function `main':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x55d2): In function `main':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5642): In function `main':
+: undefined reference to `verbose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5646): In function `main':
+: undefined reference to `verbose'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5652): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5656): In function `main':
+: undefined reference to `mesg'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5660): In function `main':
+: undefined reference to `percent'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x568a): In function `main':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x568e): In function `main':
+: undefined reference to `tempzn'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x569e): In function `main':
+: undefined reference to `zcomlen'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x56a2): In function `main':
+: undefined reference to `zcomlen'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x56a6): In function `main':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x56aa): In function `main':
+: undefined reference to `zcomment'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x56c4): In function `main':
+: undefined reference to `putend'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5758): In function `main':
+: undefined reference to `lm_free'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x578a): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x578e): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x57ba): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x57be): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x57d0): In function `main':
+: undefined reference to `replace'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5856): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x585a): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x587a): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x587e): In function `main':
+: undefined reference to `zipfile'
+/cygdrive/c/DOCUME~1/ADMINI~1/IMPOST~1/Temp/cc2E21AI.o(.text+0x5888): In function `main':
+: undefined reference to `setfileattr'
+collect2: ld returned 1 exit status
+make: *** [zip.o] Error 1

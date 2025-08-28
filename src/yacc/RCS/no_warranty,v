@@ -1,0 +1,28 @@
+head     1.1;
+branch   ;
+access   ;
+symbols  ;
+locks    ; strict;
+comment  @# @;
+
+
+1.1
+date     90.07.14.18.55.19;  author loftus;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+
+1.1
+log
+@Initial revision
+@
+text
+@     Berkeley Yacc is distributed with no warranty whatever.  The author
+and any other contributors take no responsibility for the consequences of
+its use.
+@

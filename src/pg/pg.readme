@@ -1,0 +1,59 @@
+short: Amiga pager w/ source
+author: Thomas.Radtke@rz.uni-osnabrueck.de
+uploader: Thomas.Radtke@rz.uni-osnabrueck.de
+type: util/cli
+
+---------------------------------------------
+|-> REPLACEMENT FOR MY OLD ARCHIVE PG.LHA <-|
+---------------------------------------------
+
+This small pager helps you to format input from stdin. It knows
+about your console window size (if any, else one will be created) and
+interrupts the output every page (well, this is what a pager should
+do). You can enter 'q' after the [More] input request to switch off
+the formatting, text goes then directly to stdout.
+
+'pg' is freeware, (C) Thomas Radtke 1996.
+
+Installation:
+
+copy the pg command to anywhere in your command path. Do with the rest
+what you want.
+
+Syntax:
+
+pg [filename]
+
+If the filename is omitted, source of input is stdin.
+Note: pg can be started from workbench, please do not rename the
+command. This is important!
+
+Examples:
+
+dir | pg	;	from stdin
+pg pg.c		;	from file pg.c
+pg <pg.c	;	from stdin
+
+-> You may want to have a 'pipe' command installed. Take a look at
+   various projects on Aminet.
+
+bugs:
+
+(i) not really a bug, but...
+
+The pager does not work with output that goes to stderr, like gnuc's
+error reports (however, it works with Aztec-C :).
+
+(ii) expected bug
+
+For bugs, pg is a very atractive place to be. If you  have a different
+input handler, or the text to be formatted contains CSI sequences,
+output could be very well trash. If YOU know a way to determine the
+size of a string (in units of visible characters) on the console, let
+me know. On way is to create a virtuel console, send output to it and
+take a look at the results. Good luck if you want to try something
+similar.
+
+Enjoy,
+
+Thomas Radtke

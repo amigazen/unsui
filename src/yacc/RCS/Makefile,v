@@ -1,0 +1,172 @@
+head     1.2;
+branch   ;
+access   ;
+symbols  ;
+locks    ; strict;
+comment  @# @;
+
+
+1.2
+date     90.07.14.21.58.12;  author loftus;  state Exp;
+branches ;
+next     1.1;
+
+1.1
+date     90.07.14.18.55.07;  author loftus;  state Exp;
+branches ;
+next     ;
+
+
+desc
+@@
+
+
+1.2
+log
+@Compiles using LMK of Lattice 5.05.
+@
+text
+@DEST	      = .
+
+HDRS	      = defs.h
+
+CFLAGS	      =  -cwus
+
+LDFLAGS	      =
+
+LIBS	      = lib:lc.lib lib:amiga.lib
+
+LINKER	      = blink
+
+MAKEFILE      = Makefile
+
+OBJS	      = closure.o \
+		error.o \
+		lalr.o \
+		lr0.o \
+		main.o \
+		mkpar.o \
+		output.o \
+		reader.o \
+		skeleton.o \
+		symtab.o \
+		verbose.o \
+		warshall.o
+
+PRINT	      = pr -f -l88
+
+PROGRAM	      = yacc
+
+SRCS	      = closure.c \
+		error.c \
+		lalr.c \
+		lr0.c \
+		main.c \
+		mkpar.c \
+		output.c \
+		reader.c \
+		skeleton.c \
+		symtab.c \
+		verbose.c \
+		warshall.c
+
+all:		$(PROGRAM)
+
+$(PROGRAM):     $(OBJS) $(LIBS)
+		@@echo "Loading $(PROGRAM) ... "
+		@@$(LINKER) to $(PROGRAM) from lib:c.o $(OBJS) lib $(LIBS) $(LDFLAGS)
+		@@echo "done"
+
+clean:
+		@@rm -f $(OBJS)
+
+clobber:
+		@@rm -f $(OBJS) $(PROGRAM)
+
+depend:
+		@@mkmf -f $(MAKEFILE) PROGRAM=$(PROGRAM) DEST=$(DEST)
+
+index:
+		@@ctags -wx $(HDRS) $(SRCS)
+
+install:	$(PROGRAM)
+		@@echo Installing $(PROGRAM) in $(DEST)
+		@@install -s $(PROGRAM) $(DEST)
+
+listing:
+		@@$(PRINT) Makefile $(HDRS) $(SRCS) | lpr
+
+lint:
+		@@lint $(SRCS)
+
+program:        $(PROGRAM)
+
+tags:           $(HDRS) $(SRCS); @@ctags $(HDRS) $(SRCS)
+
+###
+closure.o: closure.c defs.h
+error.o: error.c defs.h
+lalr.o: lalr.c defs.h
+lr0.o: lr0.c defs.h
+main.o: main.c defs.h
+mkpar.o: mkpar.c defs.h
+output.o: output.c defs.h
+reader.o: reader.c defs.h
+skeleton.o: skeleton.c defs.h
+symtab.o: symtab.c defs.h
+verbose.o: verbose.c defs.h
+warshall.o: warshall.c defs.h
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d5 1
+a5 1
+CFLAGS	      = -O
+d9 1
+a9 1
+LIBS	      =
+d11 1
+a11 1
+LINKER	      = cc
+d48 2
+a49 2
+		@@echo -n "Loading $(PROGRAM) ... "
+		@@$(LINKER) $(LDFLAGS) -o $(PROGRAM) $(OBJS) $(LIBS)
+d52 2
+a53 1
+clean:;		@@rm -f $(OBJS)
+d55 5
+a59 1
+clobber:;	@@rm -f $(OBJS) $(PROGRAM)
+d61 2
+a62 1
+depend:;	@@mkmf -f $(MAKEFILE) PROGRAM=$(PROGRAM) DEST=$(DEST)
+a63 2
+index:;		@@ctags -wx $(HDRS) $(SRCS)
+
+d68 2
+a69 1
+listing:;	@@$(PRINT) Makefile $(HDRS) $(SRCS) | lpr
+d71 2
+a72 1
+lint:;		@@lint $(SRCS)
+d79 12
+a90 12
+closure.o: defs.h
+error.o: defs.h
+lalr.o: defs.h
+lr0.o: defs.h
+main.o: defs.h
+mkpar.o: defs.h
+output.o: defs.h
+reader.o: defs.h
+skeleton.o: defs.h
+symtab.o: defs.h
+verbose.o: defs.h
+warshall.o: defs.h
+@

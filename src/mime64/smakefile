@@ -1,0 +1,21 @@
+# smakefile for SAS/C 7.00 for Amiga powerUP (TM) PPC
+# 1998 by Andreas R. Kleinert
+
+all: mime64.elf mime64
+
+
+mime64.elf: mime64.elf.o
+
+          ppc-amigaos-ld -r LIB:c_ppc.o mime64.elf.o LIB:scppc.a lib:end.o -o mime64.elf
+
+mime64: mime64.o
+
+          SLINK FROM LIB:c.o mime64.o LIB LIB:sc.lib LIB:amiga.lib NODEBUG SC SD TO mime64
+
+mime64.elf.o: mime64.c
+
+          SCPPC ObjectName=mime64.elf.o mime64.c
+
+mime64.o: mime64.c
+
+          SC mime64.c

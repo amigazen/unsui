@@ -1,0 +1,28 @@
+Short:    Mime64 encoder/decoder, 68k + PPC, incl. source
+Uploader: Andreas_Kleinert@t-online.de
+Author:   Karl Hahn, Andreas R. Kleinert (port)
+Type:     util/arc
+
+ Another base64 MIME decoder/encoder - this time
+ in a version for 68k and PPC machines.
+
+ Has been tested, seems to work fine - included BTW
+ is the original program archive as mime file (mime.64)
+
+ You may do some 68k <-> PPC speed comparisions,
+ if you like - has not been done yet.
+
+ The ELF module can be run by using either SAS/C's "RunElf"
+ launching tool or directly from the shell after you installed
+ the "ElfLoadSeg" patch from phase5.
+
+ Don't forget to do a
+
+     Protect #?.elf +e
+
+ on the ELF binary, first.
+
+ Have fun!
+
+ --
+ ARK, 12/Apr/98

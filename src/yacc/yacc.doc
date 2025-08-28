@@ -1,0 +1,132 @@
+
+
+
+YACC(1)                   USER COMMANDS                   YACC(1)
+
+
+
+NAME
+     Yacc - an LALR(1) parser generator
+
+SYNOPSIS
+     yacc [ -dlrtv ] [ -b [4mprefix[m ] [4mfilename[m
+
+DESCRIPTION
+     [4mYacc[m reads the grammar specification in  the  file  [4mfilename[m
+     and  generates  an LR(1) parser for it.  The parsers consist
+     of a set of LALR(1) parsing  tables  and  a  driver  routine
+     written in the C programming language.  [4mYacc[m normally writes
+     the parse tables and the driver routine to the file [4my[m.[4mtab[m.[4mc[m.
+
+     The following options are available:
+
+          -b [4mprefix[m
+               The -b option changes the prefix prepended to  the
+               output file names to the string denoted by [4mprefix[m.
+               The default prefix is the character [4my[m.
+
+          -d   The -d option causes the header file [4my[m.[4mtab[m.[4mh[m to be
+               written.
+
+          -l   If the -l  option  is  not  specified,  [4myacc[m  will
+               insert  #line  directives  in  the generated code.
+               The #line directives let  the  C  compiler  relate
+               errors  in the generated code to the user's origi-
+               nal code.  If the -l  option  is  specified,  [4myacc[m
+               will  not  insert  the  #line  directives.   #line
+               directives specified by the user will be retained.
+
+          -r   The -r option  causes  [4myacc[m  to  produce  separate
+               files for code and tables.  The code file is named
+                y.code.c, and the tables file is  named  [4my[m.[4mtab[m.[4mc[m.
+               (The -r option has not yet been implemented.)
+
+          -t   The -t option changes the preprocessor  directives
+               generated  by  [4myacc[m  so  that debugging statements
+               will be incorporated in the compiled code.
+
+          -v   The -v option causes a human-readable  description
+               of  the generated parser to be written to the file
+               [4my[m.[4moutput[m.
+
+     If the  environment  variable  TMPDIR  is  set,  the  string
+     denoted  by TMPDIR will be used as the name of the directory
+     where the temporary files are created.
+
+TABLES
+     There is a program :[4myyfix[m that extracts  tables  from  [4myacc[m-
+     generated  files.  The program takes the names of the tables
+     as its command-line arguments.   The  names  of  the  tables
+
+
+
+Sun Release 3.5     Last change: June 3, 1990                   1
+
+
+
+
+
+
+YACC(1)                   USER COMMANDS                   YACC(1)
+
+
+
+     generated   by  this  version  of  [4myacc[m  are  [4myylhs[m,  [4myylen[m,
+     [4myydefred[m, [4myydgoto[m, [4myysindex[m,  [4myyrindex[m,  [4myygindex[m,  [4myytable[m,
+     and  [4myycheck[m.  Two additional tables, [4myyname[m and [4myyrule[m, are
+     created if YYDEBUG is defined and nonzero.
+
+FILES
+     [4my[m.[4mtab[m.[4mc[m
+     [4my[m.[4mtab[m.[4mh[m
+     [4my[m.[4moutput[m
+     /[4mtmp[m/[4myacc[m.[4maXXXXXX[m
+     /[4mtmp[m/[4myacc[m.[4mtXXXXXX[m
+     /[4mtmp[m/[4myacc[m.[4muXXXXXX[m
+
+DIAGNOSTICS
+     If there are rules that are never  reduced,  the  number  of
+     such  rules is reported on standard error.  If there are any
+     LALR(1) conflicts, the number of conflicts  is  reported  on
+     standard error.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Sun Release 3.5     Last change: June 3, 1990                   2
+
+
+
