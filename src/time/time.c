@@ -1,13 +1,10 @@
-;/* time - compiles with SAS/C 5.10a by executing this file
-lc -cfis -v -b0 -j73 -O -M time
-blink time.o to time lib lib:lcnb.lib lib:amiga.lib SC ND VERBOSE
-quit ;*/
 /*
 *	time - measure time command takes to complete.
 *
 *	Usage: time <command-and-its-args> 
 *
 *	Martin W. Scott, 4/92.
+*	Copyright (c) 2025 amigazen project
 */
 #include <exec/types.h>
 #include <dos/dos.h>
