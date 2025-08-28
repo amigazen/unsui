@@ -1,0 +1,61 @@
+
+			     Nice
+
+
+     NAME
+	    Nice - executes a command at another task priority.
+
+     SYNOPSIS
+	    Nice -S=STICKY/S,PRI=PRIORITY/N/K,
+		  ABS=ABSOLUTE/S,CMD=COMMAND/F
+
+     DESCRIPTION
+	    Nice executes a command at a different task priority.
+	Why?  I run a file manager at task priority 1, so it
+	performs faster.  However, any programs I launch with it
+	also inherit this higher-than-normal task priority, so
+	all my programs launched from somewhere else (eg Workbench)
+	run slowly (or not at all).  This program reduces the
+	task priority before running the new program.
+
+	    By default, the task priority is reduced by 3.  If a
+	value is supplied for the PRIORITY argument, then the
+	prioirty will be changed by that amount instead.
+
+	    If the ABSOLUTE switch is supplied, then the priority
+	will be taken as absolute, rather than relative.  (i.e.
+	the current task priority will be considered to be 0>
+
+	    After the command has finished, the task priority will
+	be restored to its former value, unless the STICKY switch
+	is supplied.
+
+     EXAMPLE
+
+	    1. To extract myarchive.gz at a task priority 3 below
+	    the current
+
+	Nice gzip myarchive.gz
+
+
+	    2. To extract myarchive.gz at a task priority 5 below
+	    the current
+
+	Nice PRI=-5 gzip myarchive.gz
+
+
+	    3. To extract myarchive.gz at task priority -5
+
+	Nice PRI=-5 ABS gzip myarchive.gz
+
+
+	    4. To extract myarchive.gz.  (A daft example)
+
+	Nice PRI=0 ABS gzip myarchive.gz
+
+
+     COPYRIGHT
+	This program and man file is Copyright 1996 Tak Tang.  You
+     may copy and redistribute them together provided that they
+     are unmodified.  You may re-archive them for distribution.
+

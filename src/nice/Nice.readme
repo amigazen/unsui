@@ -1,0 +1,7 @@
+Short:    Run a command at a diff. task priority
+Uploader: Tak Tang (tst92@ecs.soton.ac.uk)
+Author:   Tak Tang (tst92@ecs.soton.ac.uk)
+Type:     util/cli
+Version:  1.0
+Requires: KS2
+
