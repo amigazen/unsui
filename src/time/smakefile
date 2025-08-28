@@ -1,0 +1,38 @@
+# Time command SMakefile for Unsui POSIX runtime
+
+# Tools
+CC = sc
+LD = slink
+RM = delete
+
+# Compiler flags for SAS/C (converted from lattice C)
+CFLAGS = STRIPDEBUG NODEBUG BATCH NOICONS
+SCOPTIONS = DATA=NEAR CODE=NEAR NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common/
+
+# Linker flags for SAS/C
+LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib NOICONS
+
+# Object files for time
+OBJS = time.o /common/common.o /common/getopt.o
+
+# Main target
+all: time
+
+# Build time command
+time: $(OBJS)
+	$(LD) FROM sc:lib/cres.o $(OBJS) TO time $(LDFLAGS)
+
+# Compile source files
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+time.o: time.c time.h /common/common.h /common/getopt.h
+
+# Clean target
+clean:
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) time
+
+# Install target
+install: time
+	copy time //SDK/C/time
