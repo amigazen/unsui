@@ -14,7 +14,7 @@ This is _unsui_, a POSIX environment for Amiga.
 
 Key to the amigazen project approach is ensuring every project can be built with the same common set of development tools and configurations, so the ToolKit was created to provide a standard configuration for Amiga development. All *amigazen project* releases will be guaranteed to build against the ToolKit standard so that anyone can download and begin contributing straightaway without having to tailor the toolchain for their own setup.
 
-The original authors of unix.lib or the POSIX commands included here are not affiliated with the amigazen project. This software is redistributed on terms described in the documentation, particularly the file LICENSE.md
+The original authors of the libraries and commands included here are not affiliated with the amigazen project. This software is redistributed on terms described in the documentation, particularly the file LICENSE.md and individual LICENSE.md files for each component.
 
 Our philosophy is based on openness:
 
@@ -32,11 +32,11 @@ Rather than forcing Amiga to become Unix, _unsui_ provides a bridge that allows 
 
 unsui follows the principle of "harmony through compatibility" - Unix standards and Amiga's unique capabilities can coexist and complement each other. Each component name carries both poetic and technical meaning, creating a layered understanding that elevates the project from being merely thematic to being aligned with both its philosophical roots and its practical function.
 
-This project aims to provide a comprehensive set of POSIX utilities for Amiga, ensuring they can be built out of the box against the ToolKit standard by anyone with an Amiga computer.
+This project aims to provide a comprehensive set of POSIX utilities and libraries for Amiga, ensuring they can be built out of the box against the ToolKit standard by anyone with an Amiga computer.
 
 ### UnixLib3 - The _zafu_ (座蒲)
 
-**Standard C Library**: UnixLib3 is a (WIP) near complete POSIX and C99 standard C library implementation for Amiga and the SAS/C (and soon DICE) compiler. It provides many more functions and new versions of functions to extend the SAS/C standard C library, similar to VBCC's PosixLib. It does not replace the original SAS/C startup code or sc.lib except where the function prototype has changed since the days of ANSI/C89, in which case UnixLib3 provides a new modern version of the same function. Using UnixLib3 it should be possible to port more modern functions as well as taking advantage of C99 improvements such as the memory-safe string functions. UnixLib3 is a new version of original emacs-for-Amiga developer David Gay's BSD compatible unix.lib including the extensions added by Amiga xfig developer Enrico Forestieri, as well as code added in from Irmen de Jong's Amiga Python, and all-new code from amigazen project. Furthermore UnixLib3 includes some modern resource tracking and cleanup features to make Amiga software developed with it more stable, and unlike earlier versions makes full use of the latest operating system features.
+**Standard C Library**: UnixLib3 is a (WIP) near complete POSIX and C99 standard C library implementation for Amiga and the SAS/C (and soon DICE) compiler. It provides many more functions and new versions of functions to extend the SAS/C standard C library, similar to VBCC's PosixLib. It does not replace the original SAS/C startup code or sc.lib except where the function prototype has changed since the days of ANSI/C89, in which case UnixLib3 provides a new modern version of the same function. Using UnixLib3 it should be possible to port more modern functions as well as taking advantage of C99 improvements such as the memory-safe string functions. UnixLib3 is a new version of original emacs-for-Amiga developer David Gay's BSD compatible unix.lib including the extensions added by Amiga xfig developer Enrico Forestieri, as well as code added in from Irmen de Jong's Amiga Python, and all-new code from amigazen project. Furthermore UnixLib3 includes some modern resource tracking and cleanup features to make Amiga software developed with it more stable, and unlike earlier versions makes full use of the latest operating system features. Apart from unix.lib, additional popular libraries found on Unix-like systems are also planned for inclusion, collectively forming the _zafu_ for _unsui_.
 
 In zen buddhism, the _zafu_ (座蒲) is the meditation cushion that provides the foundation for proper posture and balance. Just as the zafu supports the practitioner's meditation, UnixLib3 serves as a stable base for all software in the runtime environment.
 
@@ -44,19 +44,20 @@ In zen buddhism, the _zafu_ (座蒲) is the meditation cushion that provides the
 
 **POSIX compatibility shell**: _shami_ is a Unix-style shell for running scripts and command sequences that follow POSIX conventions.
 
-The name _shami_ (沙弥) means "Novice Monk" - a dedicated practitioner at the beginning of their journey, representing the tool for mastery as users learn to work with Unix tools on Amiga.
+The name _shami_ (沙弥) means "Novice Monk" - a dedicated practitioner at the beginning of their journey, as users learn to work with a Unix-like shell and tools on Amiga.
 
 ### Shell commands - The _koans_ (公案)
 
 **The Tools of Insight**: A complete set of the most common commands found on Unix-like systems, that are Amiga native on the inside and POSIX compatible on the outside, all _koan_ commands simultaneously support both getopts and ReadArgs style command arguments, and running from both the AmigaShell or _shami_ sh shell.
 
-In zen buddhism, a _koan_ (公案) is a riddle used to break through conventional thinking. Mastering the cryptic but powerful POSIX commands is a similar journey. Each tool is a practical puzzle that, once solved, grants deeper understanding and control over the system. In many cases simply porting to Amiga is a _koan_ in itself.
+In zen buddhism, a _koan_ (公案) is a riddle used to break through conventional thinking. Mastering the cryptic but powerful POSIX commands is a similar journey. Each tool is a practical puzzle that, once solved, grants deeper understanding and control over the system. In many cases simply creating an Amiga port is a _koan_ in itself.
 
 Each _koan_ is designed to be:
 - Self-contained and independently buildable
 - Compliant with POSIX standards where applicable
-- Optimized for Amiga platform characteristics
-- Following consistent coding and build patterns
+- Amiga native in its use of system APIs
+- Refactored to become consistent with the other parts of _unsui_ 
+- Utilize the _zafu_ for a consistent approach to supporting both Unix-like and Amiga conventions
 
 ## Frequently Asked Questions
 
@@ -74,11 +75,19 @@ That means that useful tools originating from Unix platforms that are NOT part o
 
 ### Is this like GeekGadgets, or Cygwin/cygnix, or even Homebrew?
 
-Yes and no. GeekGadgets was a project of Fred Fish, Markus Wild and many others in the 1980s and 90s to bring mostly Unix, and more specifically mostly GNU, software to Amiga, porting using the ixemul.library. GeekGadgets fizzled even before the AMiga, and GNU software became increasingly complicated, introducing features like autoconf to support the Linux kernel, while retaining cross platform portability. Despite that, GeekGadgets lives on in various ways whether the ixemul subsystem of MorphOS or the GCC based SDK for OS4.
+Yes and no. GeekGadgets was a project of Fred Fish, Markus Wild and many others in the 1980s and 90s to bring mostly Unix, and more specifically mostly GNU, software to Amiga, porting using the ixemul.library. GeekGadgets fizzled out even before the Amiga itself, and GNU software became increasingly complicated, introducing features like autoconf to support both the Linux kernel while retaining cross platform portability, and ironically dramatically increasing the complexity of porting GNU software. Despite that, GeekGadgets lives on in various ways whether the ixemul subsystem of MorphOS or the GCC based SDK for OS4.
 
 This project is maybe not as ambitious as GeekGadgets, and yet also much more modern, with a deliberate choice to NOT rely on GNU toolchains and libraries in favour of Amiga native solutions or more straightforward BSD-style solutions, much as macOS also does with FreeBSD.
 
 Cygwin is likewise a project to port GNU software to Windows. This has in turn inspired AmiCygnix for OS4, which focusses primarily on x11 enabled software.
+
+### Isn't Unix-like software bloated and slow, the antithesis of Amiga's refined system architecture?
+
+It's certainly the case that one of the appeals of Amiga is the focus on lean, efficient, waste-free software design. Mechanisms like libdl are insanely inefficient in their implementation, and POSIX commands seem to go out of their way to obfuscate their usage.
+
+GeekGadgets could certainly be said to be an acquired taste, choosing to enable mostly automated porting of GNU software in the name of gaining access to the rich GNU library.
+
+_unsui_ tries to strike a balance between Amiga _kanso_ and Unix kitchen-sink style functionality, acknowledging that there are other places to find the most efficient Amiga software, while _unsui_ makes some compromises in the name of functionality, stability and ease of porting, without going to the same extremes as GeekGadgets, yet acknowledging that the Amiga of today has substantially more resources than 40 years ago. _unsui_ is for the Amiga of 2025 not 1985.
 
 ### What Open Source license applies to the components of _unsui_?
 
@@ -88,7 +97,7 @@ Components integrated from other older projects are checked for compatible licen
 
 ### What does the name _unsui_ really mean? Is it meant to be UNix SUIte?
 
-It is left to the imagination of the reader to determine if there is greater meaning in the name _unsui_. Could it mean UNified Standard Unix-specification Implementation? Or UNix SUbsystem Interface? Perhaps _unsui_ is Not a Supported Unix Instance? What do you think it means?
+It is left to the imagination of the reader to determine if there is greater meaning in the name _unsui_. Could it mean UNified Standard Unix-specification Implementation? Or UNix SUbsystem Interface? Perhaps _unsui_ is Not a Supported Unix Instance? Is it Unix-like System Userland Interface? What do you think it means? Similarly, is _zafu_ a Zen Amiga Foundation for Unix? What else could that mean?
 
 ### Will _unsui_ be released on Aminet?
 
@@ -96,7 +105,7 @@ All stable, polished releases will be uploaded to Aminet yes. Work in progress c
 
 ### Who are amigazen project?
 
-To learn more about amigazen project, see AMIGAZEN.md or the Amiga-compatible website at http://www.amigazen.com/
+To learn more about amigazen project and its aims, see AMIGAZEN.md or the Amiga-compatible website at http://www.amigazen.com/
 
 ## Contact 
 
@@ -108,6 +117,6 @@ To learn more about amigazen project, see AMIGAZEN.md or the Amiga-compatible we
 
 *Amiga* is a trademark of **Amiga Inc**. 
 
-The POSIX utilities included here are based on various open source implementations and standards. Each individual _koan_ maintains its own licensing and attribution as documented in their respective src directories.
+The POSIX commands and libraries included here are based on various open source implementations and standards. Each individual _koan_ maintains its own licensing and attribution as documented in their respective src directories.
 
 The _unsui_ platform concept and implementation is a product of the **amigazen project**
