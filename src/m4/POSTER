@@ -1,0 +1,30 @@
+Article 46 of comp.sources.amiga:
+Path: fishpond!mcdsun!nud!noao!ncar!boulder!sunybcs!rutgers!iuvax!pur-ee!j.cc.purdue.edu!ain
+From: ain@j.cc.purdue.edu (Patrick White)
+Newsgroups: comp.sources.amiga
+Subject: M4 (sources 1 of 2)
+Keywords: m4, macro, processor
+Message-ID: <7174@j.cc.purdue.edu>
+Date: 31 May 88 23:00:23 GMT
+Organization: PUCC Land, USA
+Lines: 2022
+Approved: ain@j.cc.purdue.edu	(Patrick White)
+
+Submitted by:	kuhling!jonasf  (Jonas Flygare)
+Summary:	unix m4 look-alike macro processor.
+Poster Boy:	Patrick White	(ain@j.cc.purdue.edu)
+Archive Name:	sources/amiga/volume5/m4.src.sh1.Z
+tested.
+ 
+NOTES:
+   I undid the shar to undo the uuencoded compressed files, and to separate
+the docs from everything else.
+   I nroffed the docs so everybody gets a readable copy of the docs.
+   A patch to some of the test files was included with the origional posting..
+I applied the patch to the files and excluded the patch from this posting.
+.
+ 
+ 
+-- Pat White   (co-moderator comp.sources/binaries.amiga)
+ARPA/UUCP: j.cc.purdue.edu!ain  BITNET: PATWHITE@PURCCVM  PHONE: (317) 743-8421
+U.S.  Mail:  320 Brown St. apt. 406,    West Lafayette, IN 47906

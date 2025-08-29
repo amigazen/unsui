@@ -1,0 +1,4 @@
+FROM LIB:c.o+main.o+eval.o+serv.o+look.o+misc.o+expr.o+getopt.o+mktemp.o
+TO m4
+LIB LIB:lc.lib+LIB:amiga.lib
+MAP m4.map

@@ -1,0 +1,7 @@
+This is the port of M4 macro package to the amiga.
+I just compiled the PD package and added some functions, also
+claned up some code that wouldn't work on the amiga.
+I haven't done too extensive tests, but it works fine with
+the included testfiles. Anyway, if you find a bug, you have the 
+source, so diffs will be enough.
+The source included here compiles with just a few warnings

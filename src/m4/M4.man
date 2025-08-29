@@ -1,0 +1,462 @@
+
+
+
+M4(local)           UNIX Programmer's Manual            M4(local)
+
+
+
+NAME
+     pd m4 - macro processor
+
+ORIGIN
+     MetaSystems
+
+SYNOPSIS
+     m4[ _o_p_t_i_o_n_s ]
+
+DESCRIPTION
+     _P_d _M_4 is a un*x M4 look-alike macro processor intended as a
+     front end for Ratfor, Pascal, and other languages that do
+     not have a built-in macro processing capability.  Pd M4
+     reads standard input, the processed text is written on the
+     standard output.
+
+     The options and their effects are as follows:
+
+     -D_n_a_m_e[=_v_a_l]
+          Defines _n_a_m_e to _v_a_l or to null in _v_a_l's absence.
+
+     -U_n_a_m_e
+          undefines _n_a_m_e.
+
+     Macro calls have the form:
+
+          name(_a_r_g_1,_a_r_g_2, ..., _a_r_g_n)
+
+     The ( must immediately follow the name of the macro.  If the
+     name of a defined macro is not followed by a (, it is taken
+     to be a call of that macro with no arguments, i.e. name().
+     Potential macro names consist of alphabetic letters and
+     digits.
+
+     Leading unquoted blanks, tabs and newlines are ignored while
+     collecting arguments.  Left and right single quotes are used
+     to quote strings.  The value of a quoted string is the
+     string stripped of the quotes.
+
+     When a macro name is recognized, its arguments are collected
+     by searching for a matching ).  If fewer arguments are sup-
+     plied than are in the macro definition, the trailing argu-
+     ments are taken to be null.  Macro evaluation proceeds nor-
+     mally during the collection of the arguments, and any commas
+     or right parentheses which happen to turn up within the
+     value of a nested call are as effective as those in the ori-
+     ginal input text. (This is typically referred as _i_n_s_i_d_e-_o_u_t
+     macro expansion.) After argument collection, the value of
+     the macro is pushed back onto the input stream and res-
+     canned.
+
+
+
+
+
+Printed 5/16/88            30 Aug 1987                          1
+
+
+
+
+
+
+M4(local)           UNIX Programmer's Manual            M4(local)
+
+
+
+     _P_d _M_4 makes available the following built-in macros.  They
+     may be redefined, but once this is done the original meaning
+     is lost.  Their values are null unless otherwise stated.
+
+     define        usage: _d_e_f_i_n_e(_n_a_m_e [, _v_a_l])
+                   the second argument is installed as the value
+                   of the macro whose name is the first argument.
+                   If there is no second argument, the value is
+                   null.  Each occurrence of $_n in the replace-
+                   ment text, where _n is a digit, is replaced by
+                   the _n-th argument.  Argument 0 is the name of
+                   the macro; missing arguments are replaced by
+                   the null string.
+
+     defn          usage: _d_e_f_n(_n_a_m_e [, _n_a_m_e ...])
+                   returns the quoted definition of its
+                   argument(s). Useful in renaming macros.
+
+     undefine      usage: _u_n_d_e_f_i_n_e(_n_a_m_e [, _n_a_m_e ...])
+                   removes the definition of the macro(s) named.
+                   If there is more than one definition for the
+                   named macro, (due to previous use of _p_u_s_h_d_e_f)
+                   all definitions are removed.
+
+     pushdef       usage: _p_u_s_h_d_e_f(_n_a_m_e [, _v_a_l])
+                   like _d_e_f_i_n_e, but saves any previous definition
+                   by stacking the current definition.
+
+     popdef        usage: _p_o_p_d_e_f(_n_a_m_e [, _n_a_m_e ...])
+                   removes current definition of its argument(s),
+                   exposing the previous one if any.
+
+     ifdef         usage: _i_f_d_e_f(_n_a_m_e, _i_f-_d_e_f [, _i_f_n_o_t-_d_e_f])
+                   if the first argument is defined, the value is
+                   the second argument, otherwise the third.  If
+                   there is no third argument, the value is null.
+                   A word indicating the current operating system
+                   is predefined.  (e.g.  _u_n_i_x or _v_m_s)
+
+     shift         usage: _s_h_i_f_t(_a_r_g, _a_r_g, _a_r_g, ...)
+                   returns all but its first argument.  The other
+                   arguments are quoted and pushed back with com-
+                   mas in between.  The quoting nullifies the
+                   effect of the extra scan that will subse-
+                   quently be performed.
+
+     changequote   usage: _c_h_a_n_g_e_q_u_o_t_e(_l_q_c_h_a_r, _r_q_c_h_a_r)
+                   change quote symbols to the first and second
+                   arguments.  With no arguments, the quotes are
+                   reset back to the default characters. (i.e.,
+                   ).
+
+
+
+
+Printed 5/16/88            30 Aug 1987                          2
+
+
+
+
+
+
+M4(local)           UNIX Programmer's Manual            M4(local)
+
+
+
+     changecom     usage: _c_h_a_n_g_e_c_o_m(_l_c_c_h_a_r, _r_c_c_h_a_r)
+                   change left and right comment markers from the
+                   default # and newline.  With no arguments, the
+                   comment mechanism is reset back to the default
+                   characters.  With one argument, the left
+                   marker becomes the argument and the right
+                   marker becomes newline.  With two arguments,
+                   both markers are affected.
+
+     divert        usage: _d_i_v_e_r_t(_d_i_v_n_u_m)
+                   _m_4 maintains 10 output streams, numbered 0-9.
+                   initially stream 0 is the current stream. The
+                   _d_i_v_e_r_t macro changes the current output stream
+                   to its (digit-string) argument.  Output
+                   diverted to a stream other than 0 through 9
+                   disappears into bitbucket.
+
+     undivert      usage: _u_n_d_i_v_e_r_t([_d_i_v_n_u_m [, _d_i_v_n_u_m ...]])
+                   causes immediate output of text from diver-
+                   sions named as argument(s), or all diversions
+                   if no argument.  Text may be undiverted into
+                   another diversion.  Undiverting discards the
+                   diverted text. At the end of input processing,
+                   _M_4 forces an automatic _u_n_d_i_v_e_r_t, unless _m_4_w_r_a_p
+                   is defined.
+
+     divnum        usage: _d_i_v_n_u_m()
+                   returns the value of the current output
+                   stream.
+
+     dnl           usage: _d_n_l()
+                   reads and discards characters up to and
+                   including the next newline.
+
+     ifelse        usage: _i_f_e_l_s_e(_a_r_g, _a_r_g, _i_f-_s_a_m_e [, _i_f_n_o_t-_s_a_m_e
+                   | _a_r_g, _a_r_g ...])
+                   has three or more arguments.  If the first
+                   argument is the same string as the second,
+                   then the value is the third argument.  If not,
+                   and if there are more than four arguments, the
+                   process is repeated with arguments 4, 5, 6 and
+                   7.  Otherwise, the value is either the fourth
+                   string, or, if it is not present, null.
+
+     incr          usage: _i_n_c_r(_n_u_m)
+                   returns the value of its argument incremented
+                   by 1.  The value of the argument is calculated
+                   by interpreting an initial digit-string as a
+                   decimal number.
+
+     decr          usage: _d_e_c_r(_n_u_m)
+                   returns the value of its argument decremented
+
+
+
+Printed 5/16/88            30 Aug 1987                          3
+
+
+
+
+
+
+M4(local)           UNIX Programmer's Manual            M4(local)
+
+
+
+                   by 1.
+
+     eval          usage: _e_v_a_l(_e_x_p_r_e_s_s_i_o_n)
+                   evaluates its argument as a constant expres-
+                   sion, using integer arithmetic.  The evalua-
+                   tion mechanism is very similar to that of _c_p_p
+                   (#if expression). The expression can involve
+                   only integer constants and character con-
+                   stants, possibly connected by the binary
+                   operators
+
+                   *    /    %    +    -    >>   <<   <    >
+                   <=   >=   ==   !=   &    ^    |    &&   ||
+
+                   or the unary operators - ~ !  or by the ter-
+                   nary operator  ? : .  Parentheses may be used
+                   for grouping. Octal numbers may be specified
+                   as in C.
+
+     len           usage: _l_e_n(_s_t_r_i_n_g)
+                   returns the number of characters in its argu-
+                   ment.
+
+     index         usage: _i_n_d_e_x(_s_e_a_r_c_h-_s_t_r_i_n_g, _s_t_r_i_n_g)
+                   returns the position in its first argument
+                   where the second argument begins (zero ori-
+                   gin), or -1 if the second argument does not
+                   occur.
+
+     substr        usage: _s_u_b_s_t_r(_s_t_r_i_n_g, _i_n_d_e_x [, _l_e_n_g_t_h])
+                   returns a substring of its first argument.
+                   The second argument is a zero origin number
+                   selecting the first character (internally
+                   treated as an expression); the third argument
+                   indicates the length of the substring.  A
+                   missing third argument is taken to be large
+                   enough to extend to the end of the first
+                   string.
+
+     translit      usage: _t_r_a_n_s_l_i_t(_s_o_u_r_c_e, _f_r_o_m [, _t_o])
+                   transliterates the characters in its first
+                   argument from the set given by the second
+                   argument to the set given by the third.  If
+                   the third argument is shorter than the second,
+                   all extra characters in the second argument
+                   are deleted from the first argument. If the
+                   third argument is missing altogether, all
+                   characters in the second argument are deleted
+                   from the first argument.
+
+     include       usage: _i_n_c_l_u_d_e(_f_i_l_e_n_a_m_e)
+                   returns the contents of the file named in the
+
+
+
+Printed 5/16/88            30 Aug 1987                          4
+
+
+
+
+
+
+M4(local)           UNIX Programmer's Manual            M4(local)
+
+
+
+                   argument.
+
+     sinclude      usage: _s_i_n_c_l_u_d_e(_f_i_l_e_n_a_m_e)
+                   is identical to _i_n_c_l_u_d_e, except that it says
+                   nothing if the file is inaccessible.
+
+     paste         usage: _p_a_s_t_e(_f_i_l_e_n_a_m_e)
+                   returns the contents of the file named in the
+                   argument without any processing, unlike
+                   _i_n_c_l_u_d_e.
+
+     spaste        usage: _s_p_a_s_t_e(_f_i_l_e_n_a_m_e)
+                   is identical to _p_a_s_t_e, except that it says
+                   nothing if the file is inaccessible.
+
+     syscmd        usage: _s_y_s_c_m_d(_c_o_m_m_a_n_d)
+                   executes the UNIX command given in the first
+                   argument.  No value is returned.
+
+     sysval        usage: _s_y_s_v_a_l()
+                   is the return code from the last call to
+                   _s_y_s_c_m_d.
+
+     maketemp      usage: _m_a_k_e_t_e_m_p(_s_t_r_i_n_g)
+                   fills in a string of XXXXXX in its argument
+                   with the current process ID.
+
+     m4exit        usage: _m_4_e_x_i_t([_e_x_i_t_c_o_d_e])
+                   causes immediate exit from _m_4.  Argument 1, if
+                   given, is the exit code; the default is 0.
+
+     m4wrap        usage: _m_4_w_r_a_p(_m_4-_m_a_c_r_o-_o_r-_b_u_i_l_t-_i_n)
+                   argument 1 will be pushed back at final EOF;
+                   example: m4wrap(`dumptable()').
+
+     errprint      usage: _e_r_r_p_r_i_n_t(_s_t_r [, _s_t_r, _s_t_r, ...])
+                   prints its argument(s) on stderr. If there is
+                   more than one argument, each argument is
+                   separated by a space during the output.
+
+     dumpdef       usage: _d_u_m_p_d_e_f([_n_a_m_e, _n_a_m_e, ...])
+                   prints current names and definitions, for the
+                   named items, or for all if no arguments are
+                   given.
+
+AUTHOR
+     Ozan S. Yigit (oz)
+
+BUGS
+     Pd M4 is distributed at the source level, and does not
+     require an expensive license agreement.
+
+
+
+
+Printed 5/16/88            30 Aug 1987                          5
+
+
+
+
+
+
+M4(local)           UNIX Programmer's Manual            M4(local)
+
+
+
+     A sufficiently complex M4 macro set is about as readable as
+     APL.
+
+     All complex uses of M4 require the ability to program in
+     deep recursion.  Previous lisp experience is recommended.
+
+     Pd M4 is slower than V7 M4.
+
+EXAMPLES
+     The following macro program illustrates the type of things
+     that can be done with M4.
+
+          changequote(<,>) define(HASHVAL,99) dnl
+          define(hash,<expr(str(substr($1,1),0)%HASHVAL)>) dnl
+          define(str,
+               <ifelse($1,",$2,
+                    <str(substr(<$1>,1),<expr($2+'substr($1,0,1)')>)>)
+               >) dnl
+          define(KEYWORD,<$1,hash($1),>) dnl
+          define(TSTART,
+          <struct prehash {
+               char *keyword;
+               int   hashval;
+          } keytab[] = {>) dnl
+          define(TEND,<  "",0
+          };>) dnl
+
+     Thus a keyword table containing the keyword string and its
+     pre-calculated hash value may be generated thus:
+
+          TSTART
+               KEYWORD("foo")
+               KEYWORD("bar")
+               KEYWORD("baz")
+          TEND
+
+     which will expand into:
+          struct prehash {
+               char *keyword;
+               int   hashval;
+          } keytab[] = {
+               "foo",27,
+               "bar",12,
+               "baz",20,
+               "",0
+          };
+
+     Presumably, such a table would speed up the installation of
+     the keywords into a dynamic hash table. (Note that the above
+     macro cannot be used with _M_4, since eval does not handle
+     character constants.)
+
+
+
+
+Printed 5/16/88            30 Aug 1987                          6
+
+
+
+
+
+
+M4(local)           UNIX Programmer's Manual            M4(local)
+
+
+
+SEE ALSO
+     cc(1), m4(1), cpp(1).  _T_h_e _M_4 _M_a_c_r_o _P_r_o_c_e_s_s_o_r by B. W. Ker-
+     nighan and D. M. Ritchie.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printed 5/16/88            30 Aug 1987                          7
+
+
+
