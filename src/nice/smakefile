@@ -1,0 +1,34 @@
+# Nice command SMakefile for Unsui POSIX runtime
+
+# Tools
+CC = sc
+LD = slink
+RM = delete
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS
+LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib NOICONS
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
+
+# Object files for nice
+OBJS = nice.o /common/common.o /common/getopt.o
+
+# Main target
+all: nice
+
+# Build nice command
+nice: $(OBJS)
+	$(LD) $(LDFLAGS) FROM sc:lib/cres.o $(OBJS) TO nice
+
+# Compile source files
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+nice.o: nice.c nice.h /common/common.h /common/getopt.h
+
+# Clean target
+clean:
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) nice
+
+# Install target
+install: nice
+	copy nice //SDK/C/nice
