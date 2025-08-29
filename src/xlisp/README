@@ -1,0 +1,8 @@
+The only way I have been able to get this program to link successfully
+is to use "join" to stick all the objects into two or three object files,
+then link those files.  There seems to be too many object files for
+alink to handle directly from the command line.  The final executable
+still croaks with a "fatal initialization error".
+
+	Fred Fish
+	6-Jan-86
