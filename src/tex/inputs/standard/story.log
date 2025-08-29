@@ -1,0 +1,81 @@
+This is TeX, C Version 3.1 (INITEX)  29 OCT 1992 20:58
+**\input{story}
+(story.tex
+! Undefined control sequence.
+l.3 \centerline
+               {\bf A SHORT STORY}
+? q
+OK, entering \batchmode...
+ [0]
+! Undefined control sequence.
+l.3 \centerline{\bf
+                    A SHORT STORY}
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.5 \centerline
+               {\sl    by A. U. Thor} % !`?`?! (modified)
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.5 \centerline{\sl
+                       by A. U. Thor} % !`?`?! (modified)
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+ [0]
+! Undefined control sequence.
+l.8   galaxy called \"
+                      O\"o\c c,
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.8   galaxy called \"O\"
+                         o\c c,
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+! Undefined control sequence.
+l.8   galaxy called \"O\"o\c
+                             c,
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+ [0]
+! Undefined control sequence.
+l.18 \vfill\eject
+                 
+The control sequence at the end of the top line
+of your error message was never \def'ed. If you have
+misspelled it (e.g., `\hobx'), type `I' and the correct
+spelling (e.g., `I\hbox'). Otherwise just continue,
+and I'll forget about whatever was undefined.
+
+)
+! Emergency stop.
+<*> \input{story}
+                 
+*** (job aborted, no legal \end found)
+
+Output written on story.dvi (3 pages, 220 bytes).

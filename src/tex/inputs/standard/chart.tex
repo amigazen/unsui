@@ -1,0 +1,111 @@
+\def\shownewline{\newlinechar=`\^^j\message{^^j}}
+
+% Macros for The TeXbook
+
+\catcode`@=11 % borrow the private macros of PLAIN (with care)
+
+
+% Page layout
+\newdimen\pagewidth \newdimen\pageheight \newdimen\ruleht
+\hsize=29pc  \vsize=44pc  \maxdepth=2.2pt  \parindent=3pc
+\pagewidth=\hsize \pageheight=\vsize \ruleht=.5pt
+\abovedisplayskip=6pt plus 3pt minus 1pt
+\belowdisplayskip=6pt plus 3pt minus 1pt
+\abovedisplayshortskip=0pt plus 3pt
+\belowdisplayshortskip=4pt plus 3pt
+
+\newinsert\margin
+\dimen\margin=\maxdimen
+\def\bull{\vrule height .9ex width .8ex depth -.1ex } % square bullet
+\def\|{\leavevmode\hbox{\tt\char`\|}} % vertical line
+\def\dn{\leavevmode\hbox{\tt\char'14}} % downward arrow
+\def\up{\leavevmode\hbox{\tt\char'13}} % upward arrow
+\def\]{\leavevmode\hbox{\tt\char`\ }} % visible space
+
+\def\pt{\,{\rm pt}} % units of points, in math formulas
+\def\em{\,{\rm em}} % units of ems, in math formulas
+\def\<#1>{\leavevmode\hbox{$\langle$#1\/$\rangle$}} % syntactic quantity
+\def\oct#1{\hbox{\rm\'{}\kern-.2em\it#1\/\kern.05em}} % octal constant
+\def\hex#1{\hbox{\rm\H{}\tt#1}} % hexadecimal constant
+\def\cstok#1{\leavevmode\thinspace\hbox{\vrule\vtop{\vbox{\hrule\kern1pt
+        \hbox{\vphantom{\tt/}\thinspace{\tt#1}\thinspace}}
+      \kern1pt\hrule}\vrule}\thinspace} % control sequence token
+
+{\obeyspaces\gdef {\ }}
+\def\parbreak{\hfil\break\indent\strut}
+\def\stretch{\nobreak\hskip0pt plus2pt\relax}
+
+% macros for non-centered displays
+\outer\def\begindisplay{\obeylines\startdisplay}
+{\obeylines\gdef\startdisplay#1
+  {\catcode`\^^M=5$$#1\halign\bgroup\indent##\hfil&&\qquad##\hfil\cr}}
+\outer\def\enddisplay{\crcr\egroup$$}
+
+% (the following \begin...\end-type macros do not appear in Appendix E)
+% macros for demonstrating math constructions
+\outer\def\beginmathdemo{$$\advance\baselineskip by2pt
+  \halign\bgroup\indent\hbox to 160pt{##\hfil}&$##$\hfil\cr\noalign{\vskip-2pt}}
+\outer\def\begindisplaymathdemo {$$\advance\baselineskip by15pt
+  \halign\bgroup\indent\hbox to 160pt{##\hfil}&$\displaystyle{##}$\hfil\cr
+  \noalign{\vskip-15pt}}
+\outer\def\beginlongmathdemo{$$\advance\baselineskip by2pt
+  \halign\bgroup\indent\hbox to 210pt{##\hfil}&$##$\hfil\cr\noalign{\vskip-2pt}}
+\outer\def\beginlongdisplaymathdemo {$$\advance\baselineskip by15pt
+  \halign\bgroup\indent\hbox to 210pt{##\hfil}&$\displaystyle{##}$\hfil\cr
+  \noalign{\vskip-15pt}}
+\outer\def\endmathdemo{\egroup$$}
+
+% macros for font tables
+\def\oddline#1{\cr
+  \noalign{\nointerlineskip}
+  \multispan{19}\hrulefill&
+  \setbox0=\hbox{\lower 2.3pt\hbox{\hex{#1x}}}\smash{\box0}\cr
+  \noalign{\nointerlineskip}}
+\def\evenline{\cr\noalign{\hrule}}
+\def\chartstrut{\lower4.5pt\vbox to14pt{}}
+\def\beginchart#1{{\rm Font table for #1}\vskip .25in
+ $$\postdisplaypenalty=-10000 \global\count@=0 
+  \font\cs=#1
+  \postdisplaypenalty=0
+  \cs
+  \halign to\hsize\bgroup
+    \chartstrut##\tabskip0pt plus10pt&
+    &\hfil##\hfil&\vrule##\cr
+    \lower6.5pt\null
+    &&&\oct0&&\oct1&&\oct2&&\oct3&&\oct4&&\oct5&&\oct6&&\oct7&\evenline}
+\def\endchart{\raise11.5pt\null&&&\hex 8&&\hex 9&&\hex A&&\hex B&
+  &\hex C&&\hex D&&\hex E&&\hex F&\cr\egroup$$}
+\def\:{\setbox0=\hbox{\char\count@}%
+  \ifdim\ht0>7.5pt\reposition
+  \else\ifdim\dp0>2.5pt\reposition\fi\fi
+  \box0\global\advance\count@ by1 }
+\def\reposition{\setbox0=\hbox{$\vcenter{\kern2pt\box0\kern2pt}$}}
+\def\normalchart{%
+  &\oct{00x}&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\oddline0
+  &\oct{01x}&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\:&\evenline
+  &\oct{02x}&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\oddline1
+  &\oct{03x}&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\:&\evenline
+  &\oct{04x}&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\oddline2
+  &\oct{05x}&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\:&\evenline
+  &\oct{06x}&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\oddline3
+  &\oct{07x}&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\:&\evenline
+  &\oct{10x}&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\oddline4
+  &\oct{11x}&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\:&\evenline
+  &\oct{12x}&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\oddline5
+  &\oct{13x}&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\:&\evenline
+  &\oct{14x}&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\oddline6
+  &\oct{15x}&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\:&\evenline
+  &\oct{16x}&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\oddline7
+  &\oct{17x}&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\:&\evenline}
+
+%
+%      Display a font table
+%
+\shownewline
+\message{Name of font: }
+\read-1 to\fontname
+
+\beginchart{\fontname}
+\normalchart
+\endchart
+\bye

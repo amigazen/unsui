@@ -1,0 +1,69 @@
+F /undef	TRIP/
+E /undef/define
+F /memmax/
+D
+I
+#define memmax 2999
+Z
+F /bufsize/
+D
+I
+#define bufsize 500
+Z
+F /errorline/
+D
+I
+#define errorline 64
+Z
+F /halferrorline/
+D
+I
+#define halferrorline 32
+Z
+F /maxprintline/
+D
+I
+#define maxprintline 72
+Z
+F /maxinopen/
+D
+I
+#define maxinopen 6
+Z
+F /fontmax/
+D
+I
+#define fontmax 75
+Z
+F /fontmemsize/
+D
+I
+#define fontmemsize 20000
+Z
+F /maxstrings/
+D
+I
+#define maxstrings 3000
+Z
+F /stringvacancies/
+D
+I
+#define stringvacancies 8000
+Z
+F /poolsize/
+D
+I
+#define poolsize 32000
+Z
+F /savesize/
+D
+I
+#define savesize 600
+Z
+F /memtop/
+D
+I
+#define memtop 2999
+Z
+W
+

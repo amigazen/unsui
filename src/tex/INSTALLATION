@@ -1,0 +1,75 @@
+Directions for installing this Amiga TeX Kit:
+
+1. Read the file README thoroughly
+
+
+2. Ensure this directory is assigned as TeX:, e.g. by placing
+
+   assign TeX: <this directory> 
+
+in the file s:User-Startup (AmigaDOS 2.0 and above) or the file
+s:Startup-Sequence (AmigaDOS 1.3). If you do not have a hard disk you
+will need to spread the directories across several floppies; put one
+or two on each disk and set the environment variables accordingly (see
+the README file, e.g.:
+
+   setenv TEXINPUTS ,TeXDisk1:inputs
+
+or with AmigaDOS 2.0 and above, use a multi-assign:
+
+   assign TeX: TeXDisk1:
+   assign TeX: add TeXDisk2: 
+   (etc.)
+
+
+3. Make sure TeX:exe is on your path, e.g. with the command
+
+   path add TeX:exe
+
+in your startup.
+
+
+4. You will now need to build format files. This is done with initex,
+which needs a larger pool memory size than virtex. Change the value
+for "poolsize" in TeX:config/texmemory.config to about 60000, and the
+value of "maxstrings" to about 6000. Use the following command
+sequences to build TeX and LaTeX respectively:
+
+For TeX:
+
+   initex
+   This is TeX, C version 3.141 (INITEX)
+   **\input plain
+   **\dump
+   ...
+   rename plain.fmt TeX:formats/plain.fmt
+
+For LaTeX:
+
+   initex
+   This is TeX, C version 3.141 (INITEX)
+   **\lefthyphenmin=2
+   **\righthyphenmin=3
+   **\input lplain
+   **\dump
+   ...
+   rename lplain.fmt TeX:formats/lplain.fmt
+
+
+5. Define aliases to use them, e.g.
+
+   alias latex "virtex &lplain "
+   alias tex "virtex &plain "
+
+or if you only intend to use one of them,
+
+   rename TeX:exe/virtex TeX:exe/latex
+   rename TeX:formats/lplain.fmt TeX:formats/latex.fmt
+
+(virtex always looks for a .fmt file of the same name)
+
+
+Happy TeXing
+Dave
+23-Feb-93
+

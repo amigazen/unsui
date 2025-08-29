@@ -1,0 +1,3 @@
+copy texd.h texd.h_initex
+delete texd.h
+edit from texd.h_initex to texd.h with ini_to_trip.Amiga_edit

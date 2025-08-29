@@ -1,0 +1,18 @@
+.key arg1/a,arg2/a
+.bra [
+.ket ]
+
+type >temp_1 web.defines [arg1] 
+/web2c/web2c < temp_1 > temp_2 -htexware.h -c`basename [arg1] .p`
+/web2c/fixwrites < temp_2 > [arg2] 
+delete temp_#? quiet
+
+;
+;#!/bin/sh
+;# Convert TeXware programs to C.
+;# 
+;
+;cat texware.define $1 \
+;	| ../web2c/web2c -htexware.h -c`basename $1 .p` \
+;	| ../web2c/fixwrites > $2
+;

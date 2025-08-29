@@ -1,33 +1,133 @@
+TeX 3.141 Engine Binaries for AmigaDOS
 
-PasTeX 1.4 Source Tree
-----------------------
+For information, to submit bug reports, to offer praise, etc. contact:
+David Crooke, dcc@dcs.ed.ac.uk or by snail to 2 Main St., Carnock,
+Dunfermline, Fife, SCOTLAND KY12 9JQ.
 
- - driver
-	Source of the TeX drivers 'ShowDVI' and 'DVIprint'.
+This archive contains the binaries for version 3.141 of Donald Knuth's
+TeX engine built from my port. To use them, you will need to already
+have a TeX installation on your Amiga (preferably including Brian
+Suggs' port). If you are using Brian's port, with the default
+directories, I *think* you can install this stuff by merely typing:
 
- - flib
-	Source of the font library tool 'flib'.
+   copy "" TeX: all
 
- - LSfont
-	Source of the little pk-font usage statistic tool.
-	(You have to use the MARK option with ShowDVI and DVIprint)
+However, I suggest you look at the files and read ahead before
+proceeding (a backup wouldn't hurt either :-) 
 
- - ptofront
-	Tiny tool to get a public-screen to front.
+The initex and virtex programs use paths to search for files needed in
+the course of a typesetting run. These can be set by means of
+environment variables, but have sensible defaults (honest!) in line
+with the directory structure used by Brian's port. A path consists of
+a list of directories separated by commas, with no spaces in between,
+e.g. to search the current directory followed by the directory
+TeX:inputs followed by RAM:, the path is ",TeX:inputs,RAM:" - note the
+empty path nestling in front of the first comma. Putting the current
+directory second would look like this - "TeX:inputs,,RAM:" You can use
+any normal means of specifying directories, either by relative or
+absolute pathnames.
 
- - SpecialHost
-	Source of the graphic tool for 'ShowDVI' and 'DVIprint'.
+Here are the environment variables, the files for which they apply and
+their defaults:
 
- - TeX
-	Source of the TeX programs 'initex' and 'virtex'.
+Env Name    Default Path                  Files
+--------    ------------                  -----
+
+TEXINPUTS   ,TeX:inputs,TeX:inputs/standard,TeX:inputs/latex 
+                                          *.tex and *.sty input files
+
+TEXFONTS    ,TeX:fonts                    *.tfm font metric files
+
+TEXFORMATS  ,TeX:formats                  *.fmt dump files e.g. lplain.fmt
+
+TEXPOOL     ,TeX:pool                     tex.pool string dump file
+
+TEXCONFIG   ,TeX:config                   texmemory.config memory setups
 
 
-All programs are released under the term of the GNU general public
-license. See file COPYING.
+So, replace your initex and virtex executables with the ones in the
+/exe directory, and replace your tex.pool file with the one in /pool,
+and place the texmemory.config file in your config directory (make one
+if you don't have one). You will then need to rebuild your format
+files to match the new executables, e.g. for latex the file
+"lplain.fmt", as follows:
 
-And, if not other noted they are copyright Georg Heﬂmann.
+   TeX:
+
+      initex
+      **\input plain
+      **\dump
+
+   LaTeX:
+
+     initex
+     **\lefthyphenmin=2
+     **\righthyphenmin=3
+     **\input lplain
+     **\dump
+
+N.B. - initex will require a larger than minimum pool size in order to
+build LaTeX, and probably most other TeX-engine typesetters. To build
+LaTeX, make the following changes to texmemory.config:
+
+    set poolsize 60000
+    set maxstrings 6000
+
+To use .fmt files these you can set aliases, e.g.
+
+    alias latex "virtex &lplain "
+
+or, if like me you only use latex, rename virtex to latex and
+lplain.fmt to latex.fmt
 
 
-Georg Heﬂmann (hessmann@informatik.uni-hamburg.de)
-26.May.95
+Controlling Memory Sizes
+------------------------
 
+Normally to change TeX's memory size you need to recompile the TeX
+engine. However, you need no longer fear the "ask a wizard to enlarge
+me" message, you can do it yourself.... I have put a hack into the TeX
+engine so that it dynamically allocates its memory on startup, after
+consulting a file called "texmemory.config" to read in any required
+alterations to the default settings. The file should contain lines of
+the form:
+
+   set memmax 100000
+
+The example given in the /config directory "sets" what are the
+defaults anyway. Not all settings need be given in the file. Note that
+you can't just set everything to the maximum - that would need about
+8-10Mb of FastRAM! (If you have that much, you're a lucky sod :-]).
+If, like the default, you make the current directory first in the
+TEXCONFIG path then if you have a very demanding TeX job, you can place
+its own version of texmemory.config in its directory. The quoted "Safe
+Max." are in many cases guesses and may be too low or too high.
+Experiment, the worst that can happen is a GURU! :-)
+
+Observe the following rules:
+
+1. With initex, use a large poolsize
+2. With initex, memtop should equal memmax
+3. To be safe, use the same settings with both initex and virtex, or
+make the virtex ones larger.
+
+Setting       Default/Min.    Safe Max.   Purpose
+-------       ------------    ---------   -------
+
+memmax           30000         262140     Size of main storage heap
+bufsize            500          32760     Total memory for file input buffers
+stacksize          200              ?     Number of input sources
+maxopenin            6             20 ?   Maximum number of open files
+fontmax             75            255     Maximum number of fonts
+fontmemsize      20000         262140     Font heap memory size
+maxstrings        3000         262140     Maximum number of strings 
+poolsize         32000         262140     Memory for string data
+savesize           500          32760     Space for values outside group
+triesize          8000         262140     Space for hyphenation patterns
+dvibufsize         100           4095     Number of DVI output buffers
+memtop           30000         262140     Portion of heap dumped by initex 
+trieopsize         500          32760     Space for hyphenation opcodes
+
+Happy TeXing
+Dave
+23-Feb-93

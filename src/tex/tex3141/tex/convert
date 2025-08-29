@@ -1,0 +1,23 @@
+type >temp_a tex.defines tex.p 
+/web2c/web2c <temp_a >temp_b -t 
+/web2c/fixwrites <temp_b >temp_c
+/web2c/regfix <temp_c >temp_d
+/web2c/splitup <temp_d
+delete temp_#? force 
+type coerce.h fixcoerce.h > xcoerce.h
+delete coerce.h_old force quiet
+rename coerce.h coerce.h_old
+rename xcoerce.h coerce.h
+
+;#!/bin/sh
+;# Convert TeX to C.
+;#
+;
+;cat tex.defines tex.p \
+;	| ../web2c/web2c -t \
+;	| ../web2c/fixwrites -t \
+;	| ../web2c/regfix \
+;	| ../web2c/splitup
+;
+;cat coerce.h fixcoerce.h > xcoerce.h
+;mv xcoerce.h coerce.h

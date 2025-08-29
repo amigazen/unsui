@@ -1,0 +1,129 @@
+Welcome to the source for Donald Knuth's TeX Engine, release 3.141
+
+This Amiga port was done by David Crooke, dcc@dcs.ed.ac.uk - please
+send complaints, bug reports, adulations, etc. to me, by email or by
+snail to 2 Main St., Carnock, Dunfermline, Fife, SCOTLAND KY12 9JQ.
+
+No warranty is expressed or implied, use at your own risk. The GNU
+copyleft applies to my parts of the code, see the file COPYING.
+
+-----------------------------------------------------------------
+
+What is in this kit?
+
+This is the Unix kit for bulding the TeX engine, with my modifications
+to make it work under AmigaDOS. I have also included my hack to make
+it work with a user-configurable memory size without recompilation.
+(This was the reason _I_ was recompiling it :-( )
+
+What is TeX?
+
+If you don't know the answer to this, you shoudln't be looking at this
+kit. It is source code for tinkering with by experts, masochists and
+enthusiasts only. Same goes for any other "what is" questions. Go and
+get yourself a users' kit; it's well worth it, it's an excellent way
+of writing documents.
+
+What do I need to use this kit?
+
+You will need a C compiler (and preferably a make utility) to make
+use of this kit. I have used and assumed Markus Wild's port of
+GCC-2.3.3 for AmigaDOS and the accompanying make (thanks, Markus!). I
+did find make to be a bit flaky with default rules, your mileage may vary.
+
+How do I build initex etc.?
+
+The TeX engine is written in WEB, which is a mixture of Pascal and
+documentation. The web utilities "web" and "tangle" in the /web
+subdirectory extract these respective components. The Pascal output is
+then converted to C and tidied up by the utilities in the /web2c
+directory, and then you can compile the C code. See the file
+documentation below for more details. The step by step method:
+
+	- in /web, use "make bootstrap" to make the C version of
+	tangle.
+
+	- in /web2c, use "make" to build web2c and its utilities.
+
+	- if you like try to build tangle from the WEB sources (it
+	  killed my machine stone dead when I tried to use it, but
+	  the bootstrap version seems to work fine.
+
+	- in /tex, tangle tex.web with ctex.ch, then convert it and
+	  compile the output. If you're lucky, make will do all this
+	  to order. If you want to use my variable memory hack, do
+	  "copy texd_varmem.h texd.h" before the compilation stage.
+
+	- copy initex, virtex executables and tex.pool to your TeX
+	  directories.
+
+	- rebuild your format files with this version of initex.
+	  (If you have used the memory hack see below)
+	  e.g. for latex (lplain.fmt), run initex and type:
+
+		\lefthyphenmin=2 \righthyphenmin=3
+		\input lplain \dump
+
+If you want to use fixed sizes and make memory size or other changes,
+change ctex.ch, NOT the tex.web file. (Don Knuth's license actually
+prohibits changing tex.web anyway :-) You will then have to re-tangle,
+re-convert and recompile initex and virtex.
+
+Changes Made to the Files
+-------------------------
+
+1. All Makefiles have been changed. They do not all retain full
+functionality from the Unix versions.
+
+2. The "convert" scripts for running web2c have been replaced by Amiga
+Shell versions. Temporary files are used rather than the PIPE: device
+as I found it unreliable with EOF's.
+
+3. I have removed the "nnn symbols." output to stderr from the end of
+web2c as it was going to the redirection file and getting mixed with
+the program.
+
+4. The bootstrap version of tangle had the Pascal emulation routines
+called e.g. "zopenin" instead of "openin". I changed these and it
+seems to work.... :-)
+
+5. tex/extra.c - the system dependent file - has been altered a bit.
+In particular I have changed the separator in file search paths from
+the Unix colon (which is used to denote dvice/assign names in
+AmigaDOS) to a comma; there is also code (guarded by #ifdef's) to
+allocate memory if the memory hack is used. See below.
+
+6. tex/initotrip - This script converts texd.h from the web2c output
+to put in the minimal memory sizes expected by the trip 'n trap tests.
+I haven't tried the trip-trap stuff yet, but I have provided the
+equivalent script using AmigaDOS EDIT (yuck!)
+
+7. I have done the Makefile and convert changes for texware, but I
+haven't tried them.
+
+8. I have made the obvious changes to site.h, such as filename paths.
+These are set to match the directory structure in Brian Suggs' port of
+TeX 3.0  
+
+
+The Memory Hack
+---------------
+
+This uses an extra path and environment variable (TEXCONFIG, defaults
+to ",TeX:config"). The initex and virtex programs will search these
+directories for a file called "texmemory.config", which is expected to
+contain instructions, one per line, of the form:
+
+	set memmax 100000
+	set poolsize 50000
+
+See the top of the file "texd_varmem.h" for all the settings and their
+defaults. The defaults are the minimum setting in each case. Note that
+initex will need a larger poolsize than 32000 to build latex and most
+other format files.
+
+Happy hacking
+Dave
+23-Feb-93
+
+

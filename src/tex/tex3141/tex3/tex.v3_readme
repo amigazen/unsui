@@ -1,0 +1,76 @@
+This is the official TeX distribution directory at Stanford University.
+Most of the files here were moved from Score.Stanford.EDU in September
+1989 when that host was retired from service.
+
+*** Important note: some major changes to these files have recently
+*** been made, and more changes may happen in the near future.  You
+*** may want to wait until things settle down (by the end of 1989,
+*** probably) before updating your files.
+
+All of the files here are available for anonymous FTP by anyone and
+may be freely redistributed.  Some are copyrighted; see the files
+themselves for more details.
+
+Labrea is a fairly slow machine (a VAX-11/750) and is easily over-
+loaded by having too many FTP connections.  Please perform any large
+FTP transfers at night or on weekends.  Please transfer only the files
+that you need.
+
+If you have any questions or comments about the way the files are
+organized, please send mail to "tex@labrea.stanford.edu".  (Please
+don't send questions about what is available or general TeX questions
+to this address.  They will probably be ignored.)  The best place to
+ask simple questions is the USENET group comp.text.  The TeXhax
+mailing list is for "TeX hackers" to discuss implementation issues.
+Mail to texhax@cs.washington.edu to send something to this list.  Mail
+to texhax-request@cs.washington.edu if you want to be added to the
+list.  The TeXhax list is automatically fed to comp.text, so you need
+not receive it in mail if you read USENET.
+
+Here is a short description of what is contained in the subdirect-
+ories.  For further information, refer to the file README (or a
+similar name) in each subdirectory.
+
+amsfonts	AMS Cyrillic and math symbols fonts
+
+amstex		The AMSTeX macros
+
+archive		Old files kept for posterity
+
+bibtex		The BibTeX program and related files
+
+cm		Metafont sources for the Computer Modern fonts
+
+errata		Error logs for programs and documentation
+
+fonts		TFM files for standard (and some non-standard) fonts
+
+gf		GF font files (for Imagen and Lasewriter)
+
+imagen		Various files to support Imagen printers
+
+latex		LaTeX macros, font sources, related files
+
+lib		Input files read by TeX, Metafont and other programs
+
+local		Additional unsupported files from Don Knuth
+
+ln03		Various files to support LN03 printers
+
+mf		Metafont source code and documentation
+
+mfware		Metafont utilities
+
+tex		TeX source code and documentation
+
+texware		TeX utilities
+
+texhax		TeXhax archives
+
+tugboat		Files for things mentioned in TUGboat
+
+unix		Unix TeX distribution from University of Washington
+
+unsupported	Unsupported files from various sources
+
+web		The WEB system
