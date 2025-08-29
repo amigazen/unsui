@@ -1,0 +1,27 @@
+From mcdphx!penguin.pts.philips.oz.au!gduncan Sun Nov 15 09:00:29 1992
+Return-Path: <mcdphx!penguin.pts.philips.oz.au!gduncan>
+Received: from mcdphx.UUCP by fishpond.cygnus.com (4.1/SMI-4.1)
+	id AA01091; Sun, 15 Nov 92 09:00:28 MST
+Received: from urbana.mcd.mot.com by phx.mcd.mot.com (5.61/MCDMAIL IR04 [07/10/90 20:21]/1.34)
+	id AA25998; Sat, 14 Nov 92 22:11:10 -0700
+Received: from munnari.OZ.AU by urbana.mcd.mot.com (5.61/1.34)
+	id AA24710; Sat, 14 Nov 92 23:13:35 -0600
+Received: from penguin.pts.philips.oz by munnari.oz.au with SunIII (5.83--+1.3.1+0.50)
+	id AA27914; Sun, 15 Nov 1992 16:13:15 +1100 (from gduncan@penguin.pts.philips.oz.au)
+Message-Id: <9211150513.27914@munnari.oz.au>
+Received: by penguin.pts.philips.oz.au(16.6/version 1.10) id AA19460; Sun, 15 Nov 92 15:07:47 +1100
+From: Gary Duncan <mcdphx!philips.oz.au!gduncan>
+Subject: Contribution to Fish library
+To: fishpond!fnf
+Date: Sun, 15 Nov 92 15:07:46 EDT
+X-Mailer: ELM [version 2.3 PL11]
+Status: OR
+
+Here's an updated 'file' program for the Amiga. I've modified
+the original with the authors knowledge and consent.
+ 
+
+Hope it's of some use ...
+
+- Gary
+

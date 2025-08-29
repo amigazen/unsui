@@ -1,0 +1,28 @@
+######################################################################
+#
+# smakefile to build file
+#
+#   GMD - 14 Nov 92 
+#
+#
+# SAS/C 6.0
+#
+######################################################################
+
+O=O/
+SO=ObjectName=$(O) noIcons
+
+OBJS	= $(O)file.o 
+
+file	: $(OBJS)  
+	slink  FROM lib:c.o $(OBJS)  TO file LIB lib:sc.lib \
+		lib:amiga.lib noIcons  
+
+$(O)file.o   : file.c 
+	sc nover   $(SO)   file
+
+clean: 
+	delete file $(OBJS)  >nil:
+
+indent:
+	indent -gnu file.c

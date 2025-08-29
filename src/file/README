@@ -1,0 +1,203 @@
+Below is Edwins original (V1.0) README. You may elect to send bug
+reports/enhancements to him, or me. I will happily handle them.
+
+Note that I have been unable to test all file types so if you 
+discover that I may have broken something, please let me know.
+(Send a sample of the file!)
+
+Gary Duncan
+57 Melbourne Hill Rd
+Warrandyte Vic 3113
+Australia.
+
+Internet: gduncan@philips.oz.au 
+
+Thanks!
+
+
+
+Version 1.0 README-------------------------------------------------------
+
+             file v1.0 - Unix-like utility to determine
+                       the type of a file
+
+                Copyright 1989 Edwin Hoogerbeets
+
+  This code is freely redistributable as long as no charge other than
+  reasonable copying fees is levied for it.
+
+Usage:
+
+  file filename [filename ...]
+
+  [Options? We don need no steekeen options!]
+
+Notes:
+
+  This silly little hack I wrote for no particular reason other than
+  boredom in CS classes, where it was mostly written. ;-)
+
+  File recognizes the following types of files:
+
+    Amiga .font file - File containing the description of what is in
+                       a subdirectory of the fonts directory.
+                       ex: garnet.font
+
+    Amiga .info file - The silly little files you find hanging around
+                       in any directory you looked at with the WorkBench.
+                       ex: .info
+
+    Amiga icon .info file - A disk, drawer, project or tool icon.
+                            ex: System.info
+
+    Amiga load file - this type includes executables, shared libraries,
+                      devices, and loadable font files.
+                      They all have the format of an executable, so it
+                      is difficult to tell which is which. (anyone have
+                      a way of telling? Please mail me if you do)
+                      ex: c:Type, arp.library, ramdrive.device, garnet/16
+
+    Amiga object file - A file compiled with Lattice C, PDC or A68k.
+                        ex: SetFont.o
+
+    block compressed xx bit code data - a file compressed with the
+                                        compress program.
+                                        ex: constitution.Z
+
+    commands text - this file was not marked as a script file, but
+                    contains commands suitable as a script.
+                    ex: FooScript
+
+    C source code - file contains constructs that look like C. If these
+                    constructs are not found, the file may be mistaken
+                    for a ARexx script if the first two characters are
+                    `/*'
+                    ex: file.c
+
+    data - the file contains binary data of an unknown format.
+
+    directory - file is a directory
+
+
+    empty - the file contains nothing, making it impossible to determine
+            what kind of file it was meant to be in its former life.
+
+    execute script file - a file meant to be run with execute.
+                          ex: s:DPAT
+
+    IFF format file - File recognizes the following forms:
+
+                       8SVX   instrument file format
+                       ANIM   anim file format
+                       ACBM   Amiga compressed bit map format
+                       ILBM   interleave bit map format
+                       SMUS   simple music format
+
+    LaTeX source code - input file suitable for the LaTeX document
+                        preparation system.
+                        ex: resume.tex
+
+    Manx 3.6 run-time library - objects compiled with Manx 3.6 and
+                                stuck into a linkable library.
+                                ex: ed32.lib
+
+    Manx 3.4 object code
+    Manx 3.6 object code - file compiled with Manx 3.4 or 3.6 respectively
+                           ex: file.o
+
+    Modula II source code - file is source code for any Modula II
+                            ex: Primes.mod
+
+    SEA ARC compressed archive - an archive compressed with the ARC program.
+                                 ex: boff.arc
+
+    script file - text file with the script bit set.
+                  ex: s:FindOldFiles
+
+    shell commands - the file was not labeled as a script, but contains
+                     shell commands.
+                     ex: s:.cshrc
+
+    shell script - the file is a script for the Dillon/Drew shell.
+                   It searches for `#!' at the beginning of the file,
+                   so please add these to your Dillon/Drew shell scripts.
+                   ex: BackUpHD.sh
+
+    TeX device independent output file - output of Tex, LaTeX, BibTeX
+                                         or AMSTeX.
+                                         ex: letter.dvi
+
+    TeX source code - a file suitable for input to TeX document formatting
+                      system.
+                      ex: resume.tex
+
+    text - the file contains ascii characters of an unknown format
+           ex: ReadMe
+
+    uuencoded file - a file that is suitable as input for uudecode
+                     ex: file.uue
+
+    yacc input file - a file that is suitable as input to the yacc or
+                      bison parser generator programs.
+                      ex: grammar.y
+
+    yacc or lex input file - a file that is either suitable for yacc
+                             (bison) or lex. The exact format cannot
+                             be determined by file due to its
+                             unsophisticatedness. (how's that for a word?)
+                             ex: lex.l or hiddengrammar.y
+
+    Zoo x.xx archive - an archive made with the zoo program.
+                       ex: file.zoo
+
+Warning:
+
+  This program is a kludge. This program is only a kludge. Had this program
+  been real, it would have been a heck of a lot bigger. As it is, it only
+  checks the first 484 bytes of a file for format clues, and makes guesses
+  as to the probable file type. For binary files, magic numbers found at
+  the beginning of the file are checked. For text files, familiar sequences
+  are searched for throughout the excerpt to make the guess.
+
+Things it May Get Wrong:
+
+  - An ARexx script starts with `/*', which, perchance, also start off many
+    C programs
+
+  - Many TeX or LaTeX files contain "{\n", which are also found in
+    C programs
+
+  - a binary file may very rarely contain only printable ascii characters
+    in the first section of the file, leading file to think it is
+    actually a piece of text. (no, your program has not been magically
+    transformed into a .font file!)
+
+A Comment:
+
+  If you have a favourite file format that you would like added to the
+  program, send me mail and I will add it. Better yet, send me the
+  (freely redistributable) file that is characteristic of the file type.
+  Better yet, tell me what the distinguishing characteristic is.
+  Well, come to think of it, forget the above, and just send me your
+  patched version of file and I will incorperate the changes into the
+  official release. Have a nice day. This has been more than one
+  comment, hasn't it? I babble sometimes.
+
+Files:
+
+ ReadMe                    rwed    7111   14  21-May-89 23:21:26
+ file                      rwed    9352   19  21-May-89 22:59:15
+ file.c                    rwed    8528   17  21-May-89 22:58:10
+ makefile                  rwed     337    1  19-May-89 23:29:52
+55 Blocks, 25328 Bytes used in 4 files
+
+Please redirect any comments, criticisms or dark chocolate to:
+
+Edwin Hoogerbeets (It's a Dutch name. I was born with it... )
+Usenet: ehoogerbeets@rose.waterloo.edu (watmath!watrose!ehoogerbeets) or
+        edwin@watcsc.waterloo.edu
+CIS:    72647,3675 (any time at all)
+
+
+
+
