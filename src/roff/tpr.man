@@ -1,0 +1,264 @@
+
+
+
+     TTTTPPPPRRRR((((1111))))                   UUUUNNNNIIIIXXXX 5555....0000 ((((4444////88882222))))                   TTTTPPPPRRRR((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          tpr - text processor
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          ttttpppprrrr [ ooooppppttttiiiioooonnnnssss ] ffffiiiilllleeee ............
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          TTTTpppprrrr formats text according to control lines embedded in the
+          text in the given files or standard input if none is
+          specified.  Input consists of intermixed _t_e_x_t _l_i_n_e_s, which
+          contain information to be formatted, and _r_e_q_u_e_s_t _l_i_n_e_s,
+          which contain instructions about how to format it.  Request
+          lines begin with a distinguished _c_o_n_t_r_o_l _c_h_a_r_a_c_t_e_r, normally
+          a period.  Output lines may be _f_i_l_l_e_d as nearly as possible
+          with words without regard to input lineation.  Line _b_r_e_a_k_s
+          may be caused at specified places by certain commands, or by
+          the appearance of an empty input line or an input line
+          beginning with a space.
+
+          The capabilities of ttttpppprrrr are specified in the attached
+          Request Summary.  Numerical values are denoted there by n or
+          +n, titles by t, and single characters by c.  Numbers
+          denoted +n may be signed + or -, in which case they signify
+          relative changes to a quantity, otherwise they signify an
+          absolute resetting.  Missing n fields are ordinarily taken
+          to be 1, missing t fields to be empty, and c fields to shut
+          off the appropriate special interpretation.
+
+          Running titles usually appear at top and bottom of every
+          page.  They are set by requests like
+
+                    .he 'part1'part2'part3'
+
+          Part1 is left justified, part2 is centered, and part3 is
+          right justified on the page.  Any % sign in a title is
+          replaced by the current page number.  Any nonblank may serve
+          as a quote.
+
+          The options currently available are:
+
+          dddd         print directives encountered in input on
+                    diagnostic output (debugging only).
+
+          eeeeffffiiiilllleeee     divert error messages to file.
+
+          iiii[[[[iiiinnnnddddeeeexxxx]]]]  open the index file (see .rf directive), default
+                    name is index.
+
+          nnnnNNNN        number first page N (default 0).
+
+          ssssNNNN        stop after every N pages (default 1) and wait for
+                    newline from terminal iff output is to terminal
+
+
+
+     Page 1                                         (printed 12/28/85)
+
+
+
+
+
+
+     TTTTPPPPRRRR((((1111))))                   UUUUNNNNIIIIXXXX 5555....0000 ((((4444////88882222))))                   TTTTPPPPRRRR((((1111))))
+
+
+
+                    device.  There is no initial pause.
+
+          In addition, - in the input file list indicates that
+          standard input is to be opened and read.
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+          Of course!
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          nroff(1), troff(1)
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          Many people have worked on the ancestors of ttttpppprrrr,,,, known by
+          names such as runoff, roff, etc.  Ken Yap ( University of
+          Sydney ) can only claim credit for rewriting it in C.
+
+     BBBBUUUUGGGGSSSS
+          TTTTpppprrrr may produce output too rapidly for people used to slower
+          formatters.
+
+          Although ttttpppprrrr is written in C, it will probably be utterly
+          frozen because of the archaic convention of control lines
+          and text lines and paucity of structured directives.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 2                                         (printed 12/28/85)
+
+
+
+
+
+
+     TTTTPPPPRRRR((((1111))))                   UUUUNNNNIIIIXXXX 5555....0000 ((((4444////88882222))))                   TTTTPPPPRRRR((((1111))))
+
+
+
+                              REQUEST SUMMARY
+
+     _R_e_q_u_e_s_t    _B_r_e_a_k  _I_n_i_t_i_a_l _M_e_a_n_i_n_g
+     .ad        yes    yes     Begin adjusting right margins.
+     .ar        no     arabic  Arabic page numbers.
+     .br        yes    -       Causes a line break - the filling of
+                               the current line is stopped.
+     .bd n      no     -       Bold the printable characters in the
+                               next n lines.
+     .bl n      yes    -       Insert of n blank lines, on new page if
+                               necessary.
+     .bp +n     yes    n=1     Begin new page and number it n; no n
+                               means +1.
+     .cc c      no     c=.     Control character becomes c.
+     .ce n      yes    -       Center the next n input lines, without
+                               filling.
+     .de xx     no     -       Define parameterless macro to be
+                               invoked by request .xx (definition ends
+                               on line beginning ........).
+     .ef t      no     t=      Even foot title becomes t.
+     .eg        no     arabic  English page numbers.
+     .eh t      no     t=      Even head title becomes t.
+     .fi        yes    yes     Begin filling output lines.
+     .fo t      no     t=      All foot titles are t.
+     .he t      no     t=      All head titles are t.
+     .in +n     yes    -       Indent n spaces from left margin.
+     .ix +n     no     -       Same as .in but without break.
+     .li n      no     -       Literal, treat next n lines as text.
+     .ll +n     no     n=65    Line length including indent is n
+                               characters.
+     .ls +n     yes    n=1     Line spacing set to n lines per output
+                               line.
+     .m1 n      no     n=3     n-1 blank lines put between the top of
+                               page and head title.
+     .m2 n      no     n=1     n blank lines put between head title
+                               and beginning of text on page.
+     .m3 n      no     n=1     n blank lines put between end of text
+                               and foot title.
+     .m4 n      no     n=3     n-1 blank lines put between the foot
+                               title and the bottom of page.
+     .na        yes    no      Stop adjusting the right margin.
+     .ne n      no     -       Begin new page, if n output lines
+                               cannot fit on present page.
+     .nf        yes    no      Stop filling output lines.
+     .of t      no     t=      Odd foot title becomes t.
+     .oh t      no     t=      Odd head title becomes t.
+     .pl +n     no     n=66    Total paper length taken to be n lines.
+     .po +n     no     n=0     Page offset.  All lines are preceded by
+                               n spaces.
+     .re +n     no     -       Restore environment n levels back.
+     .rf +n     no     n=1     Save the next n following lines in the
+                               index file with page number.
+
+
+
+     Page 3                                         (printed 12/28/85)
+
+
+
+
+
+
+     TTTTPPPPRRRR((((1111))))                   UUUUNNNNIIIIXXXX 5555....0000 ((((4444////88882222))))                   TTTTPPPPRRRR((((1111))))
+
+
+
+     .ro        no     arabic  Roman page numbers.
+     .rp n      no     n=1     Output n blank pages at the next page
+                               break.  Page reservations are
+                               cumulative.
+     .se        yes    -       Save environment.  The environment
+                               consists of all current settings
+                               affected by the following directives:
+                               .ad, .ar, .bd, .bl, .cc, .ce, .ef, .eh,
+                               .fi, .fo, .he, .in, .ix, .li, .ll, .ls,
+                               .m1, .m2, .m3, .m4, .na, .ne, .nf, .of,
+                               .oh, .pl, .po, .ro, .sk, .sp, .ta, .tc,
+                               .ti, .ub, .ul.
+     .sk n      no     -       Produce n blank pages starting next
+                               page.
+     .so file   no     -       Include file file.
+     .sp n      yes    -       Insert block of n blank lines, except
+                               at top of page.
+     .ta n n..         9,17,.. Pseudotab settings.  Initial tab
+                               settings are columns 9 17 25 ...
+     .tc c      no     space   Tab replacement character becomes c.
+     .ti +n     yes    -       Temporarily indent next output line n
+                               spaces.
+     .ub c      no     ' '     Unpaddable blank is c.
+     .ul n      no     -       Underline the letters and numbers in
+                               the next n input lines.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 4                                         (printed 12/28/85)
+
+
+

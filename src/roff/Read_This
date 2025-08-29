@@ -1,0 +1,21 @@
+These are the sources and manual page for tpr, a text formatter based
+on roff and translated into C from the version in "Software Tools"
+(Kernighan and Plaugher, Addison-Wesley). I have not provided a
+makefile as there are only a few files.
+
+	cc -O -o tpr tpr0.c tpr1.c itoeng.c
+
+should work.
+
+Unfortunately, I have neither the time nor the inclination these days
+to do any more work on this program so you are on your own. But I would
+appreciate hearing from you if you do anything interesting with the
+sources. Do the net a favour too and post any bug fixes or interesting
+modifications you make.
+
+Enjoy. Cheers.
+
+	Ken Yap
+
+UUCP: (..!{allegra, decvax, seismo}!rochester!ken) ARPA: ken@rochester.arpa
+USnail:	Dept. of Comp. Sci., U. of Rochester, NY 14627. Voice: Ken!
