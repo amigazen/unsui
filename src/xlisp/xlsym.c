@@ -1,62 +1,44 @@
 /* xlsym - symbol handling routines */
+/*	Copyright (c) 1985, by David Michael Betz
+	All Rights Reserved
+	Permission is granted for unrestricted non-commercial use	*/
 
 #include "xlisp.h"
 
 /* external variables */
-extern NODE *oblist,*keylist;
-extern NODE *s_unbound;
-extern NODE *xlstack;
+extern NODE *obarray,*s_unbound,*self;
+extern NODE ***xlstack,*xlenv;
 
 /* forward declarations */
-FORWARD NODE *symenter();
-FORWARD NODE *xlmakesym();
 FORWARD NODE *findprop();
 
-/* xlenter - enter a symbol into the oblist or keylist */
+/* xlenter - enter a symbol into the obarray */
 NODE *xlenter(name,type)
-  char *name;
+  char *name; int type;
 {
-    return (symenter(name,type,(*name == ':' ? keylist : oblist)));
-}
-
-/* symenter - enter a symbol into a package */
-LOCAL NODE *symenter(name,type,listsym)
-  char *name; int type; NODE *listsym;
-{
-    NODE *oldstk,*lsym,*nsym,newsym;
-    int cmp;
+    NODE ***oldstk,*sym,*array;
+    int i;
 
     /* check for nil */
-    if (strcmp(name,"nil") == 0)
+    if (strcmp(name,"NIL") == 0)
 	return (NIL);
 
     /* check for symbol already in table */
-    lsym = NIL;
-    nsym = listsym->n_symvalue;
-    while (nsym) {
-	if ((cmp = strcmp(name,xlsymname(car(nsym)))) <= 0)
-	    break;
-	lsym = nsym;
-	nsym = cdr(nsym);
-    }
-
-    /* check to see if we found it */
-    if (nsym && cmp == 0)
-	return (car(nsym));
+    array = getvalue(obarray);
+    i = hash(name,HSIZE);
+    for (sym = getelement(array,i); sym; sym = cdr(sym))
+	if (strcmp(name,getstring(getpname(car(sym)))) == 0)
+	    return (car(sym));
 
     /* make a new symbol node and link it into the list */
-    oldstk = xlsave(&newsym,NULL);
-    newsym.n_ptr = newnode(LIST);
-    rplaca(newsym.n_ptr,xlmakesym(name,type));
-    rplacd(newsym.n_ptr,nsym);
-    if (lsym)
-	rplacd(lsym,newsym.n_ptr);
-    else
-	listsym->n_symvalue = newsym.n_ptr;
+    oldstk = xlsave(&sym,NULL);
+    sym = consd(getelement(array,i));
+    rplaca(sym,xlmakesym(name,type));
+    setelement(array,i,sym);
     xlstack = oldstk;
 
     /* return the new symbol */
-    return (car(newsym.n_ptr));
+    return (car(sym));
 }
 
 /* xlsenter - enter a symbol with a static print name */
@@ -70,31 +52,100 @@ NODE *xlsenter(name)
 NODE *xlmakesym(name,type)
   char *name;
 {
-    NODE *oldstk,sym,*str;
-
-    /* create a new stack frame */
-    oldstk = xlsave(&sym,NULL);
-
-    /* make a new symbol node */
-    sym.n_ptr = newnode(SYM);
-    sym.n_ptr->n_symvalue = (*name == ':' ? sym.n_ptr : s_unbound);
-    sym.n_ptr->n_symplist = newnode(LIST);
-    rplaca(sym.n_ptr->n_symplist,str = newnode(STR));
-    str->n_str = (type == DYNAMIC ? strsave(name) : name);
-    str->n_strtype = type;
-
-    /* restore the previous stack frame */
-    xlstack = oldstk;
-
-    /* return the new symbol node */
-    return (sym.n_ptr);
+    NODE *sym;
+    sym = (type == DYNAMIC ? cvsymbol(name) : cvcsymbol(name));
+    setvalue(sym,*name == ':' ? sym : s_unbound);
+    return (sym);
 }
 
-/* xlsymname - return the print name of a symbol */
-char *xlsymname(sym)
+/* xlframe - create a new environment frame */
+NODE *xlframe(env)
+  NODE *env;
+{
+    return (consd(env));
+}
+
+/* xlbind - bind a value to a symbol */
+xlbind(sym,val,env)
+  NODE *sym,*val,*env;
+{
+    NODE *ptr;
+
+    /* create a new environment list entry */
+    ptr = consd(car(env));
+    rplaca(env,ptr);
+
+    /* create a new variable binding */
+    rplaca(ptr,cons(sym,val));
+}
+
+/* xlgetvalue - get the value of a symbol (checked) */
+NODE *xlgetvalue(sym)
   NODE *sym;
 {
-    return (car(sym->n_symplist)->n_str);
+    register NODE *val;
+    while ((val = xlxgetvalue(sym)) == s_unbound)
+	xlunbound(sym);
+    return (val);
+}
+
+/* xlxgetvalue - get the value of a symbol */
+NODE *xlxgetvalue(sym)
+  NODE *sym;
+{
+    register NODE *fp,*ep;
+    NODE *val;
+
+    /* check for this being an instance variable */
+    if (getvalue(self) && xlobgetvalue(sym,&val))
+	return (val);
+
+    /* check the environment list */
+    for (fp = xlenv; fp; fp = cdr(fp))
+	for (ep = car(fp); ep; ep = cdr(ep))
+	    if (sym == car(car(ep)))
+		return (cdr(car(ep)));
+
+    /* return the global value */
+    return (getvalue(sym));
+}
+
+/* xlygetvalue - get the value of a symbol (no instance variables) */
+NODE *xlygetvalue(sym)
+  NODE *sym;
+{
+    register NODE *fp,*ep;
+
+    /* check the environment list */
+    for (fp = xlenv; fp; fp = cdr(fp))
+	for (ep = car(fp); ep; ep = cdr(ep))
+	    if (sym == car(car(ep)))
+		return (cdr(car(ep)));
+
+    /* return the global value */
+    return (getvalue(sym));
+}
+
+/* xlsetvalue - set the value of a symbol */
+void xlsetvalue(sym,val)
+  NODE *sym,*val;
+{
+    register NODE *fp,*ep;
+
+    /* check for this being an instance variable */
+    if (getvalue(self) && xlobsetvalue(sym,val))
+	return;
+
+    /* look for the symbol in the environment list */
+    for (fp = xlenv; fp; fp = cdr(fp))
+	for (ep = car(fp); ep; ep = cdr(ep))
+	    if (sym == car(car(ep))) {
+		rplacd(car(ep),val);
+		return;
+	    }
+
+    /* store the global value */
+    setvalue(sym,val);
 }
 
 /* xlgetprop - get the value of a property */
@@ -102,7 +153,6 @@ NODE *xlgetprop(sym,prp)
   NODE *sym,*prp;
 {
     NODE *p;
-
     return ((p = findprop(sym,prp)) ? car(p) : NIL);
 }
 
@@ -110,16 +160,12 @@ NODE *xlgetprop(sym,prp)
 xlputprop(sym,val,prp)
   NODE *sym,*val,*prp;
 {
-    NODE *oldstk,p,*pair;
-
+    NODE ***oldstk,*p,*pair;
     if ((pair = findprop(sym,prp)) == NIL) {
 	oldstk = xlsave(&p,NULL);
-	p.n_ptr = newnode(LIST);
-	rplaca(p.n_ptr,prp);
-	rplacd(p.n_ptr,pair = newnode(LIST));
-	rplaca(pair,val);
-	rplacd(pair,cdr(sym->n_symplist));
-	rplacd(sym->n_symplist,p.n_ptr);
+	p = consa(prp);
+	rplacd(p,pair = cons(val,getplist(sym)));
+	setplist(sym,p);
 	xlstack = oldstk;
     }
     rplaca(pair,val);
@@ -130,14 +176,13 @@ xlremprop(sym,prp)
   NODE *sym,*prp;
 {
     NODE *last,*p;
-
     last = NIL;
-    for (p = cdr(sym->n_symplist); consp(p) && consp(cdr(p)); p = cdr(last)) {
+    for (p = getplist(sym); consp(p) && consp(cdr(p)); p = cdr(last)) {
 	if (car(p) == prp)
 	    if (last)
 		rplacd(last,cdr(cdr(p)));
 	    else
-		rplacd(sym->n_symplist,cdr(cdr(p)));
+		setplist(sym,cdr(cdr(p)));
 	last = cdr(p);
     }
 }
@@ -147,25 +192,39 @@ LOCAL NODE *findprop(sym,prp)
   NODE *sym,*prp;
 {
     NODE *p;
-
-    for (p = cdr(sym->n_symplist); consp(p) && consp(cdr(p)); p = cdr(cdr(p)))
+    for (p = getplist(sym); consp(p) && consp(cdr(p)); p = cdr(cdr(p)))
 	if (car(p) == prp)
 	    return (cdr(p));
     return (NIL);
 }
 
+/* hash - hash a symbol name string */
+int hash(str,len)
+  char *str;
+{
+    int i;
+    for (i = 0; *str; )
+	i = (i << 2) ^ *str++;
+    i %= len;
+    return (abs(i));
+}
+
 /* xlsinit - symbol initialization routine */
 xlsinit()
 {
-    /* initialize the oblist */
-    oblist = xlmakesym("*oblist*",STATIC);
-    oblist->n_symvalue = newnode(LIST);
-    rplaca(oblist->n_symvalue,oblist);
+    NODE *array,*p;
 
-    /* initialize the keyword list */
-    keylist = xlsenter("*keylist*");
+    /* initialize the obarray */
+    obarray = xlmakesym("*OBARRAY*",STATIC);
+    array = newvector(HSIZE);
+    setvalue(obarray,array);
+
+    /* add the symbol *OBARRAY* to the obarray */
+    p = consa(obarray);
+    setelement(array,hash("*OBARRAY*",HSIZE),p);
 
     /* enter the unbound symbol indicator */
-    s_unbound = xlsenter("*unbound*");
-    s_unbound->n_symvalue = s_unbound;
+    s_unbound = xlsenter("*UNBOUND*");
+    setvalue(s_unbound,s_unbound);
 }
+

@@ -1,14 +1,22 @@
 /* xlio - xlisp i/o routines */
+/*	Copyright (c) 1985, by David Michael Betz
+	All Rights Reserved
+	Permission is granted for unrestricted non-commercial use	*/
 
 #include "xlisp.h"
 
+#ifdef MEGAMAX
+overlay "io"
+#endif
+
 /* external variables */
-extern int xlplevel;
+extern NODE ***xlstack;
+extern NODE *s_stdin,*s_unbound;
 extern int xlfsize;
-extern NODE *xlstack;
-extern NODE *s_stdin;
+extern int xlplevel;
 extern int xldebug;
 extern int prompt;
+extern char buf[];
 
 /* xlgetc - get a character from a file or stream */
 int xlgetc(fptr)
@@ -32,50 +40,54 @@ int xlgetc(fptr)
 		xlfail("bad stream");
 	    if (rplaca(fptr,cdr(lptr)) == NIL)
 		rplacd(fptr,NIL);
-	    ch = cptr->n_int;
+	    ch = getfixnum(cptr);
 	}
     }
 
     /* otherwise, check for a buffered file character */
-    else if (ch = fptr->n_savech)
-	fptr->n_savech = 0;
+    else if (ch = getsavech(fptr))
+	setsavech(fptr,0);
 
     /* otherwise, get a new character */
     else {
 
 	/* get the file pointer */
-	fp = fptr->n_fp;
+	fp = getfile(fptr);
 
 	/* prompt if necessary */
 	if (prompt && fp == stdin) {
 
 	    /* print the debug level */
 	    if (xldebug)
-		printf("%d:",xldebug);
+		{ sprintf(buf,"%d:",xldebug); stdputstr(buf); }
 
 	    /* print the nesting level */
 	    if (xlplevel > 0)
-		printf("%d",xlplevel);
+		{ sprintf(buf,"%d",xlplevel); stdputstr(buf); }
 
 	    /* print the prompt */
-	    printf("> ");
+	    stdputstr("> ");
 	    prompt = FALSE;
 	}
 
 	/* get the character */
-	if (((ch = getc(fp)) == '\n' || ch == EOF) && fp == stdin)
+	if (((ch = osgetc(fp)) == '\n' || ch == EOF) && fp == stdin)
 	    prompt = TRUE;
-
-	/* check for input abort */
-	if (fp == stdin && ch == '\007') {
-	    putchar('\n');
-	    xlabort("input aborted");
-	}
     }
 
     /* return the character */
     return (ch);
 }
+
+/* docommand - create a nested MS-DOS shell */
+#ifdef SYSTEM
+docommand()
+{
+    stdputstr("\n[ creating a nested command processor ]\n");
+    system("COMMAND");
+    stdputstr("[ returning to XLISP ]\n");
+}
+#endif
 
 /* xlpeek - peek at a character from a file or stream */
 int xlpeek(fptr)
@@ -96,13 +108,13 @@ int xlpeek(fptr)
 	    if (!consp(lptr) ||
 		(cptr = car(lptr)) == NIL || !fixp(cptr))
 		xlfail("bad stream");
-	    ch = cptr->n_int;
+	    ch = getfixnum(cptr);
 	}
     }
 
     /* otherwise, get the next file character and save it */
     else
-	ch = fptr->n_savech = xlgetc(fptr);
+	setsavech(fptr,ch = xlgetc(fptr));
 
     /* return the character */
     return (ch);
@@ -112,7 +124,7 @@ int xlpeek(fptr)
 xlputc(fptr,ch)
   NODE *fptr; int ch;
 {
-    NODE *oldstk,lptr;
+    NODE ***oldstk,*lptr;
 
     /* count the character */
     xlfsize++;
@@ -124,26 +136,26 @@ xlputc(fptr,ch)
     /* otherwise, check for output to a stream */
     else if (consp(fptr)) {
 	oldstk = xlsave(&lptr,NULL);
-	lptr.n_ptr = newnode(LIST);
-	rplaca(lptr.n_ptr,newnode(INT));
-	car(lptr.n_ptr)->n_int = ch;
+	lptr = consa(NIL);
+	rplaca(lptr,cvfixnum((FIXNUM)ch));
 	if (cdr(fptr))
-	    rplacd(cdr(fptr),lptr.n_ptr);
+	    rplacd(cdr(fptr),lptr);
 	else
-	    rplaca(fptr,lptr.n_ptr);
-	rplacd(fptr,lptr.n_ptr);
+	    rplaca(fptr,lptr);
+	rplacd(fptr,lptr);
 	xlstack = oldstk;
     }
 
     /* otherwise, output the character to a file */
     else
-	putc(ch,fptr->n_fp);
+	osputc(ch,getfile(fptr));
 }
 
 /* xlflush - flush the input buffer */
 int xlflush()
 {
     if (!prompt)
-	while (xlgetc(s_stdin->n_symvalue) != '\n')
+	while (xlgetc(getvalue(s_stdin)) != '\n')
 	    ;
 }
+

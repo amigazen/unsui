@@ -1,48 +1,69 @@
 /* xleval - xlisp evaluator */
+/*	Copyright (c) 1985, by David Michael Betz
+	All Rights Reserved
+	Permission is granted for unrestricted non-commercial use	*/
 
 #include "xlisp.h"
 
 /* external variables */
-extern NODE *xlstack,*xlenv,*xlnewenv;
+extern int xlsample;
+extern NODE ***xlstack,***xlstkbase,*xlenv;
 extern NODE *s_lambda,*s_macro;
 extern NODE *k_optional,*k_rest,*k_aux;
 extern NODE *s_evalhook,*s_applyhook;
 extern NODE *s_unbound;
 extern NODE *s_stdout;
 
+/* trace variables */
+extern NODE **trace_stack;
+extern int xltrace;
+
 /* forward declarations */
 FORWARD NODE *xlxeval();
 FORWARD NODE *evalhook();
 FORWARD NODE *evform();
-FORWARD NODE *evsym();
 FORWARD NODE *evfun();
 
 /* xleval - evaluate an xlisp expression (checking for *evalhook*) */
 NODE *xleval(expr)
   NODE *expr;
 {
-    return (s_evalhook->n_symvalue ? evalhook(expr) : xlxeval(expr));
+    /* check for control codes */
+    if (--xlsample <= 0) {
+	xlsample = SAMPLE;
+	oscheck();
+    }
+
+    /* check for *evalhook* */
+    if (getvalue(s_evalhook))
+	return (evalhook(expr));
+
+    /* add trace entry */
+    if (++xltrace < TDEPTH)
+	trace_stack[xltrace] = expr;
+
+    /* check type of value */
+    if (consp(expr))
+	expr = evform(expr);
+    else if (symbolp(expr))
+	expr = xlgetvalue(expr);
+
+    /* remove trace entry */
+    --xltrace;
+
+    /* return the value */
+    return (expr);
 }
 
 /* xlxeval - evaluate an xlisp expression (bypassing *evalhook*) */
 NODE *xlxeval(expr)
   NODE *expr;
 {
-    /* evaluate nil to itself */
-    if (expr == NIL)
-	return (NIL);
-
-    /* add trace entry */
-    xltpush(expr);
-
     /* check type of value */
     if (consp(expr))
 	expr = evform(expr);
     else if (symbolp(expr))
-	expr = evsym(expr);
-
-    /* remove trace entry */
-    xltpop();
+	expr = xlgetvalue(expr);
 
     /* return the value */
     return (expr);
@@ -52,7 +73,7 @@ NODE *xlxeval(expr)
 NODE *xlapply(fun,args)
   NODE *fun,*args;
 {
-    NODE *val;
+    NODE *env,*val;
 
     /* check for a null function */
     if (fun == NIL)
@@ -60,11 +81,17 @@ NODE *xlapply(fun,args)
 
     /* evaluate the function */
     if (subrp(fun))
-	val = (*fun->n_subr)(args);
+	val = (*getsubr(fun))(args);
     else if (consp(fun)) {
+	if (consp(car(fun))) {
+	    env = cdr(fun);
+	    fun = car(fun);
+	}
+	else
+	    env = xlenv;
 	if (car(fun) != s_lambda)
 	    xlfail("bad function type");
-	val = evfun(fun,args);
+	val = evfun(fun,args,env);
     }
     else
 	xlfail("bad function");
@@ -77,39 +104,45 @@ NODE *xlapply(fun,args)
 LOCAL NODE *evform(expr)
   NODE *expr;
 {
-    NODE *oldstk,fun,args,*val,*type;
+    NODE ***oldstk,*fun,*args,*env,*val,*type;
 
     /* create a stack frame */
     oldstk = xlsave(&fun,&args,NULL);
 
     /* get the function and the argument list */
-    fun.n_ptr = car(expr);
-    args.n_ptr = cdr(expr);
+    fun = car(expr);
+    args = cdr(expr);
 
     /* evaluate the first expression */
-    if ((fun.n_ptr = xleval(fun.n_ptr)) == NIL)
+    if ((fun = xleval(fun)) == NIL)
 	xlfail("bad function");
 
     /* evaluate the function */
-    if (subrp(fun.n_ptr) || fsubrp(fun.n_ptr)) {
-	if (subrp(fun.n_ptr))
-	    args.n_ptr = xlevlist(args.n_ptr);
-	val = (*fun.n_ptr->n_subr)(args.n_ptr);
+    if (subrp(fun) || fsubrp(fun)) {
+	if (subrp(fun))
+	    args = xlevlist(args);
+	val = (*getsubr(fun))(args);
     }
-    else if (consp(fun.n_ptr)) {
-	if ((type = car(fun.n_ptr)) == s_lambda) {
-	    args.n_ptr = xlevlist(args.n_ptr);
-	    val = evfun(fun.n_ptr,args.n_ptr);
+    else if (consp(fun)) {
+	if (consp(car(fun))) {
+	    env = cdr(fun);
+	    fun = car(fun);
+	}
+	else
+	    env = xlenv;
+	if ((type = car(fun)) == s_lambda) {
+	    args = xlevlist(args);
+	    val = evfun(fun,args,env);
 	}
 	else if (type == s_macro) {
-	    args.n_ptr = evfun(fun.n_ptr,args.n_ptr);
-	    val = xleval(args.n_ptr);
+	    args = evfun(fun,args,env);
+	    val = xleval(args);
 	}
 	else
 	    xlfail("bad function type");
     }
-    else if (objectp(fun.n_ptr))
-	val = xlsend(fun.n_ptr,args.n_ptr);
+    else if (objectp(fun))
+	val = xlsend(fun,args);
     else
 	xlfail("bad function");
 
@@ -124,28 +157,27 @@ LOCAL NODE *evform(expr)
 LOCAL NODE *evalhook(expr)
   NODE *expr;
 {
-    NODE *oldstk,*oldenv,fun,args,*val;
+    NODE ***oldstk,*ehook,*ahook,*args,*val;
 
     /* create a new stack frame */
-    oldstk = xlsave(&fun,&args,NULL);
-
-    /* get the hook function */
-    fun.n_ptr = s_evalhook->n_symvalue;
+    oldstk = xlsave(&ehook,&ahook,&args,NULL);
 
     /* make an argument list */
-    args.n_ptr = newnode(LIST);
-    rplaca(args.n_ptr,expr);
+    args = consa(expr);
+    rplacd(args,consa(xlenv));
 
     /* rebind the hook functions to nil */
-    oldenv = xlenv;
-    xlsbind(s_evalhook,NIL);
-    xlsbind(s_applyhook,NIL);
+    ehook = getvalue(s_evalhook);
+    setvalue(s_evalhook,NIL);
+    ahook = getvalue(s_applyhook);
+    setvalue(s_applyhook,NIL);
 
     /* call the hook function */
-    val = xlapply(fun.n_ptr,args.n_ptr);
+    val = xlapply(ehook,args);
 
     /* unbind the symbols */
-    xlunbind(oldenv);
+    setvalue(s_evalhook,ehook);
+    setvalue(s_applyhook,ahook);
 
     /* restore the previous stack frame */
     xlstack = oldstk;
@@ -158,28 +190,29 @@ LOCAL NODE *evalhook(expr)
 NODE *xlevlist(args)
   NODE *args;
 {
-    NODE *oldstk,src,dst,*new,*last,*val;
+    NODE ***oldstk,*src,*dst,*new,*val;
+    NODE *last = NIL;
 
     /* create a stack frame */
     oldstk = xlsave(&src,&dst,NULL);
 
     /* initialize */
-    src.n_ptr = args;
+    src = args;
 
     /* evaluate each argument */
-    for (val = NIL; src.n_ptr; src.n_ptr = cdr(src.n_ptr)) {
+    for (val = NIL; src; src = cdr(src)) {
 
 	/* check this entry */
-	if (!consp(src.n_ptr))
+	if (!consp(src))
 	    xlfail("bad argument list");
 
 	/* allocate a new list entry */
-	new = newnode(LIST);
+	new = consa(NIL);
 	if (val)
 	    rplacd(last,new);
 	else
-	    val = dst.n_ptr = new;
-	rplaca(new,xleval(car(src.n_ptr)));
+	    val = dst = new;
+	rplaca(new,xleval(car(src)));
 	last = new;
     }
 
@@ -190,24 +223,6 @@ NODE *xlevlist(args)
     return (val);
 }
 
-/* evsym - evaluate a symbol */
-LOCAL NODE *evsym(sym)
-  NODE *sym;
-{
-    NODE *p;
-
-    /* check for a reference to an instance variable */
-    if ((p = xlobsym(sym)) != NIL)
-	return (car(p));
-
-    /* get the value of the variable */
-    while ((p = sym->n_symvalue) == s_unbound)
-	xlunbound(sym);
-
-    /* return the value */
-    return (p);
-}
-
 /* xlunbound - signal an unbound variable error */
 xlunbound(sym)
   NODE *sym;
@@ -216,13 +231,13 @@ xlunbound(sym)
 }
 
 /* evfun - evaluate a function */
-LOCAL NODE *evfun(fun,args)
-  NODE *fun,*args;
+LOCAL NODE *evfun(fun,args,env)
+  NODE *fun,*args,*env;
 {
-    NODE *oldstk,*oldenv,*oldnewenv,cptr,*fargs,*val;
+    NODE ***oldstk,*oldenv,*newenv,*cptr,*fargs,*val;
 
     /* create a stack frame */
-    oldstk = xlsave(&cptr,NULL);
+    oldstk = xlsave(&oldenv,&newenv,&cptr,NULL);
 
     /* skip the function type */
     if ((fun = cdr(fun)) == NIL || !consp(fun))
@@ -232,17 +247,20 @@ LOCAL NODE *evfun(fun,args)
     if ((fargs = car(fun)) && !consp(fargs))
 	xlfail("bad formal argument list");
 
+    /* create a new environment frame */
+    newenv = xlframe(env);
+    oldenv = xlenv;
+
     /* bind the formal parameters */
-    oldnewenv = xlnewenv; oldenv = xlnewenv = xlenv;
-    xlabind(fargs,args);
-    xlfixbindings();
+    xlabind(fargs,args,newenv);
+    xlenv = newenv;
 
     /* execute the code */
-    for (cptr.n_ptr = cdr(fun); cptr.n_ptr != NIL; )
-	val = xlevarg(&cptr.n_ptr);
+    for (cptr = cdr(fun); cptr; )
+	val = xlevarg(&cptr);
 
     /* restore the environment */
-    xlunbind(oldenv); xlnewenv = oldnewenv;
+    xlenv = oldenv;
 
     /* restore the previous stack frame */
     xlstack = oldstk;
@@ -252,8 +270,8 @@ LOCAL NODE *evfun(fun,args)
 }
 
 /* xlabind - bind the arguments for a function */
-xlabind(fargs,aargs)
-  NODE *fargs,*aargs;
+xlabind(fargs,aargs,env)
+  NODE *fargs,*aargs,*env;
 {
     NODE *arg;
 
@@ -261,7 +279,7 @@ xlabind(fargs,aargs)
     while (consp(fargs) && !iskeyword(arg = car(fargs)) && consp(aargs)) {
 
 	/* bind the formal variable to the argument value */
-	xlbind(arg,car(aargs));
+	xlbind(arg,car(aargs),env);
 
 	/* move the argument list pointers ahead */
 	fargs = cdr(fargs);
@@ -276,7 +294,7 @@ xlabind(fargs,aargs)
 	while (consp(fargs) && !iskeyword(arg = car(fargs)) && consp(aargs)) {
 
 	    /* bind the formal variable to the argument value */
-	    xlbind(arg,car(aargs));
+	    xlbind(arg,car(aargs),env);
 
 	    /* move the argument list pointers ahead */
 	    fargs = cdr(fargs);
@@ -287,7 +305,7 @@ xlabind(fargs,aargs)
 	while (consp(fargs) && !iskeyword(arg = car(fargs))) {
 
 	    /* bind the formal variable to nil */
-	    xlbind(arg,NIL);
+	    xlbind(arg,NIL,env);
 
 	    /* move the argument list pointer ahead */
 	    fargs = cdr(fargs);
@@ -298,7 +316,7 @@ xlabind(fargs,aargs)
     if (consp(fargs) && car(fargs) == k_rest) {
 	fargs = cdr(fargs);
 	if (consp(fargs) && (arg = car(fargs)) && !iskeyword(arg))
-	    xlbind(arg,aargs);
+	    xlbind(arg,aargs,env);
 	else
 	    xlfail("symbol missing after &rest");
 	fargs = cdr(fargs);
@@ -308,7 +326,7 @@ xlabind(fargs,aargs)
     /* check for the '&aux' keyword */
     if (consp(fargs) && car(fargs) == k_aux)
 	while ((fargs = cdr(fargs)) != NIL && consp(fargs))
-	    xlbind(car(fargs),NIL);
+	    xlbind(car(fargs),NIL,env);
 
     /* make sure the correct number of arguments were supplied */
     if (fargs != aargs)
@@ -323,21 +341,23 @@ LOCAL int iskeyword(sym)
 }
 
 /* xlsave - save nodes on the stack */
-NODE *xlsave(n)
-  NODE *n;
+NODE ***xlsave(n)
+  NODE **n;
 {
-    NODE **nptr,*oldstk;
+    NODE ***oldstk,***nptr;
 
     /* save the old stack pointer */
     oldstk = xlstack;
 
-    /* save each node */
-    for (nptr = &n; *nptr != NULL; nptr++) {
-	rplaca(*nptr,NIL);
-	rplacd(*nptr,xlstack);
-	xlstack = *nptr;
+    /* save each node pointer */
+    for (nptr = &n; *nptr; nptr++) {
+	if (xlstack <= xlstkbase)
+	    xlabort("evaluation stack overflow");
+	*--xlstack = *nptr;
+	**nptr = NIL;
     }
 
     /* return the old stack pointer */
     return (oldstk);
 }
+

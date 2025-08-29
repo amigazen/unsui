@@ -1,20 +1,28 @@
 /* xlprint - xlisp print routine */
+/*	Copyright (c) 1985, by David Michael Betz
+	All Rights Reserved
+	Permission is granted for unrestricted non-commercial use	*/
 
 #include "xlisp.h"
 
+#ifdef MEGAMAX
+overlay "io"
+#endif
+
 /* external variables */
-extern NODE *xlstack;
 extern char buf[];
 
 /* xlprint - print an xlisp value */
-xlprint(fptr,vptr,flag)
+void xlprint(fptr,vptr,flag)
   NODE *fptr,*vptr; int flag;
 {
-    NODE *nptr,*next;
+    NODE *nptr;
+    NODE *next = NIL;
+    int n,i;
 
     /* print nil */
     if (vptr == NIL) {
-	putstr(fptr,"nil");
+	xlputstr(fptr,"NIL");
 	return;
     }
 
@@ -34,7 +42,7 @@ xlprint(fptr,vptr,flag)
 		    if (consp(next))
 			xlputc(fptr,' ');
 		    else {
-			putstr(fptr," . ");
+			xlputstr(fptr," . ");
 			xlprint(fptr,next,flag);
 			break;
 		    }
@@ -42,22 +50,33 @@ xlprint(fptr,vptr,flag)
 	    xlputc(fptr,')');
 	    break;
     case SYM:
-	    putstr(fptr,xlsymname(vptr));
+	    xlputstr(fptr,getstring(getpname(vptr)));
 	    break;
     case INT:
-	    putdec(fptr,vptr->n_int);
+	    putdec(fptr,getfixnum(vptr));
+	    break;
+    case FLOAT:
+	    putfloat(fptr,getflonum(vptr));
 	    break;
     case STR:
 	    if (flag)
-		putstring(fptr,vptr->n_str);
+		putstring(fptr,getstring(vptr));
 	    else
-		putstr(fptr,vptr->n_str);
+		xlputstr(fptr,getstring(vptr));
 	    break;
     case FPTR:
 	    putatm(fptr,"File",vptr);
 	    break;
     case OBJ:
 	    putatm(fptr,"Object",vptr);
+	    break;
+    case VECT:
+	    xlputc(fptr,'#'); xlputc(fptr,'(');
+	    for (i = 0, n = getsize(vptr); n-- > 0; ) {
+		xlprint(fptr,getelement(vptr,i++),flag);
+		if (n) xlputc(fptr,' ');
+	    }
+	    xlputc(fptr,')');
 	    break;
     case FREE:
 	    putatm(fptr,"Free",vptr);
@@ -73,6 +92,14 @@ xlterpri(fptr)
   NODE *fptr;
 {
     xlputc(fptr,'\n');
+}
+
+/* xlputstr - output a string */
+xlputstr(fptr,str)
+  NODE *fptr; char *str;
+{
+    while (*str)
+	xlputc(fptr,*str++);
 }
 
 /* putstring - output a string */
@@ -124,17 +151,25 @@ LOCAL putstring(fptr,str)
 LOCAL putatm(fptr,tag,val)
   NODE *fptr; char *tag; NODE *val;
 {
-    sprintf(buf,"#<%s: #",tag); putstr(fptr,buf);
-    sprintf(buf,AFMT,val); putstr(fptr,buf);
+    sprintf(buf,"#<%s: #",tag); xlputstr(fptr,buf);
+    sprintf(buf,AFMT,val); xlputstr(fptr,buf);
     xlputc(fptr,'>');
 }
 
 /* putdec - output a decimal number */
 LOCAL putdec(fptr,n)
-  NODE *fptr; int n;
+  NODE *fptr; FIXNUM n;
 {
-    sprintf(buf,"%d",n);
-    putstr(fptr,buf);
+    sprintf(buf,IFMT,n);
+    xlputstr(fptr,buf);
+}
+
+/* putfloat - output a floating point number */
+LOCAL putfloat(fptr,n)
+  NODE *fptr; FLONUM n;
+{
+    sprintf(buf,"%g",n);
+    xlputstr(fptr,buf);
 }
 
 /* putoct - output an octal byte value */
@@ -142,13 +177,6 @@ LOCAL putoct(fptr,n)
   NODE *fptr; int n;
 {
     sprintf(buf,"%03o",n);
-    putstr(fptr,buf);
+    xlputstr(fptr,buf);
 }
 
-/* putstr - output a string */
-LOCAL putstr(fptr,str)
-  NODE *fptr; char *str;
-{
-    while (*str)
-	xlputc(fptr,*str++);
-}

@@ -1,4 +1,7 @@
 /* xldebug - xlisp debugging support */
+/*	Copyright (c) 1985, by David Michael Betz
+	All Rights Reserved
+	Permission is granted for unrestricted non-commercial use	*/
 
 #include "xlisp.h"
 
@@ -6,13 +9,14 @@
 extern long total;
 extern int xldebug;
 extern int xltrace;
+extern int xlsample;
 extern NODE *s_unbound;
 extern NODE *s_stdin,*s_stdout;
 extern NODE *s_tracenable,*s_tlimit,*s_breakenable;
-extern NODE *s_continue,*s_quit;
-extern NODE *xlstack;
+extern NODE ***xlstack;
 extern NODE *true;
 extern NODE **trace_stack;
+extern char buf[];
 
 /* external routines */
 extern char *malloc();
@@ -59,10 +63,10 @@ xlcerror(cmsg,emsg,arg)
 xlerrprint(hdr,cmsg,emsg,arg)
   char *hdr,*cmsg,*emsg; NODE *arg;
 {
-    printf("%s: %s",hdr,emsg);
-    if (arg != s_unbound) { printf(" - "); stdprint(arg); }
-    else printf("\n");
-    if (cmsg) printf("if continued: %s\n",cmsg);
+    sprintf(buf,"%s: %s",hdr,emsg); stdputstr(buf);
+    if (arg != s_unbound) { stdputstr(" - "); stdprint(arg); }
+    else xlterpri(getvalue(s_stdout));
+    if (cmsg) { sprintf(buf,"if continued: %s\n",cmsg); stdputstr(buf); }
 }
 
 /* doerror - handle xlisp errors */
@@ -70,7 +74,7 @@ LOCAL doerror(cmsg,emsg,arg,cflag)
   char *cmsg,*emsg; NODE *arg; int cflag;
 {
     /* make sure the break loop is enabled */
-    if (s_breakenable->n_symvalue == NIL)
+    if (getvalue(s_breakenable) == NIL)
 	xlsignal(emsg,arg);
 
     /* call the debug read-eval-print loop */
@@ -81,83 +85,75 @@ LOCAL doerror(cmsg,emsg,arg,cflag)
 LOCAL int breakloop(hdr,cmsg,emsg,arg,cflag)
   char *hdr,*cmsg,*emsg; NODE *arg; int cflag;
 {
-    NODE *oldstk,expr,*val;
+    NODE ***oldstk,*expr,*val;
     CONTEXT cntxt;
-
-    /* increment the debug level */
-    xldebug++;
-
-    /* flush the input buffer */
-    xlflush();
+    int type;
 
     /* print the error message */
     xlerrprint(hdr,cmsg,emsg,arg);
 
+    /* flush the input buffer */
+    xlflush();
+
     /* do the back trace */
-    if (s_tracenable->n_symvalue) {
-	val = s_tlimit->n_symvalue;
-	xlbaktrace(fixp(val) ? val->n_int : -1);
+    if (getvalue(s_tracenable)) {
+	val = getvalue(s_tlimit);
+	xlbaktrace(fixp(val) ? (int)getfixnum(val) : -1);
     }
 
     /* create a new stack frame */
     oldstk = xlsave(&expr,NULL);
 
+    /* increment the debug level */
+    xldebug++;
+
     /* debug command processing loop */
-    xlbegin(&cntxt,CF_ERROR,true);
-    while (TRUE) {
+    xlbegin(&cntxt,CF_ERROR|CF_CLEANUP|CF_CONTINUE,true);
+    for (type = 0; type == 0; ) {
 
 	/* setup the continue trap */
-	if (setjmp(cntxt.c_jmpbuf)) {
-	    xlflush();
-	    continue;
-	}
+	if (type = setjmp(cntxt.c_jmpbuf))
+	    switch (type) {
+	    case CF_ERROR:
+		    xlflush();
+		    type = 0;
+		    continue;
+	    case CF_CLEANUP:
+		    continue;
+	    case CF_CONTINUE:
+		    if (cflag) {
+			stdputstr("[ continue from break loop ]\n");
+			continue;
+		    }
+		    else xlabort("this error can't be continued");
+	    }
 
 	/* read an expression and check for eof */
-	if (!xlread(s_stdin->n_symvalue,&expr.n_ptr)) {
-	    expr.n_ptr = s_quit;
+	if (!xlread(getvalue(s_stdin),&expr,FALSE)) {
+	    type = CF_CLEANUP;
 	    break;
 	}
-
-	/* check for commands */
-	if (expr.n_ptr == s_continue) {
-	    if (cflag) break;
-	    else xlabort("this error can't be continued");
-	}
-	else if (expr.n_ptr == s_quit)
-	    break;
 
 	/* evaluate the expression */
-	expr.n_ptr = xleval(expr.n_ptr);
+	expr = xleval(expr);
 
 	/* print it */
-	xlprint(s_stdout->n_symvalue,expr.n_ptr,TRUE);
-	xlterpri(s_stdout->n_symvalue);
+	xlprint(getvalue(s_stdout),expr,TRUE);
+	xlterpri(getvalue(s_stdout));
     }
     xlend(&cntxt);
-
-    /* restore the previous stack frame */
-    xlstack = oldstk;
 
     /* decrement the debug level */
     xldebug--;
 
-    /* continue the next higher break loop on quit */
-    if (expr.n_ptr == s_quit)
-	xlsignal("quit from break loop",s_unbound);
-}
+    /* restore the previous stack frame */
+    xlstack = oldstk;
 
-/* tpush - add an entry to the trace stack */
-xltpush(nptr)
-    NODE *nptr;
-{
-    if (++xltrace < TDEPTH)
-	trace_stack[xltrace] = nptr;
-}
-
-/* tpop - pop an entry from the trace stack */
-xltpop()
-{
-    xltrace--;
+    /* check for aborting to the previous level */
+    if (type == CF_CLEANUP) {
+	stdputstr("[ abort to previous level ]\n");
+	xlsignal(NULL,NIL);
+    }
 }
 
 /* stacktop - return the top node on the stack */
@@ -180,9 +176,15 @@ xlbaktrace(n)
 /* xldinit - debug initialization routine */
 xldinit()
 {
-    if ((trace_stack = (NODE **) malloc(TSTKSIZE)) == NULL)
-	xlabort("insufficient memory");
-    total += (long) TSTKSIZE;
+    if ((trace_stack = (NODE **)malloc(TDEPTH * sizeof(NODE *))) == NULL) {
+	printf("insufficient memory");
+	osfinish();
+	exit();
+    }
+    total += (long)(TDEPTH * sizeof(NODE *));
+    xlsample = 0;
     xltrace = -1;
     xldebug = 0;
 }
+
+

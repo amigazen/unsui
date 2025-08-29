@@ -1,40 +1,22 @@
 /* xlstr - xlisp string builtin functions */
+/*	Copyright (c) 1985, by David Michael Betz
+	All Rights Reserved
+	Permission is granted for unrestricted non-commercial use	*/
 
 #include "xlisp.h"
 
 /* external variables */
-extern NODE *xlstack;
+extern NODE ***xlstack;
+extern char buf[];
 
 /* external procedures */
 extern char *strcat();
-
-/* xstrlen - length of a string */
-NODE *xstrlen(args)
-  NODE *args;
-{
-    NODE *val;
-    int total;
-
-    /* initialize */
-    total = 0;
-
-    /* loop over args and total */
-    while (args)
-	total += strlen(xlmatch(STR,&args)->n_str);
-
-    /* create the value node */
-    val = newnode(INT);
-    val->n_int = total;
-
-    /* return the total */
-    return (val);
-}
 
 /* xstrcat - concatenate a bunch of strings */
 NODE *xstrcat(args)
   NODE *args;
 {
-    NODE *oldstk,val,*p;
+    NODE ***oldstk,*val,*p;
     char *str;
     int len;
 
@@ -43,29 +25,29 @@ NODE *xstrcat(args)
 
     /* find the length of the new string */
     for (p = args, len = 0; p; )
-	len += strlen(xlmatch(STR,&p)->n_str);
+	len += strlen(getstring(xlmatch(STR,&p)));
 
     /* create the result string */
-    val.n_ptr = newnode(STR);
-    val.n_ptr->n_str = str = stralloc(len);
+    val = newstring(len);
+    str = getstring(val);
     *str = 0;
 
     /* combine the strings */
     while (args)
-	strcat(str,xlmatch(STR,&args)->n_str);
+	strcat(str,getstring(xlmatch(STR,&args)));
 
     /* restore the previous stack frame */
     xlstack = oldstk;
 
     /* return the new string */
-    return (val.n_ptr);
+    return (val);
 }
 
 /* xsubstr - return a substring */
 NODE *xsubstr(args)
   NODE *args;
 {
-    NODE *oldstk,arg,src,val;
+    NODE ***oldstk,*arg,*src,*val;
     int start,forlen,srclen;
     char *srcptr,*dstptr;
 
@@ -73,21 +55,21 @@ NODE *xsubstr(args)
     oldstk = xlsave(&arg,&src,&val,NULL);
 
     /* initialize */
-    arg.n_ptr = args;
+    arg = args;
     
     /* get string and its length */
-    src.n_ptr = xlmatch(STR,&arg.n_ptr);
-    srcptr = src.n_ptr->n_str;
+    src = xlmatch(STR,&arg);
+    srcptr = getstring(src);
     srclen = strlen(srcptr);
 
     /* get starting pos -- must be present */
-    start = xlmatch(INT,&arg.n_ptr)->n_int;
+    start = getfixnum(xlmatch(INT,&arg));
 
     /* get length -- if not present use remainder of string */
-    forlen = (arg.n_ptr ? xlmatch(INT,&arg.n_ptr)->n_int : srclen);
+    forlen = (arg ? getfixnum(xlmatch(INT,&arg)) : srclen);
 
     /* make sure there aren't any more arguments */
-    xllastarg(arg.n_ptr);
+    xllastarg(arg);
 
     /* don't take more than exists */
     if (start + forlen > srclen)
@@ -99,8 +81,8 @@ NODE *xsubstr(args)
 	forlen = 0; }
 	
     /* create return node */
-    val.n_ptr = newnode(STR);
-    val.n_ptr->n_str = dstptr = stralloc(forlen);
+    val = newstring(forlen);
+    dstptr = getstring(val);
 
     /* move string */
     for (srcptr += start-1; forlen--; *dstptr++ = *srcptr++)
@@ -111,92 +93,39 @@ NODE *xsubstr(args)
     xlstack = oldstk;
 
     /* return the substring */
-    return (val.n_ptr);
+    return (val);
 }
 
-/* xascii - return ascii value */
-NODE *xascii(args)
+/* xstring - return a string consisting of a single character */
+NODE *xstring(args)
   NODE *args;
 {
-    NODE *val;
-
-    /* build return node */
-    val = newnode(INT);
-    val->n_int = *(xlmatch(STR,&args)->n_str);
-
-    /* make sure there aren't any more arguments */
+    /* get the character (integer) */
+    buf[0] = getfixnum(xlmatch(INT,&args));
     xllastarg(args);
+
+    /* make a one character string */
+    buf[1] = 0;
+    return (cvstring(buf));
+}
+
+/* xchar - extract a character from a string */
+NODE *xchar(args)
+  NODE *args;
+{
+    char *str;
+    int n;
+
+    /* get the string and the index */
+    str = getstring(xlmatch(STR,&args));
+    n = getfixnum(xlmatch(INT,&args));
+    xllastarg(args);
+
+    /* range check the index */
+    if (n < 0 || n >= strlen(str))
+	xlerror("index out of range",cvfixnum((FIXNUM)n));
 
     /* return the character */
-    return (val);
+    return (cvfixnum((FIXNUM)str[n]));
 }
 
-/* xchr - convert an INT into a one character ascii string */
-NODE *xchr(args)
-  NODE *args;
-{
-    NODE *oldstk,val;
-    char *sptr;
-
-    /* create a new stack frame */
-    oldstk = xlsave(&val,NULL);
-
-    /* build return node */
-    val.n_ptr = newnode(STR);
-    val.n_ptr->n_str = sptr = stralloc(1);
-    *sptr++ = xlmatch(INT,&args)->n_int;
-    *sptr = 0;
-
-    /* make sure there aren't any more arguments */
-    xllastarg(args);
-
-    /* restore the previous stack frame */
-    xlstack = oldstk;
-
-    /* return the new string */
-    return (val.n_ptr);
-}
-
-/* xatoi - convert an ascii string to an integer */
-NODE *xatoi(args)
-  NODE *args;
-{
-    NODE *val;
-    int n;
-
-    /* get the string and convert it */
-    n = atoi(xlmatch(STR,&args)->n_str);
-
-    /* make sure there aren't any more arguments */
-    xllastarg(args);
-
-    /* create the value node */
-    val = newnode(INT);
-    val->n_int = n;
-
-    /* return the number */
-    return (val);
-}
-
-/* xitoa - convert an integer to an ascii string */
-NODE *xitoa(args)
-  NODE *args;
-{
-    NODE *val;
-    char buf[20];
-    int n;
-
-    /* get the integer */
-    n = xlmatch(INT,&args)->n_int;
-    xllastarg(args);
-
-    /* convert it to ascii */
-    sprintf(buf,"%d",n);
-
-    /* create the value node */
-    val = newnode(STR);
-    val->n_str = strsave(buf);
-
-    /* return the string */
-    return (val);
-}

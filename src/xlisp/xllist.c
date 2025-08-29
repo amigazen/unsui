@@ -1,4 +1,7 @@
 /* xllist - xlisp built-in list functions */
+/*	Copyright (c) 1985, by David Michael Betz
+	All Rights Reserved
+	Permission is granted for unrestricted non-commercial use	*/
 
 #include "xlisp.h"
 
@@ -7,7 +10,7 @@ overlay "overflow"
 #endif
 
 /* external variables */
-extern NODE *xlstack;
+extern NODE ***xlstack;
 extern NODE *s_unbound;
 extern NODE *true;
 
@@ -20,47 +23,43 @@ FORWARD NODE *nth(),*assoc();
 FORWARD NODE *subst(),*sublis(),*map();
 FORWARD NODE *cequal();
 
-/* xcar - return the car of a list */
-NODE *xcar(args)
-  NODE *args;
-{
-    return (cxr(args,"a"));
-}
+/* cxr functions */
+NODE *xcar(args) NODE *args; { return (cxr(args,"a")); }
+NODE *xcdr(args) NODE *args; { return (cxr(args,"d")); }
 
-/* xcdr - return the cdr of a list */
-NODE *xcdr(args)
-  NODE *args;
-{
-    return (cxr(args,"d"));
-}
+/* cxxr functions */
+NODE *xcaar(args) NODE *args; { return (cxr(args,"aa")); }
+NODE *xcadr(args) NODE *args; { return (cxr(args,"da")); }
+NODE *xcdar(args) NODE *args; { return (cxr(args,"ad")); }
+NODE *xcddr(args) NODE *args; { return (cxr(args,"dd")); }
 
-/* xcaar - return the caar of a list */
-NODE *xcaar(args)
-  NODE *args;
-{
-    return (cxr(args,"aa"));
-}
+/* cxxxr functions */
+NODE *xcaaar(args) NODE *args; { return (cxr(args,"aaa")); }
+NODE *xcaadr(args) NODE *args; { return (cxr(args,"daa")); }
+NODE *xcadar(args) NODE *args; { return (cxr(args,"ada")); }
+NODE *xcaddr(args) NODE *args; { return (cxr(args,"dda")); }
+NODE *xcdaar(args) NODE *args; { return (cxr(args,"aad")); }
+NODE *xcdadr(args) NODE *args; { return (cxr(args,"dad")); }
+NODE *xcddar(args) NODE *args; { return (cxr(args,"add")); }
+NODE *xcdddr(args) NODE *args; { return (cxr(args,"ddd")); }
 
-/* xcadr - return the cadr of a list */
-NODE *xcadr(args)
-  NODE *args;
-{
-    return (cxr(args,"da"));
-}
-
-/* xcdar - return the cdar of a list */
-NODE *xcdar(args)
-  NODE *args;
-{
-    return (cxr(args,"ad"));
-}
-
-/* xcddr - return the cddr of a list */
-NODE *xcddr(args)
-  NODE *args;
-{
-    return (cxr(args,"dd"));
-}
+/* cxxxxr functions */
+NODE *xcaaaar(args) NODE *args; { return (cxr(args,"aaaa")); }
+NODE *xcaaadr(args) NODE *args; { return (cxr(args,"daaa")); }
+NODE *xcaadar(args) NODE *args; { return (cxr(args,"adaa")); }
+NODE *xcaaddr(args) NODE *args; { return (cxr(args,"ddaa")); }
+NODE *xcadaar(args) NODE *args; { return (cxr(args,"aada")); }
+NODE *xcadadr(args) NODE *args; { return (cxr(args,"dada")); }
+NODE *xcaddar(args) NODE *args; { return (cxr(args,"adda")); }
+NODE *xcadddr(args) NODE *args; { return (cxr(args,"ddda")); }
+NODE *xcdaaar(args) NODE *args; { return (cxr(args,"aaad")); }
+NODE *xcdaadr(args) NODE *args; { return (cxr(args,"daad")); }
+NODE *xcdadar(args) NODE *args; { return (cxr(args,"adad")); }
+NODE *xcdaddr(args) NODE *args; { return (cxr(args,"ddad")); }
+NODE *xcddaar(args) NODE *args; { return (cxr(args,"aadd")); }
+NODE *xcddadr(args) NODE *args; { return (cxr(args,"dadd")); }
+NODE *xcdddar(args) NODE *args; { return (cxr(args,"addd")); }
+NODE *xcddddr(args) NODE *args; { return (cxr(args,"dddd")); }
 
 /* cxr - common car/cdr routine */
 LOCAL NODE *cxr(args,adstr)
@@ -88,7 +87,7 @@ LOCAL NODE *cxr(args,adstr)
 NODE *xcons(args)
   NODE *args;
 {
-    NODE *arg1,*arg2,*val;
+    NODE *arg1,*arg2;
 
     /* get the two arguments */
     arg1 = xlarg(&args);
@@ -96,82 +95,76 @@ NODE *xcons(args)
     xllastarg(args);
 
     /* construct a new list element */
-    val = newnode(LIST);
-    rplaca(val,arg1);
-    rplacd(val,arg2);
-
-    /* return the list */
-    return (val);
+    return (cons(arg1,arg2));
 }
 
 /* xlist - built a list of the arguments */
 NODE *xlist(args)
   NODE *args;
 {
-    NODE *oldstk,arg,list,val,*last,*lptr;
+    NODE ***oldstk,*arg,*list,*val,*last;
+    NODE *lptr = NIL;
 
     /* create a new stack frame */
     oldstk = xlsave(&arg,&list,&val,NULL);
 
     /* initialize */
-    arg.n_ptr = args;
+    arg = args;
 
     /* evaluate and append each argument */
-    for (last = NIL; arg.n_ptr != NIL; last = lptr) {
+    for (last = NIL; arg; last = lptr) {
 
 	/* evaluate the next argument */
-	val.n_ptr = xlarg(&arg.n_ptr);
+	val = xlarg(&arg);
 
 	/* append this argument to the end of the list */
-	lptr = newnode(LIST);
+	lptr = consa(val);
 	if (last == NIL)
-	    list.n_ptr = lptr;
+	    list = lptr;
 	else
 	    rplacd(last,lptr);
-	rplaca(lptr,val.n_ptr);
     }
 
     /* restore the previous stack frame */
     xlstack = oldstk;
 
     /* return the list */
-    return (list.n_ptr);
+    return (list);
 }
 
 /* xappend - built-in function append */
 NODE *xappend(args)
   NODE *args;
 {
-    NODE *oldstk,arg,list,last,val,*lptr;
+    NODE ***oldstk,*arg,*list,*last,*val,*lptr;
 
     /* create a new stack frame */
     oldstk = xlsave(&arg,&list,&last,&val,NULL);
 
     /* initialize */
-    arg.n_ptr = args;
+    arg = args;
 
     /* evaluate and append each argument */
-    while (arg.n_ptr) {
+    while (arg) {
 
 	/* evaluate the next argument */
-	list.n_ptr = xlmatch(LIST,&arg.n_ptr);
+	list = xlmatch(LIST,&arg);
 
 	/* append each element of this list to the result list */
-	while (consp(list.n_ptr)) {
+	while (consp(list)) {
 
 	    /* append this element */
-	    lptr = newnode(LIST);
-	    if (last.n_ptr == NIL)
-		val.n_ptr = lptr;
+	    lptr = consa(car(list));
+	    if (last == NIL)
+		val = lptr;
 	    else
-		rplacd(last.n_ptr,lptr);
-	    rplaca(lptr,car(list.n_ptr));
+		rplacd(last,lptr);
 
 	    /* save the new last element */
-	    last.n_ptr = lptr;
+	    last = lptr;
 
 	    /* move to the next element */
-	    list.n_ptr = cdr(list.n_ptr);
+	    list = cdr(list);
 	}
     }
 
@@ -179,40 +172,37 @@ NODE *xappend(args)
     xlstack = oldstk;
 
     /* return the list */
-    return (val.n_ptr);
+    return (val);
 }
 
 /* xreverse - built-in function reverse */
 NODE *xreverse(args)
   NODE *args;
 {
-    NODE *oldstk,list,val,*lptr;
+    NODE ***oldstk,*list,*val;
 
     /* create a new stack frame */
     oldstk = xlsave(&list,&val,NULL);
 
     /* get the list to reverse */
-    list.n_ptr = xlmatch(LIST,&args);
+    list = xlmatch(LIST,&args);
     xllastarg(args);
 
     /* append each element of this list to the result list */
-    while (consp(list.n_ptr)) {
+    while (consp(list)) {
 
 	/* append this element */
-	lptr = newnode(LIST);
-	rplaca(lptr,car(list.n_ptr));
-	rplacd(lptr,val.n_ptr);
-	val.n_ptr = lptr;
+	val = cons(car(list),val);
 
 	/* move to the next element */
-	list.n_ptr = cdr(list.n_ptr);
+	list = cdr(list);
     }
 
     /* restore previous stack frame */
     xlstack = oldstk;
 
     /* return the list */
-    return (val.n_ptr);
+    return (val);
 }
 
 /* xlast - return the last cons of a list */
@@ -237,22 +227,22 @@ NODE *xlast(args)
 NODE *xmember(args)
   NODE *args;
 {
-    NODE *oldstk,x,list,fcn,*val;
+    NODE ***oldstk,*x,*list,*fcn,*val;
     int tresult;
 
     /* create a new stack frame */
     oldstk = xlsave(&x,&list,&fcn,NULL);
 
     /* get the expression to look for and the list */
-    x.n_ptr = xlarg(&args);
-    list.n_ptr = xlmatch(LIST,&args);
-    xltest(&fcn.n_ptr,&tresult,&args);
+    x = xlarg(&args);
+    list = xlmatch(LIST,&args);
+    xltest(&fcn,&tresult,&args);
     xllastarg(args);
 
     /* look for the expression */
-    for (val = NIL; consp(list.n_ptr); list.n_ptr = cdr(list.n_ptr))
-	if (dotest(x.n_ptr,car(list.n_ptr),fcn.n_ptr) == tresult) {
-	    val = list.n_ptr;
+    for (val = NIL; consp(list); list = cdr(list))
+	if (dotest(x,car(list),fcn) == tresult) {
+	    val = list;
 	    break;
 	}
 
@@ -267,22 +257,22 @@ NODE *xmember(args)
 NODE *xassoc(args)
   NODE *args;
 {
-    NODE *oldstk,x,alist,fcn,*pair,*val;
+    NODE ***oldstk,*x,*alist,*fcn,*pair,*val;
     int tresult;
 
     /* create a new stack frame */
     oldstk = xlsave(&x,&alist,&fcn,NULL);
 
     /* get the expression to look for and the association list */
-    x.n_ptr = xlarg(&args);
-    alist.n_ptr = xlmatch(LIST,&args);
-    xltest(&fcn.n_ptr,&tresult,&args);
+    x = xlarg(&args);
+    alist = xlmatch(LIST,&args);
+    xltest(&fcn,&tresult,&args);
     xllastarg(args);
 
     /* look for the expression */
-    for (val = NIL; consp(alist.n_ptr); alist.n_ptr = cdr(alist.n_ptr))
-	if ((pair = car(alist.n_ptr)) && consp(pair))
-	    if (dotest(x.n_ptr,car(pair),fcn.n_ptr) == tresult) {
+    for (val = NIL; consp(alist); alist = cdr(alist))
+	if ((pair = car(alist)) && consp(pair))
+	    if (dotest(x,car(pair),fcn) == tresult) {
 		val = pair;
 		break;
 	    }
@@ -298,21 +288,21 @@ NODE *xassoc(args)
 NODE *xsubst(args)
   NODE *args;
 {
-    NODE *oldstk,to,from,expr,fcn,*val;
+    NODE ***oldstk,*to,*from,*expr,*fcn,*val;
     int tresult;
 
     /* create a new stack frame */
     oldstk = xlsave(&to,&from,&expr,&fcn,NULL);
 
     /* get the to value, the from value and the expression */
-    to.n_ptr = xlarg(&args);
-    from.n_ptr = xlarg(&args);
-    expr.n_ptr = xlarg(&args);
-    xltest(&fcn.n_ptr,&tresult,&args);
+    to = xlarg(&args);
+    from = xlarg(&args);
+    expr = xlarg(&args);
+    xltest(&fcn,&tresult,&args);
     xllastarg(args);
 
     /* do the substitution */
-    val = subst(to.n_ptr,from.n_ptr,expr.n_ptr,fcn.n_ptr,tresult);
+    val = subst(to,from,expr,fcn,tresult);
 
     /* restore the previous stack frame */
     xlstack = oldstk;
@@ -325,17 +315,15 @@ NODE *xsubst(args)
 LOCAL NODE *subst(to,from,expr,fcn,tresult)
   NODE *to,*from,*expr,*fcn; int tresult;
 {
-    NODE *oldstk,carval,cdrval,*val;
+    NODE ***oldstk,*carval,*cdrval,*val;
 
     if (dotest(expr,from,fcn) == tresult)
 	val = to;
     else if (consp(expr)) {
 	oldstk = xlsave(&carval,&cdrval,NULL);
-	carval.n_ptr = subst(to,from,car(expr),fcn,tresult);
-	cdrval.n_ptr = subst(to,from,cdr(expr),fcn,tresult);
-	val = newnode(LIST);
-	rplaca(val,carval.n_ptr);
-	rplacd(val,cdrval.n_ptr);
+	carval = subst(to,from,car(expr),fcn,tresult);
+	cdrval = subst(to,from,cdr(expr),fcn,tresult);
+	val = cons(carval,cdrval);
 	xlstack = oldstk;
     }
     else
@@ -347,20 +335,20 @@ LOCAL NODE *subst(to,from,expr,fcn,tresult)
 NODE *xsublis(args)
   NODE *args;
 {
-    NODE *oldstk,alist,expr,fcn,*val;
+    NODE ***oldstk,*alist,*expr,*fcn,*val;
     int tresult;
 
     /* create a new stack frame */
     oldstk = xlsave(&alist,&expr,&fcn,NULL);
 
     /* get the assocation list and the expression */
-    alist.n_ptr = xlmatch(LIST,&args);
-    expr.n_ptr = xlarg(&args);
-    xltest(&fcn.n_ptr,&tresult,&args);
+    alist = xlmatch(LIST,&args);
+    expr = xlarg(&args);
+    xltest(&fcn,&tresult,&args);
     xllastarg(args);
 
     /* do the substitution */
-    val = sublis(alist.n_ptr,expr.n_ptr,fcn.n_ptr,tresult);
+    val = sublis(alist,expr,fcn,tresult);
 
     /* restore the previous stack frame */
     xlstack = oldstk;
@@ -373,17 +361,15 @@ NODE *xsublis(args)
 LOCAL NODE *sublis(alist,expr,fcn,tresult)
   NODE *alist,*expr,*fcn; int tresult;
 {
-    NODE *oldstk,carval,cdrval,*val;
+    NODE ***oldstk,*carval,*cdrval,*val;
 
     if (val = assoc(expr,alist,fcn,tresult))
 	val = cdr(val);
     else if (consp(expr)) {
 	oldstk = xlsave(&carval,&cdrval,NULL);
-	carval.n_ptr = sublis(alist,car(expr),fcn,tresult);
-	cdrval.n_ptr = sublis(alist,cdr(expr),fcn,tresult);
-	val = newnode(LIST);
-	rplaca(val,carval.n_ptr);
-	rplacd(val,cdrval.n_ptr);
+	carval = sublis(alist,car(expr),fcn,tresult);
+	cdrval = sublis(alist,cdr(expr),fcn,tresult);
+	val = cons(carval,cdrval);
 	xlstack = oldstk;
     }
     else
@@ -408,58 +394,56 @@ LOCAL NODE *assoc(expr,alist,fcn,tresult)
 NODE *xremove(args)
   NODE *args;
 {
-    NODE *oldstk,x,list,fcn,val,*p,*last;
+    NODE ***oldstk,*x,*list,*fcn,*val,*p;
+    NODE *last = NIL;
     int tresult;
 
     /* create a new stack frame */
     oldstk = xlsave(&x,&list,&fcn,&val,NULL);
 
     /* get the expression to remove and the list */
-    x.n_ptr = xlarg(&args);
-    list.n_ptr = xlmatch(LIST,&args);
-    xltest(&fcn.n_ptr,&tresult,&args);
+    x = xlarg(&args);
+    list = xlmatch(LIST,&args);
+    xltest(&fcn,&tresult,&args);
     xllastarg(args);
 
     /* remove matches */
-    while (consp(list.n_ptr)) {
+    while (consp(list)) {
 
 	/* check to see if this element should be deleted */
-	if (dotest(x.n_ptr,car(list.n_ptr),fcn.n_ptr) != tresult) {
-	    p = newnode(LIST);
-	    rplaca(p,car(list.n_ptr));
-	    if (val.n_ptr) rplacd(last,p);
-	    else val.n_ptr = p;
+	if (dotest(x,car(list),fcn) != tresult) {
+	    p = consa(car(list));
+	    if (val) rplacd(last,p);
+	    else val = p;
 	    last = p;
 	}
 
 	/* move to the next element */
-	list.n_ptr = cdr(list.n_ptr);
+	list = cdr(list);
     }
 
     /* restore the previous stack frame */
     xlstack = oldstk;
 
     /* return the updated list */
-    return (val.n_ptr);
+    return (val);
 }
 
 /* dotest - call a test function */
 int dotest(arg1,arg2,fcn)
   NODE *arg1,*arg2,*fcn;
 {
-    NODE *oldstk,args,*val;
+    NODE ***oldstk,*args,*val;
 
     /* create a new stack frame */
     oldstk = xlsave(&args,NULL);
 
     /* build an argument list */
-    args.n_ptr = newnode(LIST);
-    rplaca(args.n_ptr,arg1);
-    rplacd(args.n_ptr,newnode(LIST));
-    rplaca(cdr(args.n_ptr),arg2);
+    args = consa(arg1);
+    rplacd(args,consa(arg2));
 
     /* apply the test function */
-    val = xlapply(fcn,args.n_ptr);
+    val = xlapply(fcn,args);
 
     /* restore the previous stack frame */
     xlstack = oldstk;
@@ -472,59 +456,68 @@ int dotest(arg1,arg2,fcn)
 NODE *xnth(args)
   NODE *args;
 {
-    return (nth(args,FALSE));
+    return (nth(args,TRUE));
 }
 
 /* xnthcdr - return the nth cdr of a list */
 NODE *xnthcdr(args)
   NODE *args;
 {
-    return (nth(args,TRUE));
+    return (nth(args,FALSE));
 }
 
 /* nth - internal nth function */
-LOCAL NODE *nth(args,cdrflag)
-  NODE *args; int cdrflag;
+LOCAL NODE *nth(args,carflag)
+  NODE *args; int carflag;
 {
     NODE *list;
     int n;
 
     /* get n and the list */
-    if ((n = xlmatch(INT,&args)->n_int) < 0)
+    if ((n = getfixnum(xlmatch(INT,&args))) < 0)
 	xlfail("bad argument");
     if ((list = xlmatch(LIST,&args)) == NIL)
 	xlfail("bad argument");
     xllastarg(args);
 
     /* find the nth element */
-    for (; n > 0 && consp(list); n--)
+    while (consp(list) && n--)
 	list = cdr(list);
 
     /* return the list beginning at the nth element */
-    return (cdrflag || !consp(list) ? list : car(list));
+    return (carflag && consp(list) ? car(list) : list);
 }
 
-/* xlength - return the length of a list */
+/* xlength - return the length of a list or string */
 NODE *xlength(args)
   NODE *args;
 {
-    NODE *list,*val;
+    NODE *arg;
     int n;
 
-    /* get the list */
-    list = xlmatch(LIST,&args);
+    /* get the list or string */
+    arg = xlarg(&args);
     xllastarg(args);
 
-    /* find the length */
-    for (n = 0; consp(list); n++)
-	list = cdr(list);
+    /* find the length of a list */
+    if (listp(arg))
+	for (n = 0; consp(arg); n++)
+	    arg = cdr(arg);
 
-    /* create the value node */
-    val = newnode(INT);
-    val->n_int = n;
+    /* find the length of a string */
+    else if (stringp(arg))
+	n = strlen(getstring(arg));
+
+    /* find the length of a vector */
+    else if (vectorp(arg))
+	n = getsize(arg);
+
+    /* otherwise, bad argument type */
+    else
+	xlerror("bad argument type",arg);
 
     /* return the length */
-    return (val);
+    return (cvfixnum((FIXNUM)n));
 }
 
 /* xmapc - built-in function 'mapc' */
@@ -559,46 +552,41 @@ NODE *xmaplist(args)
 LOCAL NODE *map(args,carflag,valflag)
   NODE *args; int carflag,valflag;
 {
-    NODE *oldstk,fcn,lists,arglist,val,*last,*p,*x,*y;
+    NODE ***oldstk,*fcn,*lists,*arglist,*val,*p,*x,*y;
+    NODE *last = NIL;
 
     /* create a new stack frame */
     oldstk = xlsave(&fcn,&lists,&arglist,&val,NULL);
 
     /* get the function to apply and the first list */
-    fcn.n_ptr = xlarg(&args);
-    lists.n_ptr = xlmatch(LIST,&args);
+    fcn = xlarg(&args);
+    lists = xlmatch(LIST,&args);
 
     /* save the first list if not saving function values */
     if (!valflag)
-	val.n_ptr = lists.n_ptr;
+	val = lists;
 
     /* set up the list of argument lists */
-    p = newnode(LIST);
-    rplaca(p,lists.n_ptr);
-    lists.n_ptr = p;
+    lists = consa(lists);
 
     /* get the remaining argument lists */
     while (args) {
-	p = newnode(LIST);
-	rplacd(p,lists.n_ptr);
-	lists.n_ptr = p;
-	rplaca(p,xlmatch(LIST,&args));
+	lists = consd(lists);
+	rplaca(lists,xlmatch(LIST,&args));
     }
 
     /* if the function is a symbol, get its value */
-    if (symbolp(fcn.n_ptr))
-	fcn.n_ptr = xleval(fcn.n_ptr);
+    if (symbolp(fcn))
+	fcn = xleval(fcn);
 
     /* loop through each of the argument lists */
     for (;;) {
 
 	/* build an argument list from the sublists */
-	arglist.n_ptr = NIL;
-	for (x = lists.n_ptr; x && (y = car(x)) && consp(y); x = cdr(x)) {
-	    p = newnode(LIST);
-	    rplacd(p,arglist.n_ptr);
-	    arglist.n_ptr = p;
-	    rplaca(p,carflag ? car(y) : y);
+	arglist = NIL;
+	for (x = lists; x && (y = car(x)) && consp(y); x = cdr(x)) {
+	    arglist = consd(arglist);
+	    rplaca(arglist,carflag ? car(y) : y);
 	    rplaca(x,cdr(y));
 	}
 
@@ -607,21 +595,21 @@ LOCAL NODE *map(args,carflag,valflag)
 
 	/* apply the function to the arguments */
 	if (valflag) {
-	    p = newnode(LIST);
-	    if (val.n_ptr) rplacd(last,p);
-	    else val.n_ptr = p;
-	    rplaca(p,xlapply(fcn.n_ptr,arglist.n_ptr));
+	    p = consa(NIL);
+	    if (val) rplacd(last,p);
+	    else val = p;
+	    rplaca(p,xlapply(fcn,arglist));
 	    last = p;
 	}
 	else
-	    xlapply(fcn.n_ptr,arglist.n_ptr);
+	    xlapply(fcn,arglist);
     }
 
     /* restore the previous stack frame */
     xlstack = oldstk;
 
     /* return the last test expression value */
-    return (val.n_ptr);
+    return (val);
 }
 
 /* xrplca - replace the car of a list node */
@@ -666,7 +654,8 @@ NODE *xrplcd(args)
 NODE *xnconc(args)
   NODE *args;
 {
-    NODE *list,*last,*val;
+    NODE *list,*val;
+    NODE *last = NIL;
 
     /* concatenate each argument */
     for (val = NIL; args; ) {
@@ -697,43 +686,43 @@ NODE *xnconc(args)
 NODE *xdelete(args)
   NODE *args;
 {
-    NODE *oldstk,x,list,fcn,*last,*val;
+    NODE ***oldstk,*x,*list,*fcn,*last,*val;
     int tresult;
 
     /* create a new stack frame */
     oldstk = xlsave(&x,&list,&fcn,NULL);
 
     /* get the expression to delete and the list */
-    x.n_ptr = xlarg(&args);
-    list.n_ptr = xlmatch(LIST,&args);
-    xltest(&fcn.n_ptr,&tresult,&args);
+    x = xlarg(&args);
+    list = xlmatch(LIST,&args);
+    xltest(&fcn,&tresult,&args);
     xllastarg(args);
 
     /* delete leading matches */
-    while (consp(list.n_ptr)) {
-	if (dotest(x.n_ptr,car(list.n_ptr),fcn.n_ptr) != tresult)
+    while (consp(list)) {
+	if (dotest(x,car(list),fcn) != tresult)
 	    break;
-	list.n_ptr = cdr(list.n_ptr);
+	list = cdr(list);
     }
-    val = last = list.n_ptr;
+    val = last = list;
 
     /* delete embedded matches */
-    if (consp(list.n_ptr)) {
+    if (consp(list)) {
 
 	/* skip the first non-matching element */
-	list.n_ptr = cdr(list.n_ptr);
+	list = cdr(list);
 
 	/* look for embedded matches */
-	while (consp(list.n_ptr)) {
+	while (consp(list)) {
 
 	    /* check to see if this element should be deleted */
-	    if (dotest(x.n_ptr,car(list.n_ptr),fcn.n_ptr) == tresult)
-		rplacd(last,cdr(list.n_ptr));
+	    if (dotest(x,car(list),fcn) == tresult)
+		rplacd(last,cdr(list));
 	    else
-		last = list.n_ptr;
+		last = list;
 
 	    /* move to the next element */
-	    list.n_ptr = cdr(list.n_ptr);
+	    list = cdr(list);
  	}
     }
 
@@ -764,14 +753,14 @@ NODE *xsymbolp(args)
     return (arg == NIL || symbolp(arg) ? true : NIL);
 }
 
-/* xnumberp - is this an number? */
+/* xnumberp - is this a number? */
 NODE *xnumberp(args)
   NODE *args;
 {
     NODE *arg;
     arg = xlarg(&args);
     xllastarg(args);
-    return (fixp(arg) ? true : NIL);
+    return (fixp(arg) || floatp(arg) ? true : NIL);
 }
 
 /* xboundp - is this a value bound to this symbol? */
@@ -781,7 +770,7 @@ NODE *xboundp(args)
     NODE *sym;
     sym = xlmatch(SYM,&args);
     xllastarg(args);
-    return (sym->n_symvalue == s_unbound ? NIL : true);
+    return (getvalue(sym) == s_unbound ? NIL : true);
 }
 
 /* xnull - is this null? */
@@ -849,3 +838,54 @@ LOCAL NODE *cequal(args,fcn)
     /* compare the arguments */
     return ((*fcn)(arg1,arg2) ? true : NIL);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

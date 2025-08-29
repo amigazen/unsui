@@ -1,0 +1,44 @@
+PCFUN.MEM
+12/9/85
+
+This is a list of IBM-PC specific functions in XLISP version 1.5d.
+All of the functions take integers as arguments except where noted.
+All of the functions return NIL.
+
+(dos <cmd>)  Execute a DOS command
+  <cmd>	the command string
+
+(get-key)  Get a key from the keyboard
+
+(set-cursor <row> <col>)  Set the cursor position
+
+(clear)  Clear the screen
+
+(clear-eol)  Clear to the end of the current line
+
+(clear-eos)  Clear to the end of the screen
+
+(insert-line)  Insert a line
+
+(delete-line)  Delete a line
+
+(insert-char)  Insert a character
+
+(delete-char)  Delete a character
+
+(set-inverse <mode>)  Set inverse mode
+   <mode> is T for inverse, NIL for normal
+
+(line <x1> <y1> <x2> <y2>)  Draw a line
+
+(point <x> <y>)  Draw a point
+
+(circle <x> <y> <radius>)  Draw a circle
+
+(aspect-ratio <x> <y>)  Set the aspect ratio for circles
+
+(colors <color> <palette> <background>)  Set the display colors
+
+(mode <mode>)  Set the display mode
+
+

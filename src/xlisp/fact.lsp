@@ -1,3 +1,6 @@
-(defun factorial (n)
-       (cond ((= n 1) 1)
-	     (t (* n (factorial (- n 1))))))
+(defun fact (n)
+       (if (< n 2)
+           1
+	   (* n (fact (1- n)))))
+
+

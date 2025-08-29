@@ -1,4 +1,3 @@
-
 ;; The following is a tiny Prolog interpreter in MacLisp
 ;; written by Ken Kahn and modified for XLISP by David Betz.
 ;; It was inspired by other tiny Lisp-based Prologs of
@@ -58,7 +57,7 @@
 
 (defun value (x environment &aux binding)
        (cond ((variable-p x)
-              (setq binding (assoc x environment))
+              (setq binding (assoc x environment :test #'equal))
               (cond ((null binding) x)
                     (t (value (cadr binding) environment))))
              (t x)))
@@ -102,3 +101,5 @@
 
 ;; start things going
 (prolog db)
+
+

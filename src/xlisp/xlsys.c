@@ -1,34 +1,46 @@
 /* xlsys.c - xlisp builtin system functions */
+/*	Copyright (c) 1985, by David Michael Betz
+	All Rights Reserved
+	Permission is granted for unrestricted non-commercial use	*/
 
 #include "xlisp.h"
 
 /* external variables */
-extern NODE *xlstack;
+extern NODE ***xlstack,*xlenv;
 extern int anodes;
 
 /* external symbols */
 extern NODE *a_subr,*a_fsubr;
-extern NODE *a_list,*a_sym,*a_int,*a_str,*a_obj,*a_fptr;
+extern NODE *a_list,*a_sym,*a_int,*a_float,*a_str,*a_obj,*a_fptr,*a_vect;
 extern NODE *true;
 
 /* xload - direct input from a file */
 NODE *xload(args)
   NODE *args;
 {
-    NODE *oldstk,fname,*val;
+    NODE ***oldstk,*fname,*val;
     int vflag,pflag;
+    char *name;
 
     /* create a new stack frame */
     oldstk = xlsave(&fname,NULL);
 
     /* get the file name, verbose flag and print flag */
-    fname.n_ptr = xlmatch(STR,&args);
+    fname = xlarg(&args);
     vflag = (args ? xlarg(&args) != NIL : TRUE);
     pflag = (args ? xlarg(&args) != NIL : FALSE);
     xllastarg(args);
 
+    /* get the filename string */
+    if (symbolp(fname))
+	name = getstring(getpname(fname));
+    else if (stringp(fname))
+	name = getstring(fname);
+    else
+	xlfail("bad argument type",fname);
+
     /* load the file */
-    val = (xlload(fname.n_ptr->n_str,vflag,pflag) ? true : NIL);
+    val = (xlload(name,vflag,pflag) ? true : NIL);
 
     /* restore the previous stack frame */
     xlstack = oldstk;
@@ -55,11 +67,10 @@ NODE *xgc(args)
 NODE *xexpand(args)
   NODE *args;
 {
-    NODE *val;
     int n,i;
 
     /* get the new number to allocate */
-    n = (args ? xlmatch(INT,&args)->n_int : 1);
+    n = (args ? getfixnum(xlmatch(INT,&args)) : 1);
     xllastarg(args);
 
     /* allocate more segments */
@@ -68,20 +79,17 @@ NODE *xexpand(args)
 	    break;
 
     /* return the number of segments added */
-    val = newnode(INT);
-    val->n_int = i;
-    return (val);
+    return (cvfixnum((FIXNUM)i));
 }
 
 /* xalloc - xlisp function to set the number of nodes to allocate */
 NODE *xalloc(args)
   NODE *args;
 {
-    NODE *val;
     int n,oldn;
 
     /* get the new number to allocate */
-    n = xlmatch(INT,&args)->n_int;
+    n = getfixnum(xlmatch(INT,&args));
 
     /* make sure there aren't any more arguments */
     xllastarg(args);
@@ -91,9 +99,7 @@ NODE *xalloc(args)
     anodes = n;
 
     /* return the old number */
-    val = newnode(INT);
-    val->n_int = oldn;
-    return (val);
+    return (cvfixnum((FIXNUM)oldn));
 }
 
 /* xmem - xlisp function to print memory statistics */
@@ -125,9 +131,11 @@ NODE *xtype(args)
 	case LIST:	return (a_list);
 	case SYM:	return (a_sym);
 	case INT:	return (a_int);
+	case FLOAT:	return (a_float);
 	case STR:	return (a_str);
 	case OBJ:	return (a_obj);
 	case FPTR:	return (a_fptr);
+	case VECT:	return (a_vect);
 	default:	xlfail("bad node type");
     }
 }
@@ -138,7 +146,7 @@ NODE *xbaktrace(args)
 {
     int n;
 
-    n = (args ? xlmatch(INT,&args)->n_int : -1);
+    n = (args ? getfixnum(xlmatch(INT,&args)) : -1);
     xllastarg(args);
     xlbaktrace(n);
     return (NIL);
@@ -149,5 +157,92 @@ NODE *xexit(args)
   NODE *args;
 {
     xllastarg(args);
+    osfinish ();
     exit();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

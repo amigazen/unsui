@@ -1,4 +1,7 @@
 /* xldmem - xlisp dynamic memory management routines */
+/*	Copyright (c) 1985, by David Michael Betz
+	All Rights Reserved
+	Permission is granted for unrestricted non-commercial use	*/
 
 #include "xlisp.h"
 
@@ -6,27 +9,211 @@
 #define ALLOCSIZE (sizeof(struct segment) + (anodes-1) * sizeof(NODE))
 
 /* external variables */
-extern NODE *oblist,*keylist;
-extern NODE *xlstack;
-extern NODE *xlenv,*xlnewenv;
+extern NODE ***xlstack,***xlstkbase,***xlstktop;
+extern NODE *obarray;
+extern NODE *xlenv;
 extern long total;
 extern int anodes,nnodes,nsegs,nfree,gccalls;
 extern struct segment *segs;
 extern NODE *fnodes;
+extern char buf[];
 
 /* external procedures */
 extern char *malloc();
 extern char *calloc();
 
+/* forward declarations */
+FORWARD NODE *newnode();
+FORWARD char *strsave();
+FORWARD char *stralloc();
+
+/* cons - construct a new cons node */
+NODE *cons(x,y)
+  NODE *x,*y;
+{
+    NODE *val;
+    val = newnode(LIST);
+    rplaca(val,x);
+    rplacd(val,y);
+    return (val);
+}
+
+/* consa - (cons x nil) */
+NODE *consa(x)
+  NODE *x;
+{
+    NODE *val;
+    val = newnode(LIST);
+    rplaca(val,x);
+    return (val);
+}
+
+/* consd - (cons nil x) */
+NODE *consd(x)
+  NODE *x;
+{
+    NODE *val;
+    val = newnode(LIST);
+    rplacd(val,x);
+    return (val);
+}
+
+/* cvstring - convert a string to a string node */
+NODE *cvstring(str)
+  char *str;
+{
+    NODE ***oldstk,*val;
+    oldstk = xlsave(&val,NULL);
+    val = newnode(STR);
+    val->n_str = strsave(str);
+    val->n_strtype = DYNAMIC;
+    xlstack = oldstk;
+    return (val);
+}
+
+/* cvcstring - convert a constant string to a string node */
+NODE *cvcstring(str)
+  char *str;
+{
+    NODE *val;
+    val = newnode(STR);
+    val->n_str = str;
+    val->n_strtype = STATIC;
+    return (val);
+}
+
+/* cvsymbol - convert a string to a symbol */
+NODE *cvsymbol(pname)
+  char *pname;
+{
+    NODE ***oldstk,*val;
+    oldstk = xlsave(&val,NULL);
+    val = newnode(SYM);
+    val->n_symplist = newnode(LIST);
+    rplaca(val->n_symplist,cvstring(pname));
+    xlstack = oldstk;
+    return (val);
+}
+
+/* cvcsymbol - convert a constant string to a symbol */
+NODE *cvcsymbol(pname)
+  char *pname;
+{
+    NODE ***oldstk,*val;
+    oldstk = xlsave(&val,NULL);
+    val = newnode(SYM);
+    val->n_symplist = newnode(LIST);
+    rplaca(val->n_symplist,cvcstring(pname));
+    xlstack = oldstk;
+    return (val);
+}
+
+/* cvsubr - convert a function to a subr or fsubr */
+NODE *cvsubr(fcn,type)
+  NODE *(*fcn)(); int type;
+{
+    NODE *val;
+    val = newnode(type);
+    val->n_subr = fcn;
+    return (val);
+}
+
+/* cvfile - convert a file pointer to a file */
+NODE *cvfile(fp)
+  FILE *fp;
+{
+    NODE *val;
+    val = newnode(FPTR);
+    setfile(val,fp);
+    setsavech(val,0);
+    return (val);
+}
+
+/* cvfixnum - convert an integer to a fixnum node */
+NODE *cvfixnum(n)
+  FIXNUM n;
+{
+    NODE *val;
+    val = newnode(INT);
+    val->n_int = n;
+    return (val);
+}
+
+/* cvflonum - convert a floating point number to a flonum node */
+NODE *cvflonum(n)
+  FLONUM n;
+{
+    NODE *val;
+    val = newnode(FLOAT);
+    val->n_float = n;
+    return (val);
+}
+
+/* newstring - allocate and initialize a new string */
+NODE *newstring(size)
+  int size;
+{
+    NODE ***oldstk,*val;
+    oldstk = xlsave(&val,NULL);
+    val = newnode(STR);
+    val->n_str = stralloc(size);
+    *getstring(val) = 0;
+    val->n_strtype = DYNAMIC;
+    xlstack = oldstk;
+    return (val);
+}
+
+/* newobject - allocate and initialize a new object */
+NODE *newobject(cls,size)
+  NODE *cls; int size;
+{
+    NODE *val;
+    val = newvector(size+1);
+    setelement(val,0,cls);
+    val->n_type = OBJ;
+    return (val);
+}
+
+/* newvector - allocate and initialize a new vector node */
+NODE *newvector(size)
+  int size;
+{
+    NODE ***oldstk,*vect;
+    int bsize;
+
+    /* establish a new stack frame */
+    oldstk = xlsave(&vect,NULL);
+
+    /* allocate a vector node and set the size to zero (in case of gc) */
+    vect = newnode(VECT);
+    vect->n_vsize = 0;
+
+    /* allocate memory for the vector */
+    bsize = size * sizeof(NODE *);
+    if ((vect->n_vdata = (NODE **) calloc(1,bsize)) == NULL) {
+	findmem();
+	if ((vect->n_vdata = (NODE **) calloc(1,bsize)) == NULL)
+	    xlfail("insufficient vector space");
+    }
+    vect->n_vsize = size;
+    total += (long) bsize;
+ 
+    /* restore the previous stack frame */
+    xlstack = oldstk;
+
+    /* return the new vector */
+    return (vect);
+}
+
 /* newnode - allocate a new node */
-NODE *newnode(type)
+LOCAL NODE *newnode(type)
   int type;
 {
     NODE *nnode;
 
     /* get a free node */
     if ((nnode = fnodes) == NIL) {
-	gc();
+	findmem();
 	if ((nnode = fnodes) == NIL)
 	    xlabort("insufficient node space");
     }
@@ -44,14 +231,14 @@ NODE *newnode(type)
 }
 
 /* stralloc - allocate memory for a string adding a byte for the terminator */
-char *stralloc(size)
+LOCAL char *stralloc(size)
   int size;
 {
     char *sptr;
 
     /* allocate memory for the string copy */
     if ((sptr = malloc(size+1)) == NULL) {
-	gc();
+	findmem();  
 	if ((sptr = malloc(size+1)) == NULL)
 	    xlfail("insufficient string space");
     }
@@ -62,7 +249,7 @@ char *stralloc(size)
 }
 
 /* strsave - generate a dynamic copy of a string */
-char *strsave(str)
+LOCAL char *strsave(str)
   char *str;
 {
     char *sptr;
@@ -75,41 +262,45 @@ char *strsave(str)
     return (sptr);
 }
 
-/* strfree - free string memory */
-strfree(str)
+/* strfree - free a string */
+LOCAL strfree(str)
   char *str;
 {
     total -= (long) (strlen(str)+1);
     free(str);
 }
 
+/* findmem - find more memory by collecting then expanding */
+findmem()
+{
+    gc();
+    if (nfree < anodes)
+	addseg();
+}
+
 /* gc - garbage collect */
 gc()
 {
-    NODE *p;
+    NODE ***p;
+    void mark();
 
-    /* mark all accessible nodes */
-    mark(oblist); mark(keylist);
+    /* mark the obarray and the current environment */
+    mark(obarray);
     mark(xlenv);
-    mark(xlnewenv);
 
     /* mark the evaluation stack */
-    for (p = xlstack; p; p = cdr(p))
-	mark(car(p));
+    for (p = xlstack; p < xlstktop; )
+	mark(**p++);
 
     /* sweep memory collecting all unmarked nodes */
     sweep();
-
-    /* if there's still nothing available, allocate more memory */
-    if (fnodes == NIL)
-	addseg();
 
     /* count the gc call */
     gccalls++;
 }
 
 /* mark - mark all accessible nodes */
-LOCAL mark(ptr)
+void mark(ptr)
   NODE *ptr;
 {
     NODE *this,*prev,*tmp;
@@ -195,6 +386,15 @@ LOCAL mark(ptr)
     }
 }
 
+/* vmark - mark a vector */
+vmark(n)
+  NODE *n;
+{
+    int i;
+    for (i = 0; i < getsize(n); ++i)
+	mark(getelement(n,i));
+}
+
 /* sweep - sweep all unmarked nodes and add them to the free list */
 LOCAL sweep()
 {
@@ -213,12 +413,20 @@ LOCAL sweep()
 	    if (!(p->n_flags & MARK)) {
 		switch (ntype(p)) {
 		case STR:
-			if (p->n_strtype == DYNAMIC && p->n_str != NULL)
-			    strfree(p->n_str);
+			if (p->n_strtype == DYNAMIC && p->n_str != NULL) {
+			    total -= (long) (strlen(p->n_str)+1);
+			    free(p->n_str);
+			}
 			break;
 		case FPTR:
 			if (p->n_fp)
 			    fclose(p->n_fp);
+			break;
+		case VECT:
+			if (p->n_vsize) {
+			    total -= (long) (p->n_vsize * sizeof(NODE **));
+			    free(p->n_vdata);
+			}
 			break;
 		}
 		p->n_type = FREE;
@@ -277,18 +485,22 @@ LOCAL int livecar(n)
   NODE *n;
 {
     switch (ntype(n)) {
+    case OBJ:
+    case VECT:
+	    vmark(n);
     case SUBR:
     case FSUBR:
     case INT:
+    case FLOAT:
     case STR:
     case FPTR:
 	    return (FALSE);
     case SYM:
     case LIST:
-    case OBJ:
 	    return (car(n) != NIL);
     default:
 	    printf("bad node type (%d) found during left scan\n",ntype(n));
+	    osfinish ();
 	    exit();
     }
 }
@@ -301,15 +513,18 @@ LOCAL int livecdr(n)
     case SUBR:
     case FSUBR:
     case INT:
+    case FLOAT:
     case STR:
     case FPTR:
+    case OBJ:
+    case VECT:
 	    return (FALSE);
     case SYM:
     case LIST:
-    case OBJ:
 	    return (cdr(n) != NIL);
     default:
 	    printf("bad node type (%d) found during right scan\n",ntype(n));
+	    osfinish ();
 	    exit();
     }
 }
@@ -317,12 +532,12 @@ LOCAL int livecdr(n)
 /* stats - print memory statistics */
 stats()
 {
-    printf("Nodes:       %d\n",nnodes);
-    printf("Free nodes:  %d\n",nfree);
-    printf("Segments:    %d\n",nsegs);
-    printf("Allocate:    %d\n",anodes);
-    printf("Total:       %ld\n",total);
-    printf("Collections: %d\n",gccalls);
+    sprintf(buf,"Nodes:       %d\n",nnodes);  stdputstr(buf);
+    sprintf(buf,"Free nodes:  %d\n",nfree);   stdputstr(buf);
+    sprintf(buf,"Segments:    %d\n",nsegs);   stdputstr(buf);
+    sprintf(buf,"Allocate:    %d\n",anodes);  stdputstr(buf);
+    sprintf(buf,"Total:       %ld\n",total);  stdputstr(buf);
+    sprintf(buf,"Collections: %d\n",gccalls); stdputstr(buf);
 }
 
 /* xlminit - initialize the dynamic memory module */
@@ -336,5 +551,15 @@ xlminit()
     segs = NULL;
 
     /* initialize structures that are marked by the collector */
-    xlstack = xlenv = xlnewenv = oblist = keylist = NIL;
+    xlenv = obarray = NIL;
+
+    /* allocate the evaluation stack */
+    if ((xlstkbase = (NODE ***)malloc(EDEPTH * sizeof(NODE **))) == NULL) {
+	printf("insufficient memory");
+	osfinish ();
+	exit();
+    }
+    total += (long)(EDEPTH * sizeof(NODE **));
+    xlstack = xlstktop = xlstkbase + EDEPTH;
 }
+

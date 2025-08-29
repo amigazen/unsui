@@ -1,10 +1,13 @@
 /* xlsubr - xlisp builtin function support routines */
+/*	Copyright (c) 1985, by David Michael Betz
+	All Rights Reserved
+	Permission is granted for unrestricted non-commercial use	*/
 
 #include "xlisp.h"
 
 /* external variables */
 extern NODE *k_test,*k_tnot,*s_eql;
-extern NODE *xlstack;
+extern NODE ***xlstack;
 
 /* xlsubr - define a builtin function */
 xlsubr(sname,type,subr)
@@ -16,8 +19,7 @@ xlsubr(sname,type,subr)
     sym = xlsenter(sname);
 
     /* initialize the value */
-    sym->n_symvalue = newnode(type);
-    sym->n_symvalue->n_subr = subr;
+    setvalue(sym,cvsubr(subr,type));
 }
 
 /* xlarg - get the next argument */
@@ -32,10 +34,6 @@ NODE *xlarg(pargs)
 
     /* get the argument value */
     arg = car(*pargs);
-
-    /* make sure its not a keyword */
-    if (symbolp(arg) && *car(arg->n_symplist)->n_str == ':')
-	xlfail("too few arguments");
 
     /* move the argument pointer ahead */
     *pargs = cdr(*pargs);
@@ -56,11 +54,11 @@ NODE *xlmatch(type,pargs)
     /* check its type */
     if (type == LIST) {
 	if (arg && ntype(arg) != LIST)
-	    xlfail("bad argument type");
+	    xlerror("bad argument type",arg);
     }
     else {
 	if (arg == NIL || ntype(arg) != type)
-	    xlfail("bad argument type");
+	    xlerror("bad argument type",arg);
     }
 
     /* return the argument */
@@ -71,22 +69,22 @@ NODE *xlmatch(type,pargs)
 NODE *xlevarg(pargs)
   NODE **pargs;
 {
-    NODE *oldstk,val;
+    NODE ***oldstk,*val;
 
     /* create a new stack frame */
     oldstk = xlsave(&val,NULL);
 
     /* get the argument */
-    val.n_ptr = xlarg(pargs);
+    val = xlarg(pargs);
 
     /* evaluate the argument */
-    val.n_ptr = xleval(val.n_ptr);
+    val = xleval(val);
 
     /* restore the previous stack frame */
     xlstack = oldstk;
 
     /* return the argument */
-    return (val.n_ptr);
+    return (val);
 }
 
 /* xlevmatch - get an evaluated argument and match its type */
@@ -101,11 +99,11 @@ NODE *xlevmatch(type,pargs)
     /* check its type */
     if (type == LIST) {
 	if (arg && ntype(arg) != LIST)
-	    xlfail("bad argument type");
+	    xlerror("bad argument type",arg);
     }
     else {
 	if (arg == NIL || ntype(arg) != type)
-	    xlfail("bad argument type");
+	    xlerror("bad argument type",arg);
     }
 
     /* return the argument */
@@ -113,14 +111,14 @@ NODE *xlevmatch(type,pargs)
 }
 
 /* xltest - get the :test or :test-not keyword argument */
-xltest(pfcn,ptresult,pargs)
+void xltest(pfcn,ptresult,pargs)
   NODE **pfcn; int *ptresult; NODE **pargs;
 {
     NODE *arg;
 
     /* default the argument to eql */
     if (!consp(*pargs)) {
-	*pfcn = s_eql->n_symvalue;
+	*pfcn = getvalue(s_eql);
 	*ptresult = TRUE;
 	return;
     }
@@ -154,25 +152,30 @@ xltest(pfcn,ptresult,pargs)
     *pargs = cdr(*pargs);
 }
 
+/* xlgetfile - get a file or stream */
+NODE *xlgetfile(pargs)
+  NODE **pargs;
+{
+    NODE *arg;
+
+    /* get a file or stream (cons) or nil */
+    if (arg = xlarg(pargs)) {
+	if (filep(arg)) {
+	    if (arg->n_fp == NULL)
+		xlfail("file not open");
+	}
+	else if (!consp(arg))
+	    xlerror("bad argument type",arg);
+    }
+    return (arg);
+}
+
 /* xllastarg - make sure the remainder of the argument list is empty */
 xllastarg(args)
   NODE *args;
 {
     if (args)
 	xlfail("too many arguments");
-}
-
-/* assign - assign a value to a symbol */
-assign(sym,val)
-  NODE *sym,*val;
-{
-    NODE *lptr;
-
-    /* check for a current object */
-    if ((lptr = xlobsym(sym)) != NIL)
-	rplaca(lptr,val);
-    else
-	sym->n_symvalue = val;
 }
 
 /* eq - internal eq function */
@@ -190,6 +193,8 @@ int eql(arg1,arg2)
 	return (TRUE);
     else if (fixp(arg1) && fixp(arg2))
 	return (arg1->n_int == arg2->n_int);
+    else if (floatp(arg1) && floatp(arg2))
+	return (arg1->n_float == arg2->n_float);
     else if (stringp(arg1) && stringp(arg2))
 	return (strcmp(arg1->n_str,arg2->n_str) == 0);
     else
@@ -208,3 +213,4 @@ int equal(arg1,arg2)
     else
 	return (FALSE);
 }
+

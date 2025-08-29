@@ -1,9 +1,12 @@
 /* xlcont - xlisp control built-in functions */
+/*	Copyright (c) 1985, by David Michael Betz
+	All Rights Reserved
+	Permission is granted for unrestricted non-commercial use	*/
 
 #include "xlisp.h"
 
 /* external variables */
-extern NODE *xlstack,*xlenv,*xlnewenv,*xlvalue;
+extern NODE ***xlstack,*xlenv,*xlvalue;
 extern NODE *s_unbound;
 extern NODE *s_evalhook,*s_applyhook;
 extern NODE *true;
@@ -21,29 +24,29 @@ FORWARD NODE *doloop();
 NODE *xcond(args)
   NODE *args;
 {
-    NODE *oldstk,arg,list,*val;
+    NODE ***oldstk,*arg,*list,*val;
 
     /* create a new stack frame */
     oldstk = xlsave(&arg,&list,NULL);
 
     /* initialize */
-    arg.n_ptr = args;
+    arg = args;
 
     /* initialize the return value */
     val = NIL;
 
     /* find a predicate that is true */
-    while (arg.n_ptr) {
+    while (arg) {
 
 	/* get the next conditional */
-	list.n_ptr = xlmatch(LIST,&arg.n_ptr);
+	list = xlmatch(LIST,&arg);
 
 	/* evaluate the predicate part */
-	if (xlevarg(&list.n_ptr)) {
+	if (val = xlevarg(&list)) {
 
 	    /* evaluate each expression */
-	    while (list.n_ptr)
-		val = xlevarg(&list.n_ptr);
+	    while (list)
+		val = xlevarg(&list);
 
 	    /* exit the loop */
 	    break;
@@ -57,24 +60,79 @@ NODE *xcond(args)
     return (val);
 }
 
+/* xcase - built-in function 'case' */
+NODE *xcase(args)
+  NODE *args;
+{
+    NODE ***oldstk,*key,*arg,*clause,*list,*val;
+
+    /* create a new stack frame */
+    oldstk = xlsave(&key,&arg,&clause,NULL);
+
+    /* initialize */
+    arg = args;
+
+    /* get the key expression */
+    key = xlevarg(&arg);
+
+    /* initialize the return value */
+    val = NIL;
+
+    /* find a case that matches */
+    while (arg) {
+
+	/* get the next case clause */
+	clause = xlmatch(LIST,&arg);
+
+	/* compare the key list against the key */
+	if ((list = xlarg(&clause)) == true ||
+            (listp(list) && keypresent(key,list)) ||
+            eql(key,list)) {
+
+	    /* evaluate each expression */
+	    while (clause)
+		val = xlevarg(&clause);
+
+	    /* exit the loop */
+	    break;
+	}
+    }
+
+    /* restore the previous stack frame */
+    xlstack = oldstk;
+
+    /* return the value */
+    return (val);
+}
+
+/* keypresent - check for the presence of a key in a list */
+LOCAL int keypresent(key,list)
+  NODE *key,*list;
+{
+    for (; consp(list); list = cdr(list))
+	if (eql(car(list),key))
+	    return (TRUE);
+    return (FALSE);
+}
+
 /* xand - built-in function 'and' */
 NODE *xand(args)
   NODE *args;
 {
-    NODE *oldstk,arg,*val;
+    NODE ***oldstk,*arg,*val;
 
     /* create a new stack frame */
     oldstk = xlsave(&arg,NULL);
 
     /* initialize */
-    arg.n_ptr = args;
+    arg = args;
     val = true;
 
     /* evaluate each argument */
-    while (arg.n_ptr)
+    while (arg)
 
 	/* get the next argument */
-	if ((val = xlevarg(&arg.n_ptr)) == NIL)
+	if ((val = xlevarg(&arg)) == NIL)
 	    break;
 
     /* restore the previous stack frame */
@@ -88,18 +146,18 @@ NODE *xand(args)
 NODE *xor(args)
   NODE *args;
 {
-    NODE *oldstk,arg,*val;
+    NODE ***oldstk,*arg,*val;
 
     /* create a new stack frame */
     oldstk = xlsave(&arg,NULL);
 
     /* initialize */
-    arg.n_ptr = args;
+    arg = args;
     val = NIL;
 
     /* evaluate each argument */
-    while (arg.n_ptr)
-	if ((val = xlevarg(&arg.n_ptr)))
+    while (arg)
+	if ((val = xlevarg(&arg)))
 	    break;
 
     /* restore the previous stack frame */
@@ -113,19 +171,19 @@ NODE *xor(args)
 NODE *xif(args)
   NODE *args;
 {
-    NODE *oldstk,testexpr,thenexpr,elseexpr,*val;
+    NODE ***oldstk,*testexpr,*thenexpr,*elseexpr,*val;
 
     /* create a new stack frame */
     oldstk = xlsave(&testexpr,&thenexpr,&elseexpr,NULL);
 
     /* get the test expression, then clause and else clause */
-    testexpr.n_ptr = xlarg(&args);
-    thenexpr.n_ptr = xlarg(&args);
-    elseexpr.n_ptr = (args ? xlarg(&args) : NIL);
+    testexpr = xlarg(&args);
+    thenexpr = xlarg(&args);
+    elseexpr = (args ? xlarg(&args) : NIL);
     xllastarg(args);
 
     /* evaluate the appropriate clause */
-    val = xleval(xleval(testexpr.n_ptr) ? thenexpr.n_ptr : elseexpr.n_ptr);
+    val = xleval(xleval(testexpr) ? thenexpr : elseexpr);
 
     /* restore the previous stack frame */
     xlstack = oldstk;
@@ -152,24 +210,28 @@ NODE *xletstar(args)
 LOCAL NODE *let(args,pflag)
   NODE *args; int pflag;
 {
-    NODE *oldstk,*oldenv,*oldnewenv,arg,*val;
+    NODE ***oldstk,*newenv,*arg,*val;
 
     /* create a new stack frame */
-    oldstk = xlsave(&arg,NULL);
+    oldstk = xlsave(&newenv,&arg,NULL);
 
     /* initialize */
-    arg.n_ptr = args;
+    arg = args;
+
+    /* create a new environment frame */
+    newenv = xlframe(xlenv);
 
     /* get the list of bindings and bind the symbols */
-    oldnewenv = xlnewenv; oldenv = xlnewenv = xlenv;
-    dobindings(xlmatch(LIST,&arg.n_ptr),pflag);
+    if (!pflag) xlenv = newenv;
+    dobindings(xlmatch(LIST,&arg),newenv);
+    if (pflag) xlenv = newenv;
 
     /* execute the code */
-    for (val = NIL; arg.n_ptr; )
-	val = xlevarg(&arg.n_ptr);
+    for (val = NIL; arg; )
+	val = xlevarg(&arg);
 
     /* unbind the arguments */
-    xlunbind(oldenv); xlnewenv = oldnewenv;
+    xlenv = cdr(xlenv);
 
     /* restore the previous stack frame */
     xlstack = oldstk;
@@ -196,23 +258,27 @@ NODE *xprogstar(args)
 LOCAL NODE *prog(args,pflag)
   NODE *args; int pflag;
 {
-    NODE *oldstk,*oldenv,*oldnewenv,arg,*val;
+    NODE ***oldstk,*newenv,*arg,*val;
 
     /* create a new stack frame */
-    oldstk = xlsave(&arg,NULL);
+    oldstk = xlsave(&newenv,&arg,NULL);
 
     /* initialize */
-    arg.n_ptr = args;
+    arg = args;
+
+    /* create a new environment frame */
+    newenv = xlframe(xlenv);
 
     /* get the list of bindings and bind the symbols */
-    oldnewenv = xlnewenv; oldenv = xlnewenv = xlenv;
-    dobindings(xlmatch(LIST,&arg.n_ptr),pflag);
+    if (!pflag) xlenv = newenv;
+    dobindings(xlmatch(LIST,&arg),newenv);
+    if (pflag) xlenv = newenv;
 
     /* execute the code */
-    tagblock(arg.n_ptr,&val);
+    tagblock(arg,&val);
 
     /* unbind the arguments */
-    xlunbind(oldenv); xlnewenv = oldnewenv;
+    xlenv = cdr(xlenv);
 
     /* restore the previous stack frame */
     xlstack = oldstk;
@@ -267,44 +333,44 @@ NODE *xprog2(args)
 LOCAL NODE *progx(args,n)
   NODE *args; int n;
 {
-    NODE *oldstk,arg,val;
+    NODE ***oldstk,*arg,*val;
 
     /* create a new stack frame */
     oldstk = xlsave(&arg,&val,NULL);
 
     /* initialize */
-    arg.n_ptr = args;
+    arg = args;
 
     /* evaluate the first n expressions */
     while (n--)
-	val.n_ptr = xlevarg(&arg.n_ptr);
+	val = xlevarg(&arg);
 
     /* evaluate each remaining argument */
-    while (arg.n_ptr)
-	xlevarg(&arg.n_ptr);
+    while (arg)
+	xlevarg(&arg);
 
     /* restore the previous stack frame */
     xlstack = oldstk;
 
     /* return the last test expression value */
-    return (val.n_ptr);
+    return (val);
 }
 
 /* xprogn - built-in function 'progn' */
 NODE *xprogn(args)
   NODE *args;
 {
-    NODE *oldstk,arg,*val;
+    NODE ***oldstk,*arg,*val;
 
     /* create a new stack frame */
     oldstk = xlsave(&arg,NULL);
 
     /* initialize */
-    arg.n_ptr = args;
+    arg = args;
 
     /* evaluate each remaining argument */
-    for (val = NIL; arg.n_ptr; )
-	val = xlevarg(&arg.n_ptr);
+    for (val = NIL; arg; )
+	val = xlevarg(&arg);
 
     /* restore the previous stack frame */
     xlstack = oldstk;
@@ -331,45 +397,51 @@ NODE *xdostar(args)
 LOCAL NODE *doloop(args,pflag)
   NODE *args; int pflag;
 {
-    NODE *oldstk,*oldenv,*oldnewenv,arg,blist,clist,test,*rval;
+    NODE ***oldstk,*newenv,*arg,*blist,*clist,*test,*rval;
     int rbreak;
 
     /* create a new stack frame */
-    oldstk = xlsave(&arg,&blist,&clist,&test,NULL);
+    oldstk = xlsave(&newenv,&arg,&blist,&clist,&test,NULL);
 
     /* initialize */
-    arg.n_ptr = args;
+    arg = args;
 
-    /* get the list of bindings and bind the symbols */
-    blist.n_ptr = xlmatch(LIST,&arg.n_ptr);
-    oldnewenv = xlnewenv; oldenv = xlnewenv = xlenv;
-    dobindings(blist.n_ptr,pflag);
+    /* get the list of bindings */
+    blist = xlmatch(LIST,&arg);
+
+    /* create a new environment frame */
+    newenv = xlframe(xlenv);
+
+    /* bind the symbols */
+    if (!pflag) xlenv = newenv;
+    dobindings(blist,newenv);
+    if (pflag) xlenv = newenv;
 
     /* get the exit test and result forms */
-    clist.n_ptr = xlmatch(LIST,&arg.n_ptr);
-    test.n_ptr = xlarg(&clist.n_ptr);
+    clist = xlmatch(LIST,&arg);
+    test = xlarg(&clist);
 
     /* execute the loop as long as the test is false */
     rbreak = FALSE;
-    while (xleval(test.n_ptr) == NIL) {
+    while (xleval(test) == NIL) {
 
 	/* execute the body of the loop */
-	if (tagblock(arg.n_ptr,&rval)) {
+	if (tagblock(arg,&rval)) {
 	    rbreak = TRUE;
 	    break;
 	}
 
 	/* update the looping variables */
-	doupdates(blist.n_ptr,pflag);
+	doupdates(blist,pflag);
     }
 
     /* evaluate the result expression */
     if (!rbreak)
-	for (rval = NIL; consp(clist.n_ptr); )
-	    rval = xlevarg(&clist.n_ptr);
+	for (rval = NIL; consp(clist); )
+	    rval = xlevarg(&clist);
 
     /* unbind the arguments */
-    xlunbind(oldenv); xlnewenv = oldnewenv;
+    xlenv = cdr(xlenv);
 
     /* restore the previous stack frame */
     xlstack = oldstk;
@@ -382,34 +454,34 @@ LOCAL NODE *doloop(args,pflag)
 NODE *xdolist(args)
   NODE *args;
 {
-    NODE *oldstk,*oldenv,arg,clist,sym,list,val,*rval;
+    NODE ***oldstk,*arg,*clist,*sym,*list,*val,*rval;
     int rbreak;
 
     /* create a new stack frame */
     oldstk = xlsave(&arg,&clist,&sym,&list,&val,NULL);
 
     /* initialize */
-    arg.n_ptr = args;
+    arg = args;
 
     /* get the control list (sym list result-expr) */
-    clist.n_ptr = xlmatch(LIST,&arg.n_ptr);
-    sym.n_ptr = xlmatch(SYM,&clist.n_ptr);
-    list.n_ptr = xlevmatch(LIST,&clist.n_ptr);
-    val.n_ptr = (clist.n_ptr ? xlarg(&clist.n_ptr) : NIL);
+    clist = xlmatch(LIST,&arg);
+    sym = xlmatch(SYM,&clist);
+    list = xlevmatch(LIST,&clist);
+    val = (clist ? xlarg(&clist) : NIL);
 
     /* initialize the local environment */
-    oldenv = xlenv;
-    xlsbind(sym.n_ptr,NIL);
+    xlenv = xlframe(xlenv);
+    xlbind(sym,NIL,xlenv);
 
     /* loop through the list */
     rbreak = FALSE;
-    for (; consp(list.n_ptr); list.n_ptr = cdr(list.n_ptr)) {
+    for (; consp(list); list = cdr(list)) {
 
 	/* bind the symbol to the next list element */
-	sym.n_ptr->n_symvalue = car(list.n_ptr);
+	xlsetvalue(sym,car(list));
 
 	/* execute the loop body */
-	if (tagblock(arg.n_ptr,&rval)) {
+	if (tagblock(arg,&rval)) {
 	    rbreak = TRUE;
 	    break;
 	}
@@ -417,12 +489,12 @@ NODE *xdolist(args)
 
     /* evaluate the result expression */
     if (!rbreak) {
-	sym.n_ptr->n_symvalue = NIL;
-	rval = xleval(val.n_ptr);
+	xlsetvalue(sym,NIL);
+	rval = xleval(val);
     }
 
     /* unbind the arguments */
-    xlunbind(oldenv);
+    xlenv = cdr(xlenv);
 
     /* restore the previous stack frame */
     xlstack = oldstk;
@@ -435,35 +507,34 @@ NODE *xdolist(args)
 NODE *xdotimes(args)
   NODE *args;
 {
-    NODE *oldstk,*oldenv,arg,clist,sym,val,*rval;
+    NODE ***oldstk,*arg,*clist,*sym,*val,*rval;
     int rbreak,cnt,i;
 
     /* create a new stack frame */
     oldstk = xlsave(&arg,&clist,&sym,&val,NULL);
 
     /* initialize */
-    arg.n_ptr = args;
+    arg = args;
 
     /* get the control list (sym list result-expr) */
-    clist.n_ptr = xlmatch(LIST,&arg.n_ptr);
-    sym.n_ptr = xlmatch(SYM,&clist.n_ptr);
-    cnt = xlevmatch(INT,&clist.n_ptr)->n_int;
-    val.n_ptr = (clist.n_ptr ? xlarg(&clist.n_ptr) : NIL);
+    clist = xlmatch(LIST,&arg);
+    sym = xlmatch(SYM,&clist);
+    cnt = getfixnum(xlevmatch(INT,&clist));
+    val = (clist ? xlarg(&clist) : NIL);
 
     /* initialize the local environment */
-    oldenv = xlenv;
-    xlsbind(sym.n_ptr,NIL);
+    xlenv = xlframe(xlenv);
+    xlbind(sym,NIL,xlenv);
 
     /* loop through for each value from zero to cnt-1 */
     rbreak = FALSE;
     for (i = 0; i < cnt; i++) {
 
 	/* bind the symbol to the next list element */
-	sym.n_ptr->n_symvalue = newnode(INT);
-	sym.n_ptr->n_symvalue->n_int = i;
+	xlsetvalue(sym,cvfixnum((FIXNUM)i));
 
 	/* execute the loop body */
-	if (tagblock(arg.n_ptr,&rval)) {
+	if (tagblock(arg,&rval)) {
 	    rbreak = TRUE;
 	    break;
 	}
@@ -471,13 +542,12 @@ NODE *xdotimes(args)
 
     /* evaluate the result expression */
     if (!rbreak) {
-	sym.n_ptr->n_symvalue = newnode(INT);
-	sym.n_ptr->n_symvalue->n_int = cnt;
-	rval = xleval(val.n_ptr);
+	xlsetvalue(sym,cvfixnum((FIXNUM)cnt));
+	rval = xleval(val);
     }
 
     /* unbind the arguments */
-    xlunbind(oldenv);
+    xlenv = cdr(xlenv);
 
     /* restore the previous stack frame */
     xlstack = oldstk;
@@ -490,19 +560,19 @@ NODE *xdotimes(args)
 NODE *xcatch(args)
   NODE *args;
 {
-    NODE *oldstk,tag,arg,*val;
+    NODE ***oldstk,*tag,*arg,*val;
     CONTEXT cntxt;
 
     /* create a new stack frame */
     oldstk = xlsave(&tag,&arg,NULL);
 
     /* initialize */
-    tag.n_ptr = xlevarg(&args);
-    arg.n_ptr = args;
+    tag = xlevarg(&args);
+    arg = args;
     val = NIL;
 
     /* establish an execution context */
-    xlbegin(&cntxt,CF_THROW,tag.n_ptr);
+    xlbegin(&cntxt,CF_THROW,tag);
 
     /* check for 'throw' */
     if (setjmp(cntxt.c_jmpbuf))
@@ -510,8 +580,8 @@ NODE *xcatch(args)
 
     /* otherwise, evaluate the remainder of the arguments */
     else {
-	while (arg.n_ptr)
-	    val = xlevarg(&arg.n_ptr);
+	while (arg)
+	    val = xlevarg(&arg);
     }
     xlend(&cntxt);
 
@@ -544,7 +614,7 @@ NODE *xerror(args)
     char *emsg; NODE *arg;
 
     /* get the error message and the argument */
-    emsg = xlmatch(STR,&args)->n_str;
+    emsg = getstring(xlmatch(STR,&args));
     arg = (args ? xlarg(&args) : s_unbound);
     xllastarg(args);
 
@@ -559,8 +629,8 @@ NODE *xcerror(args)
     char *cmsg,*emsg; NODE *arg;
 
     /* get the correction message, the error message, and the argument */
-    cmsg = xlmatch(STR,&args)->n_str;
-    emsg = xlmatch(STR,&args)->n_str;
+    cmsg = getstring(xlmatch(STR,&args));
+    emsg = getstring(xlmatch(STR,&args));
     arg = (args ? xlarg(&args) : s_unbound);
     xllastarg(args);
 
@@ -578,7 +648,7 @@ NODE *xbreak(args)
     char *emsg; NODE *arg;
 
     /* get the error message */
-    emsg = (args ? xlmatch(STR,&args)->n_str : "**BREAK**");
+    emsg = (args ? getstring(xlmatch(STR,&args)) : "**BREAK**");
     arg = (args ? xlarg(&args) : s_unbound);
     xllastarg(args);
 
@@ -589,23 +659,39 @@ NODE *xbreak(args)
     return (NIL);
 }
 
+/* xcleanup - built-in function 'clean-up' */
+NODE *xcleanup(args)
+  NODE *args;
+{
+    xllastarg(args);
+    xlcleanup();
+}
+
+/* xcontinue - built-in function 'continue' */
+NODE *xcontinue(args)
+  NODE *args;
+{
+    xllastarg(args);
+    xlcontinue();
+}
+
 /* xerrset - built-in function 'errset' */
 NODE *xerrset(args)
   NODE *args;
 {
-    NODE *oldstk,expr,flag,*val;
+    NODE ***oldstk,*expr,*flag,*val;
     CONTEXT cntxt;
 
     /* create a new stack frame */
     oldstk = xlsave(&expr,&flag,NULL);
 
     /* get the expression and the print flag */
-    expr.n_ptr = xlarg(&args);
-    flag.n_ptr = (args ? xlarg(&args) : true);
+    expr = xlarg(&args);
+    flag = (args ? xlarg(&args) : true);
     xllastarg(args);
 
     /* establish an execution context */
-    xlbegin(&cntxt,CF_ERROR,flag.n_ptr);
+    xlbegin(&cntxt,CF_ERROR,flag);
 
     /* check for error */
     if (setjmp(cntxt.c_jmpbuf))
@@ -613,9 +699,8 @@ NODE *xerrset(args)
 
     /* otherwise, evaluate the expression */
     else {
-	expr.n_ptr = xleval(expr.n_ptr);
-	val = newnode(LIST);
-	rplaca(val,expr.n_ptr);
+	expr = xleval(expr);
+	val = consa(expr);
     }
     xlend(&cntxt);
 
@@ -630,27 +715,33 @@ NODE *xerrset(args)
 NODE *xevalhook(args)
   NODE *args;
 {
-    NODE *oldstk,*oldenv,expr,ehook,ahook,*val;
+    NODE ***oldstk,*expr,*ehook,*ahook,*env,*newehook,*newahook,*newenv,*val;
 
     /* create a new stack frame */
-    oldstk = xlsave(&expr,&ehook,&ahook,NULL);
+    oldstk = xlsave(&expr,&ehook,&ahook,&env,&newehook,&newahook,&newenv,NULL);
 
-    /* get the expression and the hook functions */
-    expr.n_ptr = xlarg(&args);
-    ehook.n_ptr = xlarg(&args);
-    ahook.n_ptr = xlarg(&args);
+    /* get the expression, the new hook functions and the environment */
+    expr = xlarg(&args);
+    newehook = xlarg(&args);
+    newahook = xlarg(&args);
+    newenv = (args ? xlarg(&args) : xlenv);
     xllastarg(args);
 
     /* bind *evalhook* and *applyhook* to the hook functions */
-    oldenv = xlenv;
-    xlsbind(s_evalhook,ehook.n_ptr);
-    xlsbind(s_applyhook,ahook.n_ptr);
+    ehook = getvalue(s_evalhook);
+    setvalue(s_evalhook,newehook);
+    ahook = getvalue(s_applyhook);
+    setvalue(s_applyhook,newahook);
+    env = xlenv;
+    xlenv = newenv;
 
     /* evaluate the expression (bypassing *evalhook*) */
-    val = xlxeval(expr.n_ptr);
+    val = xlxeval(expr);
 
     /* unbind the hook variables */
-    xlunbind(oldenv);
+    setvalue(s_evalhook,ehook);
+    setvalue(s_applyhook,ahook);
+    xlenv = env;
 
     /* restore the previous stack frame */
     xlstack = oldstk;
@@ -660,44 +751,37 @@ NODE *xevalhook(args)
 }
 
 /* dobindings - handle bindings for let/let*, prog/prog*, do/do* */
-LOCAL dobindings(blist,pflag)
-  NODE *blist; int pflag;
+LOCAL dobindings(blist,env)
+  NODE *blist,*env;
 {
-    NODE *oldstk,list,bnd,sym,val;
+    NODE ***oldstk,*list,*bnd,*sym,*val;
 
     /* create a new stack frame */
     oldstk = xlsave(&list,&bnd,&sym,&val,NULL);
 
-   /* bind each symbol in the list of bindings */
-    for (list.n_ptr = blist; consp(list.n_ptr); list.n_ptr = cdr(list.n_ptr)) {
+    /* bind each symbol in the list of bindings */
+    for (list = blist; consp(list); list = cdr(list)) {
 
 	/* get the next binding */
-	bnd.n_ptr = car(list.n_ptr);
+	bnd = car(list);
 
 	/* handle a symbol */
-	if (symbolp(bnd.n_ptr)) {
-	    sym.n_ptr = bnd.n_ptr;
-	    val.n_ptr = NIL;
+	if (symbolp(bnd)) {
+	    sym = bnd;
+	    val = NIL;
 	}
 
 	/* handle a list of the form (symbol expr) */
-	else if (consp(bnd.n_ptr)) {
-	    sym.n_ptr = xlmatch(SYM,&bnd.n_ptr);
-	    val.n_ptr = xlevarg(&bnd.n_ptr);
+	else if (consp(bnd)) {
+	    sym = xlmatch(SYM,&bnd);
+	    val = xlevarg(&bnd);
 	}
 	else
 	    xlfail("bad binding");
 
 	/* bind the value to the symbol */
-	if (pflag)
-	    xlbind(sym.n_ptr,val.n_ptr);
-	else
-	    xlsbind(sym.n_ptr,val.n_ptr);
+	xlbind(sym,val,env);
     }
-
-    /* fix the bindings on a parallel let */
-    if (pflag)
-	xlfixbindings();
 
     /* restore the previous stack frame */
     xlstack = oldstk;
@@ -707,41 +791,36 @@ LOCAL dobindings(blist,pflag)
 doupdates(blist,pflag)
   NODE *blist; int pflag;
 {
-    NODE *oldstk,*oldenv,*oldnewenv,list,bnd,sym,val;
+    NODE ***oldstk,*plist,*list,*bnd,*sym,*val;
 
     /* create a new stack frame */
-    oldstk = xlsave(&list,&bnd,&sym,&val,NULL);
-
-    /* initialize the local environment */
-    if (pflag) {
-	oldenv = xlenv; oldnewenv = xlnewenv;
-    }
+    oldstk = xlsave(&plist,&list,&bnd,&sym,&val,NULL);
 
     /* bind each symbol in the list of bindings */
-    for (list.n_ptr = blist; consp(list.n_ptr); list.n_ptr = cdr(list.n_ptr)) {
+    for (list = blist; consp(list); list = cdr(list)) {
 
 	/* get the next binding */
-	bnd.n_ptr = car(list.n_ptr);
+	bnd = car(list);
 
 	/* handle a list of the form (symbol expr) */
-	if (consp(bnd.n_ptr)) {
-	    sym.n_ptr = xlmatch(SYM,&bnd.n_ptr);
-	    bnd.n_ptr = cdr(bnd.n_ptr);
-	    if (bnd.n_ptr) {
-		val.n_ptr = xlevarg(&bnd.n_ptr);
-		if (pflag)
-		    xlbind(sym.n_ptr,val.n_ptr);
+	if (consp(bnd)) {
+	    sym = xlmatch(SYM,&bnd);
+	    bnd = cdr(bnd);
+	    if (bnd) {
+		val = xlevarg(&bnd);
+		if (pflag) {
+		    plist = consd(plist);
+		    rplaca(plist,cons(sym,val));
+		}
 		else
-		    sym.n_ptr->n_symvalue = val.n_ptr;
+		    xlsetvalue(sym,val);
 	    }
 	}
     }
 
-    /* fix the bindings on a parallel let */
-    if (pflag) {
-	xlfixbindings();
-	xlenv = oldenv; xlnewenv = oldnewenv;
-    }
+    /* set the values for parallel updates */
+    for (; plist; plist = cdr(plist))
+	xlsetvalue(car(car(plist)),cdr(car(plist)));
 
     /* restore the previous stack frame */
     xlstack = oldstk;
@@ -751,7 +830,7 @@ doupdates(blist,pflag)
 int tagblock(code,pval)
   NODE *code,**pval;
 {
-    NODE *oldstk,arg;
+    NODE ***oldstk,*arg;
     CONTEXT cntxt;
     int type,sts;
 
@@ -759,10 +838,10 @@ int tagblock(code,pval)
     oldstk = xlsave(&arg,NULL);
 
     /* initialize */
-    arg.n_ptr = code;
+    arg = code;
 
     /* establish an execution context */
-    xlbegin(&cntxt,CF_GO|CF_RETURN,arg.n_ptr);
+    xlbegin(&cntxt,CF_GO|CF_RETURN,arg);
 
     /* check for a 'return' */
     if ((type = setjmp(cntxt.c_jmpbuf)) == CF_RETURN) {
@@ -775,16 +854,16 @@ int tagblock(code,pval)
 
 	/* check for a 'go' */
 	if (type == CF_GO)
-	    arg.n_ptr = xlvalue;
+	    arg = xlvalue;
 
 	/* evaluate each expression in the body */
-	while (consp(arg.n_ptr))
-	    if (consp(car(arg.n_ptr)))
-		xlevarg(&arg.n_ptr);
+	while (consp(arg))
+	    if (consp(car(arg)))
+		xlevarg(&arg);
 	    else
-		arg.n_ptr = cdr(arg.n_ptr);
-	
-	/* indicate that we fell through the bottom of the tagbody */
+		arg = cdr(arg);
+
+	/* fell out the bottom of the loop */
 	*pval = NIL;
 	sts = FALSE;
     }
@@ -796,3 +875,4 @@ int tagblock(code,pval)
     /* return status */
     return (sts);
 }
+
