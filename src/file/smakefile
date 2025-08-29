@@ -1,22 +1,22 @@
 ######################################################################
 #
-# smakefile to build file
+# smakefile to build file (updated version)
 #
-#   GMD - 14 Nov 92 
-#
+#   GMD - 14 Nov 92 (original)
+#   Updated for modern POSIX support - 2025
 #
 # SAS/C 6.0
 #
 ######################################################################
 
-O=O/
+O=build-sasc/
 SO=ObjectName=$(O) noIcons
 
-OBJS	= $(O)file.o 
+OBJS	= $(O)file.o /common/common.o /common/getopt.o
 
-file	: $(OBJS)  
-	slink  FROM lib:c.o $(OBJS)  TO file LIB lib:sc.lib \
-		lib:amiga.lib noIcons  
+file_new	: $(OBJS)  
+	slink  FROM sc:lib/c.o $(OBJS)  TO file LIB sc:lib/sc.lib \
+		lib:small.lib noIcons  
 
 $(O)file.o   : file.c 
 	sc nover   $(SO)   file
