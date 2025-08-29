@@ -1,0 +1,12 @@
+
+LIBS = lib:sc.lib+lib:amiga.lib
+
+/Strip: Strip.o
+	slink Strip.o to /Strip sd sc nd lib $(LIBS)
+	protect /Strip +p
+
+Strip.o: Strip.c
+	sc Strip.c
+
+doc:
+	groff -Tlatin1 -man Strip.V37 > /Strip.man

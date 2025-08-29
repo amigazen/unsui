@@ -1,0 +1,8 @@
+Load files created by gcc contain quite substantial symbol
+hunks. But at least the ones created with gcc 2.2.2 and 2.3.3
+seem to break if these hunks are removed. I wonder why.
+
+You can identify them by the fact that they usually contain
+the string "ixemul.library".
+
+- Torsten

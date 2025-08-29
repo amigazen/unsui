@@ -1,0 +1,66 @@
+
+
+
+Strip(V37)                                             Strip(V37)
+
+
+FFOORRMMAATT
+       SSTTRRIIPP [FFIILLEE] _f_i_l_e [[TTOO]] _n_a_m_e] [QQUUIIEETT] [KKEEEEPP]
+
+TTEEMMPPLLAATTEE
+       FFIILLEE//AA,,TTOO,,QQUUIIEETT//SS,,KKEEEEPP//SS
+
+PPUURRPPOOSSEE
+       To strip symbol and debug hunks from load files.
+
+SSPPEECCIIFFIICCAATTIIOONN
+       SSttrriipp  removes all symbol and debug hunks from binary load
+       files, i.e., executables.  These hunks  supplies  informa­
+       tion  used  by,  for example, symbolic debuggers, but they
+       are not loaded by the _A_m_i_g_a_D_O_S loader.  The size of a load
+       file can often be reduced dramatically by removing them.
+
+       SSttrriipp accepts the following arguments:
+
+       FFIILLEE   The load file to be stripped.
+
+       TTOO     The  stripped  version  of the load file. If the TTOO
+              option isn't used, SSttrriipp will replace the  original
+              file  with  the  stripped output. If a directory is
+              given as the TTOO argument, the stripped output  will
+              be  written to that directory with the _s_a_m_e name as
+              the original file.
+
+       QQUUIIEETT  tells SSttrriipp to keep its mouth shut unless something
+              goes awry.
+
+       KKEEEEPP   tells SSttrriipp to keep the original unstripped version
+              with a _._o_r_i_g extension. This will only happen if no
+              destination   _n_a_m_e  was  given  and  the  file  was
+              changed.
+
+       The stripped output is given the same protection flags and
+       comment,  if applicable, as the original file, except that
+       the archived flag is cleared.
+
+       Any hardlinks to the original file will be broken  if  the
+       original file is replaced.
+
+       The  current  version  of  SSttrriipp refuses to strip overlaid
+       load files.
+
+AAUUTTHHOORR
+       Torsten Poulin (torsten@diku.dk)
+
+UUNNRREESSTTRRIICCTTIIOONNSS
+       SSttrriipp is free; anyone may redistribute copies of SSttrriipp  to
+       anyone  under  the  terms stated in the GNU General Public
+       Licence, a copy of which accompanies each copy of SSttrriipp.
+
+
+
+
+
+Strip version 37.2       August 28, 1994                        1
+
+

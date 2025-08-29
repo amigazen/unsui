@@ -1,0 +1,69 @@
+.TH Strip V37 "August 28, 1994" "Strip version 37.2"
+.SH FORMAT
+.B STRIP
+[\fBFILE\fR] \fIfile\fR [[\fBTO] \fIname\fR] [\fBQUIET\fR] [\fBKEEP\fR]
+.SH TEMPLATE
+.B FILE/A,TO,QUIET/S,KEEP/S
+.SH PURPOSE
+To strip symbol and debug hunks from load files.
+.SH SPECIFICATION
+.B Strip
+removes all symbol and debug hunks from binary load files, i.e.,
+executables.  These hunks supplies information used by, for example,
+symbolic debuggers, but they are not loaded by the
+.I AmigaDOS
+loader.  The size of a load file can often be reduced dramatically by
+removing them.
+.PP
+.B Strip
+accepts the following arguments:
+.TP
+.B FILE
+The load file to be stripped.
+.TP
+.B TO
+The stripped version of the load file. If the
+.B TO
+option isn't used,
+.B Strip
+will replace the original file with the stripped output. If a
+directory is given as the
+.B TO
+argument, the stripped output will be written to that directory with
+the
+.I same
+name as the original file.
+.TP
+.B QUIET
+tells
+.B Strip
+to keep its mouth shut unless something goes awry.
+.TP
+.B KEEP
+tells
+.B Strip
+to keep the original unstripped version with a
+.I ".orig"
+extension. This will only happen if no destination
+.I name
+was given and the file was changed.
+.PP
+The stripped output is given the same protection flags and
+comment, if applicable, as the original file, except that the archived
+flag is cleared.
+.PP
+Any hardlinks to the original file will be broken if the original file
+is replaced.
+.PP
+The current version of
+.B Strip
+refuses to strip overlaid load files.
+.SH AUTHOR
+Torsten Poulin (torsten@diku.dk)
+.SH UNRESTRICTIONS
+.B Strip
+is free; anyone may redistribute copies of
+.B Strip
+to anyone under the terms stated in the GNU General Public Licence, a
+copy of which accompanies each copy of
+.BR Strip .
