@@ -1,12 +1,15 @@
 
-LIBS = lib:sc.lib+lib:amiga.lib
+LIBS = sc:lib/sc.lib lib:small.lib
 
-/Strip: Strip.o
-	slink Strip.o to /Strip sd sc nd lib $(LIBS)
-	protect /Strip +p
+Strip: Strip.o
+	slink sc:lib/cres.o Strip.o /common/common.o /common/getopt.o to strip lib $(LIBS)
+	protect strip +p
 
 Strip.o: Strip.c
-	sc Strip.c
+	sc Strip.c INCLUDEDIR=include: INCLUDEDIR=/common
+
+clean:
+	-delete Strip.o strip quiet
 
 doc:
 	groff -Tlatin1 -man Strip.V37 > /Strip.man

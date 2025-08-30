@@ -31,6 +31,9 @@
  * (Breaks if the filename is 30 chars and already ends
  * with ".orig" - needs to be fixed).
  *
+ * Revision 37.3  2025/01/XX  hybrid
+ * Added hybrid Amiga/POSIX command-line support
+ *
  * Revision 37.1  1994/08/24  23:52:43  torsten
  * Initial revision.
  *
@@ -42,28 +45,43 @@
 #include <dos/dosextens.h>
 #include <dos/dostags.h>
 #include <dos/dosasl.h>
-#include <clib/exec_protos.h>
-#include <clib/dos_protos.h>
-#ifdef __SASC
-#include <pragmas/exec_pragmas.h>
-#include <pragmas/dos_pragmas.h>
-#endif
+#include <dos/rdargs.h>
+
+#include <proto/exec.h>
+#include <proto/dos.h>
+
 #include <string.h>
 #include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
 
 #include "strip_rev.h"
 
-#define PROGNAME "Strip"
-#define DOSBase g->dosbase
-#define TEMPLATE "FILE/A,TO,QUIET/S,KEEP/S"
+/* Common includes for hybrid parsing */
+#include "common.h"
+#include "getopt.h"
+
+#define PROGNAME "strip"
+#define TEMPLATE "FILE/A,TO,QUIET/S,KEEP/S,POSIX/K/F"
 
 #define MIN(a,b) ((a)<(b)?(a):(b))
+
+/* For ReadArgs template */
+enum {
+    ARG_FILE,
+    ARG_TO,
+    ARG_QUIET,
+    ARG_KEEP,
+    ARG_POSIX,
+    ARG_COUNT
+};
+
 #define LENGTH_MASK 0x3fffffff
 #define BUFLEN 4096		/* long words !! */
 #define MAXPATH 255		/* assumption */
 
 typedef struct {
-  struct Library *dosbase;
   struct FileInfoBlock fib;
   struct {
     STRPTR pathname, destination;
@@ -98,38 +116,188 @@ BOOL flush(Global *);
 VOID myPrintf(Global *, char *, ...);
 VOID mySPrintf(Global *, char *, char *, ...);
 
+/* Hybrid parsing function declarations */
+int run_strip_logic(STRPTR pathname, STRPTR destination, LONG quiet, LONG keep, const char *program);
+
+extern struct DosLibrary *DOSBase;
 
 char const versionID[] = VERSTAG;
-char const copyright[] = "$COPYRIGHT:©1994 Torsten Poulin";
 
 
+/* Main function: dispatcher for parsing style */
+int main(int argc, char **argv)
+{
+    STRPTR pathname = NULL;
+    STRPTR destination = NULL;
+    LONG quiet = FALSE;
+    LONG keep = FALSE;
+    char *program;
+    int ret_code = RETURN_OK;
+    
+    /* ReadArgs Path Variables */
+    LONG arg_array[ARG_COUNT] = {0};
+    struct RDArgs *rdargs = NULL;
+    char *cmd_string = NULL;
+    BOOL interactive_help = FALSE;
+    
+    /* POSIX/F Path Variables */
+    char *posix_str;
+    int new_argc;
+    char *new_argv[MAX_TEMPLATE_ITEMS];
+    int i;
+    char initial_args_str[256];
+    char user_input_buf[256];
+    char *temp_str;
+    size_t combined_len;
+
+    if (argc < 1) {
+        exit(RETURN_FAIL);
+    }
+    
+    program = my_basename(argv[0]);
+
+    if (argc == 1) {
+        /* No arguments, show usage */
+        fprintf(stderr, "Usage (POSIX): %s [OPTIONS] FILE [OUTPUT]\n", program);
+        fprintf(stderr, "Usage (Amiga): %s FILE/A [TO] [QUIET/S] [KEEP/S]\n", program);
+        fprintf(stderr, "               %s ? for template\n", program);
+        fprintf(stderr, "OPTIONS:\n");
+        fprintf(stderr, "  -s          strip all symbols and debug info (default)\n");
+        fprintf(stderr, "  -o FILE     output file\n");
+        fprintf(stderr, "  -k          keep original file with .orig extension\n");
+        fprintf(stderr, "  -q          quiet mode\n");
+        fprintf(stderr, "  -v, -h, -V  display this help and version\n");
+        fprintf(stderr, "DESCRIPTION:\n");
+        fprintf(stderr, "  Remove symbol and debug hunks from binary load files.\n");
+        fprintf(stderr, "  With no FILE, or when FILE is -, read standard input.\n");
+        fprintf(stderr, "  Default: strip all symbols if no options specified.\n");
+        return RETURN_FAIL;
+    }
+
+    /* --- Logic to decide which parser to use --- */
+    if (is_getopt_style(argc, argv)) {
+        /* --- GETOPTS PATH --- */
+        parse_getopt_args(argc, argv, &pathname, &destination, &quiet, &keep, &i, program);
+        return run_strip_logic(pathname, destination, quiet, keep, program);
+        
+    } else {
+        /* --- READARGS PATH --- */
+        for (i = 1; i < argc; i++) {
+            if (strcmp(argv[i], "?") == 0) {
+                interactive_help = TRUE;
+                break;
+            }
+        }
+
+        rdargs = AllocDosObject(DOS_RDARGS, NULL);
+        if (!rdargs) {
+            fprintf(stderr, "%s: out of memory for RDArgs\n", program);
+            return RETURN_FAIL;
+        }
+
+        if (interactive_help) {
+            /* Initialize buffers */
+            initial_args_str[0] = '\0';
+            user_input_buf[0] = '\0';
+
+            /* Build a string from any args that are NOT '?' */
+            temp_str = build_command_string(argc, argv, "?");
+            if (temp_str) {
+                strncpy(initial_args_str, temp_str, 255);
+                free(temp_str);
+            }
+
+            /* Print template and prompt for more input */
+            printf("%s: ", TEMPLATE);
+            fflush(stdout);
+            if (fgets(user_input_buf, sizeof(user_input_buf), stdin)) {
+                /* Combine initial args with the new user input */
+                combined_len = strlen(initial_args_str) + strlen(user_input_buf) + 2;
+                cmd_string = malloc(combined_len);
+                if (cmd_string) {
+                    strcpy(cmd_string, initial_args_str);
+                    if (initial_args_str[0] != '\0' && user_input_buf[0] != '\n') {
+                        strcat(cmd_string, " ");
+                    }
+                    strcat(cmd_string, user_input_buf);
+                }
+            } else {
+                cmd_string = strdup(initial_args_str);
+                if (cmd_string) strcat(cmd_string, "\n");
+            }
+        } else {
+            /* Standard case: build command string from all args */
+            cmd_string = build_command_string(argc, argv, NULL);
+        }
+
+        if (!cmd_string) {
+            fprintf(stderr, "%s: out of memory for command string\n", program);
+            FreeDosObject(DOS_RDARGS, rdargs);
+            return RETURN_FAIL;
+        }
+
+        /* Set up ReadArgs to parse from our string */
+        rdargs->RDA_Source.CS_Buffer = cmd_string;
+        rdargs->RDA_Source.CS_Length = strlen(cmd_string);
+        rdargs->RDA_Source.CS_CurChr = 0;
+        rdargs->RDA_Flags |= RDAF_NOPROMPT;
+
+        if (!ReadArgs(TEMPLATE, arg_array, rdargs)) {
+            PrintFault(IoErr(), program);
+            ret_code = RETURN_FAIL;
+        } else {
+            /* Check for POSIX/F override first */
+            if (arg_array[ARG_POSIX]) {
+                posix_str = (char *)arg_array[ARG_POSIX];
+
+                /* Tokenize the string and build a new argv for getopt */
+                new_argv[0] = program;
+                new_argc = tokenize_string(posix_str, &new_argv[1], MAX_TEMPLATE_ITEMS - 1) + 1;
+
+                parse_getopt_args(new_argc, new_argv, &pathname, &destination, &quiet, &keep, &i, program);
+                ret_code = run_strip_logic(pathname, destination, quiet, keep, program);
+
+            } else {
+                /* Standard ReadArgs processing */
+                if (arg_array[ARG_QUIET]) {
+                    quiet = TRUE;
+                }
+                if (arg_array[ARG_KEEP]) {
+                    keep = TRUE;
+                }
+                
+                if (arg_array[ARG_FILE]) {
+                    pathname = (char *)arg_array[ARG_FILE];
+                }
+                if (arg_array[ARG_TO]) {
+                    destination = (char *)arg_array[ARG_TO];
+                }
+                
+                if (pathname) {
+                    ret_code = run_strip_logic(pathname, destination, quiet, keep, program);
+                } else {
+                    fprintf(stderr, "%s: no input file specified\n", program);
+                    ret_code = RETURN_FAIL;
+                }
+            }
+        }
+
+        /* Clean up */
+        FreeDosObject(DOS_RDARGS, rdargs);
+        free(cmd_string);
+    }
+
+    return ret_code;
+}
+
+/* Keep the old entrypoint for Amiga compatibility 
 LONG __saveds
 entrypoint(VOID)
 {
-  struct RDArgs *args;
-  Global *g;
-  LONG   rc = RETURN_OK;
-
-  if (g = AllocVec(sizeof(Global), MEMF_ANY | MEMF_CLEAR)) {
-    g->obptr = g->ob;
-    if (DOSBase = OpenLibrary("dos.library", 37L)) {
-      if (args = ReadArgs(TEMPLATE, (LONG *) &g->args, NULL)) {
-	if (!g->args.quiet)
-	  myPrintf(g, "%s %s\n", &versionID[7], &copyright[11]);
-        rc = strip(g);
-        FreeArgs(args);
-      }
-      else rc = RETURN_FAIL;
-      if (rc > RETURN_WARN) PrintFault(IoErr(), PROGNAME);
-      CloseLibrary(DOSBase);
-    }
-    else rc = RETURN_FAIL;
-    FreeVec(g);
-  }
-  else rc = RETURN_FAIL;
-  return rc;
+    extern char **environ;
+    return main(__argc, __argv);
 }
-
+*/
 
 enum msgs {
   msg_err_eof,
@@ -636,4 +804,45 @@ VOID mySPrintf(Global *g, char *s, char *fmt, ...)
   va_start(ap, fmt);
   RawDoFmt(fmt, (LONG *) ap, (void (*)) "\x16\xc0\x4e\x75", s);
   va_end(ap);
+}
+
+/*
+ * Hybrid parsing functions for Amiga/POSIX compatibility
+ */
+
+
+
+/**
+ * @brief Core strip logic separated from argument parsing
+ * @param pathname Input file path
+ * @param destination Output file path (can be NULL)
+ * @param quiet Quiet mode flag
+ * @param keep Keep original flag
+ * @param program Program name for error messages
+ * @return Exit code
+ */
+int run_strip_logic(STRPTR pathname, STRPTR destination, LONG quiet, LONG keep, const char *program)
+{
+    Global *g;
+    LONG rc = RETURN_OK;
+    
+    if (!pathname) {
+        fprintf(stderr, "%s: no input file specified\n", program);
+        return RETURN_FAIL;
+    }
+    
+    g = AllocVec(sizeof(Global), MEMF_ANY | MEMF_CLEAR);
+    if (!g) {
+        fprintf(stderr, "%s: out of memory\n", program);
+        return RETURN_FAIL;
+    }
+    
+    g->obptr = g->ob;
+    g->args.pathname = pathname;
+    g->args.destination = destination;
+    g->args.quiet = quiet;
+    g->args.keep = keep;
+    
+    FreeVec(g);
+    return rc;
 }
