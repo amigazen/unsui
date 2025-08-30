@@ -23,6 +23,7 @@
 #include <dos/rdargs.h>
 #include <workbench/workbench.h>
 #include <exec/memory.h>
+#include <dos/dosextens.h>
 
 #include <proto/dos.h>
 #include <proto/exec.h>
@@ -411,11 +412,30 @@ static int create_directory(const char *dirname, MkdirOptions *options, const ch
     /* Check if directory already exists */
     lock = Lock(dirname, ACCESS_READ);
     if (lock) {
-        UnLock(lock);
-        if (options->verbose_flag) {
-            printf("%s: created directory '%s'\n", program, dirname);
+        /* Directory exists, verify it's actually a directory */
+        struct FileInfoBlock fib;
+        if (Examine(lock, &fib)) {
+            if (fib.fib_DirEntryType > 0) {
+                /* It's a directory */
+                if (options->verbose_flag) {
+                    printf("%s: directory '%s' already exists\n", program, dirname);
+                }
+                UnLock(lock);
+                return SUCCESS;
+            } else {
+                /* Path exists but isn't a directory */
+                fprintf(stderr, "%s: '%s' exists but is not a directory\n", program, dirname);
+                SetIoErr(ERROR_OBJECT_WRONG_TYPE);
+                PrintFault(IoErr(), dirname);
+                UnLock(lock);
+                return FAILURE;
+            }
+        } else {
+            /* Examine failed */
+            PrintFault(IoErr(), dirname);
+            UnLock(lock);
+            return FAILURE;
         }
-        return SUCCESS;  /* Directory already exists */
     }
     
     /* If parents flag is set, create parent directories */
@@ -443,8 +463,17 @@ static int create_directory(const char *dirname, MkdirOptions *options, const ch
         
         UnLock(lock);
     } else {
-        fprintf(stderr, "%s: cannot create directory '%s': %s\n", program, dirname, "Permission denied");
-        PrintFault(IoErr(), program);
+        /* CreateDir failed, check the specific error */
+        if (IoErr() == ERROR_OBJECT_NOT_FOUND) {
+            fprintf(stderr, "%s: cannot create directory '%s': parent directory does not exist\n", program, dirname);
+        } else if (IoErr() == ERROR_DISK_WRITE_PROTECTED) {
+            fprintf(stderr, "%s: cannot create directory '%s': disk is write protected\n", program, dirname);
+        } else if (IoErr() == ERROR_DISK_FULL) {
+            fprintf(stderr, "%s: cannot create directory '%s': disk is full\n", program, dirname);
+        } else {
+            fprintf(stderr, "%s: cannot create directory '%s'\n", program, dirname);
+        }
+        PrintFault(IoErr(), dirname);
         rc = FAILURE;
     }
     
@@ -460,71 +489,101 @@ static int create_directory(const char *dirname, MkdirOptions *options, const ch
  */
 static int create_parent_directories(const char *full_path, MkdirOptions *options, const char *program)
 {
-    char *path_copy;
-    char *slash_pos;
-    char *current_pos;
+    char *buffer;
     BPTR lock;
     int rc = SUCCESS;
+    int p;
     
-    /* Make a copy of the path to work with */
-    path_copy = strdup(full_path);
-    if (!path_copy) {
+    /* Allocate a temporary buffer to hold the path */
+    buffer = AllocVec(strlen(full_path) + 1, MEMF_ANY);
+    if (!buffer) {
         fprintf(stderr, "%s: out of memory\n", program);
         return FAILURE;
     }
     
-    /* Find the first slash after the device/volume */
-    current_pos = path_copy;
-    if (strchr(current_pos, ':')) {
-        current_pos = strchr(current_pos, ':') + 1;
-    }
-    
-    /* Create each parent directory */
-    while ((slash_pos = strchr(current_pos, '/')) != NULL) {
-        *slash_pos = '\0';
-        
-        /* Skip empty path components */
-        if (strlen(path_copy) == 0 || 
-            (strchr(path_copy, ':') && strlen(path_copy) == 1)) {
-            *slash_pos = '/';
-            current_pos = slash_pos + 1;
-            continue;
-        }
-        
-        /* Check if this directory exists */
-        lock = Lock(path_copy, ACCESS_READ);
-        if (lock) {
-            UnLock(lock);
-            /* Directory exists, continue to next component */
-        } else {
-            /* Directory doesn't exist, create it */
-            lock = CreateDir(path_copy);
+    /* Iterate through the buffer and stop between path components */
+    for (p = 0; ; p++) {
+        if (full_path[p] == '/' || full_path[p] == '\0') {
+            /* Temporary NULL termination */
+            buffer[p] = '\0';
+            
+            /* Skip empty path components (like // or device: only) */
+            if (strlen(buffer) == 0 || 
+                (strchr(buffer, ':') && strlen(buffer) == 1)) {
+                if (full_path[p] == '\0') break;
+                continue;
+            }
+            
+            /* Check if this directory exists */
+            lock = Lock(buffer, ACCESS_READ);
             if (lock) {
-                if (options->verbose_flag) {
-                    printf("%s: created directory '%s'\n", program, path_copy);
-                }
-                
-                /* Create .info file if requested */
-                if (options->icon_flag) {
-                    if (!create_directory_icon(path_copy, program)) {
-                        fprintf(stderr, "%s: warning: failed to create icon for '%s'\n", program, path_copy);
+                /* Directory exists, verify it's actually a directory */
+                struct FileInfoBlock fib;
+                if (Examine(lock, &fib)) {
+                    if (fib.fib_DirEntryType > 0) {
+                        /* It's a directory, continue to next component */
+                        UnLock(lock);
+                    } else {
+                        /* Path exists but isn't a directory */
+                        fprintf(stderr, "%s: '%s' exists but is not a directory\n", program, buffer);
+                        SetIoErr(ERROR_OBJECT_WRONG_TYPE);
+                        PrintFault(IoErr(), buffer);
+                        UnLock(lock);
+                        rc = FAILURE;
+                        break;
                     }
+                } else {
+                    /* Examine failed */
+                    PrintFault(IoErr(), buffer);
+                    UnLock(lock);
+                    rc = FAILURE;
+                    break;
                 }
-                
-                UnLock(lock);
             } else {
-                fprintf(stderr, "%s: cannot create directory '%s': %s\n", program, path_copy, "Permission denied");
-                PrintFault(IoErr(), program);
-                rc = FAILURE;
+                /* Directory doesn't exist, check why */
+                if (IoErr() == ERROR_OBJECT_NOT_FOUND) {
+                    /* Create the directory */
+                    lock = CreateDir(buffer);
+                    if (lock) {
+                        if (options->verbose_flag) {
+                            printf("%s: created directory '%s'\n", program, buffer);
+                        }
+                        
+                        /* Create .info file if requested */
+                        if (options->icon_flag) {
+                            if (!create_directory_icon(buffer, program)) {
+                                fprintf(stderr, "%s: warning: failed to create icon for '%s'\n", program, buffer);
+                            }
+                        }
+                        
+                        UnLock(lock);
+                    } else {
+                        /* CreateDir failed */
+                        fprintf(stderr, "%s: cannot create directory '%s'\n", program, buffer);
+                        PrintFault(IoErr(), buffer);
+                        rc = FAILURE;
+                        break;
+                    }
+                } else {
+                    /* Other error (permission denied, etc.) */
+                    fprintf(stderr, "%s: cannot access '%s'\n", program, buffer);
+                    PrintFault(IoErr(), buffer);
+                    rc = FAILURE;
+                    break;
+                }
+            }
+            
+            if (full_path[p] == '\0') {
+                /* Reached the end of the string */
                 break;
             }
         }
         
-        *slash_pos = '/';
-        current_pos = slash_pos + 1;
+        /* Copy character to work buffer */
+        buffer[p] = full_path[p];
     }
     
-    free(path_copy);
+    FreeVec(buffer);
     return rc;
 }
 
@@ -544,10 +603,19 @@ static BOOL create_directory_icon(const char *dirname, const char *program)
         if (PutDiskObject(dirname, disk_obj)) {
             success = TRUE;
         } else {
-            /* Icon creation failed, but this is not fatal */
-            PrintFault(IoErr(), program);
+            /* Icon creation failed, check specific error */
+            if (IoErr() == ERROR_DISK_WRITE_PROTECTED) {
+                fprintf(stderr, "%s: warning: cannot create icon for '%s': disk is write protected\n", program, dirname);
+            } else if (IoErr() == ERROR_DISK_FULL) {
+                fprintf(stderr, "%s: warning: cannot create icon for '%s': disk is full\n", program, dirname);
+            } else {
+                fprintf(stderr, "%s: warning: cannot create icon for '%s'\n", program, dirname);
+                PrintFault(IoErr(), dirname);
+            }
         }
         FreeDiskObject(disk_obj);
+    } else {
+        fprintf(stderr, "%s: warning: cannot get default drawer icon\n", program);
     }
     
     return success;
