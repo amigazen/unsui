@@ -1,0 +1,8 @@
+;	Required by RawDoFmt to place a character in a buffer.
+;	For usage, see Includes and AutoDocs under exec/RawDoFmt
+		section	code
+		xdef	_stuffChar
+_stuffChar:
+		move.b	d0,(a3)+
+		rts
+		end

@@ -1,0 +1,69 @@
+# SAS (Lattice) C makefile for Less
+# Note:  Requires AmigaDOS 2.0 include files
+# SAS-C v6.1
+
+# R. L. Zarling rayz@csustan.edu
+
+CFILES = ch.c command.c help.c input.c io.c line.c main.c option.c os.c \
+		output.c postion.c prim.c prompt.c screen.c signal.c \
+		ttyin.c version.c regexp.c
+
+OFILES = ch.o command.o help.o input.o io.o line.o main.o option.o os.o \
+        output.o position.o prim.o prompt.o screen.o signal.o \
+        ttyin.o version.o regexp.o stuffChar.o
+
+CFLAGS1 =
+CFLAGS = $(CFLAGS1) GST PreHeader.gst
+LC = Sc
+
+.c.o:
+        $(LC) $(CFLAGS) $*.c
+
+Less:   $(OFILES) SCOPTIONS SMakefile
+        $(LC) LINK TO Less $(OFILES)
+
+PreHeader.gst: PreHeader.c less.h funcs.h SMakefile SCOPTIONS
+        $(LC) $(CFLAGS1) MakeGST PreHeader.gst PreHeader.c
+ch.o:   ch.c PreHeader.gst
+command.o: command.c position.h PreHeader.gst
+help.o: help.c PreHeader.gst
+input.o: input.c PreHeader.gst
+io.o:   io.c PreHeader.gst
+line.o: line.c PreHeader.gst
+main.o: main.c position.h PreHeader.gst
+option.o: option.c PreHeader.gst
+os.o:   os.c PreHeader.gst
+output.o: output.c PreHeader.gst
+position.o: position.c position.h PreHeader.gst
+prim.o: prim.c PreHeader.gst position.h regexp.h
+prompt.o: prompt.c position.h PreHeader.gst
+screen.o: screen.c PreHeader.gst
+signal.o: signal.c PreHeader.gst
+ttyin.o: ttyin.c PreHeader.gst
+version.o: version.c PreHeader.gst
+regexp.o: regexp.c regmagic.h regexp.h
+        $(LC) $(CFLAGS1) $*
+stuffChar.o: stuffChar.a
+		asm stuffChar.a
+
+clean:
+        delete ch.o
+        delete command.o
+        delete help.o
+        delete input.o
+        delete io.o
+        delete line.o
+        delete main.o
+        delete option.o
+        delete os.o
+        delete output.o
+        delete position.o
+        delete prim.o
+        delete prompt.o
+        delete screen.o
+        delete signal.o
+        delete ttyin.o
+        delete version.o
+        delete regexp.o
+        delete PreHeader.gst
+        delete stuffChar.o

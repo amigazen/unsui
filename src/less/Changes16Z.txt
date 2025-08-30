@@ -1,0 +1,33 @@
+Less Version 1.6Z, the first major release after version 1.4Z, includes
+several small bug fixes, code optimizations, enhancements, and the
+changes necessary to allow compilation under SAS/C v. 6.3.
+
+A major change is that the Amiga console IO routines have been completely
+rewritten to permit optional use of the original CLI window or even an
+AUX: console, using -[cli] on the command line or in the LESS environment
+string (e.g. to get this effect, you would type something like
+"Less -[cli] myfile.txt" at the CLI prompt).
+
+I also added a 'w' code to the window designator, to cause the Less
+window to be built relative to the CLI window from which it was launched.
+This permits the user to specify, for instance, that Less is to open its
+window the same size as the existing cli window, but offset slightly to
+the lower right (-[w+10,w+12,w,w] on the command line or in the LESS
+environment string).  Note that with offsets -[w,w,w,w] the Less window
+will _appear_ to open in the original CLI window, but your old window
+and contents will appear to be restored when Less exits.
+
+Minor changes:  By default, Less no longer displays ^M at the end of
+lines of MS-DOS files.  The old behavior of showing all control characters
+can be re-instated using the -f switch. The AmigaDos version command
+can now read version information from the Less binary.  Less 1.4Z had a
+bug dealing with one ANSI mode command that has now been fixed (<CSI>m,
+with no intervening number).
+
+Thanks to the new code optimization provided by SAS/C 6.3, and a few
+recoded routines in Less itself, this upgraded functionality comes with
+an actually *reduced* program size!  When's the last time you saw a
+program upgrade that did that?
+
+--Ray Zarling
+  rayz@csustan.edu

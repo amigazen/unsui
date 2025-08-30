@@ -1,0 +1,8 @@
+Less
+A text file reader, descended from Unix "Less."  This
+version adds an option to suppress opening a new window,
+using the existing CLI window instead (especially
+useful with an AUX: shell), and includes some minor bug
+fixes.  This is version 1.6Z, an update to version 1.4Z
+on disk 511.  Includes source in SAS C 6.3.
+Author:  Ray Zarling et. al.

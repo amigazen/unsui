@@ -1,0 +1,521 @@
+
+
+
+
+
+
+_l_e_s_s - _o_p_p_o_s_i_t_e _o_f _m_o_r_e
+
+Version 1.6Z July 18, 1993
+
+Versions since Amiga version 1.3Z are supported by
+
+Raymond L. Zarling,
+Department of Computer Science
+Calif. State Univ. Stanislaus
+Turlock, CA 95380
+
+rayz@csustan.EDU
+
+
+_l_e_s_s [-_d_s_t_w_c_C_e_E_m_M_q_Q_u_U] [-_h_N] [-b[fp]_N] [-x_N] [-[z]_N]
+     [-_P[_m_M]_s_t_r_i_n_g] [+_c_m_d]  [_f_i_l_e_n_a_m_e]...
+
+_L_e_s_s is a program similar to  _m_o_r_e  (1),  but  which  allows
+backwards  movement in the file as well as forward movement.
+Also, _l_e_s_s does not have  to  read  the  entire  input  file
+before starting, so with large input files it starts up fas-
+ter than most text editors.
+
+     Commands are based on _m_o_r_e,  _v_i and _e_m_a_c_s.   Commands  may
+be  preceeded  by a decimal number, called N in the descrip-
+tions below.  The number is used by some commands, as  indi-
+cated.
+
+
+_I_n _t_h_e _f_o_l_l_o_w_i_n_g _d_e_s_c_r_i_p_t_i_o_n_s, ^_X _m_e_a_n_s _c_o_n_t_r_o_l-_X.
+
+H or Help key
+     Help: display a summary of these commands.  If you for-
+     get all the other commands, remember this one.
+
+
+SPACE
+     Scroll forward N lines, default one window (see  option
+     -z below).  If N is more than the screen size, only the
+     final screenful is displayed.
+
+
+f or ^F
+     Same as SPACE.
+
+
+^V
+     Same as SPACE.
+
+
+b or ^B
+     Scroll backward N lines, default one window (see option
+     -z below).  If N is more than the screen size, only the
+     final screenful is displayed.
+
+
+RETURN
+     Scroll forward N lines, default 1.  The entire N lines
+     are displayed, even if N is more than the screen size.
+
+
+e or ^E
+     Same as RETURN.
+
+^N
+     Same as RETURN.
+
+
+j or ^J
+     Also the same as RETURN.
+
+y or ^Y
+     Scroll backward N lines, default 1.  The entire N lines
+     are displayed, even if N is more than the screen size.
+
+k or ^K
+     Same as y.
+
+^P
+     Same as y.
+
+
+d or ^D
+     Scroll forward N lines, default half of the screen.  If
+     N is specified, it becomes the new default for subsequent
+     d and u commands.  The half-screen default is set again
+     whenever the screen is resized.
+
+
+u or ^U
+     Scroll backward N lines, default half of the screen.  If
+     N is specified, it becomes the new default for subsequent
+     d and u commands.  The half-screen default is set again
+     whenever the screen is resized.
+
+
+r or ^R or ^L
+     Repaint the screen.
+
+
+R    Repaint the  screen,  discarding  any  buffered  input.
+     Useful  if  the  file  is  changing  while  it is being
+     viewed.
+
+
+g    Go to line N in  the  file,  default  1  (beginning  of
+     file).  (Warning: this may be slow if N is large.)
+
+<    Same as g.
+
+
+G    Go to line N in the file, default the end of the  file.
+     (Warning:  this  may  be slow if standard input, rather
+     than a file, is being read.)
+
+>    Same as G.
+
+
+p    Go to a position N percent into the file.  N should  be
+     between 0 and 100.  (This is possible if standard input
+     is being read, but only if _l_e_s_s has already read to the
+     end  of  the  file.   It is always fast, but not always
+     useful.)
+
+
+%    Same as p.
+
+
+m    Followed by any lowercase  letter,  marks  the  current
+     position with that letter.
+
+
+'    (Single  quote.)  Followed  by  any  lowercase  letter,
+     returns  to  the  position  which was previously marked
+     with that letter.  Followed by  another  single  quote,
+     returns  to the postion at which the last "large" move-
+     ment command was executed.  All marks are lost  when  a
+     new file is examined.
+
+
+/pattern
+     Search forward in the file for the N-th line containing
+     the  pattern.  N defaults to 1.  The pattern is a regu-
+     lar expression, as recognized by Unix _e_d (see the
+     section on regular expressions below).  The search starts
+     at  the  second  line displayed (but see the -t option,
+     which changes this).  If the pattern is omitted, search
+     for another occurance of the most recent pattern.
+
+^S   Same as /.
+
+
+?pattern
+     Search backward in the file for the N-th line  contain-
+     ing the pattern.  The search starts at the line immedi-
+     ately before the top line displayed.  If the pattern is
+     omitted, search for another occurance of the most recent
+     pattern.
+
+
+n    Repeat previous search, for N-th  line  containing  the
+     last pattern, searching in the same direction as the
+     previous search.
+
+
+E    Examine a new file.  If the filename  is  missing,  the
+     "current"  file  (see  the N and P commands below) from
+     the list of files in the command line  is  re-examined.
+     If  the  filename  is  a pound sign (#), the previously
+     examined file is re-examined (one level of backup only).
+
+
+N    Examine the next file (from the list of files given  in
+     the  command line).  If a number N is specified (not to
+     be confused with the command N), the N-th next file  is
+     examined.
+
+
+P    Examine the previous file.  If a number N is specified,
+     the N-th previous file is examined.
+
+
+= or ^G
+     Prints some information about the  file  being  viewed,
+     including  its  name  and the byte offset of the bottom
+     line being displayed.  If possible, it also prints  the
+     length  of  the  file and the percent of the file above
+     the last displayed line.
+
+
+-    Followed by one of the command line option letters (see
+     below), this will toggle the setting of that option
+     and/or print a message describing the new setting.  Not
+     all options can be set from within the program:  b, P,
+     and window sizing are command-line only options.
+
++cmd Causes the specified cmd to be executed each time a new
+     file  is examined.  For example, +G causes _l_e_s_s to ini-
+     tially display each file starting  at  the  end  rather
+     than the beginning.
+
+
+V    Prints the version number of _l_e_s_s being run.
+
+
+q    Exits _l_e_s_s.
+
+
+_C_o_m_m_a_n_d _l_i_n_e _o_p_t_i_o_n_s _a_r_e _d_e_s_c_r_i_b_e_d _b_e_l_o_w.  _M_o_s_t _o_p_t_i_o_n_s  _m_a_y
+_b_e _c_h_a_n_g_e_d _w_h_i_l_e _l_e_s_s is running, via the "-" command.
+
+     Options are also taken from  the  environment  variable
+"LESS".   For  example, if you like very verbose prompting, to
+avoid typing "less -M ..." each time _l_e_s_s  is  invoked,  you
+might tell _c_s_h or the AmigaDOS shell:
+
+setenv LESS M
+
+or if you use _S_K_s_h:
+
+LESS=M; export LESS
+
+The environment variable is parsed before the command  line,
+so  command line options override the LESS environment vari-
+able.  A dollar sign ($) may be used to signal the end of an
+option  string.   This is important only for options like -P
+which take a following string.
+
+Some options have values, some are 2-way toggles, and some are
+3-way toggles.  The 3-way ones are handled by using both an
+upper-case and a lower-case option name.  Usually, the upper-
+case option is the most extreme, the lower-case setting is
+moderate, and neither is least extreme.  For instance, the
+-m and -M options control the length of the prompt line.  If
+-M is in effect, you get a relatively long prompt, while -m
+is much shorter.  If neither -m nor -M is set, the prompt is
+a single ":" character (unless you redefine one or more of
+these using -P).  To change a 3-way option, use either -x or
+-X, where x is the option name.  Typing -x will establish the
+moderate case if it wasn't already set (i.e. either -X or
+neither was in effect) or set the least extreme ("neither")
+choice if it was.  Similarly, -X would establish the X option
+if it wasn't already in effect; otherwise "neither".
+
+-b   Numeric; set from command line or environment only.
+     The -b_n option tells _l_e_s_s to use a non-standard  buffer
+     size.   There  are two standard (default) buffer sizes,
+     one is used when a file is being  read  and  the  other
+     when  a  pipe  (standard  input)  is  being  read.  The
+     current defaults are 5 buffers for  files  and  12  for
+     pipes.   (Buffers  are 1024 bytes.) The number _n speci-
+     fies a different number of buffers to use.  The -b  may
+     be followed by "f", in which case only the file default
+     is changed, or by "p"  in  which  case  only  the  pipe
+     default is changed.  Otherwise, both are changed.  This
+     option cannot be reset using the '-' command from within
+     Less.
+     These default settings are pretty minimal, designed for
+     situations where memory is really at a premium.  (A full
+     page of text on a high-res screen can be nearly 4k.)  If
+     you have enough memory, you may want to use an environment
+     variable to revise them upward;  I use -bf15bp100.
+
+-c and -C  3-way switch
+     If the -c option is set, when _l_e_s_s needs to change the
+     entire  display,  it will paint from the top line down.
+     Otherwise, it will repaint  the  screen  by  scrolling
+     from  the  bottom  of  the screen.
+     The -C option is like -c, but  the  screen  is  cleared
+     before it is repainted.  This is the fastest option, and
+     is the default upon program startup.
+     The -c or -C option may be overridden for backward file
+     motion by a sufficiently large setting of -h.  If -h is
+     set larger than the screen size, full page backwards
+     movements will scroll regardless of the -C setting.
+
+-e and -E  3-way switch
+     Under -e, the only way to exit less is via the "q"  com-
+     mand, or the screen close gadget.  Without the -e option,
+     less automatically exits if you use a page forward com-
+     mand when you have already reached end-of-file (default).
+     The -E flag causes less  to  exit if you use any of the
+     usual commands (not just page forward) after you have
+     reached end-of-file.
+     Regardless of the setting of this switch, Less will quit
+     immediately upon receipt of a BREAK signal.  BREAK may
+     be generated by the AmigaDOS "break" command directed at
+     the Less process, or by a ^C in the invoking CLI window
+     (if there is one).  A ^C in the Less window is ignored,
+     with a warning message.
+
+-f	 Toggle
+     Use -f if you wish any ^M characters in the input to be
+     displayed.  These would be present if the text being viewed
+     came from an MSDOS system or other source that leaves
+     them at the end of each line.  Turned off by default.
+     (Used to be the "assume clean" flag under unix.)
+
+-h   Numeric
+     The -h option interacts with -c to specify under what
+     conditions backwards scrolling will be used to update a
+     display.  The -h setting is the maximum number of lines
+     to scroll  backwards.  If  it  is necessary  to move
+     backwards more than this many lines, or more than one
+     screenful, the screen is repainted in a forward  direction.
+     Backwards movements of exactly one screenful are handled
+     according to the -c setting, if the user leaves -h unset.
+     If -h is left unspecified by the user, it defaults to one
+     less than the screen size.  Once the user specifies a
+     value, however, that value is retained for the balance of
+     the run.  Use -h0 to disable all backwards scrolling.
+
+-m and -M  3-way switch
+     By default, _l_e_s_s prompts verbosely (-m), with the
+     percent into the file. The -M option causes _l_e_s_s to
+     prompt even more verbosely than -m.  If neither -m nor
+     -M is set, the prompt is very short.  Note that Less
+     automatically shortens any prompt if the screen is not
+     wide enough.
+
+-P   String; command line or environment only
+     The -P option provides a way to tailor the three prompt
+     styles  to your own preference.  You would normally put
+     this option in your LESS environment  variable,  rather
+     than type it in with each less command.  Such an option
+     must either be the last option in the LESS variable, or
+     be  terminated  by  a  dollar  sign.   -P followed by a
+     string changes  the  default  (short)  prompt  to  that
+     string.   -Pm  changes  the  medium  (-m) prompt to the
+     string, and -PM changes  the  long  (-M)  prompt.   The
+     string  consists  of  a  sequence  of letters which are
+     replaced with certain predefined strings, as follows:
+          Ffile name
+          ffile name, only once
+          Ofile n of n
+          ofile n of n, only once
+          bbyte offset
+          ppercent into file
+          Ppercent if known, else byte offset
+     Angle brackets, < and >, may  be  used  to  surround  a
+     literal  string  to  be  included  in  the prompt.  The
+     defaults are "fo" for the short prompt, "foP"  for  the
+     medium prompt, and "Fobp" for the long prompt.
+     Example: Setting your LESS variable  to  "PmFOP$PMFObp"
+     would  change  the  medium  and  long prompts to always
+     include the file name and "file n of n" message.
+     Another example: Setting your LESS variable to
+     "mPm<--Less-->FoPe" would change the medium  prompt  to
+     the  string  "--Less--"  followed  by the file name and
+     percent into the file.   It  also  selects  the  medium
+     prompt  as  the  default  prompt  (because of the first
+     "m").
+
+-q and -Q  3-way switch
+     Normally, if an attempt is made to scroll past the  end
+     of  the  file  or before the beginning of the file, the
+     screen flashes ("visual bell") to indicate this  fact.
+     The  -q option  tells  _l_e_s_s not to flash the screen at
+     such times.
+     Even if -q is given, _l_e_s_s will flash the screen on certain
+     other errors, such as typing an invalid character.  The
+     -Q option tells _l_e_s_s to be quiet all the time; that is,
+     never  do the visual bell.
+
+-s   2-way switch
+     The -s option causes  consecutive  blank  lines  to  be
+     squeezed into a single blank line.  This is useful when
+     viewing _n_r_o_f_f output.
+
+-t   2-way switch
+     Normally, forward searches start  just  after  the  top
+     displayed line (that is, at the second displayed line).
+     Thus forward searches include the  currently  displayed
+     screen.  The -t option causes forward searches to start
+     just after the bottom line displayed, thus skipping the
+     currently displayed screen.
+
+-u and -U  3-way switch
+     If the -u option is given, backspaces  are  treated  as
+     printable  characters;  that  is,  they are sent to the
+     terminal when they appear in the input.
+     If the -U option is given, backspaces  are  printed  as
+     the two character sequence "^H".
+     If neither -u nor -U is given, backspaces which  appear
+     adjacent  to  an  underscore character are treated spe-
+     cially: the underlined  text  is  displayed  using  the
+     terminal's   hardware  underlining  capability.   Also,
+     backspaces which appear between two  identical  charac-
+     ters  are  treated  specially:  the  overstruck text is
+     printed using the terminal's hardware boldface capabil-
+     ity.   Other  backspaces  are  deleted,  along with the
+     preceeding character.  This is the default setting.
+     The recognition of ANSI escape sequences is also controlled
+     by this switch.  The ANSI underlining, boldface, italic,
+     and inverse rendering is only done if neither -u nor -U
+     is set.
+
+-w   2-way switch
+     Normally, _l_e_s_s uses  a  tilde  character  to  represent
+     lines  past  the end of the file.  The -w option causes
+     blank lines to be used instead.
+
+-x   Numeric
+     The -x_n option sets tab stops every _n  positions.   The
+     default for _n is 8.
+
+-[z] Numeric
+     When given a backwards or forwards window command, _l_e_s_s
+     will  by  default  scroll  backwards  or  forwards  one
+     screenful of lines. The -z_n option changes the  default
+     scrolling window size to _n lines, or one  screenful,
+     whichever is smaller.  Note  that the "z" is optional for
+     compatibility with _m_o_r_e.  If the screen is resized
+     so that the -z option would be larger than a screenful,
+     -z is reset to this smaller screen size.  If the screen
+     is then enlarged to a size greater than -z, the previously
+     specified value is restored.
+
++    String
+     If a command line option begins with +,  the  remainder
+     of  that  option  is  taken to be an initial command to
+     _l_e_s_s.  For example, +G tells _l_e_s_s to start at  the  end
+     of  the file rather than the beginning, and +/xyz tells
+     it to start at the first  occurence  of  "xyz"  in  the
+     file.    As   a   special  case,  +<number>  acts  like
+     +<number>g; that is,  it  starts  the  display  at  the
+     specified  line  number  (however, see the caveat under
+     the "g" command above).  If the option starts with  ++,
+     the initial command applies to every file being viewed,
+     not just the first one.  The + command described previ-
+     ously  may  also  be used to set (or change) an initial
+     command for every file.
+
+-[N,N,N,N] or [cli]
+     If an option of this form appears on the command line,
+     Less uses the information to size and position its display
+     window.  The second ([cli]) form means that Less should
+     not open a new window, but use the cli window from which
+     it was launched instead.  This specification is simply
+     ignored if Less was not launched from a cli.  The first
+     ([N,N,N,N]) form is used to specify the size and position
+     of a new output window to be created.  Any of the four
+     values may be omitted, defaulting to 0, and any of the
+     four may be of the form w, w+N, or w-N.  In this case, the
+     character "w" is replaced by the corresponding dimension
+     of the existing cli window, so the new window can open
+     in a position and/or size relative to the launching cli.
+     If one or more of the last values is omitted, the
+     trailing commas may be omitted also.  A value of zero in
+     either of the last two positions causes Less to use maximum
+     screen dimensions.  The four values indicate in order the
+     left edge, top edge, width, and height of window to use.
+     If any of these are negative, they are taken as relative
+     to the bottom right corner of the workbench screen.  Thus,
+     -[0,12,,-100] will open a full-width window extending from
+     12 pixels from the top to 100 pixels from the bottom of
+     the screen. Similarly, -[-400,0,400,0] would open a full-
+     height window which is flush against the right edge of the
+     screen and 400 pixels wide.  And -[w+10,w+12,w,w] would
+     open a window the same size as the existing cli window
+     but offset slightly to the right and down.  In all cases,
+     if the window specified would fall off an edge of the
+     screen, or would go less than a certain minimum size, the
+     window is silently coerced back into conformity.
+
+_R_e_g_u_l_a_r _E_x_p_r_e_s_s_i_o_n _P_a_t_t_e_r_n _M_a_t_c_h_i_n_g
+
+Less uses Regular Expressions, in the style of Unix 'ed', for
+specifying searches.  While these expressions can appear quite
+cryptic, they are very powerful tools for locating text within
+a document.
+
+Any pattern consisting only of letters, numbers, and spaces will
+simply search for the given pattern.  But you can use one or
+more of the metacharacters [].^$()|*+ to engineer very
+sophisticated searches.  The '.' stands for any single character,
+and 'x*' stands for 0 or more occurances of x (so 'x.*y' would
+match anything that started with x and ended with y).  'x+'
+works the same way, for 1 or more occurances of x.  'x?' matches
+0 or 1 occurances of x (i.e. 'x' or nothing).  '[abc]' matches
+any single occurance of 'a', 'b', or 'c'.  '[^abc]' matches any
+single character except 'a', 'b', or 'c'.  '[a-m]' matches any
+single character in the range 'a' through 'm' inclusive.  '^x'
+finds x only at the beginning of a line; 'x$' only at the end of
+a line.  'x|y' matches either x or y.  The various pieces can be
+combined, of course, and grouped with parentheses.  For instance,
+'([Aa]ny|[Ee]ach) +of you' would find any phrase beginning with
+'any' or 'each' (possibly capitalized) followed by one or more
+blanks, followed by 'of you'. ' (can)?not ' matches either 'not'
+or 'cannot', but not 'nothing' or 'cancel'.  '[^a-zA-Z]i[^a-zA-Z]'
+finds all occurances of a variable 'i' in a program, but does not
+find 'i' embedded in other variable names or words.  To match a
+metacharacter literally, precede it with a backslash; e.g. '\.  \*'
+would match a period followed by two spaces and an asterisk.
+
+
+_O_t_h_e_r _C_o_n_s_i_d_e_r_a_t_i_o_n_s
+
+Less is residentable, so if you use it a lot you may wish to add
+it to your system resident list.  To do this, make sure the pure
+bit is set in the file protection codes (protect +p Less).  Then
+add the line "resident c:Less" (or whatever your path is) to your
+startup-sequence.
+
+Less uses internally Ascii characters 0 and 129-136.  Since these
+are non-printing characters, it shouldn't make any difference
+under normal circumstances.  Character 0 will display as '@' and
+129-136 as ^?.
+
+
+_W_h_e_n _u_s_e_d _o_n _s_t_a_n_d_a_r_d _i_n_p_u_t (_r_a_t_h_e_r _t_h_a_n _a  _f_i_l_e),  _y_o_u  _c_a_n
+_m_o_v_e  _b_a_c_k_w_a_r_d_s  _o_n_l_y _a _f_i_n_i_t_e _a_m_o_u_n_t, _c_o_r_r_e_s_p_o_n_d_i_n_g _t_o _t_h_a_t
+_p_o_r_t_i_o_n _o_f _t_h_e _f_i_l_e _w_h_i_c_h _i_s _s_t_i_l_l _b_u_f_f_e_r_e_d.  _T_h_e -_b  _o_p_t_i_o_n
+_m_a_y _b_e _u_s_e_d _t_o _e_x_p_a_n_d _t_h_e _b_u_f_f_e_r _s_p_a_c_e.
+

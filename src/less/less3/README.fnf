@@ -1,0 +1,8 @@
+This is a minor update to the version of less released on disk number 74.
+It is primarily of interest to users that have only a single disk drive
+and who do not have some other program that calls the Manx getenv() library
+call.  This version does not use getenv() and thus eliminates the annoying 
+disk requestor that would come up everytime it was run without having
+the workbench disk available.
+
+-Fred  9-Aug-87

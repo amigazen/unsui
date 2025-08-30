@@ -1,0 +1,30 @@
+This is an updated version of "LESS" from Fish #34
+
+It fixes several bugs and has some nice new features
+
+* It is a "better more" , that is you can go forward or backward, search,
+    got to line numbers, or a percentage of the file, <space> moves forward
+    just like more, however "b" backs up and many more options are available
+    (type h for help)
+
+* It now works from the WorkBench and can show files with blanks in the names
+
+* Templates now work -- yes you can say: less *.c *.h "Amiga File Name"
+     and browse through 100 files in one command
+
+* Backspace and ^X now work in searches
+
+donations, comments and suggestions can be sent to:
+
+	Bob Leivian		ihnp4!sun!sunburn!dover!leivian
+	2702 W. Curry St.
+	Chandler, AZ 85224	(602)820-6859
+
+
+[Ed note:  As received, less defaulted to having the command line option
+ -p active (which presented the next screen by clearing the current one
+ and repainting from the top).  However, I found this visually confusing
+ and opposite the default behavior of less on other systems.  I believe
+ Bob set it up this way because it was faster.  I hope he doesn't mind
+ that I changed it back.  If you prefer the -p default, the original
+ version is "less.orig".  -Fred Fish, 2-May-87]

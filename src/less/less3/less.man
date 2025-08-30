@@ -1,0 +1,397 @@
+
+
+
+     LLLLEEEESSSSSSSS((((llll))))                     
+
+
+
+     NNNNAAAAMMMMEEEE
+          less - opposite of more
+
+     SSSSYYYYNNNNOOOOPPPPSSSSIIIISSSS
+          lllleeeessssssss [[[[----ccccddddeeeeppppssssttttwwwwmmmmMMMMqqqqQQQQuuuuUUUU]]]] [[[[----hhhh_n]]]] [[[[----bbbb[[[[ffffpppp]]]]_n]]]] [[[[--
+--xxxx_n]]]] [[[[----[[[[zzzz]]]]_n]]]] [[[[++++_c_m_d]]]]
+          [[[[_n_a_m_e]]]] ............
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _L_e_s_s is a program similar to _m_o_r_e(1), but which allows
+          backwards movement in the file as well as forward movement.
+          Also, _l_e_s_s does not have to read the entire input file
+          before starting, so with large input files it starts up
+          faster than text editors like _v_i(1).  _L_e_s_s uses termcap, so
+          it can run on a variety of terminals.  There is even limited
+          support for hardcopy terminals.  (On a hardcopy terminal,
+          lines which should be printed at the top of the screen are
+          prefixed with an up-arrow.)
+
+          Commands are based on both _m_o_r_e and _v_i.  Commands may be
+          preceeded by a decimal number, called N in the descriptions
+          below.  The number is used by some commands, as indicated.
+
+     CCCCOOOOMMMMMMMMAAAANNNNDDDDSSSS
+          hhhh    Help: display a summary of these commands.  If you
+               forget all the other commands, remember this one.
+
+          SSSSPPPPAAAACCCCEEEE
+               Scroll forward N lines, default one window (see option
+               ----zzzz below).  If N is more than the screen size, only one
+               screenful is displayed.
+
+          ffff    Same as SSSSPPPPAAAACCCCEEEE.
+
+          bbbb    Scroll backward N lines, default one window (see option
+               ----zzzz below).  If N is more than the screen size, only one
+               screenful is displayed.
+
+          RRRREEEETTTTUUUURRRRNNNN
+               Scroll forward N lines, default 1.  If N is more than
+               the screen size, the entire N lines are displayed.
+
+          eeee    Same as RRRREEEETTTTUUUURRRRNNNN.
+
+          jjjj    Also the same as RRRREEEETTTTUUUURRRRNNNN.
+
+          yyyy    Scroll backward N lines, default 1.  If N is more than
+               the screen size, the entire N lines are displayed.
+
+          kkkk    Same as yyyy.
+
+          dddd    Scroll forward N lines, default 10.  If N is specified,
+               it becomes the new default for all dddd and uuuu commands.
+
+
+
+     Page 1                                           (printed 9/1/86)
+
+
+
+
+
+
+     LLLLEEEESSSSSSSS((((llll))))                     UUUUNNNNIIIIXXXX 5555....0000                      LLLLEEEESSSSSSSS((((llll))))
+
+
+
+          uuuu    Scroll backward N lines, default 10.  If N is
+               specified, it becomes the new default for all dddd and uuuu
+               commands.
+
+          rrrr    Repaint the screen.
+
+          RRRR    Repaint the screen, discarding any buffered input.
+               Useful if the file is changing while it is being
+               viewed.
+
+          gggg    Go to line N in the file, default 1 (beginning of
+               file).  (Warning: this may be slow if N is large.)
+
+          GGGG    Go to line N in the file, default the end of the file.
+               (Warning: this may be slow if standard input, rather
+               than a file, is being read.)
+
+          pppp    Go to a position N percent into the file.  N should be
+               between 0 and 100.  (This is possible if standard input
+               is being read, but only if _l_e_s_s has already read to the
+               end of the file.  It is always fast, but not always
+               useful.)
+
+          %%%%    Same as pppp.
+
+          mmmm_l   Followed by any lowercase letter, _l, marks the current
+               position with that letter.
+
+          ''''_l   Followed by any lowercase letter, _l, returns to the
+               position which was previously marked with that letter.
+               All marks are lost when a new file is examined.
+
+          ////ppppaaaatttttttteeeerrrrnnnn
+               Search forward in the file for the N-th occurence of
+               the _p_a_t_t_e_r_n.  N defaults to 1.  The _p_a_t_t_e_r_n is a
+               regular expression, as recognized by _e_d.  The search
+               starts at the second line displayed (but see the ----tttt
+               option, which changes this).
+
+          ????ppppaaaatttttttteeeerrrrnnnn
+               Search backward in the file for the N-th occurence of
+               the _p_a_t_t_e_r_n.  The search starts at the line immediately
+               before the top line displayed.
+
+          nnnn    Repeat previous search, for N-th occurence of the last
+               _p_a_t_t_e_r_n.
+
+          EEEE [_f_i_l_e_n_a_m_e]
+               Examine a new file.  If the _f_i_l_e_n_a_m_e is missing, the
+               "current" file (see the NNNN and PPPP commands below) from
+               the list of files in the command line is re-examined.
+
+
+
+
+     Page 2                                           (printed 9/1/86)
+
+
+
+
+
+
+     LLLLEEEESSSSSSSS((((llll))))                     UUUUNNNNIIIIXXXX 5555....0000                      LLLLEEEESSSSSSSS((((llll))))
+
+
+
+          NNNN    Examine the next file (from the list of files given in
+               the command line).  If a number N is specified (not to
+               be confused with the command NNNN), the N-th next file is
+               examined.
+
+          PPPP    Examine the previous file.  If a number N is specified,
+               the N-th previous file is examined.
+
+          ====    Prints the name of the file being viewed and the byte
+               offset of the bottom line being displayed.  If
+               possible, it also prints the length of the file and the
+               percent of the file above the last displayed line.
+
+          ----    Followed by one of the command line option letters (see
+               below), this will toggle the setting of that option and
+               print a message describing the new setting.
+
+          VVVV    Prints the version number of _l_e_s_s being run.
+
+          qqqq    Exits _l_e_s_s.
+
+          The following two commands may or may not be valid,
+          depending on your particular installation.
+
+          vvvv    Invokes an editor to edit the current file being
+               viewed.  The editor is taken from the environment
+               variable EEEEDDDDIIIITTTTOOOORRRR, or defaults to _v_i.
+
+          !!!! _s_h_e_l_l-_c_o_m_m_a_n_d
+               Invokes a shell to run the _s_h_e_l_l-_c_o_m_m_a_n_d given.
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          Command line options are described below.  Options are also
+          taken from the environment variable LLLLEEEESSSSSSSS.  (The environment
+          variable is parsed before the command line, so command line
+          options override the LLLLEEEESSSSSSSS environment variable.  Options may
+          be changed while _l_e_s_s is running via the """"----"""" command.)  For
+          example, if you like more-style prompting, to avoid typing
+          lllleeeessssssss ----mmmm ............ each time _l_e_s_s is invoked, you might tell _c_s_h:
+
+          sssseeeetttteeeennnnvvvv LLLLEEEESSSSSSSS mmmm
+
+          or if you use _s_h:
+
+          LLLLEEEESSSSSSSS====mmmm;;;; eeeexxxxppppoooorrrrtttt LLLLEEEESSSSSSSS
+
+          ----ssss   The ----ssss flag causes consecutive blank lines to be
+               squeezed into a single blank line.  This is useful when
+               viewing _n_r_o_f_f output.
+
+          ----tttt   Normally, forward searches start just after the top
+               displayed line (that is, at the second displayed line).
+
+
+
+     Page 3                                           (printed 9/1/86)
+
+
+
+
+
+
+     LLLLEEEESSSSSSSS((((llll))))                     UUUUNNNNIIIIXXXX 5555....0000                      LLLLEEEESSSSSSSS((((llll))))
+
+
+
+               Thus forward searches include the currently displayed
+               screen.  The ----tttt command line option causes forward
+               searches to start just after the bottom line displayed,
+               thus skipping the currently displayed screen.
+
+          ----mmmm   Normally, _l_e_s_s prompts with a colon.  The ----mmmm command
+               line option causes _l_e_s_s to prompt verbosely like _m_o_r_e,
+               printing the file name and percent into the file.
+
+          ----MMMM   The ----MMMM command line option causes _l_e_s_s to prompt even
+               more verbosely than _m_o_r_e.
+
+          ----qqqq   Normally, if an attempt is made to scroll past the end
+               of the file or before the beginning of the file, the
+               terminal bell is rung to indicate this fact.  The ----qqqq
+               command line option tells _l_e_s_s not to ring the bell at
+               such times.  If the terminal has a "visual bell", it is
+               used instead.
+
+          ----QQQQ   Even if ----qqqq is given, _l_e_s_s will ring the bell on certain
+               other errors, such as typing an invalid character.  The
+               ----QQQQ command line option tells _l_e_s_s to be quiet all the
+               time; that is, never ring the terminal bell.  If the
+               terminal has a "visual bell", it is used instead.
+
+          ----eeee   Normally the only way to exit less is via the "q"
+               command.  The ----eeee command line option tells less to
+               automatically exit the second time it reaches end-of-
+               file.
+
+          ----uuuu   If the ----uuuu command line option is given, backspaces are
+               treated as printable characters; that is, they are sent
+               to the terminal when they appear in the input.
+
+          ----UUUU   If the ----UUUU command line option is given, backspaces are
+               printed as the two character sequence "^H".  If neither
+               ----uuuu nor ----UUUU is given, backspaces which appear adjacent to
+               an underscore character or sequences of a character
+               interleaved with backspaces are treated specially:  the
+               underlined or boldfaced text is displayed using the
+               terminal's hardware capability.  Note that the ----vvvv
+               option below superceeds both ----uuuu and ----UUUU.
+
+          ----wwww   Normally, _l_e_s_s uses a tilde character to represent
+               lines past the end of the file.  The ----wwww option causes
+               blank lines to be used instead.
+
+          ----dddd   Normally, _l_e_s_s will complain if the terminal is dumb;
+               that is, lacks some important capability, such as the
+               ability to clear the screen or scroll backwards.  The
+               ----dddd flag suppresses this complaint (but does not
+               otherwise change the behavior of the program on a dumb
+
+
+
+     Page 4                                           (printed 9/1/86)
+
+
+
+
+
+
+     LLLLEEEESSSSSSSS((((llll))))                     UUUUNNNNIIIIXXXX 5555....0000                      LLLLEEEESSSSSSSS((((llll))))
+
+
+
+               terminal).
+
+          ----pppp   Normally, _l_e_s_s will repaint the screen by scrolling
+               from the bottom of the screen.  If the ----pppp flag is set,
+               when _l_e_s_s needs to change the entire display, it will
+               clear the screen and paint from the top line down.
+
+          ----hhhh_n  Normally, _l_e_s_s will scroll backwards when backwards
+               movement is necessary.  The ----hhhh option specifies a
+               maximum number of lines to scroll backwards.  If it is
+               necessary to move backwards more than this many lines,
+               the screen is repainted in a forward direction.  (If
+               the terminal does not have the ability to scroll
+               backwards, ----hhhh_0 is implied.)
+
+          ----[[[[zzzz]]]]_n
+               When given a backwards or forwards window command, _l_e_s_s
+               will by default scroll backwards or forwards one
+               screenful of lines.  The ----zzzz option changes the default
+               scrolling window size to _n lines.  If _n is greater than
+               the screen size, the scrolling window size will be set
+               to one screenful.  Note that the zzzz is optional for
+               compatibility with more.
+
+          ----xxxx   The ----xxxx command line option sets tab stops every _n
+               positions.  The default for _n is 8.
+
+          ----bbbb[[[[ffffpppp]]]]_n
+               The ----bbbb command line option tells _l_e_s_s to use a non-
+               standard buffer size.  There are two standard (default)
+               buffer sizes, one is used when a file is being read and
+               the other when a pipe (standard input) is being read.
+               The current defaults are 5 buffers for files and 12 for
+               pipes.  (Buffers are 1024 bytes.)  The number _n
+               specifies a different number of buffers to use.  The ----bbbb
+               may be followed by ffff, in which case only the file
+               default is changed, or by pppp in which case only the pipe
+               default is changed.  Otherwise, both are changed.
+
+          ----cccc   Normally, when data is read by _l_e_s_s, it is scanned to
+               ensure that bit 7 (the high order bit) is turned off in
+               each byte read, and to ensure that there are no null
+               (zero) bytes in the data (null bytes are turned into
+               "@" characters).  If the data is known to be "clean",
+               the ----cccc command line option will tell _l_e_s_s to skip this
+               checking, causing an imperceptible speed improvement.
+               (However, if the data is not "clean", unpredicatable
+               results may occur.)
+
+          ----vvvv   The ----vvvv option tells less to print non-printing
+               characters in a visible way ala _c_a_t(1).  Control
+               characters are printed as ^X (the delete character
+
+
+
+     Page 5                                           (printed 9/1/86)
+
+
+
+
+
+
+     LLLLEEEESSSSSSSS((((llll))))                     UUUUNNNNIIIIXXXX 5555....0000                      LLLLEEEESSSSSSSS((((llll))))
+
+
+
+               (octal 0177) is printed as ^?).  Characters with the
+               0200 bit set are printed as M- followed by the
+               character represented by the low order seven bits.
+
+          ++++_c_o_m_m_a_n_d
+               If a command line option begins with ++++, the remainder
+               of that option is taken to be an initial command to
+               _l_e_s_s.  For example, ++++_G tells _l_e_s_s to start at the end
+               of the file rather than the beginning, and ++++/_x_y_z tells
+               it to start at the first occurence of _x_y_z in the file.
+               As a special case, ++++<_n_u_m_b_e_r> acts like ++++<_n_u_m_b_e_r>_g; that
+               is, it starts the display at the specified line number
+               (however, see the caveat under the gggg command above).
+               If the option starts with ++++++++, the initial command
+               applies to every file being viewed, not just the first
+               one.
+
+     BBBBUUUUGGGGSSSS
+          When used on standard input (rather than a file), you can
+          move backwards only a finite amount, corresponding to that
+          portion of the file which is still buffered.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 6                                           (printed 9/1/86)
+
+
+
