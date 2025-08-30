@@ -160,6 +160,7 @@
  *			 printing correctly.  Added -f option (used
  *			 to be the "clean" flag) to keep ^M (carriage
  *			 return) from displaying.
+ *		1.7: Refactored to build against NDK 3.2 with SAS/C 6.58
  */
 
-char version[] = "$VER: Amiga Less 1.6Z";
+char version[] = "$VER: less 1.7 (31/08/25)";

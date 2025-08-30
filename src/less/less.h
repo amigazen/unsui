@@ -5,7 +5,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <proto/all.h>
+#include <proto/exec.h>
+#include <proto/dos.h>
+#include <proto/utility.h>
+#include <proto/intuition.h>
+#include <clib/alib_protos.h>
 #endif
 /*
  * Standard include file for "less".
@@ -85,4 +89,7 @@ extern char version[];
 extern int called_from_WB;
 extern int IsV2; /* Non-zero if AmigaDos 2.00 or more */
 extern BOOL UseCLI; /* 0 = Open new window; 1 = use CLI window */
+
+extern struct IntuitionBase *IntuitionBase;
+
 #endif

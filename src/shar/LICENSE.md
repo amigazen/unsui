@@ -1,7 +1,7 @@
 # BSD 2-Clause License
 
-Copyright (c) 1987 Fabbian G. Dufoe, III  
-Copyright (c) 2025 amigazen project
+Copyright (c) 1987 Fabbian F. Dufoe, III
+Copyright (c) 2025 amigazen project. 
 
 All rights reserved.
 
@@ -26,8 +26,6 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-## License Notes
+## Acknowledgements
 
-This project combines:
-- **Original shar implementation** (c) 1987 Fabbian G. Dufoe, III
-- **Enhanced POSIX compliance and UNSUI integration** (c) 2025 amigazen project
+Original shar implementation (c) 1987 Fabbian G. Dufoe, III

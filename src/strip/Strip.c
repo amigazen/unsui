@@ -113,8 +113,6 @@ BOOL skipNLongs(LONG, Global *);
 VOID writeLong(LONG, Global *);
 VOID writeNLongs(LONG, Global *);
 BOOL flush(Global *);
-VOID myPrintf(Global *, char *, ...);
-VOID mySPrintf(Global *, char *, char *, ...);
 
 /* Hybrid parsing function declarations */
 int run_strip_logic(STRPTR pathname, STRPTR destination, LONG quiet, LONG keep, const char *program);
@@ -322,7 +320,7 @@ const char *messages[] = {
 
 VOID message(enum msgs msg, Global *g)
 {
-  myPrintf(g, "%s: %s\n", PROGNAME, messages[msg]);
+  printf("%s: %s\n", PROGNAME, messages[msg]);
 }
 
 
@@ -641,7 +639,7 @@ VOID statistics(Global *g)
 {
   if (!g->args.quiet)
     if (g->symhunks || g->dbghunks)
-      myPrintf(g, "%s: removed - symbol hunks: %ld, debug hunks: %ld\n",
+      printf("%s: removed - symbol hunks: %ld, debug hunks: %ld\n",
 	       PROGNAME, g->symhunks, g->dbghunks);
     else message(msg_nothing, g);
 }
@@ -787,30 +785,98 @@ BOOL flush(Global *g)
 }
 
 
-VOID myPrintf(Global *g, char *fmt, ...)
-{
-  va_list ap;
-
-  va_start(ap, fmt);
-  VPrintf(fmt, (LONG *) ap);
-  va_end(ap);
-}
-
-
-VOID mySPrintf(Global *g, char *s, char *fmt, ...)
-{
-  va_list ap;
-
-  va_start(ap, fmt);
-  RawDoFmt(fmt, (LONG *) ap, (void (*)) "\x16\xc0\x4e\x75", s);
-  va_end(ap);
-}
-
 /*
  * Hybrid parsing functions for Amiga/POSIX compatibility
  */
 
 
+
+/**
+ * @brief Detect if command line uses getopt style
+ * @param argc Argument count
+ * @param argv Argument vector
+ * @return TRUE if getopt style, FALSE otherwise
+ */
+int is_getopt_style(int argc, char **argv)
+{
+    if (argc < 2) return FALSE;
+
+    /* Check for standard options like -s, -o, -k */
+    if (argv[1][0] == '-' && argv[1][1] != '\0' && strchr("sokqh", argv[1][1])) {
+        return TRUE;
+    }
+
+    /* Check for historical syntax like +5 or -10 */
+    if ((argv[1][0] == '+') ||
+        (argv[1][0] == '-' && (isdigit(argv[1][1])))) {
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+/**
+ * @brief Parse arguments using getopt (POSIX style)
+ * @param argc Argument count
+ * @param argv Argument vector
+ * @param pathname Pointer to store input file path
+ * @param destination Pointer to store output file path
+ * @param quiet Pointer to store quiet flag
+ * @param keep Pointer to store keep flag
+ * @param file_start Index where files start in argv
+ * @param program Program name for error messages
+ */
+void parse_getopt_args(int argc, char **argv, STRPTR *pathname, STRPTR *destination, LONG *quiet, LONG *keep, int *file_start, const char *program)
+{
+    int c;
+    
+    reset_getopt();
+    
+    while ((c = getopt(argc, argv, "s:o:kqvhV")) != -1) {
+        switch (c) {
+            case 's':
+                /* -s is equivalent to no options (strip all) */
+                break;
+            case 'o':
+                *destination = optarg;
+                break;
+            case 'k':
+                *keep = TRUE;
+                break;
+            case 'q':
+                *quiet = TRUE;
+                break;
+            case 'v':
+            case 'h':
+            case 'V':
+                fprintf(stderr, "Usage: %s [OPTIONS] FILE [OUTPUT]\n", program);
+                fprintf(stderr, "OPTIONS:\n");
+                fprintf(stderr, "  -s          strip all symbols and debug info (default)\n");
+                fprintf(stderr, "  -o FILE     output file\n");
+                fprintf(stderr, "  -k          keep original file with .orig extension\n");
+                fprintf(stderr, "  -q          quiet mode\n");
+                fprintf(stderr, "  -v, -h, -V  display this help and version\n");
+                exit(RETURN_FAIL);
+                break;
+            case '?':
+                exit(RETURN_FAIL);
+                break;
+        }
+    }
+    
+    *file_start = optind;
+    
+    /* Get the input file */
+    if (*file_start < argc) {
+        *pathname = argv[*file_start];
+        (*file_start)++;
+        
+        /* Check for output file */
+        if (*file_start < argc && !*destination) {
+            *destination = argv[*file_start];
+        }
+    }
+}
 
 /**
  * @brief Core strip logic separated from argument parsing

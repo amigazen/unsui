@@ -22,7 +22,10 @@ $(O)file.o   : file.c
 	sc nover   $(SO)   file
 
 clean: 
-	delete file $(OBJS)  >nil:
+	-delete file=file $(OBJS)  quiet
+
+install:
+	copy CLONE from=file to=//SDK/C/file
 
 indent:
 	indent -gnu file.c

@@ -29,7 +29,7 @@ The following projects are currently Work in Progress and available at https://g
 - **Amiga Python 2** - Irmen de Jong's Amiga Python 2 port updated to the last release of Python 2.7.18
 - **AWeb 3** - Yvon Rozijn's AWeb APL edition updated to build with Roadshow and Reaction
 - **ToolKit** - SDK configurations and tools to use alongside the Amiga NDK including:
-- _Codex_ - a brand new Amiga coding standards C linting tool
+- _Codex_ - a new Amiga coding standards C linting tool
 - _make-amiga_ - the last Amiga compatible version of GNU make
 - _ctags-amiga_ - ctags
 - _rman-amiga_ - a port of the PolyglotMan man page generator
@@ -41,7 +41,7 @@ The following projects are currently Work in Progress and available at https://g
 - _reaction.lib_sasc_ - a link library for Reaction and SAS/C to auto open class libraries
 - _OpenTriton_ - Stefan Zeiger's triton.library GUI framework 
 - _Insight_ - after meditation comes... Insight, a guru error LastAlert tool
-- _CShell_ - Matt Dillon's csh-like CShell
+- _CShell_ - Matt Dillon's CShell an Amiga native csh-like shell
 - _FileTypes_ - MarkDown and Python FileType plugins for TextEdit and CodeCraft
 - **unsui** including _UnixLib3_ and _shami_ - a POSIX runtime environment including C standard library, shell and command line tools
 

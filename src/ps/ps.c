@@ -397,7 +397,8 @@ int get_process_list(struct process_info *procs, int max_procs) {
                     procs[count].prompt[0] = '\0';
                 }
                 
-                /* Calculate start time (approximate) */
+                /* Calculate start time (approximate) - use system boot time as baseline */
+                /* Note: AmigaOS doesn't provide individual process creation times */
                 procs[count].start_time = get_system_boot_time();
             } else {
                 strcpy(procs[count].command, "Not a CLI");
@@ -427,9 +428,9 @@ void print_process_header(struct ps_options *opts) {
     if (opts->long_flag) {
         printf("F S   UID   PID  PPID  C PRI  ADDR SZ WCHAN  TTY          TIME CMD\n");
     } else if (opts->full_flag) {
-        printf("UID        PID  PPID  C STIME TTY          TIME CMD\n");
+        printf("UID        PID  PPID  C UPTIME TTY          TIME CMD\n");
     } else if (opts->verbose_flag) {
-        printf("PID PRI STATE STACK  BG INT TTY      TIME CMD\n");
+        printf("PID PRI STATE STACK  BG INT TTY      UPTIME CMD\n");
     } else {
         printf("  PID TTY          TIME CMD\n");
     }
@@ -483,19 +484,16 @@ void print_long_format(struct process_info *proc) {
  * @param proc Pointer to process information
  */
 void print_full_format(struct process_info *proc) {
-    char start_time_str[16];
+    char uptime_str[16];
     
-    /* Format start time */
+    /* Format uptime (system boot time) */
     if (proc->start_time > 0) {
-        time_t start_t = (time_t)proc->start_time;
-        struct tm *start_tm = localtime(&start_t);
-        if (start_tm) {
-            strftime(start_time_str, sizeof(start_time_str), "%H:%M", start_tm);
-        } else {
-            strcpy(start_time_str, "??:??");
-        }
+        /* Show system uptime in hours:minutes format */
+        ULONG hours = proc->start_time / 3600;
+        ULONG minutes = (proc->start_time % 3600) / 60;
+        sprintf(uptime_str, "%lu:%02lu", hours, minutes);
     } else {
-        strcpy(start_time_str, "??:??");
+        strcpy(uptime_str, "??:??");
     }
     
     printf("%-10s %5d %5d %5d %s %-12s %s %s\n",
@@ -503,7 +501,7 @@ void print_full_format(struct process_info *proc) {
            proc->pid,                /* PID */
            0,                        /* PPID - parent PID (not available on Amiga) */
            0,                        /* C - CPU usage (not available on Amiga) */
-           start_time_str,           /* STIME - start time */
+           uptime_str,               /* STIME - system uptime */
            "CON:",                   /* TTY */
            "00:00:00",              /* TIME */
            proc->command);           /* CMD */
@@ -514,22 +512,19 @@ void print_full_format(struct process_info *proc) {
  * @param proc Pointer to process information
  */
 void print_enhanced_format(struct process_info *proc) {
-    char start_time_str[16];
+    char uptime_str[16];
     
-    /* Format start time */
+    /* Format uptime (system boot time) */
     if (proc->start_time > 0) {
-        time_t start_t = (time_t)proc->start_time;
-        struct tm *start_tm = localtime(&start_t);
-        if (start_tm) {
-            strftime(start_time_str, sizeof(start_time_str), "%H:%M", start_tm);
-        } else {
-            strcpy(start_time_str, "??:??");
-        }
+        /* Show system uptime in hours:minutes format */
+        ULONG hours = proc->start_time / 3600;
+        ULONG minutes = (proc->start_time % 3600) / 60;
+        sprintf(uptime_str, "%lu:%02lu", hours, minutes);
     } else {
-        strcpy(start_time_str, "??:??");
+        strcpy(uptime_str, "??:??");
     }
     
-    printf("%5d %3d %5s %6lu %2s %3s %-8s %s %s\n",
+    printf("%5d %3d %5s %6lu %2s %3s %-8s %-8s %s %s\n",
            proc->pid,                /* PID */
            proc->priority,           /* PRI - priority */
            proc->state,              /* STATE - process state */
@@ -537,7 +532,7 @@ void print_enhanced_format(struct process_info *proc) {
            proc->background ? "BG" : "FG", /* BG - background/foreground */
            proc->interactive ? "INT" : "NO", /* INT - interactive */
            "CON:",                   /* TTY */
-           start_time_str,           /* START - start time */
+           uptime_str,               /* UPTIME - system uptime */
            proc->command);           /* CMD */
 }
 

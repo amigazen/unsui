@@ -9,8 +9,8 @@
 #include <intuition/intuition.h>
 #include <dos.h>
 #include <devices/conunit.h>
+#include <proto/intuition.h>
 
-#include <intuition/intuitionbase.h>
 extern struct IntuitionBase *IntuitionBase;
 extern int sigs;
 
@@ -134,7 +134,16 @@ static int ConLookC ( void )
 */
 static void ConWrite ( char *data, int length )
 {
-	Write ( ConsoleHandle, data, length );
+	/* Add error checking and ensure console is valid */
+	if ( ConsoleHandle && data && length > 0 )
+	{
+		LONG result = Write ( ConsoleHandle, data, length );
+		if ( result != length )
+		{
+			/* If write fails, try to recover */
+			error ( "Console write failed" );
+		}
+	}
 }
 
 
@@ -231,7 +240,7 @@ void ttopen (void)
 		}
 		findWindow();
 
-        StartConRead ( );
+        		StartConRead ( );
         /* enable report of window resizeing and close gadget */
     	PktArg[0] = 1;	/* set raw mode */
     	if ( ! MyDoPkt ( ACTION_SCREEN_MODE, PktArg, 1 ) )
@@ -240,7 +249,8 @@ void ttopen (void)
     		quit();
     	}
     	/* Enable reports; translate \n to \n\r for aux: */
-        ConWrite( "\x1b[12;11{\x1b[20h", 13);
+        /* Simplified terminal setup - avoid complex ANSI sequences */
+        ConWrite( "\x1b[20h", 4); /* Enable line wrapping */
 }
 
 struct Screen *MyFindWB ( void )
@@ -310,27 +320,16 @@ void ttclose (void)
     	lower_left();
     	clear_eol();
 
-    	/* Don't leave the console handing with an unfulfilled async
-    	   read request.  We cancel it by forcing the console to send
-    	   us some more-or-less known characters, and not renewing the
-    	   read request when we've seen the last one.
-    	*/
-    	ConWrite( "\x1b[6n", 4 ); /* request device status */
-    	while ( 1 )
-    	{
-    		WaitPort ( RdReplyPort );
-        	while ( ! GetMsg ( RdReplyPort ) ) /* nothing */;
-        	ch = buffer;
-        	if ( ch == 'R' ) break;
-        	StartConRead();
-        }
+    	/* Simplified cleanup - avoid complex ANSI sequences */
+    	/* Just wait a moment for any pending operations */
+    	Delay(1);
 
     	/* Disable window sizing reporting and raw mode.  This only
     	   matters if we are running in a borrowed CLI window.  We
     	   leave the close gadget activated, since if there is a close
     	   gadget is was probably activated before we were called.
     	*/
-    	ConWrite( "\x1b[12}", 5);
+    	/* Simplified cleanup - avoid complex ANSI sequences */
     	PktArg[0] = 0; /* Turn off raw mode */
     	MyDoPkt ( ACTION_SCREEN_MODE, PktArg, 1 );
     	Close ( ConsoleHandle );

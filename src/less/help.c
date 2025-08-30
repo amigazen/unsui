@@ -87,7 +87,6 @@ help()
                 clear();
                 so_enter();
                 ttputs(Ver); ttputs ( "\n" );
-                ttputs("R. Zarling rayz@csustan.EDU");
                 so_exit();
 
                 ttputs("\n\nCommands marked with * may be preceeded by a number, N.\n\n");

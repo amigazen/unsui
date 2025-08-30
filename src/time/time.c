@@ -2,7 +2,7 @@
  * time - Unsui POSIX runtime for Amiga
  * 
  * Copyright (c) 2025 amigazen project. All rights reserved.
- * Based on time by Martin W. Scott, 4/92.
+ * Based on time by Martin W. Scott.
  * 
  * This version integrates AmigaDOS ReadArgs and standard POSIX getopt
  * for command-line parsing, and provides full POSIX time command functionality.

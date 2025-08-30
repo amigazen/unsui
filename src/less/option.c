@@ -41,6 +41,8 @@ public int p_nbufs, f_nbufs;    /* Number of buffers.  There are two values,
 public int clean_data;          /* Can we assume the data is "clean"?
                                    (That is, free of nulls, etc) */
 #else
+public int clean_data = 1;      /* Can we assume the data is "clean"?
+                                   (That is, free of nulls, etc) */
 public int ShowCR;				/* Suppress ^M characters? */
 #endif
 public int quiet;               /* Should we suppress the audible bell? */
