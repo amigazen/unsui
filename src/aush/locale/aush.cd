@@ -1,0 +1,75 @@
+; Définition des chaines pour AUSH v2.00
+; 26-Jan-93 par Denis GOUNELLE
+;
+MSG_TOOMUCHARGS (0/1/75)
+too much arguments
+;
+MSG_TOOMUCHREDIR(1/1/75)
+too much redirections
+;
+MSG_CANTREDIRECT(2/1/75)
+can't open redirection
+;
+MSG_CANTEXECUTE(3/1/75)
+can't execute
+;
+MSG_CANTSEEK(4/1/75)
+can't seek to end of stdout
+;
+MSG_BADARGS(5/1/75)
+bad arguments
+;
+MSG_OVERFLOW(6/1/75)
+internal overflow
+;
+MSG_NOMSGPORT(7/1/75)
+no message port
+;
+MSG_SYNTAXERR(8/1/75)
+syntax error
+;
+MSG_IFERROR(9/1/75)
+'if...else...endif' error
+;
+MSG_NOSUCHDIR(10/1/75)
+not that many directories
+;
+MSG_ZERODIV(11/1/75)
+zero divide
+;
+MSG_STACKFULL(12/1/75)
+not enough stack space
+;
+MSG_READONLY(13/1/75)
+variable is read only
+;
+MSG_NOMATCH(14/1/75)
+no match
+;
+MSG_BADFUNC(15/1/75)
+unkown function
+;
+MSG_WAITINGBG(16/1/75)
+Waiting for %ld background process(es) to terminate\n
+;
+MSG_STARTEDBG(17/1/75)
+[%ld] %s launched\n
+;
+MSG_TIMECMD(18/1/75)
+time: %ld seconds\n
+;
+MSG_FINISHBG(19/1/75)
+[%ld] %s terminated (status %ld)\n
+;
+MSG_STACKSIZE(20/1/75)
+Current stack size: %ld bytes\n
+;
+MSG_FAILLEVEL(21/1/75)
+Current fail level: %ld\n
+;
+MSG_UNKNOWNERR(22/1/75)
+%s: error code %ld\n
+;
+MSG_ENDSHELL(23/1/75)
+Shell %ld ending\n
+;

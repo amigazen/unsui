@@ -1,0 +1,1341 @@
+.ds pn AUSH
+.ds pv 3.17
+.ds pd 1992-1994
+.so Usr:Lib/ARoff/DocEntete.src
+.ta 4
+
+.PR Introduction
+.ti +8
+AUSH (Amiga Ultimate SHell) est un interpréteur de commande (ou "shell") écrit
+pour l'Amiga, et destiné à remplacer entièrement le shell de Commodore. Il
+s'inspire de tous les shells que j'ai utilisé jusqu'ici, aussi bien sous UNIX
+(sh, csh, et surtout tcsh 6.00.03) que sur Amiga (AShell 1.3 et Csh 4.01A),
+tout en intégrant de nombreuses idées personnelles et en gardant la plus
+grande compatibilité possible avec le shell de Commodore.
+
+.so Usr:Lib/ARoff/DocAdresse.src
+
+.ti +8
+Merci à Pierre ARDICHVILI, Jean-Yves PROUX, Jean-Philippe RAPP, et Michel SCHINZ
+pour leurs tests et leurs suggestions.
+
+.PR Installation
+.ti +8
+Cette version de AUSH ne fonctionne que sous système 2.04 (ou supérieur). Copiez les
+fichiers "AUSH" (le shell lui-même) et "NewAUSH" (commande pour lancer un nouveau shell)
+dans le répertoire "C:". Notez que AUSH et NewAUSH sont écrits en code ré-entrant, et
+peuvent donc parfaitement être rendus résidents.
+.so Usr:Lib/ARoff/DocLocal.src
+
+.PR La\ commande\ NewAUSH
+.ti +8
+Cette commande est l'équivalent des commandes "NewCLI" et "NewShell" du shell
+de Commodore. Elle ne fonctionnera que si le programme "AUSH" se trouve dans
+le chemin d'accès défini par la commande "Path". Pour lancer un nouveau shell,
+depuis la ligne de commande, tapez :
+
+.ce
+NewAUSH [WINDOW <spécification de fenêtre>] [FROM <fichier>]
+
+.ti +8
+Pour lancer un nouveau shell depuis le WorkBench, créez une icône de type "Project".
+Indiquez éventuellement une taille de pile (champ "STACK"), une spécification de
+fenêtre (champ "TOOL TYPE", sous la forme "WINDOW=spécification"), et un nom de
+fichier de démarrage (champ "TOOL TYPE", sous la forme "FROM=fichier"). N'oubliez
+pas de mettre le chemin d'accès à NewAUSH dans le champ "DEFAULT TOOL".
+
+.PR Notions\ de\ base
+.ti +8
+Lorsque vous lancez AUSH, un message indiquant la version du programme
+apparait, suivit d'une chaine d'invite (ou "prompt"). Par défaut, cette
+chaine indique le numéro du shell, suivit du répertoire courant. Le shell
+attend alors vos commandes.
+
+.ti +8
+Une commande simple est une suite de mots séparés par un ou plusieurs espaces.
+Le premier mot indique la commande à exécuter, et les autres sont les arguments
+à passer à cette commande.
+.ti +8
+Si le premier mot correspond à un alias, la substitution correspondante est
+effectuée. Cela continue tant que c'est possible, ce qui veut dire qu'un alias
+peut être défini en fonction d'un autre. Notez cependant qu'il n'y a pas de
+contrôle de récursivité des définitions. Vous pouvez désactiver la substitution
+des alias en ajoutant le caractère "\\" devant le nom de la commande (par
+exemple "\\ls df0:")
+.ti +8
+AUSH examine également les arguments, et remplace certains d'entre eux en
+fonction des règles suivantes :
+
+.in +16
+.ll -4
+.ti -12
+;\t\t\ttout ce qui suit est un commentaire, et est ignoré.
+.ti -12
+^car\t\tremplacé par "CTRL-car" si "car" est une lettre, par "car" sinon.
+.ti -12
+§n\t\t\tremplacé par le n-ième répertoire dans la pile des répertoires.
+.ti -12
+$var\t\tremplacé par la valeur de la variable "var" (cherchée d'abord dans
+les variables locales, puis dans les variables globales, et enfin dans les
+variables d'environnement de Commodore) ou par une chaine vide si cette
+variable n'est pas définie.
+.br
+Le nom de la variable peut être indiqué entre accolades afin de le séparer
+de la suite : si vous voulez par exemple afficher le contenu de la variable
+"var" suivit du mot "coucou", il vous faudra écrire "echo ${var}coucou" et
+non "echo $varcoucou".
+.br
+Le nom de la variable peut éventuellement être suivit d'un nom de fonction.
+Cette fonction sera appliquée au contenu de la variable (si la variable est
+définie) lors de la substitution. Notez que le contenu réel de la variable
+ne sera pas modifié. Les fonctions disponibles sont :
+
+.nf
+lower\tconverti en minuscules
+upper\tconverti en majuscules
+first\textrait le premier caractère
+slead\tsupprime espaces et tabulations en tête
+len\t\tcalcule la longueur
+base\tsupprime le chemin d'accès
+noext\tsupprime l'extension
+expand\tétend le motif
+split\tdécoupe la variable en plusieurs sous-chaines
+\t\t(voir commande "for")
+
+.fi
+La syntaxe à respecter est la forme "var:fonction", par exemple "$config:lower"
+ou "${config:lower}".
+.ti -12
+motif\t\tremplacé par le nom de tous les fichiers correspondant. Un motif est
+un mot contenant au moins un méta-caractères AmigaDOS. Notez que la plupart des
+commandes (list, copy, ...) étendent elles-même les motifs, et que dans ce cas
+il vous faudra mettre le motif entre quotes (par exemple "list '#?.o'") pour
+éviter des conflits.
+.ti -12
+{expr}\t\tremplacé par la valeur de l'expression (voir la syntaxe plus loin).
+.ti -12
+!!\t\t\tremplacé par la dernière commande dans l'historique.
+.ti -12
+!n\t\t\tremplacé par la commande numéro "n" dans l'historique.
+.ti -12
+!chaine\t\tremplacé par la dernière commande commençant par
+.br
+"chaine" dans l'historique.
+.ti -12
+`cmd`\t\tremplacé par la première ligne produite en sortie par la commande
+indiquée. Les espaces en tête sont éliminés avant remplacement, la ligne
+est considéré comme un seul argument et n'est pas ré-interprété.
+.br
+Exemple : la commande "set toto `type config`" copie le contenu de la
+première ligne du fichier "config" dans la variable locale "toto".
+.ti -12
+\\car\t\tcopie le caractère indiqué sans l'interpréter.
+.ti -12
+ 'chaine'\tcopie la chaine sans interprétation (à part de la forme "\\car").
+.ti -12
+"chaine"\tcopie la chaine sans interprétation, à part des formes "^car",
+"§n", "$var", "{expr}" et "\\car". De plus, l'extension des motifs n'est
+pas désactivée.
+
+.in -16
+.ll +4
+.ti +8
+AUSH est également capable de rediriger l'entrée ou la sortie d'une commande :
+au lieu de se faire sur la fenêtre courante, elle se fera sur le fichier
+indiqué. La syntaxe à respecter est la suivante :
+
+.in +16
+.ll -4
+.ti -12
+>nom\t\tredirection de la sortie vers le fichier "nom". Le fichier est
+écrasé s'il existe déjà, créé sinon.
+.ti -12
+>>nom\t\tredirection de la sortie vers le fichier "nom". La sortie est
+ajoutée à la fin du fichier s'il existe, sinon le fichier est créé.
+.ti -12
+<nom\t\tredirection de l'entrée depuis le fichier "nom".
+
+.in -16
+.ll +4
+.ti +8
+La spécification de ces redirections peut se faire n'importe où sur
+la ligne de commande. Il peut y avoir un ou plusieurs espaces entre
+les caractères de redirection et le nom de fichier (comme par exemple
+"list\ >\ maliste").
+
+.ti +8
+Une commande complexe est composée d'au moins deux commandes simples
+enchainées par une des formes suivantes :
+
+.in +20
+.ll -4
+.ti -16
+cmd1|cmd2|...\texécution successive de commandes simples, avec "pipes" (la
+sortie de la commande à gauche du caractère "|" est utilisée comme entrée
+par la commande indiquée à droite), tant que le code retour est nul.
+.ti -16
+cmd1,cmd2,...\texécution successive de commandes, tant que le code retour
+est nul. Vous pouvez spécifier des commandes simples, mais aussi des
+enchainements par pipes (par exemple "cd ram: , list | wc , delete toto").
+.in -20
+.ll +4
+
+.ti +8
+Le code retour d'une commande complexe est celui de la dernière commande
+simple exécutée. Seule la dernière commande simple d'une commande complexe
+peut être lancée en arrière plan.
+
+.ti +8
+Une fois l'analyse de la ligne de commande terminée, AUSH lance
+l'exécution de la commande correspondante. La recherche se fait d'abord
+dans la liste des commandes internes au shell, puis dans la liste des
+commandes résidentes, et enfin dans les répertoires indiqués à l'aide la
+commande "Path". Une fois la commande lancée, AUSH attend la fin de son
+exécution, met à jour certaines variables (comme celle indiquant le code
+retour de la dernière commande exécutée) puis affiche de nouveau la chaine
+d'invite.
+.ti +8
+Vous pouvez demander une exécution en arrière plan, c'est-à-dire que AUSH
+n'attendra pas la fin de la commande. Il vous faudra alors spécifier le
+caractère "&" sur la ligne de commande (par exemple "list >maliste &"). Le
+shell affichera alors le numéro de processus de cette commande puis l'invite
+ré-apparaitra immédiatement.
+.ti +8
+Par défaut, les commandes héritent de la priorité du shell, mais AUSH vous
+permet de modifier temporairement cette priorité. Ainsi, si vous tapez une
+ligne de la forme "cmd @n", la commande indiquée sera exécutée avec la
+priorité "n" (par exemple "list @-3" lancera la commande "list" avec la
+priorité -3). Ceci ne marchera cependant pas pour les commandes internes.
+De même, lors du lancement en arrière plan, vous pouvez faire suivre le
+caractère "&" par la priorité à donner à la commande. Par exemple, "list
+>maliste &5" lancera la commande "list" en arrière plan, avec la priorité 5.
+.ti +8
+Notez que les spécifications "&" et "@" peuvent être indiquées n'importe où
+sur la ligne de commande.
+
+.PR Les\ variables
+.ti +8
+AUSH vous permet de définir des variables, comme dans un langage de
+programmation classique. Les caractères autorisés pour les noms de variables
+sont les lettres minuscules et majuscules, les chiffres, et le caractère
+souligné. Notez que minuscules et majuscules sont différenciées (contrairement
+aux noms de fichiers). Ces variables peuvent contenir n'importe quelle valeur,
+aussi bien numérique que alphanumérique.
+.ti +8
+Les variables globales sont accessibles à tous les niveaux d'exécution,
+c'est-à-dire aussi bien en mode interactif que dans les fichiers de commandes.
+Elles ne peuvent être détruites. Notez qu'il ne s'agit pas des variables au
+sens des variables d'environnement de Commodore. Elles ne sont pas partagées
+par plusieurs shells.
+.ti +8
+Une variables locale n'est accessible que dans le niveau d'exécution où elle
+a été définie pour la première fois. Lors du retour au niveau précédent, les
+variables locales sont détruites automatiquement.
+.ti +8
+Certaines variables permettent de contrôler et de paramètrer AUSH. Ces
+variables sont décrites plus loin.
+
+.PR Expressions
+.ti +8
+AUSH peut évaluer des expressions entières, exprimées en notation polonaise
+inversée postfixée. Vous pouvez utiliser des variables locales ou globales dans
+ces expressions, si leurs valeurs sont numériques. Il est possible d'indiquer
+des nombres hexadécimaux (précédés par "0x", par exemple "0x13e"). Par défaut
+le résultat est en décimal.
+Les opérateurs reconnus sont :
+
+.nf
+.in +8
++\t\taddition
+-\t\tsoustraction
+*\t\tmultiplication
+/\t\tdivision
+%\t\tmodulo (reste de la division entière)
+<\t\tdécalage à gauche
+>\t\tdécalage à droite
+&\t\tet
+|\t\tou
+sx\t\tdépile le sommet de pile dans le registre x
+lx\t\tempile le contenu du registre x
+HEX\t\taffiche le résultat en hexadécimal
+.in -8
+.fi
+
+.ti +8
+Il y a dix registres (désignés par un chiffre de 0 à 9) initialisés à zéro
+au démarrage du shell. Ils conservent leur valeur entre deux évaluations
+d'expression. Les nombres et les opérateurs doivent être séparés par au moins
+un espace, sauf le - unaire (négation).
+
+Exemples :
+
+.nf
+.in +8
+echo { 34 3 / 4 + }\t=> 15
+echo { 7 3 - }\t\t=> 4
+echo { 10 -2 + }\t=> 8
+
+set cpt 3
+echo { $cpt 2 * }\t=> 6
+set cpt { $cpt 1 + }
+echo $cpt\t\t\t=> 4
+.fi
+.in -8
+
+.PR Les\ fichiers\ de\ commandes
+.ti +8
+Vous pouvez regrouper plusieurs commandes dans un fichier, et le faire
+exécuter par AUSH comme un programme quelconque. Tout ce passera alors
+comme si vous aviez tapé cette suite de commandes au clavier, à part
+sur le plan des variables locales.
+.ti +8
+Dans un fichier de commandes, la variable locale "argc" indique le nombre
+d'arguments reçus. AUSH positionne également des pseudo-variables locales
+(elles n'apparaissent pas dans la liste des variables données par la commande
+"set", et ne peuvent être modifiées) : la variable "0" contient le nom du
+fichier de commandes, les variables "1", "2",... les différents arguments, et
+la variable "*" la liste des arguments (à partir de "$1") séparés par un espace.
+.ti +8
+Chaque fois que vous lancez AUSH, le fichier de commandes "S:.aushrc" est
+exécuté (s'il existe). L'argument optionnel "FROM fichier" permet d'exécuter
+le fichier de commandes indiqué plutôt que le fichier "S:.aushrc".
+
+.PR Gestion\ de\ l'historique
+.ti +8
+AUSH peut mémoriser vos commandes, et vous permettre de les rappeler par la
+suite. Le mécanisme d'historique, qui ne fonctionne qu'en mode interactif,
+est contrôlé par la variable "history" (qui indique le nombre de commandes à
+conserver). La commande "history" (décrite plus loin) vous permet de voir
+le contenu de l'historique.
+
+.ti +8
+La variable "savehist" indique le nombre de commandes sauvées entre chaque
+exécution d'un shell. Ce fichier (généré lors de la terminaison du shell) est
+automatiquement chargé lors du démarrage, et les commandes qu'il contient sont
+copiées dans l'historique. La variable "histfile" peut être définie, pour
+indiquer le nom du fichier de sauvegarde. Par défaut ce fichier est "S:.history".
+
+.PR Edition\ de\ la\ ligne\ de\ commandes
+.ti +8
+Ce mécanisme permet de se passer du gestionnaire de console NewCON. Il
+est activé en affectant la valeur "1" à la variable "lineedit". Vous pouvez
+alors utiliser les touches suivantes pour éditer vos lignes de commande :
+
+.in +6
+.nf
+gauche\t\t caractère précédent.
+droite\t\t caractère suivant.
+shift-gauche mot précédent.
+shift-droit\t mot suivant.
+shift-haut\t dernière commande commençant par la ligne courante.
+haut\t\t commande précédente dans l'historique.
+bas\t\t\t commande suivante dans l'historique.
+^A\t\t\t va en début de ligne.
+^B\t\t\t caractère précédent.
+^E\t\t\t va en fin de ligne.
+^F\t\t\t caractère suivant.
+^K\t\t\t efface la fin de ligne.
+^L\t\t\t ré-affiche la ligne.
+^N\t\t\t commande suivante dans l'historique.
+^P\t\t\t commande précédente dans l'historique.
+^S\t\t\t échange les deux caractères précédents.
+^T\t\t\t première commande dans l'historique.
+^W\t\t\t efface la fin du mot.
+^X\t\t\t efface la ligne.
+^Z\t\t\t dernière commande dans l'historique.
+RETURN\t\t exécute la commande, après sauvegarde dans l'historique.
+ESC\t\t\t annule la commande, après sauvegarde dans l'historique.
+
+^V\t\t\t le mot précédent est considéré comme un nom de variable
+.in +13
+et est remplacé par la valeur de cette variable.
+Exemple : echo version<^V> => echo 1.10.
+.in -13
+TAB\t\t\t complète le nom de fichier ou de variable.
+.in +13
+Exemple :\tcd ram:
+\t\t\tlist Cl<TAB>  => list ClipBoards/
+\t\t\techo $hi<TAB> => echo $history
+S'il y a plusieurs possibilités, AUSH complète le plus
+loin possible et affiche la liste des possibilités.
+Pour compléter un nom de fichier, AUSH lui ajoute le
+contenu de la variable "filepat" et étend le motif
+ainsi obtenue.
+.in -13
+^D\t\t\t affiche la liste des possibilités pour compléter le
+\t\t\t nom de fichier ou de variable (sans modifier la ligne
+\t\t\t de commande).
+
+HELP\t\t appelle la requête de fichier. Si vous choisissez un
+\t\t\t fichier, son nom sera ajouté dans la ligne de commande.
+
+f1 à f10\t remplacé par la valeur des variables "f1" à "f10", ou
+\t\t\t "F1" à "F10" si shifté.
+.in -6
+.fi
+
+Les commandes TAB et ^D peuvent être utilisées au milieu d'un mot.
+Toutes les touches de contrôle peuvent être redéfinies, à l'aide de la
+variable spéciale "keys" (voir plus loin).
+
+.PR Gestion\ des\ répertoires
+.ti +8
+Si vous définissez l'alias "dircmd", cet alias sera exécuté chaque fois
+que vous taperez un nom de répertoire comme nom de commande (sans argument,
+redirection, pipe, ni lancement en arrière-plan). Par exemple "alias
+dircmd cd %1" vous permet d'avoir un "cd" implicite : taper le nom d'un
+répertoire suffit pour y aller. Vous pouvez également définir un alias plus
+complexe, comme "alias dircmd cd %1 , list FILES QUICK".
+
+.ti +8
+AUSH peut gérer une pile de répertoire (64 entrées). L'ajout d'un répertoire
+ce fait à l'aide la commande interne "pushd", le retrait par "popd", et
+l'affichage du contenu de la pile par "dirs" (ces commandes sont décrites
+plus loin).
+.ti +8
+Vous pouvez utiliser cette pile dans vos commandes avec la forme "§n",
+où "n" est le numéro d'un répertoire dans la pile (indiqué par la commande
+"dirs").
+
+.PR Commandes\ internes
+.ti +8
+Ce chapitre décrit toutes les commandes internes de AUSH. Ces commandes
+ne peuvent être lancées en arrière plan mais acceptent les redirections
+en entrée et en sortie. Elles retournent 0 (RETURN_OK) ou 20 (RETURN_FAIL)
+suivant le cas.
+.ti +8
+Lors de l'affichage de la valeur d'une variable par les commandes "setvar"
+ou "set", les attributs de cette variable sont affichés entre parenthèses
+("x" pour exportable, "r" pour lecture seulement).
+
+.in +4
+.ll -4
+.ti -4
+alias
+.br
+Affiche la liste des alias et leurs définitions.
+
+.ti -4
+alias nom
+.br
+Affiche la définition de l'alias indiqué.
+
+.ti -4
+alias nom chaine
+.br
+Défini un alias "nom" de valeur "chaine". Dans la chaine, le symbole "[]"
+indique où placer les arguments lors de la substitution de l'alias. Il est
+possible de désigner les arguments un par un, avec les spécifications "%1",
+"%2", ..."%9".
+
+.ti -4
+cd [rep]
+.br
+Sans argument affiche le nom du répertoire courant, sinon "rep" devient le
+répertoire courant.
+
+.ti -4
+dirs
+.br
+Affiche le contenu de la pile des répertoires.
+
+.ti -4
+echo [-c] [args...]
+.br
+Affiche les arguments sur la sortie standard, suivis d'un retour chariot
+sauf si vous indiquez l'option "-c".
+
+.ti -4
+eval
+.br
+Passe en mode évaluation : toute ligne en entrée est analysée comme une
+expression (voir syntaxe plus haut) et le résultat affiché. Pour sortir de
+ce mode, tapez "x" tout seul sur une ligne.
+
+.ti -4
+exit [code]
+.br
+Retourne au niveau d'exécution précédent, avec le code retour indiqué
+(0 par défaut). En mode interactif, termine le shell.
+
+.ti -4
+export vars...
+.br
+Marque les variables locales indiquées comme "exportables". Ces variables
+deviennent alors lisibles, modifiables et détruisibles dans les fichiers de
+commandes lancés depuis le niveau d'exécution courant.
+
+.nf
+.in -4
+for var in val1 val2... valn
+ ...
+done
+.fi
+.in +4
+Effectue une boucle. La variable "var" (locale) prend les valeurs indiquées
+dans la liste, et pour chaque valeur la séquence d'instruction entre le "for"
+et le "done" est exécutée une fois. Après le "done", la variable contient la
+dernière valeur pour laquelle la boucle a été effectuée. En mode interactif,
+l'invite devient celle indiquée par la variable "prompt3", entre le "for" et
+le "done".
+.br
+Vous pouvez également utiliser la forme "for var in val1 .. val2", qui
+effectue la boucle pour chaque valeur comprise entre les nombres "val1" et
+"val2" inclus. Si le nombre "val2" est inférieur au nombre "val1", la boucle
+est effectué avec un pas de -1. Les nombres "val1" et "val2" peuvent être
+négatifs.
+.br
+La fonction "split" peut être très utile ici : si la variable "toto" contient
+"ceci est un exemple", la commande "for i in $toto" ne fera qu'une seule
+boucle, avec "i" valant "ceci est un exemple". Par contre, la commande "for
+i in $toto:split" fera bien quatre boucles, avec "i" valant successivement
+"ceci", "est", "un" et "exemple".
+
+.nf
+.in -4
+for var from file
+ ...
+done
+.fi
+.in +4
+Effectue une boucle de la même façon que pour la forme précédente, sauf que
+la variable "var" (locale) prend successivement pour valeur chaque ligne du
+fichier indiqué.
+
+.ti -4
+history [str]
+.br
+Donne la liste des commandes présentes dans l'historique. Si vous indiquez
+un argument "str", l'affichage sera limité aux commandes commençant par
+la chaine de caractères"str".
+
+.ne 2
+.nf
+.in -4
+if [NOT] condition
+ ....
+[else
+ ....]
+endif
+.fi
+.in +4
+Exécution conditionnelle. En mode "interactif", la chaine d'invite devient
+celle indiquée par la variable "prompt2".
+.nf
+La condition peut être :
+
+.in +4
+-d nom\t\tvrai si "nom" est un répertoire (1)
+-e nom\t\tvrai si "nom" existe (1)
+-f nom\t\tvrai si "nom" est un fichier (1)
+-o nom nom2\tvrai si "nom1" et "nom2" existent et que
+\t\t\t"nom" est plus ancien que "nom2" (1)
+-s nom\t\tvrai si "nom" est un fichier non vide (1)
+str = str\tvrai si les deux chaines sont identiques
+str == str\tvrai si les deux chaines sont identiques
+\t\t\t(sans différencier majuscules et minuscules)
+n1 LT n2\tvrai si n1 est inférieur n2
+n1 EQ n2\tvrai si n1 est égal à n2
+n1 GT n2\tvrai si n1 est supérieur n2
+n1 LE n2\tvrai si n1 est inférieur ou égal à n2
+n1 NE n2\tvrai si n1 est différent de n2
+n1 GE n2\tvrai si n1 est supérieur ou égal à n2
+.in -4
+
+.fi
+Le mot-clé "NOT" avant une condition permet d'inverser cette condition.
+Jusqu'à 16 commandes "if" peuvent être imbriquées.
+
+.in +4
+.ti -4
+(1) Si la lettre après le tiret est en majuscule (exemple: "-D"), le test
+échouera sans requêtes de l'AmigaDOS en cas de volume absent, lecteur de
+disquette vide, etc...
+.in
+
+.ti -4
+jobs
+.br
+Affiche la liste des processus lancés en arrière plan.
+
+.ti -4
+loadhist
+.br
+Force le chargement immédiat du fichier contenant l'historique des commandes.
+Cette commande peut être utile si vous changez la valeur de la variable "histfile"
+et que vous voulez prendre en compte le nouveau fichier.
+
+.ti -4
+popd [nb]
+.br
+Sans arguments dépile le dernier répertoire empilé et en fait le répertoire
+courant, sinon tronque la pile des répertoires aux "nb" premiers répertoires
+("popd 0" vide complètement la pile).
+
+.ti -4
+pushd rep
+.br
+Empile le répertoire courant, puis fait de "rep" le répertoire courant.
+
+.ti -4
+read [-f] var
+.br
+Affecte à la variable locale indiquée une ligne lue sur l'entrée standard.
+Retourne RETURN_FAIL en cas de fin de fichier. L'option -f permet d'interdire
+la saisie d'une chaine vide.
+
+.ti -4
+readonly vars...
+.br
+Empêche toute modification ou destruction des variables (locales ou globales)
+indiquées. Cette opération est irréversible.
+
+.ti -4
+set
+.br
+Affiche la liste des variables locales, ainsi que leur valeurs.
+
+.ti -4
+set var
+.br
+Affiche la valeur de la variable locale "var".
+
+.ti -4
+set var val
+.br
+Affecte la valeur "val" à la variable locale "var". La variable est
+créée si elle n'existe pas encore.
+
+.ti -4
+setvar
+.br
+Affiche la liste des variables globales, ainsi que leur valeurs.
+
+.ti -4
+setvar var
+.br
+Affiche la valeur de la variable globale "var".
+
+.ti -4
+setvar var val
+.br
+Affecte la valeur "val" à la variable globale "var". La variable est
+créée si elle n'existe pas encore.
+
+.ti -4
+shift
+.br
+Décale les arguments d'un fichier de commandes : la pseudo-variable "1" reçoit
+le contenu de "2", puis la pseudo-variable "2" celui de "3", etc... La variable
+"argc" et la pseudo-variable "*" sont mises à jour.
+
+.ti -4
+source fichier
+.br
+Exécute le fichier de commandes indiqué. Si vous redirigez la sortie de cette
+commande, la redirection concernera toutes les commandes du fichier.
+
+.ti -4
+stop [code]
+.br
+Interrompt l'exécution de la boucle "for...done" courante, avec le code retour
+indiqué (0 par défaut).
+
+.ti -4
+time <commande>
+.br
+Lance l'exécution de la commande indiquée, puis affiche la durée (en secondes)
+d'exécution de cette commande. Peut être utilisé pour toutes les commandes, y
+compris les commandes internes et les commandes lancées en arrière plan.
+
+.ti -4
+unalias noms...
+.br
+Détruit les alias indiqués.
+
+.ti -4
+unset vars...
+.br
+Détruit les variables locales indiquées.
+
+.in -4
+.nf
+window front
+window back
+window move x y
+window size largeur hauteur
+.fi
+.in
+Place la fenêtre au premier plan, au dernier plan, change sa position ou
+sa taille.
+
+.ti -4
+writehist
+.br
+Force une sauvegarde immédiate de l'historique. Cette commande peut être
+utilisée par exemple avant de lancer un programme qui risque de "planter"
+votre Amiga.
+.ll +4
+.in -4
+
+.PR Variables\ spéciales
+.ti +8
+Les variables suivantes permettent de contrôler et de paramétrer AUSH.
+Sauf dans le cas où une valeur initiale est indiquée, elles ne sont pas
+définies au démarrage. Il est recommandé de les définir comme variables
+globales (c'est d'ailleurs ce que fait AUSH pour celles qui ont une valeur
+initiale) ou éventuellement comme variables d'environnement de Commodore.
+
+.ll -4
+.in +12
+.ti -12
+cmdnum\t\tnuméro de commande, de la forme "_ShellNumber_CmdNumber"
+.br
+(garanti différent pour chaque commande exécutée).
+.ti -12
+cwd\t\t\tnom du répertoire courant.
+.ti -12
+debug\t\tsi vaut "1", trace les commandes exécutées (avant et après première
+interprétation, utile pour la mise au point des fichiers de commandes).
+.ti -12
+delim\t\tcaractères délimiteurs de mots pour les fonctions "mot suivant", "mot
+précédent" et "efface la fin du mot" de l'éditeur de la ligne de commande.
+.br
+Valeur initiale : " :/".
+.ti -12
+filepat\t\tchaine ajoutée au mot en cours pour compléter les nom de fichiers.
+.br
+Valeur initiale : "#?".
+.ti -12
+fullhist\tsi vaut "1", sauvegarde toutes les commandes dans l'historique,
+sinon ne sauvegarde pas deux fois de suite la même commande.
+.ti -12
+histfile\tnom du fichier de sauvegarde de l'historique entre deux sessions.
+Si cette variable n'est pas définie, l'historique est sauvegardé dans
+"S:.history".
+.ti -12
+histmin\t\tlongueur minimale que doit avoir une commande pour être conservée
+dans l'historique.
+.br
+Valeur initiale : 3.
+.ti -12
+history\t\tnombre de commandes conservées dans l'historique (si non défini
+ou inférieur à 1, seule la dernière commande est sauvée).
+.br
+Valeur initiale : 50.
+.ti -12
+insert\t\tsi vaut "1", l'édition de la ligne de commande se fait en mode
+"insertion" (mode "remplacement" sinon).
+.br
+Valeur initiale : 1.
+.ti -12
+ioerror\t\tcode d'erreur positionné par la dernière commande ayant échoué
+(pour l'instant ne marche que pour les commandes internes).
+.br
+Valeur initiale : 0.
+.ti -12
+keys\t\tindique comment gérer les touches de contrôle sous l'éditeur de lignes
+de commande. La valeur de cette variable doit être une chaine de lettres minuscules,
+chaque lettre indiquant la touche de contrôle appelant une des fonctions de l'éditeur.
+C'est la position de la lettre dans la chaine qui détermine la fonction appelée\ :
+
+.in +4
+.nf
+position 1\t\tva en début de ligne
+position 2\t\tcaractère précédent
+position 3\t\tliste des compléments
+position 4\t\tva en fin de ligne
+position 5\t\tcaractère suivant
+position 6\t\tefface fin de ligne
+position 7\t\tre-affiche la ligne
+position 8\t\tligne suivante
+position 9\t\tligne précédente
+position 10\t\téchange deux caractères
+position 11\t\tva au début de l'historique
+position 12\t\tremplace variable
+position 13\t\tefface fin de mot
+position 14\t\tefface ligne
+position 15\t\tva à la fin de l'historique
+.fi
+.in
+
+Par exemple, si la quatrième lettre est un "o", l'appui sur la touche ^o déplacera le
+curseur en fin de ligne. Dans la redéfinition des touches à utiliser, veuillez ne pas
+spécifier les touches de contrôle ^h, ^i, ^j, et ^m, car ces touches sont gérées
+spécialement.
+.br
+Valeur initiale : "abdefklnpstvwxz".
+.ti -12
+lineedit\tsi vaut "1", active l'édition de la ligne de commande. Est ignorée si
+la variable "remove" vaut "1".
+.ti -12
+noexpand\tsi vaut "1", désactive l'extension des méta-caractères.
+.ti -12
+path\t\tindique le chemin de recherche des commandes à exécuter, sous la
+forme d'une liste de noms de répertoires séparés par un caractère ";". Pour
+désigner le répertoire courant, indiquez "." comme nom de répertoire. Si un
+fichier avec le bit "s" est trouvé, AUSH tentera de déterminer son type et
+lancera automatiquement la commande associée :
+
+.nf
+rx\t\tsi le fichier commence par "/*" (script AREXX)
+source\tsi le fichier commence par ";AUSH" (script AUSH)
+execute\tdans tous les autres cas
+.fi
+
+.br
+Exemple : setvar path 'ram:;.;c:;sys:utilities'
+.ti -12
+prompt\t\tchaine d'invite, interprétée comme suit :
+
+.nf
+.in +4
+%h\t\tnuméro dans l'historique
+%#\t\tnuméro du shell
+%i\t\tniveau d'imbrication des "if"
+%l\t\tniveau d'imbrication de boucle
+%c\t\tnom du répertoire courant (variable "cwd")
+%b\t\tnom de base du répertoire courant
+%s\t\tdernier code retour (variable "status")
+%Vnom\tvaleur de la variable "nom".
+%T\t\theure (HH:MM:SS)
+%d\t\tjour du mois (1-31)
+%D\t\tjour de la semaine (Lun-Dim)
+%m\t\tmois (1-12)
+%M\t\tnom du mois (Jan-Dec)
+%y\t\tannée (1900-1999)
+%C\t\tcaractère CSI (0x9B)
+%N\t\tcaractère retour chariot
+%f\t\ttaille de mémoire FAST libre
+%v\t\ttaille de mémoire CHIP libre
+%a\t\ttaille de mémoire libre (CHIP+FAST)
+%%\t\tsigne %
+.in -4
+.fi
+
+Valeur initiale : "%C0;33;40m< %# - %c >%C0;31;40m ".
+.ti -12
+prompt2\t\tidem que "prompt", mais utilisé entre "if" et "endif".
+.br
+Valeur initiale : "%i> ".
+.ti -12
+prompt3\t\tidem que "prompt", mais utilisé entre "for" et "done".
+.br
+Valeur initiale : "%l) ".
+
+.ti -12
+NOTE\ :\ en l'absence de définition, "> " est utilisé comme invite.
+
+.ti -12
+remote\t\tvaut "1" pour un shell utilisant "AUX:" comme terminal.
+.ti -12
+savehist\tnombre de commandes sauvées entre chaque session (si non défini
+ou inférieur à 1 rien n'est sauvé).
+.ti -12
+status\t\tcode retour de la dernière commande exécutée.
+.ti -12
+titlebar\tidem que "prompt", mais pour le titre de la fenêtre shell. Est
+ignorée si la variable "remote" vaut "1".
+.ti -12
+trap\t\tcommande(s) à exécuter lors de l'interruption d'un fichier de
+commandes ou d'une boucle "for...done" par l'appui sur CTRL-C ou CTRL-D.
+Contrairement aux autres variables spéciales, il est conseillé de définir
+cette variable localement (commande "set", permet à chaque fichier de
+commandes de la modifier en fonction de ses besoins). Il est également
+conseillé d'indiquer une commande "exit" comme dernière commande (exemple :
+set trap 'delete $tmpfile , exit 20'), sinon l'exécution reprendra au point
+où elle en était (pour ignorer les interruptions : set trap ';'). Si cette
+variable n'est pas définie, l'exécution est arrêtée avec un code retour de 20.
+.ti -12
+truepipes\tutilise "PIPE:" pour gérer les tubes si cette variable vaut "1"
+.ti -12
+version\t\tnuméro de version de AUSH.
+.ll +4
+.in -12
+
+.PR Notes
+.ti +8
+Sauf si vous lui affectez une pile de plus de 4000 octets AVANT de le lancer,
+AUSH ne pourra exécuter plus d'une quinzaine de fichiers de commandes et/ou de
+boucles imbriquées (vous obtiendrez le message "pas assez de place dans la
+pile !").
+.ti +8
+Si le nom indiqué pour les redirections en sortie est "TTY" (i.e. ">TTY" ou
+">>TTY"), la redirection se fait vers la fenêtre du shell. Cela peut être utile
+dans un fichier de commandes, pour afficher un message alors que la sortie de
+toutes les commandes a été redirigée vers un fichier.
+.ti +8
+Par défauts, les pipes sont gérés à l'aide de fichiers temporaires créés dans le
+répertoire "T:" (voir variable "truepipes"). Le répertoire "T:" est également utilisé
+pour stocker des fichiers temporaires lors des substitutions de commandes et de
+l'exécution des boucles "for...done".
+.ti +8
+La forme "cmd &" correspond à la forme "run cmd" du shell de Commodore.
+Notez que AUSH attend la fin de toutes les commandes lancées en arrière plan
+avant de terminer. La commande "jobs" vous permettra de savoir quelles sont
+ces commandes.
+.ti +8
+AUSH n'est pas capable de récupérer le code retour d'une commande lancée en arrière
+plan.
+
+.PR Version\ UNIX
+.ti +8
+AUSH comprend la forme "variable=valeur". Les formes "@pri" et "&pri" sont ignorées,
+car nice() ne permet pas d'augmenter la priorité. La commande "cd" sans arguments permet
+de revenir dans $HOME (comme d'habitude sous UNIX). Les fichiers ".aushrc" et ".history"
+sont cherchés par défaut dans $HOME. Dans l'invite, on ne peut avoir la memoire restante
+ou le caractère CSI. La variable "truepipes" est ignorée (les tubes sont simulés par des
+fichiers dans "/tmp").
+.ti +8
+AUSH transforme automatiquement les motifs pour qu'ils correspondent au format des
+expressions régulières utilisées par "ed", afin de pouvoir étendre ces motifs. Il
+peut donc y avoir quelques conflits de temps en temps. Les caractères reconnus pour
+les motifs sont '*', '?', '[' et ']'.
+.ti +8
+L'heure de décès des fils est l'heure à laquelle on détecte sa fin (normalement pas
+trop de décalage, puisqu'on déroute le signal SIGCHLD).
+.ti +8
+Sous un shell UNIX normal, la commande "set" donne la liste des variables dans
+l'environnement courant. Sous AUSH, on obtient la liste des variables locales. Si
+on veut le contenu de l'environnement, il faut utiliser la commande "env".
+.ti +8
+L'éditeur de ligne de commandes tient compte du terminal indiqué par la variable $TERM.
+Comme on ne peut pas récuperer les valeurs des touches de fonctions shiftées, ainsi que
+de la touche shift-up, ces touches ne sont utilisables que sur un terminal "amiga". La
+touche HELP ne fait rien.
+
+.PR Historique
+.in +10
+.ti -10
+v1.00\t28-Feb-92, 29564 octets
+.ti -2
+o Première version diffusée.
+
+.ti -10
+v1.10\t28-Mar-92, 31828 octets
+.ti -2
+o Cherche les variables également dans les variables ARP/Commodore et Manx.
+.ti -2
+o La touche "^D" affiche les possibilités pour compléter le nom de fichier
+ou de variable, les touches "^B", "^F", "^N" et "^P" font la même chose que
+"gauche", "droite", "bas" et "haut".
+.ti -2
+o L'éditeur de ligne de commande efface le curseur pendant qu'il exécute une
+commande (affichage plus rapide).
+.ti -2
+o La requête de fichier récupère le mot en cours pour initialiser le répertoire
+initial de la requête.
+.ti -2
+o Remet à zéro les signaux SIGBREAKF en retour de l'éditeur de ligne de
+commandes (car ils sont positionnés si on utilise ^D, ^E, ou ^F).
+.ti -2
+o Les formes "!!", "!n" et "!chaine" peuvent être indiquée n'importe où
+sur la ligne de commande.
+.ti -2
+o Ajout des formes -D, -E, et -F à la commande "if".
+.ti -2
+o Ajout de la forme "for var in val1 .. val2" pour la commande "for...done".
+.ti -2
+o Ajout de l'alias "dircmd".
+.ti -2
+o Ajoute un espace après une définition d'alias sans arguments (si on faisait
+"alias ls dir" puis "ls ram:" on avait un message "Please insert volume dirram:
+in any drive").
+.ti -2
+o Messages d'erreur en allemand si la variable "language" vaut "deutsch".
+.ti -2
+o Commande "setenv" renommée en "setvar" (plus de conflits avec la commande
+de Commodore), ajout de la commande "echo".
+.ti -2
+o\ Ajout des variables "version" et "path", variable "ioerror" initialisée
+à "0", variable "insert" initialisée à "1", variable "autocd" supprimée.
+
+.ti -10
+v1.11\t29-Mar-92, 31832 octets
+.ti -2
+o La commande "echo" tient compte des redirections en sorties
+
+.ti -10
+v1.12\t11-Apr-92, 32244 octets
+.ti -2
+o\ Charge l'historique après l'exécution de "S:.aushrc", afin de prendre en
+compte une éventuelle modification de la valeur de la variable "history".
+.ti -2
+o Ajout des formes "NE", "LE", et "GE" à la commande "if".
+.ti -2
+o\ La forme "for i in val1 .. val2" accepte des nombres négatifs et que "val2"
+soit inférieur à "val1".
+.ti -2
+o Plus de contrôle de la taille des arguments pour les commandes internes.
+.ti -2
+o Ajout de la fonction "^V" à l'éditeur de ligne de commandes.
+
+.ti -10
+v1.13\t18-Apr-92, 32280 octets
+.ti -2
+o Lors de la recherche d'une commande à l'aide de la variable "path" vérifie que
+l'objet trouvé est bien un fichier (et non un répertoire).
+
+.ti -10
+v1.14\t26-Apr-92, 32300 octets
+.ti -2
+o Deux erreurs corrigées dans la substitution de commande : n'éliminait pas le "`"
+final, calcul de la longueur des arguments incorrect.
+.ti -2
+o Une erreur corrigée dans le parcoureur : interprétait quand même les caractères
+"<>,;" s'ils étaient en première position dans une chaine entre quotes.
+.ti -2
+o Messages en allemands revus
+
+.ti -10
+v1.15\t01-May-92, 32364 octets
+.ti -2
+o Ajout de la variable "histfile".
+.ti -2
+o Deux erreurs corrigées dans le calcul de la longueur des arguments : oubliait de
+compter les guillements ou les quotes, et de prévoir un peu de place supplémentaire
+pour les arguments "splités".
+
+.ti -10
+v1.16\t11-May-92, 32404 octets
+.ti -2
+o commande "echo" revue : quand on met l'option -c supprime vraiment le '\\n' final
+(i.e. ne le remplace pas par un espace)
+
+.ti -10
+v1.20\t16-May-92, 32568 octets
+.ti -2
+o ajout des commandes "loadhist" et "writehist"
+.ti -2
+o ajout de la forme "%Vnom" à la syntaxe du l'invite
+.ti -2
+o modification du parcoureur : n'analyse la partie droite d'une commande composée qu'après
+avoir exécuté la partie gauche, et donc :
+.br
+- "cd ram: , delete *" donne le résultat attendu ("*" était étendu avant de faire le "cd")
+.br
+- toutes les commandes simples peuvent être des alias (et non plus seulement la première)
+.br
+- on peut écrire une boucle sur une seule ligne ("for i in 1 .. 50 , echo $i , done" ne
+marchait pas, maintenant même "cd ram:\ , for i in *.c , echo $i , compress $i , done , echo
+fini" fonctionne !)
+
+.ti -10
+v1.21\t17-May-92, 32912 octets
+.ti -2
+o ajout de la commande "time"
+
+.ti -10
+v1.22\t23-May-92, 32944 octets
+.ti -2
+o bug corrigé dans la gestion des boucles "for...done" : lors de l'écriture des commandes
+dans le fichier temporaire, ne forçait pas une fin de ligne après chaque commande
+
+.ti -10
+v1.23\t01-Jun-92, 33328 octets
+.ti -2
+o Plusieurs bugs corrigés dans la gestion des boucles "for...done" écrites sur une même
+ligne : "for i in 1 .. 5,echo $i,done" marche, ainsi que "for i in 1 .. 5 , list | wc ,
+done"
+.ti -2
+o Si trouve un fichier avec le bit "s" en cherchant une commande dans le chemin défini
+par la variable "path", lance automatiquement une commande "source" sur ce fichier.
+.ti -2
+o La touche "^S" échange les deux caractères précédant le curseur.
+.ti -2
+o Les touches "^D" et "<TAB>" sont utilisables sans préfixe, et donc en début de ligne ou
+après un espace.
+.ti -2
+o Bug corrigé dans l'éditeur de ligne de commande: après un "shift-haut", les touches
+"haut" et "bas" ne donnaient pas les bonnes commandes.
+
+.ti -10
+v1.30\t14-Jun-92, 33932 octets
+.ti -2
+o\ Plusieurs erreurs détectées par "Enforcer" et "Mungwall" corrigées.
+.ti -2
+o Bug corrigé dans la commande "shift" : ne positionnait pas "argc" correctement.
+.ti -2
+o Reconnait "$*" (remplacé par la liste des arguments séparés par un espace).
+.ti -2
+o Ajout de l'option -f à la commande "read".
+.ti -2
+o La variable "argc" est en lecture seulement.
+.ti -2
+o Vérifie les noms de variables donnés aux commandes internes (interdit les
+pseudo-variables arguments).
+.ti -2
+o Les spécifications "&[pri]" et "@pri" peuvent être indiquées n'importe où sur la
+ligne de commande.
+
+.ti -10
+v1.40\t26-Jun-92, 37764 octets
+.ti -2
+o Recompilé avec le SAS/C 5.10b (avec pragmas et optimisation)
+.ti -2
+o Peut être rendu résident (code "pure")
+.ti -2
+o Enorme bug corrigé dans la fonction strxcat() (ne sauvegardait pas le registre a2)
+.ti -2
+o Nombreuses modifications pour mieux tenir compte de la version du système, ainsi
+sous système 2.04 :
+.br
+- n'a plus besoin de "arp.library"
+.br
+- peut exécuter les programmes résidents/internes (ROM)
+.br
+- la commande "Execute" peut être utilisée
+.ti -2
+o Modification de l'évaluateur d'expressions :
+.br
+- on peut indiquer des valeurs en hexa (0x1FD)
+.br
+- ajout des opérateurs "HEX", "<", ">", "&", et "|"
+.ti -2
+o Ajout de l'option "-o" à la commande "if"
+.ti -2
+o Bug corrigé dans la commande "if": n'appelait UnLock() dans certains cas d'erreur
+
+.ti -10
+v1.41\t30-Jun-92, 37864 octets
+.ti -2
+o Correction dans la recherche des commandes: ne cherche plus le chemin si la
+commande est résidente
+
+.ti -10
+v1.42\t06-Jul-92, 37872 octets (Fish #706)
+.ti -2
+o Bug corrigé dans la gestion des boucles "for...done": "oubliait" les redirections
+des commandes dans la boucle
+.ti -2
+o Ne fait plus crier "Enforcer" quand on fait "!string" (ou "shift-haut" dans l'éditeur
+de lignes de commandes) et qu'aucune commande commençant par "string" ne se trouve dans
+l'historique
+
+.ti -10
+v1.50\t21-Aug-92, 37736 octets
+.ti -2
+o Ajout de la variable globale "keys" (permet de modifier les fonctions des touches
+de contrôle sous l'éditeur de lignes de commande)
+.ti -2
+o Accepte l'argument "FROM file"
+.ti -2
+o Contrôles plus stricts au démarrage: proc->pr_CLI valide, pas de lancement depuis
+le WB, etc...
+.ti -2
+o Bug corrigé dans l'évaluation des expressions: affichait le résultat en décimal
+même si on indiquait "HEX"
+.ti -2
+o Bug corrigé sous système 1.3: ne donnait pas le chemin complet de la commande à
+la fonction qui lance l'exécution
+
+.ti -10
+v1.51\t01-Sep-92, 37804 octets
+.ti -2
+o Bug corrigé dans la recherche du chemin: après exécution automatique d'un script
+(bit "s" détecté) les commandes suivantes étaient parfois considérées elles-aussi
+comme des scripts (et exécutées comme telles !!!)
+.ti -2
+o La commande "history str" n'affiche que les commandes commençant par "str"
+.ti -2
+o La commande "history" teste CTRL-C lors de l'affichage de l'historique
+.ti -2
+o Affiche la commande retrouvée quand on utilise les formes "!!", "!n" ou "!str"
+.ti -2
+o Bug corrigé: quand on faisait un "cd volume:" la variable $cwd n'avait pas de ':'
+à la fin (d'où problème par exemple quand on faisait "copy df0:toto $cwd")
+.ti -2
+o Bug corrigé dans le complément de nom de fichier: distinguait minuscules et majuscules
+
+.ti -10
+v1.52\t22-Sep-92, 40000 octets (Fish #747)
+.ti -2
+o La forme ${nom de var} est acceptée (permet par exemple "echo ${var}coucou")
+.ti -2
+o Ajout des fonctions sur les variables (formes "$var:fonction" et "${var:fonction}")
+.ti -2
+o Ajout du test "==" à la commande "if"
+.ti -2
+o Sous système 2.0, la longueur des arguments n'est plus limitée
+.ti -2
+o Bug corrigé: teste le bit "s" aussi quand on donne le chemin complet de la commande
+.ti -2
+o Quelques bugs corrigés dans la gestion des boucles "for...done"
+.ti -2
+o La variable $cwd se termine maintenant toujours soit par ":" soit par "/"
+.ti -2
+o Si aucun fichier ne correspond à un motif, affiche un message d'erreur et n'exécute
+pas la commande
+
+.ti -10
+v1.53\t22-Sep-92, 40136 octets
+.ti -2
+o Peut maintenant être utilisé avec "AUX:" comme terminal
+.ti -2
+o Ajout de la variable "remote"
+.ti -2
+o Les variables "cmdnum", "cwd", "status", "version" et "remote" sont
+désormais en lecture seulement
+.ti -2
+o L'accès à la pile des répertoires se fait avec "§no" au lieu de "=no"
+(plus besoin de protéger le "=" pour la commande "if")
+
+.ti -10
+v1.54\t05-Oct-92, 40120 octets
+.ti -2
+o Plus de blocages de l'éditeur de lignes de commandes
+.ti -2
+o Bug corrigé: n'arrivait pas à exécuter une commande sur un volume dont
+le nom comportait des espaces
+.ti -2
+o Bug corrigé: en cas d'erreur de syntaxe sur une des formes !!, !n ou
+!str, exécutait quand même la commande
+
+.ti -10
+v1.55\t23-Oct-92, 40764 octets
+.ti -2
+o Ajout de la forme "for var from file"
+.ti -2
+o Lors du lancement d'une commande en arrière plan, tout canal qui n'a pas déjà été
+redirigé est redirigé vers "NIL:"
+.ti -2
+o Si la variable "truepipes" vaut "1", utilise "PIPE:" pour gérer les tubes (sous
+système 2.0 uniquement)
+.ti -2
+o Ajout des fonctions "base" et "noext"
+
+.ti -10
+v2.00\t03-Feb-93, 37744 octets
+.ti -2
+o Recompilé avec le SAS/C 6.2.
+.ti -2
+o Ne fonctionne plus que sous système 2.0 et plus
+.ti -2
+o Complètement localisé.
+
+.ti -10
+v2.01\t07-Mar-93, 37988 octets
+.ti -2
+o Se termine si on clique sur le gadget de fermeture de la fenêtre
+.ti -2
+o Construction de la chaine d'argument modifiée (ajoute un espace avant, et non
+après)
+.ti -2
+o On peut avoir un '%' dans l'invite ou le titre de la fenêtre, en indiquant '%%'
+
+.ti -10
+v2.02\t28-Mar-93, 38020 octets
+.ti -2
+o Bug corrigé: dans la forme "if str = str", si la première chaine commençait par
+un "-", l'interprétait comme une forme "if -test ..." sans aucun contrôle
+
+.ti -10
+v2.03\t13-Apr-93, 38060 octets
+.ti -2
+o Lors du complètement des noms de fichiers, ajoute automatiquement un '/' si
+c'est un répertoire ou un ' ' si c'est un fichier
+
+.ti -10
+v2.04\t04-May-93, 38268 octets
+.ti -2
+o Ajout de la fonction "split"
+
+.ti -10
+v3.00\t14-May-93, 39336 octets
+.ti -2
+o Parcoureur entièrement ré-écrit ("$toto:split" en début de ligne marche désormais,
+etc...)
+.ti -2
+o Gestion des alias modifiée :
+.br
+- les définitions NE DOIVENT PLUS être entre quotes simples
+.br
+- les définitions peuvent utiliser %1, %2,... %9 pour indiquer la position des
+arguments (la spécification [] est toujours reconnue)
+.ti -2
+o Editeur de lignes de commandes modifié :
+.br
+- plus de problèmes avec les commandes de plus d'une ligne
+.br
+- le complètement de nom de fichiers marche au milieu d'un mot
+.br
+- les fonctions "début d'historique" et "fin d'historique" marchent correctement
+.ti -2
+o Lors du lancement automatique d'un script (bit "s") essaye de deviner son type
+(AREXX, AUSH ou autre)
+
+.ti -10
+v3.10\t25-May-93, 45964 octets
+.ti -2
+o Se compile et s'exécute sous UNIX
+.ti -2
+o Ajout de la fonction "expand", de la commande "window"
+.ti -2
+o La commande "time" fonctionne à nouveau
+.ti -2
+o Si un code d'erreur ne correspond à aucun des messages prévus dans le catalogue,
+appelle la fonction Fault() pour avoir le libellé
+.ti -2
+o Erreur corrigée dans les catalogues (TOUS !)
+.ti -2
+o Plusieurs erreurs corrigées ("echo" sans arguments, complètement avec curseur en fin
+de mot, contrôle des noms de variable, etc...)
+
+.ti -10
+v3.11\t01-Jun-93, 46388 octets
+.ti -2
+o Sur Amiga, ne perd plus les caractères tapés à l'avance
+.ti -2
+o "window" sans arguments indique la position et la taille de la fenêtre
+
+.ti -10
+v3.12\t17-Jun-93, 46396 octets
+.ti -2
+o Erreur corrigée: interprétait ',' et '|' en début de chaine entre '' ou "" ou
+en début de contenu de variable
+.ti -2
+o Erreur corrigée: dans un script, une ligne vide était traitée comme fin de
+fichier
+
+.ti -10
+v3.13\t27-Jun-93, 46472 octets
+.ti -2
+o Quelques modifications pour faciliter/améliorer la compilation sous UNIX
+.ti -2
+o Sous UNIX, l'invite par défaut ne contient plus de séquences ANSI
+.ti -2
+o Ajout de la spécification "%b" pour la définition de l'invite
+
+.ti -10
+v3.14\t10-Jul-93, 46588 octets
+.ti -2
+o Compilé avec le SAS/C 6.3
+.ti -2
+o L'appel de la requête de fichier causait un "hit" avec Enforcer
+.ti -2
+o Correction d'une erreur dans le parcoureur (remplacement de '*' par '#?'
+fait plus proprement)
+.ti -2
+o La commande NewAUSH retourne 0 et non 1
+
+.ti -10
+v3.15\t25-Jul-93, 46608 octets
+.ti -2
+o Le nombre maximal d'argument pour les commandes passe à 128 (au lieu de 64)
+.ti -2
+o Erreur corrigée dans le parcoureur: $i, "toto" et 'titi' n'étaient pas reconnus
+correctement après un symbole de redirection ('>' ou '<', par exemple "toto > $i"
+ne marchait pas).
+.ti -2
+o Erreur corrigée: "cd" ne changait plus cli_SetName sous AmigaDOS.
+
+.ti -10
+v3.16\t08-Apr-94, 46644 octets
+.ti -2
+o Recompilé avec le SAS/C 6.51 (corrige quelques erreurs)
+
+.ti -10
+v3.17\t01-Jul-94, 46608 octets
+.ti -2
+o Erreur corrigée: "NewAUSH" ne gérait pas correctement les arguments
+

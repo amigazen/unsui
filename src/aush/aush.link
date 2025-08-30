@@ -1,0 +1,8 @@
+FROM
+lib:cres.o aush.o parse.o fct.o eval.o cmd.o vars.o hist.o alias.o console.o
+files.o amiga.o
+TO
+aush
+LIB
+lib:ares.lib lib:sc.lib lib:amiga.lib
+SMALLCODE SMALLDATA NODEBUG

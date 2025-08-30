@@ -1,0 +1,43 @@
+#
+# Makefile for AmigaDOS version of AUSH
+#
+# Compiler : SAS/C 6.51
+# Symboles : "_AMIGA" for all AmigaDOS specifics parts
+#
+MYFLAGS=NOSTKCHK DEF=__USE_SYSBASE GST=aush.gst NOVER
+#CFLAGS=$(MYFLAGS) DBG=SF
+CFLAGS=$(MYFLAGS) NODEBUG OPT OPTTIME
+#
+INCL=aush.gst aush_msg.h
+OBJS=aush.o parse.o fct.o eval.o cmd.o vars.o hist.o alias.o console.o\
+ files.o amiga.o
+#
+all: aush newaush
+#
+newaush: newaush.c
+	SC $(CFLAGS) newaush.c
+	SLink FROM lib:cres.o newaush.o TO newaush LIB lib:amiga.lib lib:sc.lib
+#
+aush.gst: aush.h
+      - delete aush.gst
+	$(CC) MAKEGST aush.gst aush.h NOOBJNAME
+	protect aush.gst +ah
+	avail FLUSH >NIL:	# unload previous version from memory
+#
+aush: $(OBJS)
+	SLink WITH aush.link QUIET
+	protect aush +a
+#
+aush.o: aush.c $(INCL)
+shell.o: shell.c $(INCL)
+parse.o: parse.c parse.h $(INCL)
+fct.o: fct.c $(INCL)
+eval.o: eval.c $(INCL)
+cmd.o: cmd.c $(INCL)
+vars.o: vars.c $(INCL)
+hist.o: hist.c $(INCL)
+alias.o: alias.c $(INCL)
+console.o: console.c $(INCL)
+files.o: files.c $(INCL)
+amiga.o: amiga.c $(INCL)
+

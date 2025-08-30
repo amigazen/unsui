@@ -1,0 +1,1203 @@
+.ds pn AUSH
+.ds pv 3.17
+.ds pd 1992-1994
+.so Usr:Lib/ARoff/DocEnteteEnglish.src
+.ta 4
+
+.PR Introduction
+.ti +8
+AUSH (Amiga Ultimate SHell) is a new command line interpreter, designed to
+replace Commodore's shell. It takes several features from some UNIX and
+Amiga shells I used (sh, csh, tcsh 6.00.03, AShell 1.3 and Csh 4.01A) but
+also adds a lot of new possibilities, while remaining almost fully compatible
+with Commodore shell.
+
+.so Usr:Lib/ARoff/DocAdresseEnglish.src
+
+.ti +8
+Many thanks to Pierre ARDICHVILI, Jean-Yves PROUX, Jean-Philippe RAPP, and
+Michel SCHINZ for tests and suggestions.
+
+.PR Installation
+.ti +8
+This version of AUSH only works under system release 2.04 or higher. Copy the "AUSH"
+(the shell itself) and "NewAUSH" (command to start a new shell) files to your "C:"
+directory. Both AUSH and NewAUSH are written in "pure" code, and can be made resident.
+.so Usr:Lib/ARoff/DocLocalEnglish.src
+
+.ti +8
+The german catalog was translated by Stefan SALEWSKI.
+
+.PR The\ NewAUSH\ command
+.ti +8
+The NewAUSH command is the command to start a new shell (as Commodore's
+NewCLI and NewShell). It won't work unless you put AUSH in the command
+search directories defined by the "Path" command. To start a new shell, enter
+the following command:
+
+.ce
+NewAUSH [WINDOW=window specification] [FROM=startup file]
+
+.ce
+Example: NewAUSH WINDOW=CON:0/11/640/180/AUSH
+
+.ti +8
+From WorkBench, you must create a "Project" icon, and specify NewAUSH
+complete path in the "DEFAULT TOOL" field. You can also specify a stack
+size ("STACK" field), a window specification ("TOOLS TYPE" field, the
+syntax is "WINDOW=specification") and a alternate startup file ("TOOLS
+TYPE" field, the syntax is "FROM=file").
+
+.PR Command\ line\ parsing
+.ti +8
+Each command you enter is parsed by AUSH before it tries to execute it.
+First, alias substitution is performed on the command name. An alias can
+be defined by another one (CAUTION: there's no test for alias recursion !).
+You can prevent alias substitution by adding a "\\" character before
+command name (e.g. "\\ls df0:").
+.ti +8
+All command arguments are also scanned, and the following substitutions are
+performed:
+
+.in +16
+.ll -4
+.ti -12
+;\t\t\tstart comment (the rest of the line is discarded).
+.ti -12
+^chr\t\treplaced by "CTRL-chr" if "chr" is a letter, by "chr" otherwise.
+.ti -12
+§n\t\t\treplaced by the n-th directory in the directory stack.
+.ti -12
+$var\t\treplaced by the value of the given variable (the local variables
+are scanned first, then the global variables, and last the Commodore
+environment variables list) or by an empty string if this variable is not
+defined.
+.br
+Variable names may be put between brackets: to display the value of variable
+"foo" followed by "hello", you must type "echo ${foo}hello" instead of "echo
+$foohello".
+.br
+Variable names may be followed by a function name. This function will be
+applied on variable value (if the variable is defined) during substitution.
+The variable value is not modified. Function supported are:
+
+.nf
+lower\tconvert to lower-case
+upper\tconvert to upper-case
+first\textract first character
+slead\tskip leading tabs or spaces
+len\t\treturn len
+base\tdelete path name
+noext\tdelete file extension
+expand\texpand the pattern
+split\tbreak value into words
+\t\t(see "for" command below)
+.fi
+
+The syntax is "$var:function", e.g. "$config:lower" or "${config:lower}".
+.ti -12
+pattern\t\treplaced by the name of all files matching the pattern. A pattern is
+a word with at least one of the AmigaDOS wildcards. Take care that some commands
+(list, copy, ...) expect the pattern and expand it themselves, so you'll have to
+quote it (e.g. "list '#?.o'") in order to avoid conflicts.
+.ti -12
+{expr}\t\treplaced by the result of the expression (see below for syntax).
+.ti -12
+!!\t\t\treplaced by last command in history.
+.ti -12
+!n\t\t\treplaced by n-th command in history.
+.ti -12
+!str\t\treplaced by last command beginning with "str" in history.
+.ti -12
+`cmd`\t\treplaced by the first output line of specified command. Leading
+spaces are deleted, the line is considered as a whole word and is not
+parsed again.
+.br
+Example: "set foo `type config`" copies the first line of "config" file
+in a local variable named "foo".
+.ti -12
+\\chr\t\tescape the meaning of the "chr" character.
+.ti -12
+ 'str'\t\tcopies "str" without parsing (except for the "\\chr" form).
+.ti -12
+"str"\t\tcopies "str" without parsing (except for "^chr", "§n", "$var",
+"{expr}" and "\\chr" forms, pattern expansion is not disabled).
+.ti -12
+>file\t\tspecify output redirection. If the file does not exist it is
+created, otherwise it is truncated to zero length.
+.ti -12
+>>file\t\tspecify output redirection. If the file does not exist it
+is created, otherwise output is append to existing file.
+.ti -12
+<file\t\tspecify input redirection.
+.ti -12
+@pri\t\trun command at priority "pri" (can be specified anywhere on the
+command line).
+.ti -12
+&[pri]\t\trun command in background [at priority "pri"] (can be specified
+anywhere on the command line).
+.ll +4
+.in -16
+
+AUSH recognize the following constructions:
+
+.in +20
+.ll -4
+.ti -16
+cmd1|cmd2|...\texecute commands with "pipes" (the output of the commands
+at the left of the "|" character is used as input by the commands to the
+right) as long as return code is zero.
+.ti -16
+cmd1,cmd2,...\texecute commands as long as return code is zero. You can
+also specify pipes, e.g. "cd ram: , list | wc , delete foo" is a valid
+command.
+.ll +4
+.in -20
+
+Return code of such commands is the return code of the last command executed.
+Only the last command can be ran in background.
+
+.PR Variables
+.ti +8
+With AUSH, you can define local and global variables in order to store any
+numeric or alphanumeric value. Valid characters for variable names are
+lowercase and uppercase letters, digits and the underscore character.
+Variable names are case sensitive.
+.ti +8
+A global variable is "visible" at any execution level. It can't be destroyed.
+Notice that these variable are not the same as Commodore environment variables.
+They are not shared between several shells running at the same time. A local
+variable is "visible" only at the execution level where it has been defined.
+When comming back to the previous execution level, all local variables are
+destroyed.
+.ti +8
+Some variables are used to control AUSH behaviour (see below for description).
+
+.PR Expressions
+.ti +8
+AUSH can compute integer expressions in reverse polish notation. You can
+use variables in such expressions, if their value is numeric. You can enter
+hexadecimal values (e.g.: 0x13e). Results are displayed in decimal. Operators
+are:
+
+.nf
+.in +8
++\t\taddition
+-\t\tsubtraction
+*\t\tmultiplication
+/\t\tinteger division
+%\t\tremainder of integer division
+<\t\tshift left
+>\t\tshift right
+&\t\tand
+|\t\tor
+sx\t\tstore stack top in register x (x = 0 to 9)
+lx\t\tpush register x (x = 0 to 9)
+HEX\t\tchange output base to hexadecimal
+.in -8
+.fi
+
+Registers are set to zero when you start AUSH, and are not modified between
+two expression evaluations. Numbers and operators must be separated by at
+least one space.
+
+Examples:
+
+.in +8
+.nf
+echo { 34 3 / 4 + }\t=> 15
+echo { 7 3 - }\t\t=> 4
+echo { 10 -2 + }\t=> 8
+
+set cpt 3
+echo { $cpt 2 * }\t=> 6
+set cpt { $cpt 1 + }
+echo $cpt\t\t\t=> 4
+.fi
+.in -8
+
+.PR Command\ line\ editing
+.ti +8
+Command line editing is enabled by setting the "lineedit" variable to "1".
+AUSH takes control of the shell window, and recognizes the following keys:
+
+.nf
+.in +16
+.ll -4
+.ti -12
+left\t\tprevious character.
+.ti -12
+right\t\tnext character.
+.ti -12
+shift-left\tprevious word.
+.ti -12
+shift-right\tnext word.
+.ti -12
+shift-up\tlast command in history beginning with the current line.
+.ti -12
+up\t\t\tprevious command in history.
+.ti -12
+down\t\tnext command in history.
+.ti -12
+^A\t\t\tbeginning of line.
+.ti -12
+^B\t\t\tprevious character.
+.ti -12
+^E\t\t\tend of line.
+.ti -12
+^F\t\t\tnext character.
+.ti -12
+^K\t\t\tdelete end of line.
+.ti -12
+^L\t\t\trefresh line.
+.ti -12
+^N\t\t\tnext command in history.
+.ti -12
+^P\t\t\tprevious command in history.
+.ti -12
+^T\t\t\tfirst command in history.
+.ti -12
+^W\t\t\tdelete end of word.
+.ti -12
+^X\t\t\tkill current line.
+.ti -12
+^Z\t\t\tlast command in history.
+.ti -12
+RETURN\t\tsave command and execute it.
+.ti -12
+ESC\t\t\tsave command but don't execute it.
+
+.ti -12
+^V\t\t\tsuppose that previous word is a variable
+name, and replace it by it's value.
+Example: echo version<^V> => echo 1.10
+.ti -12
+TAB\t\t\tfilename/varname completion.
+Example:\tcd ram:
+\t\t\tlist Cl<TAB>  => list ClipBoards/
+\t\t\techo $hi<TAB> => echo $history
+If the prefix you gave matches several names, it is
+extended up to the point of ambiguity and all the
+possibility are displayed.
+.br
+To perform filename completion, AUSH adds the content
+of the "filepat" variable to the prefix and expands
+the resulting pattern.
+.ti -12
+^D\t\t\tdisplays the list the possibilities for filename/
+varname completion, but does not modify command line.
+
+.ti -12
+HELP\t\topens a file requester. If you select a file, it's
+name will be added to the command line.
+
+.ti -12
+f1 to f10\treplaced by the content of "f1" to "f10" variables
+(of "F1" to "F10" if shifted).
+.fi
+.in -16
+
+The TAB and ^D keys may also be used in the middle of a word. The "keys" special
+variable may be used to remap control keys (see below).
+
+.PR Other\ features
+.ti +8
+AUSH can execute script files (which are text files containing several
+commands) just as any other program. In such files, the local variable
+"argc" is set to the number of arguments you gave. AUSH also sets some
+"pseudo" local variables (the "set" command won't show them, and you
+can't modify them): the variable "0" is set to the script file name,
+"*" to the argument list (each argument separated by a space) and "1",
+"2",... variables to the arguments themselves. On startup, AUSH tries to
+execute the "S:.aushrc" script file.
+
+.ti +8
+AUSH can save your commands in an history. The "history" variable tells
+how many commands are to be kept. The "history" command displays the
+history content. The "savehist" variable tells how many commands must be
+saved when you quit AUSH. This file is read when AUSH starts, and all
+commands in the file are stored in the command history. You can define
+the "histfile" variable to the name of the file to use to save/load command
+history. Default name is "S:.history".
+
+.ti +8
+The alias "dircmd" (if defined) is executed each time you enter a directory
+name as a command name (without arguments, redirection, pipe, or background
+specification). So, "alias dircmd cd %1" gives you an "implicit cd": to change
+of directory you just have to enter the new directory name. Of course, you
+can define a more complex alias, like "alias dircmd cd %1 , list QUICK FILES".
+
+.ti +8
+AUSH manage a stack of directories (64 entries). You push a directory with
+"pushd", you pop a directory with "popd", and you list the stack content
+with "dirs" (all these internal commands are described below). You can
+use this stack in your commands, with the "§n" form (replaced by the n-th
+directory in the stack).
+
+.ti +8
+With the default stack of 4000 bytes, AUSH can't execute more than about 15
+nested script files and/or loops (you'll get the error "not enough stack
+space !").
+
+.ti +8
+If the name of the output redirection file is "TTY" (i.e. ">TTY" or ">>TTY")
+the output will be redirected to the shell's window. This may be useful in a
+script file, to display a message when all output have been redirected to a
+file.
+
+.ti +8
+By default, pipes are handled via temporary files in the "T:" directory (see
+"truepipes" variable). The "T:" directory is also used for command substitution
+and loop execution.
+
+.ti +8
+A command like "cmd &" is the same as "run cmd" under Commodore shell. AUSH
+will wait for *ALL* background commands to finish before terminating. Use
+the "jobs" command to list background commands.
+
+.PR Internal\ commands
+.ti +8
+These commands can't be run in background, but can have their input and/or
+output redirected. They always return 0 (RETURN_OK) or 20 (RETURN_FAIL).
+"set" and "setvar" commands display variables with their attributes ("x"
+for exportable, "r" for readonly).
+
+.in +4
+.ll -4
+.ti -4
+alias
+.br
+Displays all aliases and their definitions.
+
+.ti -4
+alias name
+.br
+Displays definition of alias "name".
+
+.ti -4
+alias name 'string'
+.br
+Define an alias "name" to the given string. In the string, the "[]" symbol
+tells AUSH where to copy alias arguments. You may also use the "%1", "%2",
+..."%9" symbols to specify the position of the arguments one by one.
+
+.ti -4
+cd [dir]
+.br
+Without argument displays the name of the current directory, otherwise
+sets current directory to "dir".
+
+.ti -4
+dirs
+.br
+Displays the directory stack.
+
+.ti -4
+echo [-c] [args...]
+.br
+Just displays all given arguments, followed by a new-line character
+(except if you specify the "-c" option).
+.ti -4
+eval
+.br
+Enters expression evaluation mode: every line you enter is supposed to
+be a expression, which result is displayed. To exit this mode, enter the
+character "x" alone on a newline.
+
+.ti -4
+exit [code]
+.br
+Returns to previous execution level, with the specified return code (0 if
+no arguments). In interactive mode, it terminates the shell.
+
+.ti -4
+export vars...
+.br
+Makes the given local variables "exportable", so they can be read, modified
+or destroyed by any script file started from the current execution level.
+
+.in -4
+.nf
+for var in val1 val2... valn
+ ....
+done
+.fi
+.in
+Performs a loop. The local variable "var" is set to each value in the list,
+and for each value the loop is executed. After the "done" command, the "var"
+variable tells for which value the loop was last executed.
+.br
+You can also use the form "for var in val1 .. val2", where "val1" and "val2"
+are numeric values. Both numbers may be negatives. If "val2" is lower than
+"val1", loop step will be negative.
+.br
+The "split" function may be very useful here: if the "foo" variable value
+is "this is an example", the "for i in $foo" command will only make one loop,
+with the variable "i" set to "this is an example". However, with the "for i
+in $foo:split" command, you will have four loops and the variable "i" will
+be set to "this", "is", "and" and "example".
+
+.nf
+.in -4
+for var from file
+ ...
+done
+.fi
+.in +4
+Performs a loop the same way as for the previous form, except that the local
+variable "var" is set to each line of the given file.
+
+.ti -4
+history [str]
+.br
+Displays the command history. If the optional "str" argument is specified,
+only commands beginning by the "str" string will be displayed.
+
+.in -4
+.nf
+if [NOT] condition
+ ....
+[else
+ ....]
+endif
+.fi
+.in
+Conditionnal execution. The condition may be:
+
+.nf
+.in +4
+-d name\t\ttrue if "name" if a directory (1)
+-e name\t\ttrue if "name" exists (1)
+-f name\t\ttrue if "name" is a file (1)
+-o name name2\ttrue if "name" and "name2" exist
+\t\t\t\tand "name" is older than "name2" (1)
+-s name\t\ttrue if "name" is not an empty file (1)
+str = str\ttrue if strings are equal
+str == str\ttrue if strings are equal
+\t\t\t(case-insensitive)
+n1 LT n2\ttrue if n1 is lower than n2
+n1 LE n2\ttrue if n1 is lower than or equal to n2
+n1 EQ n2\ttrue if n1 is equal to n2
+n1 NE n2\ttrue if n1 is not equal to n2
+n1 GT n2\ttrue if n1 is greater than n2
+n1 GE n2\ttrue is n1 is greater than or equal to n2
+.in -4
+.fi
+
+The word "NOT" may be used to invert the condition. Up to 16
+"if" commands may be nested.
+
+.in +4
+.ti -4
+(1) If the letter after the minus sign is an upper-case letter (e.g.
+"-D"), the test will fail without any AmigaDOS requester if volume is
+not mounted, if there is no disk in drive, etc...
+.in
+
+.ti -4
+jobs
+.br
+Displays the list of background commands.
+
+.ti -4
+loadhist
+.br
+Loads command history from history file. May be useful if you've just changed
+the "histfile" variable, and want to use the new history file.
+
+.ti -4
+popd [nb]
+.br
+Without arguments, pops the last directory in the directory stack
+and makes it the current directory. Otherwise, truncs stack size to
+"nb" entries (i.e. "popd 0" clears the stack).
+
+.ti -4
+pushd dir
+.br
+Pushes the current directory onto the directory stack and sets current
+directory to "dir".
+
+.ti -4
+read [-f] var
+.br
+Sets local variable "var" to the first line read on standard input.
+Returns RETURN_FAIL on end of file. If you specify the "-f" option,
+the user won't be allowed to enter an empty string.
+
+.ti -4
+readonly vars...
+.br
+Makes the specified variables "readonly". This works both on local and
+global variables.
+
+.ti -4
+set
+.br
+Displays all local variables and their values.
+
+.ti -4
+set name
+.br
+Displays value of local variable "name."
+
+.ti -4
+set name value
+.br
+Sets local variable "name" to "value".
+
+.ti -4
+setvar
+.br
+Displays all global variables and their values.
+
+.ti -4
+setvar name
+.br
+Displays value of global variable "name."
+
+.ti -4
+setvar name value
+.br
+Sets global variable "name" to "value".
+
+.ti -4
+shift
+.br
+Shifts script file arguments: "1" pseudo-variable is set to "2", "2" is set
+to "3",... The "argc" and "*" variables are updated.
+
+.ti -4
+source file
+.br
+Execute a script file. If you specify an output redirection, all commands
+in the file will be redirected.
+
+.ti -4
+stop [code]
+.br
+Exits a "for...done" loop with the specified return code (0 if no arguments).
+
+.ti -4
+time <command>
+.br
+Runs the given command and displays the execution time of this command. Can
+be used for all commands, including internal and background ones.
+
+.ti -4
+unalias name...
+.br
+Destroys the specified aliases.
+
+.ti -4
+unset name...
+.br
+Destroys the specified local variables.
+
+.nf
+.in -4
+window front
+window back
+window move x y
+window size width height
+.in
+.fi
+Put the window in front of all other windows, in back, move it or resize it.
+
+.ti -4
+writehist
+.br
+Writes immediatly command history to history file. Can be useful, for
+example, before running a program that may crash you Amiga.
+.ll +4
+.in -4
+
+.PR Special\ variables
+.ti +8
+These variables are used to control AUSH. You should define them as global
+variables (that is what AUSH does when setting them to their initial values).
+
+.in +12
+.ll -4
+.ti -12
+cmdnum\t\tcommand number (_ShellNumber_CmdNumber, guaranted to be
+different for each command being executed).
+.ti -12
+cwd\t\t\tcurrent directory.
+.ti -12
+debug\t\tif set to "1", displays commands before and after parsing
+(may be useful to debug script files).
+.ti -12
+delim\t\tlist of word delimiters for "next word", "previous word" and
+"delete end of word" functions of the command line editor.
+.br
+Initial value: " :/".
+.ti -12
+filepat\t\tstring added to current word to perform filename completion.
+.br
+Initial value: "#?".
+.ti -12
+fullhist\tif set to "1", save all commands in the history. Otherwise,
+don't save twice again the same command.
+.ti -12
+histfile\tname of the file to use to save/load command history. If not
+set, "S:.history" is assumed.
+.ti -12
+histmin\t\tminimal length that a command must have in order to be saved
+in history.
+.br
+Initial value: 3.
+.ti -12
+insert\t\tif set to "1", command line edition is in insert mode (overstrike
+mode otherwise).
+.br
+Initial value: 1.
+.ti -12
+ioerror\t\tlast IoErr() code sets by an internal command.
+.br
+Initial value: 0.
+.ti -12
+keys\t\tallows you to remap control keys. Must be set to a string of lowercase
+characters, each character setting the control key to use to call one of the
+command line editor's functions. The corresponding function is found by to
+the position of the letter in the string:
+
+.in +4
+.nf
+position 1\t\tgo to beginning of line
+position 2\t\tprevious character
+position 3\t\tlist completion
+position 4\t\tgo to end of line
+position 5\t\tnext character
+position 6\t\tkill end of line
+position 7\t\trefresh line
+position 8\t\tnext line
+position 9\t\tprevious line
+position 10\t\tswap characters
+position 11\t\tgo to beginning of history
+position 12\t\treplace variable
+position 13\t\tkill end of word
+position 14\t\tkill line
+position 15\t\tgo to end of history
+.fi
+.in
+
+For example, if the fourth letter is "o", you will have to press ^o to go to end of
+line. When remapping control keys, avoid to use ^h, ^i, ^j and ^m keys, because they
+are handled in a special way.
+.br
+Initial value: "abdefklnpstvwxz".
+.ti -12
+lineedit\tif set to "1", enables AUSH command line editor. Ignored if
+"remote" variable is set to "1".
+.ti -12
+noexpand\tif set to "1", patterns in command lines are not expanded.
+.ti -12
+path\t\tcommand search path. Directory names must be separated by a
+semi-colon character ";", and the name "." stands for the current directory.
+If a file with the "s" bit set is found when searching for a command, AUSH
+tries to run the appropriate command:
+
+.nf
+rx\t\tif the file begins with "/*" (AREXX script)
+source\tif the file begins with ";AUSH" (AUSH script)
+execute\tin all other cases
+.fi
+
+Example: setvar path 'ram:;.;c:;sys:utilities'
+.ti -12
+prompt\t\tdefines normal prompt. You can include the following sequences:
+
+.in +4
+.nf
+%h\t\tcurrent history number
+%#\t\tshell number
+%i\t\t"if...endif" nesting level
+%l\t\t"for...done" nesting level
+%c\t\tcurrent directory ("cwd" variable)
+%b\t\tbasename of current directory
+%s\t\tlast return code ("status" variable)
+%Vname\tvaleur of "name" variable
+%T\t\ttime (HH:MM:SS)
+%d\t\tday in the month (1-31)
+%D\t\tday in the week (Mon-Sun)
+%m\t\tmonth (1-12)
+%M\t\tname of the month (Jan-Dec)
+%y\t\tyear (1900-1999)
+%C\t\tCSI character (0x9B)
+%N\t\tcarriage return
+%f\t\tsize of FAST memory free
+%v\t\tsize of CHIP memory free
+%a\t\tsize of memory free (FAST+CHIP)
+%%\t\tthe '%' sign
+.fi
+.in -4
+
+Initial value: "%C0;33;40m< %# - #c >%C0;31;40m"
+.ti -12
+prompt2\t\tdefines prompt between "if" and "endif".
+.br
+Initial value: "%i> ".
+.ti -12
+prompt3\t\tdefines prompt between "for" and "done".
+.br
+Initial value: "%l) ".
+.ti -12
+remote\t\tset to "1" if running over a serial line (AUX:).
+.ti -12
+savehist\tnumber of commands to save. If not defined or set to a value
+lower than 1, nothing is saved.
+.ti -12
+status\t\tlast return code.
+.ti -12
+titlebar\tdefines the titlebar of the current window (same syntax as
+for the prompts). Ignored if "remote" variable is set "1".
+.ti -12
+trap\t\tcommand(s) to run when CTRL-C or CTRL-D are hit during
+a script file or a loop execution. I suggest you define it as a local
+variable, so that each script file could modify it for it's own use.
+I also suggest that you give an "exit" command as last command (e.g.
+"set trap 'delete $tmpfile , exit 20'"), otherwise execution will not
+be stopped (so to ignore breaks use "set trap ';'"). If this variable
+is not defined, execution is stopped with a return code of 20.
+.ti -12
+truepipes\tif set to "1", pipes are handled via "PIPE:" device.
+.ti -12
+version\t\tcurrent version of AUSH.
+.ll +4
+.in -12
+
+.PR UNIX\ version
+.ti +8
+AUSH understands the "variable=value" form. The "@pri" and "&pri" forms are ignored,
+because the nice() system call doesn't allow raising priority. As expected, Cd without
+argument goes back to the $HOME directory. The ".aushrc" and ".history" files are
+searched in the $HOME directory. In prompt definition, the "%f", "%v", "%a" and "%C"
+specifications are ignored. The "truepipes" variable is ignored (pipes are handled
+with temporary files in the "/tmp" directory).
+.ti +8
+Child death time is set to the time we detect it's death (should be ok because the
+SIGCHLD signal is trapped).
+.ti +8
+Under any regular UNIX shell, the "set" command shows all environment variables.
+Under AUSH, you get all local variables. If you want environnement, you must use the
+"env" command.
+.ti +8
+The command line editor uses the value of the TERM variable to know which terminal
+you use. As it's impossible to get the value of shifted function keys, and shifted
+up-arrow, these keys are handled only if the terminal is "amiga". The HELP key is
+ignored.
+
+.PR History
+.in +10
+.ti -10
+v1.00\t28-Feb-92, 29564 bytes
+.ti -2
+o First release.
+
+.ti -10
+v1.10\t28-Mar-92, 31828 bytes
+.ti -2
+o When expanding vars, look also in ARP/Commodore and Manx lists.
+.ti -2
+o "^D" key displays possibilities for file/varname completion ; "^B", "^F",
+"^N" and "^P" keys do the same as "left", "right", "down" and "up" keys.
+.ti -2
+o The command line editor erase cursor while executing a command (faster display).
+.ti -2
+o The file request read the current work to set request initial's directory.
+.ti -2
+o Reset SIGBREAKF signals when returning from command line editing (they are set
+if you press "^D", "^E" or "^F" keys)
+.ti -2
+o "!!", "!n" and "!string" can be specified anywhere on the command line.
+.ti -2
+o Added -D, -E and -F switches to "if" command.
+.ti -2
+o\ Added "for var in val1 .. val2" specification to "for...done" command.
+.ti -2
+o Added alias "dircmd".
+.ti -2
+o Add a space after an alias definition without argument (if you enter "alias
+ls dir", and then type "ls ram:", you will no longer have a "Please insert
+volume dirram: in any drive" requester).
+.ti -2
+o Error messages in german if the "language" variable is set to "deutsch".
+.ti -2
+o Renamed "setenv" command to "setvar" (no more conflicts with Commodore's
+command), added "echo" command.
+.ti -2
+o Added special variables "version" and "path", the "ioerror" command is initialized
+to "0", the "insert" command is initialized to "1", removed "autocd" variable.
+
+.ti -10
+v1.11\t29-Mar-92, 31832 bytes
+.ti -2
+o Bug fixed: The "echo" command can new be output redirected.
+
+.ti -10
+v1.12\t11-Apr-92, 32244 bytes
+.ti -2
+o\ Load history *after* "S:.aushrc" execution, in order to allow a change of
+the value of "history" variable in the startup-sequence.
+.ti -2
+o Added "NE", "LE", and "GE" switches to "if" command.
+.ti -2
+o In "for i in val1 .. val2" specification, "val2" may be lower than "val1",
+and both value may be negative.
+.ti -2
+o No more checking of arguments size for internal commands.
+.ti -2
+o Added "^V" key to command line editor.
+
+.ti -10
+v1.13\t18-Apr-92, 32280 bytes
+.ti -2
+o When searching a command with the "path" variable, check that the object is
+a file (and not a directory).
+
+.ti -10
+v1.14\t26-Apr-92, 32300 bytes
+.ti -2
+o Two bugs fixed in command substitution: didn't remove the final "`", error in
+arguments length computation.
+.ti -2
+o Bug fixed in the parser: didn't escaped "<>,;" special meaning when in first
+position of a quoted string.
+.ti -2
+o Better german messages.
+
+.ti -10
+v1.15\t01-May-92, 32364 bytes
+.ti -2
+o Added "histfile" variable.
+.ti -2
+o Two bug fixed in arguments length computation: forgetted quotes, and didn't add
+some more space for "splitted" arguments.
+
+.ti -10
+v1.16\t11-May-92, 32404 bytes
+.ti -2
+o Bug fixed: the "-c" option of "echo" command *really* delete the final "\\n"
+(doesn't replace it with a space)
+
+.ti -10
+v1.20\t16-May-92, 32568 bytes
+.ti -2
+o Added "loadhist" and "writehist" commands.
+.ti -2
+o Added "%Vname" specification to prompt syntax.
+.ti -2
+o Parser modified: parse right part of a complex command *after* left part execution,
+so:
+.in +2
+.ti -2
+- "cd ram: , delete *" does what expected ("*" was expanded before going to "ram:")
+.ti -2
+- all commands in a complex command may be aliases (not only the first one)
+.ti -2
+- you can write a loop in one command ("for i in 1 .. 50 , echo $i , done" didn't worked,
+now even "cd ram: , for i in *.c , echo $i , compress $i , done , echo fini" does !)
+.in -2
+
+.ti -10
+v1.21\t17-May-92, 32912 bytes
+.ti -2
+o Added "time" command.
+
+.ti -10
+v1.22\t23-May-92, 32944 bytes
+.ti -2
+o Bug fixed in loop handling: when writing commands to temporary file, didn't ensure
+there was a "\\n" character after each command.
+
+.ti -10
+v1.23\t01-Jun-92, 33328 bytes
+.ti -2
+o Several bugs fixed in loop handling (when written on a single line): now "for i in
+1 .. 5,echo $i,done" and "for i in 1 .. 5 , list | wc , done" work.
+.ti -2
+o If a file with the "s" bit set if found, when searching for a command in the path
+defined by the "path" variable, a "source" command is automatically run on this file.
+.ti -2
+o The "^S" key swaps the two previous characters.
+.ti -2
+o The "^D" and "<TAB>" keys can now be used without prefix, i.e. at the beginning of a
+line or after a space character.
+.ti -2
+o Bug fixed in command line editor: after a "shift-up" key, the "up" and "down" keys
+didn't give the expected commands.
+
+.ti -10
+v1.30\t14-Jun-92, 33932 bytes
+.ti -2
+o\ Fixed several errors detected with "Enforcer" and "Mungwall".
+.ti -2
+o Bug fixed in "shift" command: didn't set "argc" to the good value.
+.ti -2
+o Handles "$*" (list of arguments separated with a space).
+.ti -2
+o Added -f option to "read" command.
+.ti -2
+o "argc" variable is now read-only.
+.ti -2
+o Checks varnames given to internal commands ("pseudo" local variables are
+not allowed).
+.ti -2
+o "&[pri]" and "@pri" can be specified anywhere on the command line.
+
+.ti -10
+v1.40\t26-Jun-92, 37764 bytes
+.ti -2
+o\ Now compiled with SAS/C 5.10b (with pragmas and optimization)
+.ti -2
+o Can be made resident ("pure" code)
+.ti -2
+o Bug fixed in strxcat() function: didn't save a2 register
+.ti -2
+o Several changes for better support of 2.04 system release, so:
+.in +2
+- no more need for "arp.library"
+.br
+- can execute ROM resident/internal commands
+.br
+- AmigaDOS "Execute" command works
+.in
+.ti -2
+o Expression evaluator modified:
+.in +2
+.ti -2
+- hex (0x13F) values supported
+.ti -2
+- added "HEX", "<", ">", "&", and "|", operators
+.in
+.ti -2
+o Added "-o" switch to "if" command
+.ti -2
+o Bug fixed in "if" command: didn't always UnLock() file
+
+.ti -10
+v1.41\t30-Jun-92, 37864 bytes
+.ti -2
+o Bug fixed in command search: doesn't search path for resident commands
+
+.ti -10
+v1.42\t06-Jul-92, 37872 bytes (Fish #706)
+.ti -2
+o Bug fixed in loop handling "for...done": command redirection was "forgotten"
+.ti -2
+o No more "Enforcer" hits whith "!string" (or "shift-up" in command line editor)
+when there's no command starting with "string" in history
+
+.ti -10
+v1.50\t21-Aug-92, 37736 bytes
+.ti -2
+o Added global var "keys" (allows to remap control keys)
+.ti -2
+o Optional argument "FROM file"
+.ti -2
+o More checking at startup time: proc->pr_CLI must be a valid pointeur, stop if
+started from WB, etc...
+.ti -2
+o Bug fixed in expression parsing: displayed result in decimal even if "HEX"
+was specified
+.ti -2
+o Bug fixed under 1.3 system release: didn't give full command path to function
+that start command execution
+
+.ti -10
+v1.51\t01-Sep-92, 37808 bytes
+.ti -2
+o Bug fixed in path search: after automatic sourcing of a script (bit "s" detected)
+the following commands were sometimes also considered like a script (and sourced !!!)
+.ti -2
+o "history str" displays only commands starting with "str"
+.ti -2
+o The "history" command checks CTRL-C while displaying history
+.ti -2
+o Displays command founded when using "!!", "!n" or "!str" forms
+.ti -2
+o Bug fix: when you did a "cd volume:" the $cwd variable didn't ended with a ':' (so
+problems for example with a "copy df0:foo $cwd")
+.ti -2
+o Bug fixed in file name completion: distinguished lower case and upper case characters.
+
+.ti -10
+v1.52\t22-Sep-92, 40000 bytes (Fish #747)
+.ti -2
+o Allow the ${varname} form
+.ti -2
+o\ Added variable functions (e.g. "$var:function" or "${var:function}")
+.ti -2
+o Added "==" condition to "if" command
+.ti -2
+o Command line length is no longer limitated to 256 characters under system 2.0
+.ti -2
+o Bug fixed: test "s" protection bit even if full command path name is given
+.ti -2
+o Some bugs fixed in "for...done" loop handling
+.ti -2
+o The $cwd variable now always ended with a ":" or a "/"
+.ti -2
+o If no file correspond to a pattern, displays an error message and don't execute
+command
+
+.ti -10
+v1.53\t22-Sep-92, 40136 bytes
+.ti -2
+o May now be used over the serial port (AUX:)
+.ti -2
+o Added "remote" variable
+.ti -2
+o "cmdnum", "cwd", "status", "version" and "remote" variables are now
+readonly
+.ti -2
+o Access to directories stack is done with "§nb" instead of "=nb"
+(no more need to protect "=" for the "if" command)
+
+.ti -10
+v1.54\t05-Oct-92, 40120 bytes
+.ti -2
+o No more deadlocks in command line editor
+.ti -2
+o Bug fixed: couldn't execute a command located on a volume which name
+has spaces in
+.ti -2
+o Bug fixed: if an syntax error occured in !!, !n or !str forms, still
+executed the command
+
+.ti -10
+v1.55\t23-Oct-92, 40764 bytes
+.ti -2
+o Added "for var from file" form
+.ti -2
+o When starting a background command, stdin and stdout are redirected to "NIL:"
+(if they have not been redirected yet)
+.ti -2
+o Uses "PIPE:" to handle pipes if "truepipes" variable is set to "1" (under 2.0
+system release only)
+.ti -2
+o Added "base" and "noext" functions
+
+.ti -10
+v2.00\t03-Feb-93, 37744 bytes
+.ti -2
+o Recompiled with SAS/C 6.2
+.ti -2
+o Now works only under system release 2.0 or more
+.ti -2
+o Fully localized.
+
+.ti -10
+v2.01\t07-Mar-93, 37988 bytes
+.ti -2
+o Now handle shell window closing gadget
+.ti -2
+o Build argument string in a different way (add spaces before args, not after)
+.ti -2
+o You can get a '%' in prompt or titlebar
+
+.ti -10
+v2.03\t13-Apr-93, 38060 bytes
+.ti -2
+o In filename completion, automatically add a '/' if the name if a directory name
+or a ' ' if it's a filename
+
+.ti -10
+v2.04\t04-May-93, 38268 bytes
+.ti -2
+o Added "split" function
+
+.ti -10
+v3.00\t14-May-93, 39336 bytes
+.ti -2
+o Parser rewritten from scratch ("$foo:split" work as a command, etc...)
+.ti -2
+o Aliases handling modified:
+.br
+- definitions MUST NOT be enclosed between quotes
+.br
+- you may use "%1", "%2,... to specify argument positions
+.ti -2
+o Command line editor modified:
+.br
+- no more problems with commands on several lines
+.br
+- filename completion works even in the middle of a word
+.br
+- "top of history" and "bottom of history" functions now work
+.ti -2
+o When finding a script (with bit "s"), try to guess it's type (AREXX/AUSH/other)
+
+.ti -10
+v3.10\t25-May-93, 45964 bytes
+.ti -2
+o Compile and run under UNIX
+.ti -2
+o Added "expand" function and "window" command
+.ti -2
+o The "time" command work again
+.ti -2
+o If an error code doesn't have a message in the locale catalogue, call the Fault()
+function to get it's meaning
+.ti -2
+o All locale catalogues modified
+.ti -2
+o Several bugs fixed ("echo" without arguments, filename completion with cursor at
+the end of a word, varname checking, etc...)
+
+.ti -10
+v3.11\t01-Jun-93, 46388 bytes
+.ti -2
+o On an Amiga, don't lose typeahead characters anymore
+.ti -2
+o "window" without arguments shows position and size of the window
+
+.ti -10
+v3.12\t17-Jun-93, 46396 bytes
+.ti -2
+o Bug fixed: interpreted ',' and '|' even if at the beginning of a string between
+'' or "", or at the beginning of the value of a variable
+.ti -2
+o Bug fixed: an empty line in a script was considered at end of file
+
+.ti -10
+v3.13\t27-Jun-93, 46472 bytes
+.ti -2
+o Some changes to make compilation easier/better under UNIX
+.ti -2
+o Under UNIX, the default prompt doesn't contains ANSI sequences anymore
+.ti -2
+o Added "%b" specification for prompt definition
+
+.ti -10
+v3.14\t10-Jul-93, 46588 bytes
+.ti -2
+o Compiled with SAS/C 6.3
+.ti -2
+o Calling the file requester caused an Enforcer "hit"
+.ti -2
+o Bug fixed in parser (substitution of '*' by '#?' is better now)
+.ti -2
+o The NewAUSH command returns 0 (instead of 1)
+
+.ti -10
+v3.15\t25-Jul-93, 46608 bytes
+.ti -2
+o Maximal number of arguments for a command is now 128 (instead of 64)
+.ti -2
+o Bug fixed in parser: $i, "foo" and 'bar' were not handled correctly after a
+redirection symbol ('>' and '<', for exemple "foo > $i" didn't worked)
+.ti -2
+o Bug fixed: "cd" didn't changed cli_SetName under AmigaDOS
+
+.ti -10
+v3.16\t08-Apr-94, 46644 bytes
+.ti -2
+o Recompiled with SAS/C 6.51 (fixes some bugs)
+
+.ti -10
+v3.17\t01-Jul-94, 46608 bytes
+.ti -2
+o Bug fix: "NewAUSH" didn't handle arguments the good way
+

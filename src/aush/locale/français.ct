@@ -1,0 +1,98 @@
+## version $VER: français.catalog 1.01 (20.05.93)
+## codeset 0
+## language français
+;
+MSG_TOOMUCHARGS
+trop d'arguments
+; too much arguments
+;
+MSG_TOOMUCHREDIR
+trop de redirections
+; too much redirections
+;
+MSG_CANTREDIRECT
+redirection impossible
+; can't open redirection
+;
+MSG_CANTEXECUTE
+exécution impossible
+; can't execute
+;
+MSG_CANTSEEK
+impossible d'aller à la fin de stdout
+; can't seek to end of stdout
+;
+MSG_BADARGS
+arguments incorrects
+; bad arguments
+;
+MSG_OVERFLOW
+débordement interne
+; internal overflow
+;
+MSG_NOMSGPORT
+pas de port message
+; no message port
+;
+MSG_SYNTAXERR
+erreur de syntaxe
+; syntax error
+;
+MSG_IFERROR
+erreur sur 'if...else...endif'
+; 'if...else...endif' error
+;
+MSG_NOSUCHDIR
+pas autant de répertoires
+; not that many directories
+;
+MSG_ZERODIV
+division par zéro
+; zero divide
+;
+MSG_STACKFULL
+pas assez de place dans la pile
+; not enough stack space
+;
+MSG_READONLY
+variable en lecture seulement
+; variable is read only
+;
+MSG_NOMATCH
+rien ne correspond
+; no match
+;
+MSG_BADFUNC
+function inconnue
+; unkown function
+;
+MSG_WAITINGBG
+Attente de la fin de %ld processus en arrière plan\n
+; Waiting for %ld background process(es) to terminate
+;
+MSG_STARTEDBG
+[%ld] %s lancé\n
+; [%ld] %s launched
+;
+MSG_TIMECMD
+temps : %ld secondes\n
+; time: %ld seconds
+;
+MSG_FINISHBG
+[%ld] %s terminé (code retour %ld)\n
+; [%ld] %s terminated (status %ld)
+;
+MSG_STACKSIZE
+Taille de la pile : %ld octets\n
+; Current stack size: %ld bytes
+;
+MSG_FAILLEVEL
+Limite d'erreur : %ld\n
+; Current fail level: %ld
+;
+MSG_UNKNOWNERR
+%s: erreur code %ld\n
+;
+MSG_ENDSHELL
+Fin de l'interpréteur %ld\n
+;

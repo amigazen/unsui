@@ -1,0 +1,100 @@
+## version $VER: deutsch.catalog 1.01 (20.05.93)
+## codeset 0
+## language deutsch
+;
+MSG_TOOMUCHARGS
+zu viele Argumente
+; too much arguments
+;
+MSG_TOOMUCHREDIR
+zu viele Umleitungen
+; too much redirections
+;
+MSG_CANTREDIRECT
+Umleitung nicht möglich
+; can't open redirection
+;
+MSG_CANTEXECUTE
+Ausführung nicht möglich
+; can't execute
+;
+MSG_CANTSEEK
+Positionierung an das Ende von stdout nicht möglich
+; can't seek to end of stdout
+;
+MSG_BADARGS
+falsche Argumente
+; bad arguments
+;
+MSG_OVERFLOW
+interner Überlauf
+; internal overflow
+;
+MSG_NOMSGPORT
+kein Messageport
+; no message port
+;
+MSG_SYNTAXERR
+syntaktischer Fehler
+; syntax error
+;
+MSG_IFERROR
+Fehler in 'if...else...endif'
+; 'if...else...endif' error
+;
+MSG_NOSUCHDIR
+das Verzeichnis existiert nicht
+; not that many directories
+;
+MSG_ZERODIV
+unerlaubte Division durch null
+; zero divide
+;
+MSG_STACKFULL
+zu wenig Stapelspeicher
+; not enough stack space
+;
+MSG_READONLY
+die Variable darf nur gelesen werden
+; variable is read only
+;
+MSG_NOMATCH
+Namensmuster wurde nicht gefunden
+; no match
+;
+MSG_BADFUNC
+unbekannte Funktion
+; unkown function
+;
+MSG_WAITINGBG
+warten bis %ld Hintergrundprozeß(e) beendet sind\n
+; Waiting for %ld background process(es) to terminate\n
+;
+MSG_STARTEDBG
+[%ld] %s aufgestartet\n
+; [%ld] %s launched\n
+;
+MSG_TIMECMD
+Zeit: %ld Sekunden\n
+; time: %ld seconds\n
+;
+MSG_FINISHBG
+[%ld] %s beendet (Rückgabewert %ld)\n
+; [%ld] %s terminated (status %ld)\n
+;
+MSG_STACKSIZE
+Stapelspeichergröße: %ld Bytes\n
+; Current stack size: %ld bytes\n
+;
+MSG_FAILLEVEL
+Fehlergrenzwert: %ld\n
+; Current fail level: %ld\n
+;
+MSG_UNKNOWNERR
+%s: Fehlercode %ld\n
+; %s: error code %ld\n
+;
+MSG_ENDSHELL
+Die Shell %ld wird beendet\n
+; Shell %ld ending\n
+;

@@ -1,0 +1,28 @@
+#
+# Makefile for UNIX version of AUSH
+#
+# Compiler: GnuCC 1.40
+# Symbols : "unix" for all Unix specific parts
+#
+CFLAGS=-g -O
+#
+INCL=aush.h aush_msg.h lists.h
+OBJS=parse.o fct.o eval.o cmd.o vars.o hist.o alias.o files.o unix.o\
+ lists.o console.o
+#
+aush: aush.c $(OBJS)
+	cc -o aush $(CFLAGS) aush.c $(OBJS) -lucb -ltermlib
+#
+aush.o: aush.c $(INCL)
+shell.o: shell.c $(INCL)
+parse.o: parse.c parse.h $(INCL)
+fct.o: fct.c $(INCL)
+eval.o: eval.c $(INCL)
+cmd.o: cmd.c $(INCL)
+vars.o: vars.c $(INCL)
+hist.o: hist.c $(INCL)
+alias.o: alias.c $(INCL)
+files.o: files.c $(INCL)
+unix.o: unix.c $(INCL)
+lists.o: lists.c lists.h
+console.o: console.c $(INCL)
