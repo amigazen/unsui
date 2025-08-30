@@ -1,11 +1,5 @@
 # GNU General Public License v2
 
-## Bison 1.25 License
-
-This project contains GNU Bison 1.25, a parser generator tool. The source code is licensed under the GNU General Public License version 2 or later.
-
-## License Text
-
 ```
                     GNU GENERAL PUBLIC LICENSE
                        Version 2, June 1991
@@ -333,35 +327,3 @@ consider it more useful to permit linking proprietary applications with the
 library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.
 ```
-
-## Project-Specific Information
-
-### **Bison 1.25**
-- **Original Copyright**: Free Software Foundation, Inc.
-- **License**: GNU General Public License v2 or later
-- **Amiga Port**: Giacomo Magnini <prometeo@flashnet.it>
-- **SAS/C Compatibility**: Sandro Tolaini <tolaini@freenet.hut.fi>
-
-### **UNSUI Integration**
-- **Integration Copyright**: AmigaZen project team
-- **License**: Same as original (GPL v2+)
-- **Modifications**: Project structure and build system integration
-
-### **Usage Rights**
-Under this license, you are free to:
-- Use the software for any purpose
-- Modify the source code
-- Distribute copies
-- Distribute modified versions
-
-**Requirements:**
-- Include the original copyright notices
-- License any modifications under GPL v2+
-- Provide source code when distributing
-- Include a copy of this license
-
-### **Contact Information**
-For questions about this license or the Bison software:
-- **GNU Bison**: https://www.gnu.org/software/bison/
-- **Free Software Foundation**: https://www.fsf.org/
-- **AmigaZen Project**: See project documentation for contact details
