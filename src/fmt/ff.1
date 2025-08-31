@@ -1,0 +1,222 @@
+.TH FF 1 "August 10, 1985" "Wang Institute" "UNIX User's Manual"
+.\" $Compile: iroff -man.new %f
+.SH NAME
+ff \- fast text formatter
+.SH USAGE
+.B ff
+[options] [-] [files]
+.SH DESCRIPTION
+.I ff
+is a simple text formatter for flexible uniform formatting of
+input files.
+Program options are used to control formatting.
+This is in contrast to text formatters like
+.I nroff (1)
+that require special format requests to be part of their input files.
+Besides avoiding cryptic format requests in text,
+.I ff
+is considerably faster than traditional formatters like
+.I nroff (1)
+and even simple formatters like
+.I fmt (1).
+.PP
+The most complicated concept with
+.I ff
+is that of a line break.
+A line break causes an interruption in the filling
+(evening out of the text lines).
+Line breaks occur when special characters are seen at the beginnings
+of lines, or when all lines are broken.
+By default, any non-alphanumeric character will cause a break,
+but this can be controlled with the
+.B -B
+option.
+A blank line always causes a break.
+.SH OPTIONS
+There are many, many options to allow control of
+indentation, line width, line spacing, filling,
+pagination with headers and footers,
+line numbering, right justification,
+and perhaps some other things.
+They have extensive type and range checking
+that produces diagnostic error messages,
+so warnings of obviously wrong options will not be discussed here.
+In general, options that imply the use of others
+work the way they should; if the page size is set,
+then pagination is automatically assumed.
+Some combinations of options give impressive, even artistic, effects.
+Making a small text file and playing with it is the easiest
+way to learn how the options interact.
+.de OP
+.TP
+.B -\\$1 \\$2
+..
+.OP b
+Break all lines of text.
+That is, don't even-out lines by filling.
+By default, text lines are filled.
+.OP B breakchars
+Change the set of characters that cause line breaks at the start of lines to
+.I breakchars.
+By default, any characters but letters and numbers cause a break.
+A good choice for break characters might be "*-+" and TABS
+that might be used for lists.
+.OP c
+Center all lines of text.
+This option stops all filling of text.
+.OP d
+Delete white space at the beginning and end of lines.
+This option is useful to help un-format text to be re-formatted.
+.OP D
+Delete empty input lines.
+An input line is empty if it has no characters,
+not even invisible character like tabs or spaces.
+This option can be combined with the option to remove white space
+to delete visibly blank lines.
+.OP f footer
+Set the page footer to the string
+.I footer.
+This can be any string,
+but if the first character is not a letter or a digit,
+but a punctuation character like /,
+then that character separates the left,
+center, and right fields of a title.
+For example, the title
+.ce
+"/ff: fast formatter//1985/"
+would have "ff: fast formatter" as a left justified field
+and 1985 as a right justified field on each page.
+Note that there is no middle field in this example,
+but there could have been, between the two consecutive /'s.
+There are two special characters, % and *,
+that respectively are variables for the page number
+and the input file name.
+The default page footer is blank.
+.OP F footersize
+Set the number of blank lines at the bottom of the page.
+The footer, if any, is placed in the middle of the space,
+which by default, is five lines.
+If
+.I footersize
+is 0, no footer will be printed.
+.OP h header
+Set the page header.
+See the description of three-part titles for the
+.B -f footer
+option.
+The default page header is
+.ce
+"|File: *||Page: %|".
+.OP H headersize
+See the description of the footer size.
+.OP i indent
+Set the indentation of the text to
+.I indent
+spaces.
+Note that this effectively reduces the usable width of the page.
+.OP I tempindent
+Set the temporary indent.
+This causes filled text found immediately after a break to
+be indented for one line.
+It is useful for indenting the first lines of paragraphs.
+If
+.I tempindent
+is negative,
+the the temporary indent will be relative to the current
+.I indent
+value.
+If the
+.I tempindent
+value is more negative than the
+.I indent
+value is positive,
+.I ff
+will automatically increase
+.I indent.
+.OP j
+Justify the text.
+That is, even the right margin by inserting spaces in the line.
+Only filled text can be justified.
+.OP n
+Number all output lines produced by the input text.
+Lines from multiple line spacing or pagination will not
+be numbered.
+.OP N numberwidth
+Set the width of the line numbers.
+The default is to take up 4 spaces.
+Note that this effectively reduces the usable part of the page.
+.OP p
+Paginate the output.
+See the options for page header and footer control.
+.OP P pagesize
+Set the number of lines in a page to
+.I pagesize.
+By default, the standard 66 line page is assumed.
+.OP s spacing
+Set the line spacing.
+By default, text is single spaced (\fIspacing\fR equals 1).
+.OP t tab
+Set individual absolute and relative tab stops.
+These values tell the formatter
+where to put the text (from an unfilled line)
+that follows a tab character.
+Each tab stop is supplied with its own
+.B -t
+option; there is no way to bundle them.
+.I tab
+values can be integers without a plus sign.
+These are \fIabsolute\fR tab settings;
+the tabs go to that position.
+The values must increase monotonically.
+If a
+.I tab
+value is preceded by a plus sign,
+then it is interpreted \fIrelative\fR to the previous tab setting.
+For example, a tab setting of 40 followed by one of +20
+will set the second tab stop to 60.
+.OP T tabs
+Set tab stops to every
+.I tabs
+spaces.
+It is useful to get equally spaced tabs.
+This option cannot be used with the other tab setting option.
+.OP u
+Print All Input Text As Initial Upper-Case Titles,
+Like This Sentence.
+This option goes well with the one for centering lines.
+.OP U
+Print a usage summary of all the options and stop.
+.OP w width
+Set the page width.
+By default, the page width is 72 characters.
+Note that the usable line length is sometimes less
+than the page width.
+If line numbering or indentation is requested,
+these subtract from the line length.
+.SH EXAMPLES
+Some of these examples can make shell scripts or aliases.
+.nf
+.ta .5i
+.sp
+Centered Titles: title
+	ff -dcu $*
+Double Spaced Unfilled Paginated indented (for editing): draft
+	ff -s 2 -b -p -f "`date`" -i 8 $*
+Program Listing: cpr
+	H="@        Dir: `pwd`@@File: *@"
+	F="@        $NAME@`date`@Page %@"
+	ff -b -N 8 -H 3 -h "$H" -F 3 -f "$F" -T 4 -w 79 -i 2 $*
+Reformat Paragraphed Text: nr
+	ff -jd -I 5 -i 10 -w 65 -B "TAB SP'*.@" $*
+.fi
+.SH DIAGNOSTICS
+Some options are incompatible with others.
+For example, centered text cannot be right-justified.
+.I ff
+will not allow inconsistent combinations of options.
+.SH "SEE ALSO"
+fmt(1), nroff(1), scribe(1w)
+.SH AUTHOR
+Gary Perlman (with help from many students)
+.SH STATUS
+Pretty well tested.

@@ -1,0 +1,52 @@
+Article 177 of mod.sources:
+ion: version B 2.10.2 9/17/84 chuqui version 1.9 3/12/85; site unisoft.UUCP
+Posting-Version: version B 2.10.2 9/3/84; site panda.UUCP
+Path: unisoft!lll-lcc!lll-crg!seismo!harvard!talcott!panda!sources-request
+From: sources-request@panda.UUCP
+Newsgroups: mod.sources
+Subject: ff: fast text formatter (part 1 of 2)
+Message-ID: <1139@panda.UUCP>
+Date: 28 Nov 85 16:32:36 GMT
+Date-Received: 29 Nov 85 04:24:01 GMT
+Sender: jpn@panda.UUCP
+Lines: 1049
+Approved: jpn@panda.UUCP
+
+Mod.sources:  Volume 3, Issue 51
+Submitted by: decvax!wanginst!perlman
+
+                 ff: A Fast Text Formatter
+
+Here is ff, a fast text  formatter.  It fills a gap  between
+the fmt program in Berkeley UNIX and systems like nroff.  ff
+is sort  of an  inside-out  nroff.   There are  no  commands
+inside a file, but the common options like line width,  line
+spacing, indentation,  pagination,  etc., are  command  line
+options.  ff is a general  utility that lets you throw  away
+most uses of programs like pr, expand, and especially fmt.
+
+There are  a lot  of options  for ff--some  would argue  too
+many--but they are necessary  to provide the  functionality.
+I make shell scripts that encode most of my needs.  Here  is
+the shell script I  am using to  format these paragraphs  (I
+have the filter bound to a function key; I go to the top  of
+the paragraph and type PF1).
+	exec ff -w 60 -j -B "	 '*.@|" $*
+I have  scripts  for  centering  regions  and  for  indented
+paragraphs.   These  and  a  nice  one  for  making  program
+listings are listed in the manual entry.  emacs users  might
+find the centering  option useful, even  though many of  the
+other functions are built in to  emacs.  vi users will  find
+ff and option-variants on it much more useful.
+
+ff really is fast--roughly  twice the speed  as fmt for  the
+formats fmt  supports.   For paginating  text, ff  is  about
+twice as fast as  pr.  The tab  expansion options on ff  are
+comparable to  those of  the  expand program,  but ff  is  a
+little slower than expand  on expanding tabs--it simply  has
+too many concerns that expand can ignore.  Still, ff is fast
+enough to bind  to keys in  emacs or vi  to filter  regions,
+making vi a passable wysiwyg editor.  One reason for this is
+extensive profiling and  optimization, some  by my  students
+for a programming efficiency assignment.
+

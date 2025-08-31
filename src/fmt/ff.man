@@ -1,0 +1,264 @@
+
+
+
+     FFFFFFFF((((1111))))           WWWWaaaannnngggg IIIInnnnssssttttiiiittttuuuutttteeee ((((AAAAuuuugggguuuusssstttt 11110000,,,, 1111999988885555))))            FFFFFFFF((((1111))))
+
+
+
+     NNNNAAAAMMMMEEEE
+          ff - fast text formatter
+
+     UUUUSSSSAAAAGGGGEEEE
+          ffffffff [options] [-] [files]
+
+     DDDDEEEESSSSCCCCRRRRIIIIPPPPTTTTIIIIOOOONNNN
+          _f_f is a simple text formatter for flexible uniform
+          formatting of input files.  Program options are used to
+          control formatting.  This is in contrast to text formatters
+          like _n_r_o_f_f (_1) that require special format requests to be
+          part of their input files.  Besides avoiding cryptic format
+          requests in text, _f_f is considerably faster than traditional
+          formatters like _n_r_o_f_f (_1) and even simple formatters like
+          _f_m_t (_1).
+
+          The most complicated concept with _f_f is that of a line
+          break.  A line break causes an interruption in the filling
+          (evening out of the text lines).  Line breaks occur when
+          special characters are seen at the beginnings of lines, or
+          when all lines are broken.  By default, any non-alphanumeric
+          character will cause a break, but this can be controlled
+          with the ----BBBB option.  A blank line always causes a break.
+
+     OOOOPPPPTTTTIIIIOOOONNNNSSSS
+          There are many, many options to allow control of
+          indentation, line width, line spacing, filling, pagination
+          with headers and footers, line numbering, right
+          justification, and perhaps some other things.  They have
+          extensive type and range checking that produces diagnostic
+          error messages, so warnings of obviously wrong options will
+          not be discussed here.  In general, options that imply the
+          use of others work the way they should; if the page size is
+          set, then pagination is automatically assumed.  Some
+          combinations of options give impressive, even artistic,
+          effects.  Making a small text file and playing with it is
+          the easiest way to learn how the options interact.
+
+          ----bbbb   Break all lines of text.  That is, don't even-out lines
+               by filling.  By default, text lines are filled.
+
+          ----BBBB bbbbrrrreeeeaaaakkkkcccchhhhaaaarrrrssss
+               Change the set of characters that cause line breaks at
+               the start of lines to _b_r_e_a_k_c_h_a_r_s. By default, any
+               characters but letters and numbers cause a break.  A
+               good choice for break characters might be "*-+" and
+               TABS that might be used for lists.
+
+          ----cccc   Center all lines of text.  This option stops all
+               filling of text.
+
+          ----dddd   Delete white space at the beginning and end of lines.
+
+
+
+     Page 1                                           (printed 1/1/86)
+
+
+
+
+
+
+     FFFFFFFF((((1111))))           WWWWaaaannnngggg IIIInnnnssssttttiiiittttuuuutttteeee ((((AAAAuuuugggguuuusssstttt 11110000,,,, 1111999988885555))))            FFFFFFFF((((1111))))
+
+
+
+               This option is useful to help un-format text to be re-
+               formatted.
+
+          ----DDDD   Delete empty input lines.  An input line is empty if it
+               has no characters, not even invisible character like
+               tabs or spaces.  This option can be combined with the
+               option to remove white space to delete visibly blank
+               lines.
+
+          ----ffff ffffooooooootttteeeerrrr
+               Set the page footer to the string _f_o_o_t_e_r. This can be
+               any string, but if the first character is not a letter
+               or a digit, but a punctuation character like /, then
+               that character separates the left, center, and right
+               fields of a title.  For example, the title
+                            "/ff: fast formatter//1985/"
+               would have "ff: fast formatter" as a left justified
+               field and 1985 as a right justified field on each page.
+               Note that there is no middle field in this example, but
+               there could have been, between the two consecutive /'s.
+               There are two special characters, % and *, that
+               respectively are variables for the page number and the
+               input file name.  The default page footer is blank.
+
+          ----FFFF ffffooooooootttteeeerrrrssssiiiizzzzeeee
+               Set the number of blank lines at the bottom of the
+               page.  The footer, if any, is placed in the middle of
+               the space, which by default, is five lines.  If
+               _f_o_o_t_e_r_s_i_z_e is 0, no footer will be printed.
+
+          ----hhhh hhhheeeeaaaaddddeeeerrrr
+               Set the page header.  See the description of three-part
+               titles for the ----ffff ffffooooooootttteeeerrrr option.  The default page
+               header is
+                                "|File: *||Page: %|".
+
+          ----HHHH hhhheeeeaaaaddddeeeerrrrssssiiiizzzzeeee
+               See the description of the footer size.
+
+          ----iiii iiiinnnnddddeeeennnntttt
+               Set the indentation of the text to _i_n_d_e_n_t spaces.  Note
+               that this effectively reduces the usable width of the
+               page.
+
+          ----IIII tttteeeemmmmppppiiiinnnnddddeeeennnntttt
+               Set the temporary indent.  This causes filled text
+               found immediately after a break to be indented for one
+               line.  It is useful for indenting the first lines of
+               paragraphs.  If _t_e_m_p_i_n_d_e_n_t is negative, the the
+               temporary indent will be relative to the current _i_n_d_e_n_t
+               value.  If the _t_e_m_p_i_n_d_e_n_t value is more negative than
+               the _i_n_d_e_n_t value is positive, _f_f will automatically
+
+
+
+     Page 2                                           (printed 1/1/86)
+
+
+
+
+
+
+     FFFFFFFF((((1111))))           WWWWaaaannnngggg IIIInnnnssssttttiiiittttuuuutttteeee ((((AAAAuuuugggguuuusssstttt 11110000,,,, 1111999988885555))))            FFFFFFFF((((1111))))
+
+
+
+               increase _i_n_d_e_n_t.
+
+          ----jjjj   Justify the text.  That is, even the right margin by
+               inserting spaces in the line.  Only filled text can be
+               justified.
+
+          ----nnnn   Number all output lines produced by the input text.
+               Lines from multiple line spacing or pagination will not
+               be numbered.
+
+          ----NNNN nnnnuuuummmmbbbbeeeerrrrwwwwiiiiddddtttthhhh
+               Set the width of the line numbers.  The default is to
+               take up 4 spaces.  Note that this effectively reduces
+               the usable part of the page.
+
+          ----pppp   Paginate the output.  See the options for page header
+               and footer control.
+
+          ----PPPP ppppaaaaggggeeeessssiiiizzzzeeee
+               Set the number of lines in a page to _p_a_g_e_s_i_z_e. By
+               default, the standard 66 line page is assumed.
+
+          ----ssss ssssppppaaaacccciiiinnnngggg
+               Set the line spacing.  By default, text is single
+               spaced (_s_p_a_c_i_n_g equals 1).
+
+          ----tttt ttttaaaabbbb
+               Set individual absolute and relative tab stops.  These
+               values tell the formatter where to put the text (from
+               an unfilled line) that follows a tab character.  Each
+               tab stop is supplied with its own ----tttt option; there is
+               no way to bundle them.  _t_a_b values can be integers
+               without a plus sign.  These are _a_b_s_o_l_u_t_e tab settings;
+               the tabs go to that position.  The values must increase
+               monotonically.  If a _t_a_b value is preceded by a plus
+               sign, then it is interpreted _r_e_l_a_t_i_v_e to the previous
+               tab setting.  For example, a tab setting of 40 followed
+               by one of +20 will set the second tab stop to 60.
+
+          ----TTTT ttttaaaabbbbssss
+               Set tab stops to every _t_a_b_s spaces.  It is useful to
+               get equally spaced tabs.  This option cannot be used
+               with the other tab setting option.
+
+          ----uuuu   Print All Input Text As Initial Upper-Case Titles, Like
+               This Sentence.  This option goes well with the one for
+               centering lines.
+
+          ----UUUU   Print a usage summary of all the options and stop.
+
+          ----wwww wwwwiiiiddddtttthhhh
+               Set the page width.  By default, the page width is 72
+
+
+
+     Page 3                                           (printed 1/1/86)
+
+
+
+
+
+
+     FFFFFFFF((((1111))))           WWWWaaaannnngggg IIIInnnnssssttttiiiittttuuuutttteeee ((((AAAAuuuugggguuuusssstttt 11110000,,,, 1111999988885555))))            FFFFFFFF((((1111))))
+
+
+
+               characters.  Note that the usable line length is
+               sometimes less than the page width.  If line numbering
+               or indentation is requested, these subtract from the
+               line length.
+
+     EEEEXXXXAAAAMMMMPPPPLLLLEEEESSSS
+          Some of these examples can make shell scripts or aliases.
+
+          Centered Titles: title
+               ff -dcu $*
+          Double Spaced Unfilled Paginated indented (for editing): draft
+               ff -s 2 -b -p -f "`date`" -i 8 $*
+          Program Listing: cpr
+               H="@        Dir: `pwd`@@File: *@"
+               F="@        $NAME@`date`@Page %@"
+               ff -b -N 8 -H 3 -h "$H" -F 3 -f "$F" -T 4 -w 79 -i 2 $*
+          Reformat Paragraphed Text: nr
+               ff -jd -I 5 -i 10 -w 65 -B "TAB SP'*.@" $*
+
+     DDDDIIIIAAAAGGGGNNNNOOOOSSSSTTTTIIIICCCCSSSS
+          Some options are incompatible with others.  For example,
+          centered text cannot be right-justified.  _f_f will not allow
+          inconsistent combinations of options.
+
+     SSSSEEEEEEEE AAAALLLLSSSSOOOO
+          fmt(1), nroff(1), scribe(1w)
+
+     AAAAUUUUTTTTHHHHOOOORRRR
+          Gary Perlman (with help from many students)
+
+     SSSSTTTTAAAATTTTUUUUSSSS
+          Pretty well tested.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 4                                           (printed 1/1/86)
+
+
+

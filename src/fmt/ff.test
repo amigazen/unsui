@@ -1,0 +1,179 @@
+#! /usr/local/bin/ksh
+# test script for ff fast text formatter
+
+PATH=$PATH:/tmp
+delim="-------------- "
+trap "rm -f /tmp/linelength fourcol ff.in; exit 1" 2
+
+# Define utility functions
+function runcom
+	{
+	echo "$delim($1):" "$2"
+	shift
+	echo $* | sh
+	}
+function newtest
+	{
+	echo
+	echo $1
+	echo ===============================================
+	}
+# the following must be available to the Bourne shell
+echo "dm '#INPUT'" > /tmp/linelength
+chmod +x /tmp/linelength
+
+# create utility files
+cat << \EOF > fourcol
+a	b	c	d
+	w	x	y	z
+EOF
+cat << \EOF > ff.in
+The rain in Spain falls mainly in the plains.
+She sells sea shells on the sea shore. 
+Peter piper picked a peck of pickled peppers.
+The quick red fox jumped over the lazy brown dog.
+A stitch in time saves nine.
+Now is the time for all good men to come to the aid of the party.
+And now a word from our sponsor...
+    
+The rain in Spain falls mainly in the plains.  She sells sea
+shells on  the sea  shore.   Peter piper  picked a  peck  of
+pickled peppers.   The quick  red fox jumped  over the  lazy
+brown dog.  A stitch  in time saves nine.   Now is the  time
+for all good men to come to the aid of the party.  And now a
+word from our sponsor...
+EOF
+
+newtest "WIDTH WIDTH WIDTH WIDTH WIDTH WIDTH WIDTH WIDTH"
+runcom "width of 1"                  "ff -w 1 ff.in | linelength"
+runcom "width of 20"                 "ff -w 20 ff.in | linelength"
+runcom "width of 60"                 "ff -w 60 ff.in | linelength"
+
+newtest "JUSTIFY JUSTIFY JUSTIFY JUSTIFY JUSTIFY JUSTIFY JUSTIFY"
+runcom "justify text"                    "ff -j ff.in"
+runcom "justify with width = 30"         "ff -w 30 -j ff.in | linelength"
+runcom "justify with indent and temp indent"  "ff -j -i 20 -I 5 ff.in | linelength"
+
+newtest "ALLTABS ALLTABS ALLTABS ALLTABS ALLTABS ALLTABS"
+runcom "tabs set at 1"          "ff -T 1 -b fourcol"
+runcom "tabs set at 10"         "ff -T 10 -b fourcol"
+runcom "tabs set at 100"        "ff -T 100 -b fourcol"
+
+newtest "TABS TABS TABS TABS TABS TABS TABS TABS TABS TABS"
+runcom "decreasing values"      "ff -t 10 -t 11 -t 10"
+runcom "non increasing values"  "ff -t 10 -t 11 -t 11"
+runcom "1 too many values"      "ff -t 1 -t 2 -t 3 -t 4 -t 5 -t 6 -t 7 -t 8 -t 9 -t 10 -t 11 -t 12 -t 13 -t 14 -t 15 -t 16 -t 17 -t 18 -t 19 -t 20 -t 21"
+runcom "max number of values - exits from unknown option" "ff -t 1 -t 2 -t 3 -t 4 -t 5 -t 6 -t 7 -t 8 -t 9 -t 10 -t 11 -t 12 -t 13 -t 14 -t 15 -t 16 -t 17 -t 18 -t 19 -t 20 -z"
+runcom "huge tab value"         "ff -t 300"
+runcom "tab value at extreme"   "ff -t 255 fourcol"
+runcom "indented ff -U table"   "ff -U | ff -t 20"
+runcom "all plussed values" "ff -t +55 -t +15 fourcol"
+runcom "more tabs than tabstops" "ff -t 10 -t +15 fourcol"
+
+newtest "UPPER CASE TITLE UPPER CASE TITLE UPPER CASE TITLE"
+runcom "all titles"              "ff -u ff.in"
+runcom "centered titles"         "ff -cu ff.in"
+
+newtest "SPACING SPACING SPACING SPACING SPACING SPACING SPACING"
+runcom "24 lines spacing of 10 lines - 217 lines" "series 1 10 | ff -bs 24 | wc"
+
+newtest "NUMWIDTH NUMWIDTH NUMWIDTH NUMWIDTH NUMWIDTH NUMWIDTH"
+runcom "1 value"                 "ff -N 1 ff.in"
+runcom "numwidth = 10"           "ff -N 10 ff.in"
+runcom "numwidth 20 centered"    "ff -N 20 -c ff.in"
+runcom "numwidth=10 indent=10 width=50 tindent=-5 justified" "ff -N 10 -i 10 -w 50 -I -5 -j ff.in"
+
+newtest "NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER NUMBER"
+runcom "number zero lines"       "ff -n /dev/null"
+runcom "number centered lines"   "ff -n -c ff.in"
+runcom "number 4 spaced broken lines" "ff -s 4 -n ff.in"
+runcom "number 3 spaced lines on 23 line pages" "series 1 200 | ff -n -s 3 -b -P 23 | wc"
+
+newtest "TINDENT TINDENT TINDENT TINDENT TINDENT TINDENT TINDENT"
+runcom "temp indent 5"                   "ff -I 5 ff.in"
+runcom "negative temp indent will automatically bump -i option" "ff -I -5 ff.in"
+runcom "negative temp indent less than -i option" "ff -I -5 -i 10 ff.in"
+
+newtest "INDENT INDENT INDENT INDENT INDENT INDENT INDENT INDENT"
+runcom "indent 10"                  "ff -i 10 ff.in"
+runcom "indent 50"                  "ff -i 50 ff.in"
+#runcom "indent 300 - does not crash but is really tedious" "ff -i 300 ff.in"
+
+newtest "HEADSIZE HEADSIZE HEADSIZE HEADSIZE HEADSIZE HEADSIZE"
+runcom "1 header size"              "ff -H 1 ff.in | wc"
+runcom "100 header size"            "ff -h 'Huge header!!' -H 100 ff.in | wc"
+newtest "tricky part can come with even and odd sizes"
+runcom "20 header w/out -p option"  "ff -H 20 ff.in | wc"
+runcom "odd header size = 19"       "ff -H 19 ff.in | wc"
+
+newtest "HEADER HEADER HEADER HEADER HEADER HEADER HEADER"
+runcom "nice header"                'ff -h "@$NAME on $TERM@@`date`" ff.in'
+
+newtest "FOOTSIZE FOOTSIZE FOOTSIZE FOOTSIZE FOOTSIZE FOOTSIZE"
+runcom "1 foot size"                'ff -F 0 -f "Howdy $NAME" ff.in | wc'
+runcom "zero foot size without -p"  "ff -F 0 ff.in"
+runcom "20 foot size"               'ff -F 20 -f "Howdy $NAME" ff.in | wc'
+runcom "19 foot size"               'ff -F 19 -f "Howdy $NAME" ff.in | wc'
+
+newtest "FOOTER FOOTER FOOTER FOOTER FOOTER FOOTER FOOTER"
+runcom "nice threepart"             'ff -f "@`date`@$NAME@File * Page %@" ff.in'
+
+newtest "DELETE DELETE DELETE DELETE DELETE DELETE DELETE"
+runcom "delete blank lines - not really blank" "ff -D ff.in"
+runcom "delete blank chars - breaking all lines" "ff -bd ff.in | diff ff.in -"
+runcom "delete chars then lines"    "ff -Dd ff.in"
+
+newtest "BREAKCHARS BREAKCHARS BREAKCHARS BREAKCHARS"
+runcom "null break chars"            'ff -B "" ff.in'
+runcom "break on T"                  "ff -B T ff.in"
+
+newtest "PAGELENGTH PAGELENGTH PAGELENGTH PAGELENGTH PAGELENGTH"
+runcom "0dd page length of 19 should imply -p option" "ff -P 19 ff.in | wc"
+runcom "ridiculously small page length" "ff -P 1 ff.in | wc"
+
+newtest "PAGINATE PAGINATE PAGINATE PAGINATE PAGINATE PAGINATE"
+runcom "paginate"                    "ff -p ff.in | wc"
+
+newtest "BREAK BREAK BREAK BREAK BREAK BREAK BREAK BREAK"
+runcom "break lines + check with diff" "ff -b ff.in | diff - ff.in"
+
+newtest "CENTER CENTER CENTER CENTER CENTER CENTER CENTER "
+runcom "center all lines"            "ff -c ff.in"
+runcom "center on lines 50 wide"     "ff -c -w 50 ff.in"
+runcom "center on lines 1 wide"      "ff -c -w 1 ff.in"
+
+newtest "BASIC BASIC BASIC BASIC BASIC BASIC BASIC BASIC "
+runcom "no options from stdin"       "ff < ff.in"
+runcom "no options from stdin -"     "ff - < ff.in"
+runcom "no options from ff.in"       "ff ff.in"
+runcom "three times: ff.in - ff.in"  "ff ff.in - ff.in < ff.in"
+runcom "usage menu"                  "ff -U"
+
+newtest "BAD OPTIONS BAD OPTIONS BAD OPTIONS BAD OPTIONS"
+runcom "bad option"                  "ff -z"
+runcom "bad file"                    "ff howdy pal"
+runcom "too many calls to stdin"     "ff - - - < ff.in"
+
+newtest "PARSER PARSER PARSER PARSER PARSER PARSER PARSER PARSER"
+
+newtest "CHECK OPTIONS CHECK OPTIONS CHECK OPTIONS CHECK OPTIONS"
+runcom "center iff no justify"       "ff -cj ff.in"
+runcom "break lines iff no justify"  "ff -bj ff.in"
+runcom "justify iff not center"          "ff -cj"
+runcom "justify iff not breaklines"      "ff -bj"
+runcom "justify iff not tabs"            "ff -t 5 -j"
+
+newtest "NUMBER OPTIONS NUMBER OPTIONS NUMBER OPTIONS NUMBER OPTIONS"
+for numopt in P w T t s N i I H F P
+do
+	runcom "Missing Value"               "ff -$numopt < ff.in"
+	runcom "Bad Type Value"              "ff -$numopt foo < ff.in"
+	runcom "Zero Integer"                "ff -$numopt 0 < ff.in"
+	runcom "Negative Integer"            "ff -$numopt -1 < ff.in"
+done
+
+newtest "MISSING ARGS MISSING ARGS MISSING ARGS MISSING ARGS"
+for argopt in h f B
+do
+	runcom "Missing Value"               "ff -$argopt < ff.in"
+done
