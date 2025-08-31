@@ -1,0 +1,2 @@
+lc -M -dLATTICE -csuw -r -b -v AmiCron25 timer
+Blink from lib:c.o AmiCron25.o timer.o lib lib:lc.lib lib:amiga.lib VERBOSE SC SD ND to AmiCron

@@ -1,0 +1,189 @@
+                    AmiCron - Cron task for the Amiga
+
+Following below is the original AmiCron documentation by Rick
+Schaeffer (Version 2.3). I changed it were necessary and listed
+additional features below.
+<CB>
+
+This is a (no longer) crude but effective version of the Unix (tm) 
+program known as "cron" modified to run on an Amiga.  For those 
+who aren't Unix knowledgeable, cron is a background task which 
+uses a disk-resident table to automatically run certain tasks on a 
+regular basis.  The cron table's format is very simple...it 
+contains entries in the form of lines where each line has 6 fields 
+and each field is separated by "white space" (either tabs or 
+spaces) from it's neighbor. The fields are as follows:
+
+   1.  Minute       (0-59)
+   2.  Hour         (0-23)
+   3.  Day          (1-31)	(now works, <CB>)
+   4.  Month        (1-12) 
+   5.  Day of week  (0-6 where 0=Sunday and 6=Saturday)
+   6.  Command      This is the command to be run at the appointed 
+                    time.  It will be run just as if typed into 
+                    the CLI.
+
+Each of the first 5 fields are numbers.  However, it is 
+permissable to use an asterisk (*) in a field to mean ALL possible 
+numbers for that field,  and you can specify a series of numbers 
+separated by commas (,) and ranges separated by dashes (-).  For 
+instance, in the Day field you could specify "1,5,10" to mean the 
+first, fifth, and tenth days of the month; or you could specify 
+"1-15" to mean the first through the fifteenth of the month.  Here 
+are some examples of Amicron table entries:
+
+  	Print the date in the crontask window every minute:
+  		* * * * * date
+  
+  	Print the date in the crontask window on the hour, every hour:
+  		0 * * * * date
+  
+  	Run uupc at 4:30 am every day except Sat and Sun:
+  		30 4 * * 1-5 uupc -siscuva
+  
+  	Incrementally backup the files every other day at 7:30 pm:
+  		30 19 * * 1,3,5 sdbackup -l -s LAST dh0: incbkup_1:
+
+    	Backup the files on the 1st and 15th of each month at 1:00 am:
+        	00 01 1,15 * * sdbackup -l dh0: SemiBkup_1:
+
+The Amicron table file is by default located using the following path:
+
+    S:	(or S:CronTab to be exact and include the filename)
+
+but you now may specify a complete path (including filename!) for
+the CronTab file (which needn't but should have this name) as a
+command line parameter like this:
+
+    Amicron RAM:MyCronTab
+
+which would cause Amicron to use the CronTab file "MyCronTab"
+located in the RAM: disk and not to access a disk drive every minute
+to read in the CronTab file.
+
+Crontab entries *MUST* be left justified starting in column 1 and 
+each entry must contain 6 fields, each separated by spaces or 
+tabs.
+
+To run Amicron, you must use your favorite editor to create the
+"CronTab" file.  Amicron needs a CLI window for displaying the 
+output of the commands it runs...but it can be made as small or 
+large as you wish.  Assuming that you have placed Amicron in your 
+command directory (c:), you can start it by typing the following 
+line into a "newcli" window:
+    Amicron
+Then you can size and move the window anywhere you want, just be 
+sure not to type anything else into the window because that would 
+prevent cron tasks from running (read: printing something in that 
+window).
+
+I have an entry in my startup-sequence file that looks like this:
+   run newcli con:0/140/160/50/CronTask s:startcron
+The "s:startcron" file contains one line:
+   Amicron
+This automatically sets up a tiny CronTask window and runs Amicron 
+in it.
+
+This program was originally written by Steve R.  Sampson (UUCP:
+sys1!killer!sampson), who very kindly responded to my request for
+a PD cron that I could port to Minix.  I haven't done that yet
+(My new Amiga 2000 came in right after I received the cron
+program <grin>) but will do so ASAP.  The modifications to make
+it run on the Amiga were very minor!
+
+Rick Schaeffer          UUCP:  seismo!uunet!iscuva!ricks
+E. 13611 26th Ave.      Phone: (509)928-3533
+Spokane, WA  99216
+
+---- Changes up to Version 2.4
+V2.31& V2.32
+Besides changing the paths for CronTab (s:) & CronErr (t:) to more
+decent Amiga places, I encountered a bug when I wanted to start
+cron a special program on xmas. After some investigation I found
+out that the localtime() function returns months only in the range
+from  0 to 11. So it was not surprising  that my "12" in the month
+field of CronTab was completely ignored. 
+To not have the user adapt to the computer by having him to supply
+months in the range from 0 to 11, I now increase the localtime()
+month by one, so the documentation above is correct again. 
+
+V2.33
+Then I started wondering what that CronErr file was doing in the
+first place, since all errors where displayed in the CLI window.
+That instantly lead to the removal of this Unix artefact.
+I'm aware of the need for a stderr output, nevertheless Cron should
+always be attached to a CLI, so we can get rid of CronErr. 
+
+V2.4 (a = Aztec C V3.6 , L = Lattice C V4.0)
+I experienced a loss of aprox. one second per minute in the AmiCron
+wakeups, since it was send to sleep for a fixed amount of time (59
+seconds). The time Cron did spent in "bed" increased with the
+length of the command call and the workload of the machine
+(especially I/O ints. like disk access). 
+So I now align to the to the next minute and keep this alignment by
+tranquilizing the task only for the remaining time 'till the next
+minute. Although the goal of starting it on the minute may only work
+if there is no heavy workload on your machine, this delay is at least
+not cumulative, like the one in the original version.
+Another odd thing is that the Delay() function (nasty AmigaDog) 
+obviously creates 5 I/O ints. per second (measured with SysMon
+by Perry S. Kivolovitz). 
+Although I couldn't detect any performance decreases caused by these
+interrupts, I decided to use the TimeDelay function from the Timer.c
+RKM example by Rob Peck in version 2.4 of AmiCron. Besides creating
+no I/O ints., I found that the TimeDelay() function is not effected
+by other I/O ints., so it turned out to be MUCH more accurate than
+the Delay() function and therefore worth compiling & linking that
+timer.c part.  
+I also included the path command line parameter, a check for the 
+existance of the CronTab file and tighten up the code here and there.
+
+V2.5
+Just in time for KS & WB 1.3 I changed my "run >nil:" call in AmiCron
+back to a plain "run", since the 1.3 RUN kills ALL output, not just
+the naughty "[CLIn]" message from RUN. Hope you have a good time
+watching thoose CLI messages in your Cron window :-}.
+
+Some hints for the serious AmiCron addict: 
+If don't wanna AmiCron to stumble  through your default path and
+blast you with requesters (i.e you sometimes remove a disk with
+utilities on which you have a path assigned to), why not define
+your own path in the StartCron batch file? Quite simple, but very
+effective.
+AmiCron can be easyly terminated (during it's next wakeup) by typing
+Ctrl-C in its window or by sending it a break using the BREAK
+command.  
+
+This project/enhancement/fix is a combined effort by:
+                          
+______  /          
+______\O                    - The Software Brewery - 
+      \\              		    
+       o            Sparkling, fresh software from W.-Germany
+                 
+     @@@@@	      Straight from the bar to your Amiga
+     |~~~|\        
+     | | |/        
+     |___|        With our regards to the Software Distillery
+---------------------------------------------------------------------
+
+a West-German group of (hopefully professional) Amiga programmers
+inspired by the Software Destillery 
+(but we germans are more into brewing & drinking beer <grin>).
+
+Programming & documentation by <CB>
+
+<CB> is : Christian Balzer 
+          Im Wingertsberg 45
+          D-6108 Weiterstadt
+          W. Germany
+
+Aztec C support by Christof Bonnkirch (another CB :-) )
+Further support/ideas by Peter Stark, Heiko Rath and Ralf Woitinas.
+
+I would like to thank Steve R. Sampson for his initial PD cron, Rick
+Schaeffer for his port to the Amiga, Rob Peck for all the work he
+did and will (hopefully) do in the future and especially Fred Fish
+for his continuous effort to spread all that fantastic PD software 
+all over the world, without all of them I wouldn't have done this.   
+<CB>
