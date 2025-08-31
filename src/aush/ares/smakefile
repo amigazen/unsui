@@ -1,0 +1,56 @@
+#
+CFLAGS=NOVER NODEBUG NOSTKCHK OPT OPTTIME OPTSCHED IGN=100 DEF=__USE_SYSBASE
+#CFLAGS=NOVER DEBUG=SF NOSTKCHK IGN=100 DEF=__USE_SYSBASE
+AFLAGS=
+#
+INCLUS1=ARes.h AResFonctions.h
+INCLUS2=ARes.h AResExtern.h
+#
+ASMOBJ=BCPL.o Divers.o GfxOp.o SPrintf.o Strings.o Bits.o
+OBJETS=AReq.o NomComplet.o AMarque.o LMarque.o LSaufMarque.o LRess.o LSaufRess.o\
+ PMarque.o ParseOpt.o ARes.o DateEtHeure.o ChercheWB.o Requete.o GfxPatch.o\
+ UpdateMenus.o GetFont.o OpenFont.o AutoAdapt.o WaitPtr.o ClearFen.o OuvreEcran.o\
+ IFF.o $(ASMOBJ)
+#
+ARes.lib: $(OBJETS)
+	oml T:ARes.lib $(OBJETS)
+	copy T:ARes.lib ARes.lib
+#
+install: ARes.lib
+	copy ARes.lib USR:Lib/sc/lib/ARes.lib
+#
+GfxOp.o: GfxOp.a
+	$(AS) $(AFLAGS) GfxOp
+Divers.o: Divers.a
+	$(AS) $(AFLAGS) Divers
+BCPL.o: BCPL.a
+	$(AS) $(AFLAGS) BCPL
+SPrintf.o: SPrintf.a
+	$(AS) $(AFLAGS) SPrintf
+Strings.o: Strings.a
+	$(AS) $(AFLAGS) Strings
+Bits.o: Bits.a
+	$(AS) $(AFLASG) Bits
+#
+AReq.o		: AReq.c	ARes.h AReq.h AReq_sub.c
+NomComplet.o	: NomComplet.c	$(INCLUS2)
+AMarque.o	: AMarque.c	$(INCLUS2)
+LMarque.o	: LMarque.c	$(INCLUS2)
+LSaufMarque.o	: LSaufMarque.c $(INCLUS2)
+LRess.o 	: LRess.c	$(INCLUS2)
+LSaufRess.o	: LSaufRess.c	$(INCLUS2)
+PMarque.o	: PMarque.c	$(INCLUS2)
+ARes.o		: ARes.c	$(INCLUS1)
+DateEtHeure.o	: DateEtHeure.c
+ParseOpt.o	: ParseOpt.c	ARes.h
+Requete.o	: Requete.c	ARes.h
+GfxPatch.o	: GfxPatch.c	ARes.h
+UpdateMenus.o	: UpdateMenus.c ARes.h
+ChercheWB.o	: ChercheWB.c	ARes.h
+GetFont.o	: GetFont.c	ARes.h
+OpenFont.o	: OpenFont.c	ARes.h
+AutoAdapt.o	: AutoAdapt.c	ARes.h
+WaitPtr.o	: WaitPtr.c	ARes.h
+ClearFen.o	: ClearFen.c	ARes.h
+OuvreEcran.o	: OuvreEcran.c	ARes.h
+IFF.o		: IFF.c 	ARes.h

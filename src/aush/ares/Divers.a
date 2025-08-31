@@ -1,0 +1,65 @@
+;
+; This file is part of ARes.
+; Copyright (C) 1995 Denis Gounelle
+;
+; ARes is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; (at your option) any later version.
+;
+; ARes is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with ARes.  If not, see <http://www.gnu.org/licenses/>.
+;
+;
+; ARes (c)1990-1994 par Denis GOUNELLE
+;
+;----------------------------------------------------------------------
+;
+; char *NomDeBase( char *nom )
+;
+	CSECT	text
+;
+_NomDeBase:
+	move.l	4(sp),a0        ; a0 = nom
+	move.l	a0,a1
+nbbcle:
+	move.b	(a0)+,d0        ; fin de chaine ?
+	beq.s	nbfin
+	cmp.b	#':',d0         ; ":" ?
+	beq.s	nbset
+	cmp.b	#'/',d0         ; "/" ?
+	bne.s	nbbcle
+nbset:
+	move.l	a0,a1
+	bra.s	nbbcle
+nbfin:
+	move.l	a1,d0
+	rts
+;
+; void BeepOn( char *data, long periode )
+;
+_BeepOn:
+	move.l	4(sp),$DFF0A0
+	move.w	#0001,$DFF0A4
+	move.l	8(sp),d0
+	move.w	d0,$DFF0A6
+	move.w	#0050,$DFF0A8
+	move.w	#$8201,$DFF096
+	rts
+;
+; void BeepOff( void )
+;
+_BeepOff:
+	move.w	#0001,$DFF096
+	rts
+;
+	XDEF	_BeepOn
+	XDEF	_BeepOff
+	XDEF	_NomDeBase
+	END
+

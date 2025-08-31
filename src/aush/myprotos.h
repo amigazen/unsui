@@ -22,14 +22,7 @@
  *
  ***************************************************************************/
 
-#ifdef _AMIGA
-#include "proto/ares.h"
 
-#include <proto/exec.h>
-#include <proto/dos.h>
-#include <proto/locale.h>
-#include <proto/asl.h>
-#endif
 
 #ifndef SRC_OSDEP_C
 extern int  RunCmd(CMD * );

@@ -32,7 +32,7 @@
 extern struct Process *Moi ;
 extern struct Window *ConWin ;
 extern struct Locale *MaLocale ;
-extern struct Library *LocaleBase ;
+extern struct LocaleBase *LocaleBase ;
 extern struct Catalog *MonCatalogue ;
 extern struct CommandLineInterface *MonCli ;
 #endif
@@ -103,8 +103,8 @@ void *myalloc( int len, int flg )
 char *BuildName( char *file )
 
 /*
- * Prépare un nom complet permettant d'accéder au fichier "file" dans
- * le répertoire adéquat pour les fichiers de config/préférences
+ * Prï¿½pare un nom complet permettant d'accï¿½der au fichier "file" dans
+ * le rï¿½pertoire adï¿½quat pour les fichiers de config/prï¿½fï¿½rences
  * Sur Amiga c'est "S:", sous Unix "$HOME"
  */
 
@@ -605,7 +605,7 @@ int ExpandPat( char *pat, char *tab[] )
     }
 
     if ( (d == tmp) || (tab) ) d = strpcpy( d , new ) ;
-    else d = strxcat( d , " " , new , NULL ) ;
+    else d = strxcat( d , " " , new , "" ) ;
     new = FindNext( ap ) ;
   }
 
@@ -622,7 +622,7 @@ int ParseArgs( int argc , char *argv[] )
 
   if ( ! argc ) return( TRUE ) ;
 
-  if (! (argc & 1)) return( FALSE ) ; /* nb arg doit être impair */
+  if (! (argc & 1)) return( FALSE ) ; /* nb arg doit ï¿½tre impair */
 
   for ( k = 1 ; k < argc ; k++ )
     if (! stricmp( argv[k] , "FROM" ))

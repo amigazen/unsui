@@ -22,15 +22,16 @@
  *
  ***************************************************************************/
 
-#ifdef _AMIGA
-#include "ares.h"
-#endif
 
+
+#include "ares/ares.h"
 #include <stdio.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
+#include <ctype.h>
 
 #ifdef _AMIGA
 #include <dos.h>
@@ -43,6 +44,12 @@
 #include <intuition/intuition.h>
 #include <libraries/locale.h>
 
+#include <proto/exec.h>
+#include <proto/dos.h>
+#include <proto/locale.h>
+#include <proto/asl.h>
+#include <clib/alib_protos.h>
+
 #define NULDEV "NIL:"
 #define PIPDEV "PIPE:"
 #define TMPDIR "T:"
@@ -53,6 +60,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <time.h>
+#include <unistd.h>
 #include "lists.h"
 
 #define EXEC_TYPES_H		/* for aush_msg.h */
@@ -244,5 +252,14 @@ struct ChildMsg
   CMD		  *cm_cmd ;
 } ;
 
+#endif
+
+/* Function prototypes for missing functions */
+
+#ifndef _AMIGA
+/* Unix-specific function prototypes */
+char *strdup(const char *str);
+char *getcwd(char *buf, size_t size);
+int stricmp(const char *s1, const char *s2);
 #endif
 

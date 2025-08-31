@@ -77,12 +77,12 @@ struct MyFile *StdIn, *CurrentFile = NULL ;
 #ifdef _AMIGA
 struct Process *Moi = NULL ;
 struct Window *ConWin = NULL ;
-struct Library *AslBase = NULL ;
+extern struct Library *AslBase;
 struct Locale *MaLocale = NULL ;
 struct MsgPort *ChildPort = NULL ;
-struct Library *LocaleBase = NULL ;
+extern struct LocaleBase *LocaleBase;
 struct Catalog *MonCatalogue = NULL ;
-struct IntuitionBase *IntuitionBase = NULL ;
+extern struct IntuitionBase *IntuitionBase;
 struct CommandLineInterface *MonCli  = NULL ;
 
 static struct TagItem OCTags[] =

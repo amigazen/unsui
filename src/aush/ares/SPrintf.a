@@ -1,0 +1,65 @@
+;
+; This file is part of ARes.
+; Copyright (C) 1995 Denis Gounelle
+;
+; ARes is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; (at your option) any later version.
+;
+; ARes is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with ARes.  If not, see <http://www.gnu.org/licenses/>.
+;
+;
+; ARes (C)1990-1994 par Denis GOUNELLE
+;
+;-------------------------------------------------------------------------
+;
+; void mySPrintf( pRes , pFmt , args... )
+; char *pRes , *pFmt ;
+; long args... ;
+;
+; Version personnelle du "sprintf()" standard.
+; Utilise la fonction RawToFmt() d'Exec
+;
+	CSECT	text
+;-------------------------------------------------------------------------
+MyProc:
+	move.b	d0,(a3)+
+	rts
+;
+; _do_sprintf( pRes , pFmt , &arg1 )     utilisé par mySPrintf() et myFPrintf()
+;
+__do_sprintf:
+	move.l	sp,a0
+	movem.l d4-d7/a2-a6,-(sp)
+	move.l	4(a0),a3                ; prépare arguments
+	lea	MyProc,a2
+	move.l	12(a0),a1               ; et non "lea" puisqu'on a &arg1
+	move.l	8(a0),a0
+	move.l	$4,a6
+	jsr	-522(a6)                ; appel RawToFmt()
+	movem.l (sp)+,d4-d7/a2-a6
+	move.l	#0,d0
+	rts
+;-------------------------------------------------------------------------
+_mySPrintf:
+	move.l	sp,a0
+	pea	12(a0)                  ; empile &arg1
+	move.l	8(a0),d0                ; empile pFmt
+	move.l	d0,-(sp)
+	move.l	4(a0),d0                ; empile pRes
+	move.l	d0,-(sp)
+	bsr	__do_sprintf
+	add.l	#12,sp			; vide la pile
+	rts
+;-------------------------------------------------------------------------
+	XDEF	_mySPrintf
+	XDEF	__do_sprintf
+	END
+

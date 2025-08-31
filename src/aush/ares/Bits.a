@@ -1,0 +1,256 @@
+;
+; This file is part of ARes.
+; Copyright (C) 1995 Denis Gounelle
+;
+; ARes is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; (at your option) any later version.
+;
+; ARes is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with ARes.  If not, see <http://www.gnu.org/licenses/>.
+;
+;
+; ARes (c)1990-1994 par Denis GOUNELLE
+;
+;--------------------------------------------------------------------
+;
+	CSECT text
+;
+; ---- Sous-programmes ----
+;
+getargs:
+	move.l	8(sp),a0
+	move.l	12(sp),d0
+	moveq	#7,d1
+	and.l	d1,d0
+	sub.l	d0,d1
+	move.l	12(sp),d0
+	lsr.l	#3,d0
+	rts
+;
+getargs2:
+	move.l	16(sp),a0                       ; récupère "dadr" & "dbit"
+	move.l	20(sp),d0
+	lsr.l	#3,d0
+	add.l	d0,a0
+	move.l	20(sp),d2
+	moveq	#7,d0
+	and.l	d0,d2
+	sub.l	d2,d0
+	move.l	24(sp),a1                       ; récupère "sadr" & "sbit"
+	move.l	28(sp),d1
+	lsr.l	#3,d1
+	add.l	d1,a1
+	move.l	28(sp),d2
+	moveq	#7,d1
+	and.l	d1,d2
+	sub.l	d2,d1
+	move.l	32(sp),d3                       ; récupère "nb"
+	rts
+;
+bc_bcpy:
+	subq.w	#1,d2				; copie d2 bits
+bc_loop:
+	btst	d1,(a1)                         ; teste bit
+	beq	bc_clr
+	bset	d0,(a0)                         ; met à 1
+	bra	bc_next
+bc_clr:
+	bclr	d0,(a0)                         ; met à 0
+bc_next:
+	sub.b	#1,d0				; bit suivant
+	bge	bc_next2
+	moveq	#7,d0
+	addq.l	#1,a0
+bc_next2:
+	sub.b	#1,d1
+	bge	bc_next3
+	moveq	#7,d1
+	addq.l	#1,a1
+bc_next3:
+	dbra	d2,bc_loop
+	rts
+;
+bm_bcmp:
+	subq.w	#1,d2				; compare d2 bits
+bm_loop:
+	btst	d1,(a1)                         ; teste bit source
+	beq	bm_clr
+	btst	d0,(a0)                         ; bit destination idem ?
+	bne	bm_next
+bm_out:
+	moveq	#-1,d0
+	rts
+bm_clr:
+	btst	d0,(a0)                         ; bit destination idem ?
+	bne	bm_out
+bm_next:
+	sub.b	#1,d0				; bit suivant
+	bge	bm_next2
+	moveq	#7,d0
+	addq.l	#1,a0
+bm_next2:
+	sub.b	#1,d1
+	bge	bm_next3
+	moveq	#7,d1
+	addq.l	#1,a1
+bm_next3:
+	dbra	d2,bm_loop
+	moveq	#0,d0
+	rts
+;
+; ---- Fonctions ----
+;
+; long bset( char *adr , long bit )
+;
+_bset:
+	bsr	getargs
+	bset	d1,(a0,d0.l)
+	sne	d0
+	andi.b	#1,d0
+	rts
+;
+; long bclr( char *adr , long bit )
+;
+_bclr:
+	bsr	getargs
+	bclr	d1,(a0,d0.l)
+	sne	d0
+	andi.b	#1,d0
+	rts
+;
+; long bchg( char *adr , long bit )
+;
+_bchg:
+	bsr	getargs
+	bchg	d1,(a0,d0.l)
+	sne	d0
+	andi.b	#1,d0
+	rts
+;
+; long btst( char *adr , long bit )
+;
+_btst:
+	bsr	getargs
+	btst	d1,(a0,d0.l)
+	sne	d0
+	andi.b	#1,d0
+	rts
+;
+; void bitcpy( char *dadr , long dbit , char *sadr , long sbit , long nb )
+;
+_bitcpy:
+	movem.l d2/d3,-(sp)
+	bsr	getargs2
+	cmpi.w	#8,d3				; tests pour optimisation
+	ble	bc_fin
+	cmp.b	d0,d1
+	bne	bc_fin
+	move.b	d0,d2				; copie -> frontière octet
+	ext.w	d2
+	beq	bc_byte
+	addq.w	#1,d2
+	sub.w	d2,d3
+	bsr	bc_bcpy
+bc_byte:
+	cmp.w	#8,d3				; copie octet par octet
+	blt	bc_suite
+	move.b	(a1)+,(a0)+
+	subq.w	#8,d3
+	bra	bc_byte
+bc_suite:
+	moveq	#7,d0
+	moveq	#7,d1
+bc_fin:
+	cmp.w	#0,d3
+	ble	bc_exit
+	move.w	d3,d2				; copie -> fin
+	bsr	bc_bcpy
+bc_exit:
+	movem.l (sp)+,d2/d3
+	moveq	#0,d0
+	rts
+;
+; void bitcmp( char *dadr , long dbit , char *sadr , long sbit , long nb )
+;
+_bitcmp:
+	movem.l d2/d3,-(sp)
+	bsr	getargs2
+	cmpi.w	#8,d3				; tests pour optimisation
+	ble	bm_fin
+	cmp.b	d0,d1
+	bne	bm_fin
+	move.b	d0,d2				; teste -> frontière octet
+	ext.w	d2
+	beq	bm_byte
+	addq.w	#1,d2
+	sub.w	d2,d3
+	bsr	bm_bcmp
+	bne	bm_neq
+bm_byte:
+	cmp.w	#8,d3				; teste octet par octet
+	blt	bm_suite
+	move.b	(a1)+,d0
+	cmp.b	(a0)+,d0
+	bne	bm_neq
+	subq.w	#8,d3
+	bra	bm_byte
+bm_suite
+	moveq	#7,d0
+	moveq	#7,d1
+bm_fin:
+	cmp.w	#0,d3
+	ble	bm_exit
+	move.w	d3,d2				; teste -> fin
+	bsr	bm_bcmp
+	bne	bm_neq
+bm_exit:
+	movem.l (sp)+,d2/d3
+	moveq	#0,d0
+	rts
+bm_neq:
+	movem.l (sp)+,d2/d3
+	moveq	#-1,d0
+	rts
+;
+; void bitrev( void * , long , void * , long , long )
+;
+_bitrev:
+	movem.l d2/d3,-(sp)
+	bsr	getargs2
+	subq.l	#1,d3
+br_bcle:
+	btst	d1,(a1)
+	beq	br_next
+	bset	d0,(a0)
+br_next:
+	addq.b	#1,d1
+	cmp.b	#8,d1
+	blt	br_next2
+	moveq	#0,d1
+	subq.l	#1,a1
+br_next2:
+	subq.b	#1,d0
+	bge	br_next3
+	moveq	#7,d0
+	addq.l	#1,a0
+br_next3:
+	dbra	d3,br_bcle
+	movem.l (sp)+,d2/d3
+	rts
+;
+	XDEF	_bset
+	XDEF	_bclr
+	XDEF	_bchg
+	XDEF	_btst
+	XDEF	_bitcpy
+	XDEF	_bitrev
+	XDEF	_bitcmp
+	END
+

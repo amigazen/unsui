@@ -1,0 +1,392 @@
+;
+; This file is part of ARes.
+; Copyright (C) 1995 Denis Gounelle
+;
+; ARes is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; (at your option) any later version.
+;
+; ARes is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with ARes.  If not, see <http://www.gnu.org/licenses/>.
+;
+;
+; ARes (c)1990-1994 par Denis GOUNELLE
+;
+;------------------------------------------------------------------------
+; A ASSEMBLER EN SMALL_CODE ET SMALL_DATA
+;------------------------------------------------------------------------
+;
+	CSECT	data,1,,0,4
+_GfxImagePtr:	dc.l 0
+GfxCol: 	dc.l 0,0
+GfxReg: 	dc.w 0,0,0,0
+GfxReg2:	dc.w 0,0,0,0
+;
+	CSECT	text
+;
+GetXY:
+	move.w	d6,d0
+	add.w	(a5)+,d0
+	add.w	d7,d1
+	move.w	d0,d2
+	add.w	(a5)+,d2
+	move.w	d1,d3
+	add.w	(a5)+,d3
+	rts
+;
+GO_SetAPen:
+	move.w	d1,d0
+	ext.l	d0
+	jmp	_LVOSetAPen(a6)
+;
+GO_SetBPen:
+	move.w	d1,d0
+	ext.l	d0
+	jmp	_LVOSetBPen(a6)
+;
+GO_Move:
+	move.w	d6,d0
+	add.w	(a5)+,d0
+	add.w	d7,d1
+	jmp	_LVOMove(a6)
+;
+GO_Draw:
+	move.w	d6,d0
+	add.w	(a5)+,d0
+	add.w	d7,d1
+	jmp	_LVODraw(a6)
+;
+GO_RectFill:
+	bsr	GetXY
+	jmp	_LVORectFill(a6)
+;
+GO_Box:
+	bsr	GetXY
+DrawBox:
+	movem.w d0-d3,GfxReg
+	jsr	_LVOMove(a6)                    ; move(x1,y1)
+	move.w	(GfxReg+4),d0
+	move.w	(GfxReg+2),d1
+	move.l	a3,a1
+	jsr	_LVODraw(a6)                    ; draw(x2,y1)
+	move.w	(GfxReg+4),d0
+	move.w	(GfxReg+6),d1
+	move.l	a3,a1
+	jsr	_LVODraw(a6)                    ; draw(x2,y2)
+	move.w	(GfxReg+0),d0
+	move.w	(GfxReg+6),d1
+	move.l	a3,a1
+	jsr	_LVODraw(a6)                    ; draw(x1,y2)
+	move.w	(GfxReg+0),d0
+	move.w	(GfxReg+2),d1
+	move.l	a3,a1
+	jmp	_LVODraw(a6)
+;
+GO_TrueBox:
+	bsr	GetXY
+	bsr	DrawBox
+	addq.w	#1,(GfxReg+0)                   ; x1++
+	subq.w	#1,(GfxReg+4)                   ; x2--
+	move.w	(GfxReg+0),d0
+	move.w	(GfxReg+2),d1
+	move.l	a3,a1
+	jsr	_LVOMove(a6)                    ; move(x1,y1)
+	move.w	(GfxReg+0),d0
+	move.w	(GfxReg+6),d1
+	move.l	a3,a1
+	jsr	_LVODraw(a6)                    ; draw(x1,y2)
+TrueEnd:
+	move.w	(GfxReg+4),d0
+	move.w	(GfxReg+2),d1
+	move.l	a3,a1
+	jsr	_LVOMove(a6)                    ; move(x2,y1)
+	move.w	(GfxReg+4),d0
+	move.w	(GfxReg+6),d1
+	move.l	a3,a1
+	jmp	_LVODraw(a6)                    ; draw(x2,y2)
+;
+; ATTENTION !!!!
+; a1 et a3 doivent contenir un pointeur sur le RastPort en d'arrivant ici !!
+;
+GO_TrueBox2:
+	bsr	GetXY
+GO_DoBox2:
+	movem.w d0-d3,GfxReg
+	move.l	GfxCol,d0
+	jsr	_LVOSetAPen(a6)                 ; setapen(col1)
+	move.w	(GfxReg+4),d0
+	move.w	(GfxReg+2),d1
+	move.l	a3,a1
+	jsr	_LVOMove(a6)                    ; move(x2,y1)
+	move.w	(GfxReg+0),d0
+	move.w	(GfxReg+2),d1
+	move.l	a3,a1
+	jsr	_LVODraw(a6)                    ; draw(x1,y1)
+	move.w	(GfxReg+0),d0
+	move.w	(GfxReg+6),d1
+	move.l	a3,a1
+	jsr	_LVODraw(a6)                    ; draw(x1,y2)
+	addq.w	#1,(GfxReg+0)                   ; x1++
+	move.w	(GfxReg+0),d0
+	move.w	(GfxReg+2),d1
+	move.l	a3,a1
+	jsr	_LVOMove(a6)                    ; move(x1,y1)
+	move.w	(GfxReg+0),d0
+	move.w	(GfxReg+6),d1
+	move.l	a3,a1
+	jsr	_LVODraw(a6)                    ; draw(x1,y2)
+	move.l	(GfxCol+4),d0
+	move.l	a3,a1
+	jsr	_LVOSetAPen(a6)                 ; setapen(col2)
+	move.w	(GfxReg+4),d0
+	move.w	(GfxReg+6),d1
+	move.l	a3,a1
+	jsr	_LVODraw(a6)                    ; draw(x2,y2)
+	move.w	(GfxReg+4),d0
+	move.w	(GfxReg+2),d1
+	move.l	a3,a1
+	jsr	_LVODraw(a6)                    ; draw(x2,y1)
+	addq.w	#1,(GfxReg+2)                   ; y1++
+	subq.w	#1,(GfxReg+4)                   ; x2--
+	bra	TrueEnd
+;
+GO_SetCol:
+	move.l	d1,(GfxCol+4)
+	move.w	(a5)+,d0
+	ext.l	d0
+	move.l	d0,GfxCol
+	rts
+;
+GO_Image:
+	move.l	a1,a0
+	move.l	_GfxImagePtr,a1
+	move.w	d6,d0
+	add.w	(a5)+,d0
+	add.w	d7,d1
+	move.l	_IntuitionBase,a6
+	jmp	_LVODrawImage(a6)
+;
+GfxTab: dc.l	GO_SetAPen
+	dc.l	GO_SetBPen
+	dc.l	GO_Move
+	dc.l	GO_Draw
+	dc.l	GO_RectFill
+	dc.l	GO_Box
+	dc.l	GO_TrueBox
+	dc.l	GO_TrueBox2
+	dc.l	GO_SetCol
+	dc.l	GO_Image
+;
+; long GfxOp( struct RastPort *RPort , short *Code , long x , long y )
+;
+_GfxOp:
+	movem.l d2-d7/a3-a6,-(sp)
+	move.l	56(sp),d7       ; deply
+	move.l	52(sp),d6       ; deplx
+	move.l	48(sp),a5       ; Code
+	move.l	44(sp),a3       ; RPort
+	move.w	(a5)+,d5        ; NbOp
+	beq.s	GfxFin
+	subq.w	#1,d5
+	move.l	_GfxBase,a6
+GfxBcle:
+	moveq	#0,d0
+	move.w	(a5)+,d0        ; lit op + opd
+	move.l	d0,d1
+	andi.w	#$0FFF,d1	; d1 = opd
+	lsr.l	#8,d0		; d0 = op
+	lsr.l	#4,d0
+	move.l	d0,d2
+	sub.l	#9,d2		; code correct ?
+	bgt.s	GfxErr
+	move.l	a3,a1		; a1 = RPort
+	lsl.l	#2,d0		; effectue le saut
+	move.l	GfxTab(PC,d0),a0
+	jsr	(a0)
+	dbra	d5,GfxBcle
+GfxFin:
+	moveq	#1,d0		; sortie ok
+	movem.l (sp)+,d2-d7/a3-a6
+	rts
+GfxErr:
+	moveq	#0,d0		; sortie pb
+	movem.l (sp)+,d2-d7/a3-a6
+	rts
+;
+; void GfxGList( struct RastPort *RPort, struct Gadget *Gadget, long NumGad, long col1 , long col2 )
+;
+gl_string:
+	subq.w	#6,d0		; correction
+	subq.w	#4,d1
+	addq.w	#8,d2
+	addq.w	#3,d3
+	movem.w d0-d3,GfxReg2
+	moveq	#0,d0		; fond en couleur 0
+	move.l	a3,a1		; a1 = RPort
+	jsr	_LVOSetAPen(a6)
+	movem.w GfxReg2,d0-d3
+	move.l	a3,a1		; a1 = RPort
+	jsr	_LVORectFill(a6)
+	moveq	#2,d0		; premier cadre
+	move.l	d0,GfxCol
+	moveq	#1,d0
+	move.l	d0,(GfxCol+4)
+	movem.w GfxReg2,d0-d3
+	move.l	a3,a1		; a1 = RPort
+	bsr	GO_DoBox2
+	moveq	#1,d0		; second cadre
+	move.l	d0,GfxCol
+	moveq	#2,d0
+	move.l	d0,(GfxCol+4)
+	movem.w GfxReg2,d0-d3
+	addq.w	#2,d0
+	addq.w	#1,d1
+	subq.w	#2,d2
+	subq.w	#1,d3
+	move.l	a3,a1		; a1 = RPort
+	bsr	GO_DoBox2	; trace le cadre
+	rts
+gl_autre:
+	move.l	a3,a1		; a1 = RPort
+	bsr	GO_DoBox2	; trace le cadre
+	bra	gl_next
+;
+_GfxGList:
+	movem.l d2-d7/a3-a6,-(sp)
+	move.l	60(sp),d0       ; col2
+	move.l	d0,(GfxCol+4)
+	move.l	56(sp),d0       ; col1
+	move.l	d0,GfxCol
+	move.l	52(sp),d5       ; NumGad
+	move.l	48(sp),a5       ; Gadget
+	move.l	44(sp),a3       ; RPort
+	move.l	_GfxBase,a6
+gl_bcle:
+	move.w	4(a5),d0        ; LeftEdge
+	move.w	6(a5),d1        ; TopEdge
+	move.w	8(a5),d2        ; Width
+	add.w	d0,d2
+	subq.w	#1,d2
+	move.w	10(a5),d3       ; Height
+	add.w	d1,d3
+	subq.w	#1,d3
+	move.w	16(a5),d7       ; Type = STRGADGET ?
+	subq.b	#4,d7
+	bne	gl_autre
+	bsr	gl_string
+	move.l	60(sp),d0       ; restaure les couleurs
+	move.l	d0,(GfxCol+4)
+	move.l	56(sp),d0
+	move.l	d0,GfxCol
+gl_next:
+	move.l	(a5),d0         ; NextGadget
+	beq	gl_fin
+	move.l	d0,a5
+	subq.l	#1,d5		; NumGadg--
+	bne	gl_bcle
+gl_fin:
+	movem.l (sp)+,d2-d7/a3-a6
+	rts
+;
+; void GfxGStr( struct RastPort *RPort, struct Gadget *Gadget, long NumGad )
+;
+_GfxGStr:
+	movem.l d2-d7/a3-a6,-(sp)
+	move.l	52(sp),d5       ; NumGad
+	move.l	48(sp),a5       ; Gadget
+	move.l	44(sp),a3       ; RPort
+	move.l	_GfxBase,a6
+gs_bcle:
+	move.w	4(a5),d0        ; LeftEdge
+	move.w	6(a5),d1        ; TopEdge
+	move.w	8(a5),d2        ; Width
+	add.w	d0,d2
+	subq.w	#1,d2
+	move.w	10(a5),d3       ; Height
+	add.w	d1,d3
+	subq.w	#1,d3
+	bsr	gl_string	; effectue le tracé
+	move.l	(a5),d0         ; NextGadget
+	beq	gs_fin
+	move.l	d0,a5
+	subq.l	#1,d5		; NumGadg--
+	bne	gs_bcle
+gs_fin:
+	movem.l (sp)+,d2-d7/a3-a6
+	rts
+;
+; void GfxFill( struct RastPort *RPort , struct Gadget *Gadget , long NumGadget )
+;
+_GfxFill:
+	movem.l d2-d7/a3-a6,-(sp)
+	move.l	52(sp),d5       ; NumGadg
+	move.l	48(sp),a5       ; Gadget
+	move.l	44(sp),a3       ; RPort
+	move.l	_GfxBase,a6
+gf_bcle:
+	move.w	4(a5),d0        ; LeftEdge
+	move.w	6(a5),d1        ; TopEdge
+	move.w	8(a5),d2        ; Width
+	add.w	d0,d2
+	subq.w	#1,d2
+	move.w	10(a5),d3       ; Height
+	add.w	d1,d3
+	subq.w	#1,d3
+	move.l	a3,a1
+	jsr	_LVORectFill(a6)
+gf_next:
+	move.l	(a5),d0         ; NextGadget
+	beq	gf_fin
+	move.l	d0,a5
+	subq.l	#1,d5		; NumGadg--
+	bne	gf_bcle
+gf_fin:
+	movem.l (sp)+,d2-d7/a3-a6
+	rts
+;
+; void GfxBox2( struct RastPort *RPort , x , y , w , h , c1 , c2 )
+;
+_GfxBox2:
+	movem.l d2-d7/a3-a6,-(sp)
+	move.l	68(sp),d0       ; col2
+	move.l	d0,(GfxCol+4)
+	move.l	64(sp),d0       ; col1
+	move.l	d0,GfxCol
+	move.l	60(sp),d3       ; h
+	move.l	56(sp),d2       ; w
+	move.l	52(sp),d1       ; y
+	move.l	48(sp),d0       ; x
+	move.l	44(sp),a3       ; RPort
+	move.l	_GfxBase,a6
+	add.w	d0,d2
+	subq.w	#1,d2
+	add.w	d1,d3
+	subq.w	#1,d3
+	move.l	a3,a1
+	bsr	GO_DoBox2	; trace le cadre
+	movem.l (sp)+,d2-d7/a3-a6
+	rts
+;
+	XDEF	_GfxOp
+	XDEF	_GfxGList
+	XDEF	_GfxGStr
+	XDEF	_GfxFill
+	XDEF	_GfxBox2
+	XDEF	_GfxImagePtr
+;
+	XREF	_GfxBase
+	XREF	_IntuitionBase
+	XREF	_LVOSetAPen
+	XREF	_LVOSetBPen
+	XREF	_LVOMove
+	XREF	_LVODraw
+	XREF	_LVORectFill
+	XREF	_LVODrawImage
+;
+	END

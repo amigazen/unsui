@@ -1,0 +1,122 @@
+;
+; This file is part of ARes.
+; Copyright (C) 1995 Denis Gounelle
+;
+; ARes is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; (at your option) any later version.
+;
+; ARes is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with ARes.  If not, see <http://www.gnu.org/licenses/>.
+;
+;
+; ARes.lib (c)1990-1994 par Denis GOUNELLE
+; Fonctions sur les chaines de caracteres
+;
+; char *strxcat( dst , src1 , src2 , ... NULL )
+;	concatene src1, src2,... a dst et retourne un pointeur
+;	sur l'octet nul a la fin de dst
+;
+; char *strpcat( dst , src )
+;	concatene src a dst et retourne un pointeur sur l'octet nul
+;	a la fin de dst
+;
+; char *strpcpy( dst , src )
+;	copie src dans dst et retourne un pointeur sur l'octet nul
+;	a la fin de dst
+;
+; char *strapd( dst , car )
+;	ajoute le caractere car a la fin de dst et retourne un
+;	pointeur sur l'octet nul a la fin de dst
+;	ATTENTION : car doit etre passe comme un "long"
+;
+; char *strrpt( dst , car , nb )
+;	ajoute nb répétitions du caractère car à la fin de dst et
+;	retourne un pointeur sur l'octet nul à la fin de dst
+;	ATTENTION : car doit etre passe comme un "long"
+;
+	CSECT	text
+;
+_strxcat:
+	move.l	a2,-(sp)
+	move.l	8(sp),a0        ; a0 = dst
+_xbcle0:
+	move.b	(a0)+,d0        ; va a la fin de dst
+	bne.s	_xbcle0
+	lea	12(sp),a2       ; a2 = @(src1)
+_xbcle1:
+	subq.l	#1,a0		; car a0 pointe apres le '\0'
+	move.l	(a2)+,d0        ; d0 = srcx
+	beq.s	_xfin		; NULL ?
+	move.l	d0,a1		; a1 = srcx
+_xbcle2:
+	move.b	(a1)+,(a0)+     ; ajoute srcx a dst
+	bne.s	_xbcle2
+	bra.s	_xbcle1 	; passe a srcx+1
+_xfin:
+	move.l	a0,d0
+	move.l	(sp)+,a2
+	rts
+;
+_strpcat:
+	move.l	4(sp),a0        ; a0 = dst
+_pbcle0:
+	move.b	(a0)+,d0        ; va a la fin de dst
+	bne.s	_pbcle0
+	subq.l	#1,a0		; car a0 pointe apres le '\0'
+	move.l	8(sp),a1        ; a1 = src
+_pbcle1:
+	move.b	(a1)+,(a0)+     ; ajoute src a dst
+	bne.s	_pbcle1
+	subq.l	#1,a0		; car a0 pointe apres le '\0'
+	move.l	a0,d0
+	rts
+;
+_strpcpy:
+	move.l	4(sp),a0        ; a0 = dst
+	move.l	8(sp),a1        ; a1 = src
+	bra.s	_pbcle1
+;
+_strapd:
+	move.l	4(sp),a0        ; a0 = dst
+_abcl0:
+	move.b	(a0)+,d0        ; va a la fin de dst
+	bne.s	_abcl0
+	subq.l	#1,a0		; car a0 pointe apres le '\0'
+	move.l	8(sp),d1        ; d1 = car
+	move.b	d1,(a0)+        ; ajoute car
+	move.b	d0,(a0)         ; ajoute '\0'
+	move.l	a0,d0
+	rts
+;
+_strrpt:
+	move.l	4(sp),a0        ; a0 = dst
+_rbcl0:
+	move.b	(a0)+,d0        ; va a la fin de dst
+	bne.s	_rbcl0
+	subq.l	#1,a0		; car a0 pointe apres le '\0'
+	move.l	8(sp),d0        ; d0 = car
+	move.l	12(sp),d1       ; d1 = lg
+	beq.s	_rfin
+	subq.l	#1,d1
+_rbcl1:
+	move.b	d0,(a0)+        ; ajoute car
+	dbra	d1,_rbcl1
+	move.b	#0,(a0)         ; ajoute '\0'
+_rfin:
+	move.l	a0,d0
+	rts
+;
+	XDEF	_strxcat
+	XDEF	_strpcat
+	XDEF	_strpcpy
+	XDEF	_strapd
+	XDEF	_strrpt
+	END
+
