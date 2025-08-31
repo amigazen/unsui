@@ -1,0 +1,36 @@
+                C Cross Referencing & Documentation tool.
+                =========================================
+
+To install the program, do the following:
+
+1) Edit the Makefile.config in this directory
+
+        Set the variables
+        CC      = The C compiler
+        CFLAGS  = C compiler flags
+
+        LD      = The linker
+        LDFLAGS = Linker flags
+
+        YACC    = yacc or bison program
+        LEX     = lex or flex program
+
+        PERL    = Perl Program
+
+        LATEX   = LaTeX program
+        DVIPS   = dvips Program
+        LATEX_PAGE = Page size for LaTeX output (A4 or US only)
+
+
+2) Run 'make'         in this directory to make all of the programs
+       'make docs'    in this directory to make the README & documents
+       'make install' in this directory to install the program.
+
+
+3) Print README.ps, read README.dvi or browse README.html to understand how to
+   use the program.
+
+
+The Makefiles in cxref version 1.3 have all been modified from those in previous
+versions.  They are now fully automated, I have only been able to test them on a
+limited number of system types, so if you have problems, let me know.

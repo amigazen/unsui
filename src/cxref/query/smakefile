@@ -1,0 +1,20 @@
+CFLAGS = optimize opttime optinline optschedule nostackcheck debug=line data=faronly
+LFLAGS = smallcode noicons
+
+OBJS =\
+	query.o \
+	input.o output.o \
+	/memory.o /slist.o \
+	/amiga.o
+
+LIBS =\
+	lib:scmnb.lib lib:scnb.lib lib:amiga.lib
+
+cxref-query : $(OBJS)
+	slink lib:c.o $(OBJS) to $@.debug lib $(LIBS) $(LFLAGS) addsym \
+		map $@.map,fhx fwidth 32 pwidth 32 swidth 32 width 100
+	slink $@.debug to $@ nodebug noicons
+
+query.o    : query.c   query.h /cxref.h /datatype.h /memory.h
+input.o    : input.c   query.h /cxref.h /datatype.h /memory.h
+output.o   : output.c  query.h /cxref.h /datatype.h /memory.h

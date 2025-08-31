@@ -1,0 +1,54 @@
+CFLAGS = opttime optimize optinline optschedule nostackcheck debug=line \
+         data=faronly
+LFLAGS = smallcode noicons
+
+OBJS =\
+	cxref.o \
+	func.o type.o var.o comment.o file.o preproc.o \
+	slist.o memory.o \
+	xref.o warn-raw.o latex.o latex-style.o html.o \
+	parse-yacc.o parse-lex.o \
+	amiga.o alloca.o
+
+LIBS =\
+	lib:scmnb.lib lib:scnb.lib lib:amiga.lib
+
+cxref : $(OBJS)
+	slink lib:c.o $(OBJS) to $@.debug lib $(LIBS) $(LFLAGS) addsym \
+		map $@.map,fhx fwidth 32 pwidth 32 swidth 32 width 100
+	slink $@.debug to $@ nodebug noicons
+
+cxref.o      : cxref.c      cxref.h datatype.h   memory.h parse-yy.h
+
+func.o       : func.c       cxref.h datatype.h   memory.h
+type.o       : type.c       cxref.h datatype.h   memory.h
+var.o        : var.c        cxref.h datatype.h   memory.h
+comment.o    : comment.c    cxref.h datatype.h   memory.h
+file.o       : file.c       cxref.h datatype.h   memory.h
+preproc.o    : preproc.c    cxref.h datatype.h   memory.h
+
+slist.o      : slist.c      cxref.h datatype.h   memory.h
+memory.o     : memory.c                          memory.h
+
+xref.o       : xref.c       cxref.h datatype.h   memory.h
+warn-raw.o   : warn-raw.c   cxref.h datatype.h   memory.h
+latex.o      : latex.c      cxref.h datatype.h   memory.h
+latex-style.o: latex-style.c
+html.o       : html.c       cxref.h datatype.h   memory.h
+
+parse-yacc.o : parse-yacc.c cxref.h parse-yacc.h memory.h parse-yy.h
+parse-lex.o  : parse-lex.c  cxref.h parse-yacc.h memory.h parse-yy.h
+
+parse-lex.c : parse.l
+	flex -L parse.l
+	-delete quiet parse-lex.c
+	rename lex.yy.c parse-lex.c
+
+parse-yacc.c : parse.y
+	bison -y -l -d parse.y
+	-delete quiet parse-yacc.c
+	rename y.tab.c parse-yacc.c
+
+parse-yacc.h : parse-yacc.c
+	-delete quiet parse-yacc.h
+	rename y.tab.h parse-yacc.h
