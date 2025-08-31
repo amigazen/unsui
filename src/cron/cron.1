@@ -1,0 +1,166 @@
+.TH CRON 1 "August 2025" "unsui" "User Commands"
+.SH NAME
+cron \- daemon to execute scheduled commands
+.SH SYNOPSIS
+.B cron
+[\fB\-h\fR|\fB\-\-help\fR]
+[\fB\-v\fR|\fB\-\-version\fR]
+[\fIcrontab_file\fR]
+.SH DESCRIPTION
+.B cron
+is a daemon that executes scheduled commands at specified times. It reads
+commands from a crontab file and executes them at the appropriate intervals.
+.PP
+The daemon wakes up every minute to check for scheduled tasks and runs
+commands that match the current time. It continues running until terminated.
+.PP
+If no crontab file is specified, the default file
+.B S:CronTab
+is used.
+.SH OPTIONS
+.TP
+.BR \-h ", " \-\-help
+Display help information and exit.
+.TP
+.BR \-v ", " \-\-version
+Display version information and exit.
+.SH CRONTAB FORMAT
+The crontab file contains one job per line with the following format:
+.PP
+.RS
+\fBminute hour day month weekday command\fR
+.RE
+.PP
+Each field must be separated by spaces or tabs. The fields are:
+.TP
+\fBminute\fR
+Minute of the hour (0\-59)
+.TP
+\fBhour\fR
+Hour of the day (0\-23)
+.TP
+\fBday\fR
+Day of the month (1\-31)
+.TP
+\fBmonth\fR
+Month of the year (1\-12)
+.TP
+\fBweekday\fR
+Day of the week (0\-6, where 0=Sunday)
+.TP
+\fBcommand\fR
+Command to execute (runs as if typed in CLI)
+.PP
+Each field can contain:
+.TP
+\fB*\fR
+Any value (matches all possible values)
+.TP
+\fB,\fR
+List of values (e.g., "1,3,5")
+.TP
+\fB\-\fR
+Range of values (e.g., "1\-5")
+.TP
+\fB/\fR
+Step values (e.g., "*/15" for every 15th value)
+.SH EXAMPLES
+.TP
+.B "* * * * * date"
+Run the date command every minute
+.TP
+.B "0 * * * * echo 'Hourly check'"
+Run echo command at the top of every hour
+.TP
+.B "30 2 * * * backup"
+Run backup command daily at 2:30 AM
+.TP
+.B "0 9 * * 1 weekly_report"
+Run weekly_report command every Monday at 9:00 AM
+.TP
+.B "*/15 9\-17 * * 1\-5 business_check"
+Run business_check every 15 minutes during business hours (9 AM to 5 PM), Monday through Friday
+.TP
+.B "0 1 1,15 * * monthly_maintenance"
+Run monthly_maintenance on the 1st and 15th of each month at 1:00 AM
+.SH FILES
+.TP
+.B S:CronTab
+Default crontab file location
+.TP
+.B /tmp/crontab
+Alternative crontab file location
+.SH STARTUP CONFIGURATION
+To run cron automatically on system startup, add to your
+.B startup-sequence
+file:
+.PP
+.RS
+.B "run newcli con:0/140/160/50/CronTask s:startcron"
+.RE
+.PP
+Where
+.B s:startcron
+contains:
+.PP
+.RS
+.B cron
+.RE
+.PP
+This creates a dedicated CLI window for cron tasks and launches the daemon.
+.SH SIGNALS
+.B cron
+responds to the following signals:
+.TP
+.B SIGINT
+(Ctrl\-C) Gracefully terminate the daemon
+.TP
+.B SIGTERM
+Terminate the daemon
+.SH EXIT STATUS
+.TP
+.B 0
+Successful completion
+.TP
+.B 1
+Error occurred (e.g., cannot open crontab file)
+.SH NOTES
+.PP
+The daemon aligns itself to start on minute boundaries and compensates for
+execution time to maintain accurate timing.
+.PP
+Commands are executed using the Amiga CLI "RUN" command, so output will be
+visible in the cron window.
+.PP
+The daemon uses the Amiga.lib TimeDelay API for precise timing, which is
+more accurate than the standard Delay() function.
+.SH BUGS
+.PP
+Since this is a multi-tasking system, timing delays may be approximate
+under heavy system load.
+.PP
+Long-running commands may affect the timing accuracy of subsequent scheduled
+tasks.
+.SH AUTHOR
+Developed by amigazen project.
+.PP
+Based on AmiCron v2.5 by Christian Balzer & The Software Brewery.
+Original cron concept by Steve R. Sampson.
+.SH COPYRIGHT
+Copyright \(co 2025 amigazen project. All rights reserved.
+.PP
+This software is licensed under the BSD-2-Clause License.
+.SH SEE ALSO
+.BR crontab (5),
+.BR at (1),
+.BR sleep (1)
+.SH HISTORY
+.PP
+The original AmiCron was developed by Steve R. Sampson in 1987 and
+released into the public domain. Rick Schaeffer ported it to the Amiga
+in October 1987. Christian Balzer made further improvements through
+versions 2.31\-2.5 (1987\-1988).
+.PP
+This POSIX-compliant version was created for the UNSUI POSIX runtime
+environment, maintaining compatibility with the original cron functionality
+while adapting it for modern Amiga systems.

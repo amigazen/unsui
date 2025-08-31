@@ -1,9 +1,6 @@
 /*
  * cron.h - Consolidated header for UNSUI POSIX cron command
  *
- * Based on AmiCron v2.5 by Christian Balzer & The Software Brewery
- * Ported to POSIX-compliant cron for UNSUI runtime
- *
  * Copyright (c) 2025 amigazen project. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-2-Clause

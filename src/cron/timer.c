@@ -1,11 +1,8 @@
 /*
- * timer.c - Timer compatibility layer for UNSUI POSIX cron command
+ * timer.c - Timer compatibility layer for cron command
  *
- * This file now serves as a compatibility layer since we're using
+ * This file serves as a compatibility layer since we're using
  * the Amiga.lib TimeDelay API instead of custom timer functions.
- *
- * Based on AmiCron v2.5 by Christian Balzer & The Software Brewery
- * Ported to POSIX-compliant cron for UNSUI runtime
  *
  * Copyright (c) 2025 amigazen project. All rights reserved.
  *

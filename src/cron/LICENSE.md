@@ -25,4 +25,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## Acknowledgements
 
-cron is based on AmiCron developed by Steve R. Sampson released into the public domain without copyright in 1987, with further updates from Rick Schaeffer and Christian Balzer
+cron is based on AmiCron developed by Steve R. Sampson released into the public 
+domain without copyright in 1987, with further updates from Rick Schaeffer 
+and Christian Balzer

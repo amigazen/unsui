@@ -1,189 +1,164 @@
-                    AmiCron - Cron task for the Amiga
+CRON COMMAND DOCUMENTATION
+==========================
 
-Following below is the original AmiCron documentation by Rick
-Schaeffer (Version 2.3). I changed it were necessary and listed
-additional features below.
-<CB>
+NAME
+    cron - daemon to execute scheduled commands
 
-This is a (no longer) crude but effective version of the Unix (tm) 
-program known as "cron" modified to run on an Amiga.  For those 
-who aren't Unix knowledgeable, cron is a background task which 
-uses a disk-resident table to automatically run certain tasks on a 
-regular basis.  The cron table's format is very simple...it 
-contains entries in the form of lines where each line has 6 fields 
-and each field is separated by "white space" (either tabs or 
-spaces) from it's neighbor. The fields are as follows:
+SYNOPSIS
+    cron [-h|--help] [-v|--version] [crontab_file]
 
-   1.  Minute       (0-59)
-   2.  Hour         (0-23)
-   3.  Day          (1-31)	(now works, <CB>)
-   4.  Month        (1-12) 
-   5.  Day of week  (0-6 where 0=Sunday and 6=Saturday)
-   6.  Command      This is the command to be run at the appointed 
-                    time.  It will be run just as if typed into 
-                    the CLI.
+DESCRIPTION
+    cron is a daemon that executes scheduled commands at specified times.
+    It reads commands from a crontab file and executes them at the
+    appropriate intervals.
 
-Each of the first 5 fields are numbers.  However, it is 
-permissable to use an asterisk (*) in a field to mean ALL possible 
-numbers for that field,  and you can specify a series of numbers 
-separated by commas (,) and ranges separated by dashes (-).  For 
-instance, in the Day field you could specify "1,5,10" to mean the 
-first, fifth, and tenth days of the month; or you could specify 
-"1-15" to mean the first through the fifteenth of the month.  Here 
-are some examples of Amicron table entries:
+    The daemon wakes up every minute to check for scheduled tasks and runs
+    commands that match the current time. It continues running until
+    terminated.
 
-  	Print the date in the crontask window every minute:
-  		* * * * * date
-  
-  	Print the date in the crontask window on the hour, every hour:
-  		0 * * * * date
-  
-  	Run uupc at 4:30 am every day except Sat and Sun:
-  		30 4 * * 1-5 uupc -siscuva
-  
-  	Incrementally backup the files every other day at 7:30 pm:
-  		30 19 * * 1,3,5 sdbackup -l -s LAST dh0: incbkup_1:
+    If no crontab file is specified, the default file S:CronTab is used.
 
-    	Backup the files on the 1st and 15th of each month at 1:00 am:
-        	00 01 1,15 * * sdbackup -l dh0: SemiBkup_1:
+OPTIONS
+    -h, --help
+        Display help information and exit.
 
-The Amicron table file is by default located using the following path:
+    -v, --version
+        Display version information and exit.
 
-    S:	(or S:CronTab to be exact and include the filename)
+CRONTAB FORMAT
+    The crontab file contains one job per line with the following format:
 
-but you now may specify a complete path (including filename!) for
-the CronTab file (which needn't but should have this name) as a
-command line parameter like this:
+        minute hour day month weekday command
 
-    Amicron RAM:MyCronTab
+    Each field must be separated by spaces or tabs. The fields are:
 
-which would cause Amicron to use the CronTab file "MyCronTab"
-located in the RAM: disk and not to access a disk drive every minute
-to read in the CronTab file.
+    minute   Minute of the hour (0-59)
+    hour     Hour of the day (0-23)
+    day      Day of the month (1-31)
+    month    Month of the year (1-12)
+    weekday  Day of the week (0-6, where 0=Sunday)
+    command  Command to execute (runs as if typed in CLI)
 
-Crontab entries *MUST* be left justified starting in column 1 and 
-each entry must contain 6 fields, each separated by spaces or 
-tabs.
+    Each field can contain:
 
-To run Amicron, you must use your favorite editor to create the
-"CronTab" file.  Amicron needs a CLI window for displaying the 
-output of the commands it runs...but it can be made as small or 
-large as you wish.  Assuming that you have placed Amicron in your 
-command directory (c:), you can start it by typing the following 
-line into a "newcli" window:
-    Amicron
-Then you can size and move the window anywhere you want, just be 
-sure not to type anything else into the window because that would 
-prevent cron tasks from running (read: printing something in that 
-window).
+    *       Any value (matches all possible values)
+    ,       List of values (e.g., "1,3,5")
+    -       Range of values (e.g., "1-5")
+    /       Step values (e.g., "*/15" for every 15th value)
 
-I have an entry in my startup-sequence file that looks like this:
-   run newcli con:0/140/160/50/CronTask s:startcron
-The "s:startcron" file contains one line:
-   Amicron
-This automatically sets up a tiny CronTask window and runs Amicron 
-in it.
+EXAMPLES
+    * * * * * date
+        Run the date command every minute
 
-This program was originally written by Steve R.  Sampson (UUCP:
-sys1!killer!sampson), who very kindly responded to my request for
-a PD cron that I could port to Minix.  I haven't done that yet
-(My new Amiga 2000 came in right after I received the cron
-program <grin>) but will do so ASAP.  The modifications to make
-it run on the Amiga were very minor!
+    0 * * * * echo 'Hourly check'
+        Run echo command at the top of every hour
 
-Rick Schaeffer          UUCP:  seismo!uunet!iscuva!ricks
-E. 13611 26th Ave.      Phone: (509)928-3533
-Spokane, WA  99216
+    30 2 * * * backup
+        Run backup command daily at 2:30 AM
 
----- Changes up to Version 2.4
-V2.31& V2.32
-Besides changing the paths for CronTab (s:) & CronErr (t:) to more
-decent Amiga places, I encountered a bug when I wanted to start
-cron a special program on xmas. After some investigation I found
-out that the localtime() function returns months only in the range
-from  0 to 11. So it was not surprising  that my "12" in the month
-field of CronTab was completely ignored. 
-To not have the user adapt to the computer by having him to supply
-months in the range from 0 to 11, I now increase the localtime()
-month by one, so the documentation above is correct again. 
+    0 9 * * 1 weekly_report
+        Run weekly_report command every Monday at 9:00 AM
 
-V2.33
-Then I started wondering what that CronErr file was doing in the
-first place, since all errors where displayed in the CLI window.
-That instantly lead to the removal of this Unix artefact.
-I'm aware of the need for a stderr output, nevertheless Cron should
-always be attached to a CLI, so we can get rid of CronErr. 
+    */15 9-17 * * 1-5 business_check
+        Run business_check every 15 minutes during business hours
+        (9 AM to 5 PM), Monday through Friday
 
-V2.4 (a = Aztec C V3.6 , L = Lattice C V4.0)
-I experienced a loss of aprox. one second per minute in the AmiCron
-wakeups, since it was send to sleep for a fixed amount of time (59
-seconds). The time Cron did spent in "bed" increased with the
-length of the command call and the workload of the machine
-(especially I/O ints. like disk access). 
-So I now align to the to the next minute and keep this alignment by
-tranquilizing the task only for the remaining time 'till the next
-minute. Although the goal of starting it on the minute may only work
-if there is no heavy workload on your machine, this delay is at least
-not cumulative, like the one in the original version.
-Another odd thing is that the Delay() function (nasty AmigaDog) 
-obviously creates 5 I/O ints. per second (measured with SysMon
-by Perry S. Kivolovitz). 
-Although I couldn't detect any performance decreases caused by these
-interrupts, I decided to use the TimeDelay function from the Timer.c
-RKM example by Rob Peck in version 2.4 of AmiCron. Besides creating
-no I/O ints., I found that the TimeDelay() function is not effected
-by other I/O ints., so it turned out to be MUCH more accurate than
-the Delay() function and therefore worth compiling & linking that
-timer.c part.  
-I also included the path command line parameter, a check for the 
-existance of the CronTab file and tighten up the code here and there.
+    0 1 1,15 * * monthly_maintenance
+        Run monthly_maintenance on the 1st and 15th of each month
+        at 1:00 AM
 
-V2.5
-Just in time for KS & WB 1.3 I changed my "run >nil:" call in AmiCron
-back to a plain "run", since the 1.3 RUN kills ALL output, not just
-the naughty "[CLIn]" message from RUN. Hope you have a good time
-watching thoose CLI messages in your Cron window :-}.
+COMMON PATTERNS
+    0 * * * *        Every hour at the top of the hour
+    0 0 * * *        Every day at midnight
+    0 0 * * 0        Every Sunday at midnight
+    0 0 1 * *        First day of every month at midnight
+    0 0 1 1 *        New Year's Day at midnight
+    0 9-17 * * 1-5   Every hour from 9 AM to 5 PM on weekdays
 
-Some hints for the serious AmiCron addict: 
-If don't wanna AmiCron to stumble  through your default path and
-blast you with requesters (i.e you sometimes remove a disk with
-utilities on which you have a path assigned to), why not define
-your own path in the StartCron batch file? Quite simple, but very
-effective.
-AmiCron can be easyly terminated (during it's next wakeup) by typing
-Ctrl-C in its window or by sending it a break using the BREAK
-command.  
+FILES
+    S:CronTab         Default crontab file location
+    /tmp/crontab      Alternative crontab file location
 
-This project/enhancement/fix is a combined effort by:
-                          
-______  /          
-______\O                    - The Software Brewery - 
-      \\              		    
-       o            Sparkling, fresh software from W.-Germany
-                 
-     @@@@@	      Straight from the bar to your Amiga
-     |~~~|\        
-     | | |/        
-     |___|        With our regards to the Software Distillery
----------------------------------------------------------------------
+STARTUP CONFIGURATION
+    To run cron automatically on system startup, add to your
+    startup-sequence file:
 
-a West-German group of (hopefully professional) Amiga programmers
-inspired by the Software Destillery 
-(but we germans are more into brewing & drinking beer <grin>).
+        run newcli con:0/140/160/50/CronTask s:startcron
 
-Programming & documentation by <CB>
+    Where s:startcron contains:
 
-<CB> is : Christian Balzer 
-          Im Wingertsberg 45
-          D-6108 Weiterstadt
-          W. Germany
+        cron
 
-Aztec C support by Christof Bonnkirch (another CB :-) )
-Further support/ideas by Peter Stark, Heiko Rath and Ralf Woitinas.
+    This creates a dedicated CLI window for cron tasks and launches the
+    daemon.
 
-I would like to thank Steve R. Sampson for his initial PD cron, Rick
-Schaeffer for his port to the Amiga, Rob Peck for all the work he
-did and will (hopefully) do in the future and especially Fred Fish
-for his continuous effort to spread all that fantastic PD software 
-all over the world, without all of them I wouldn't have done this.   
-<CB>
+SIGNALS
+    cron responds to the following signals:
+
+    SIGINT  (Ctrl-C) Gracefully terminate the daemon
+    SIGTERM          Terminate the daemon
+
+EXIT STATUS
+    0      Successful completion
+    1      Error occurred (e.g., cannot open crontab file)
+
+NOTES
+    The daemon aligns itself to start on minute boundaries and compensates
+    for execution time to maintain accurate timing.
+
+    Commands are executed using the Amiga CLI "RUN" command, so output
+    will be visible in the cron window.
+
+    The daemon uses the Amiga.lib TimeDelay API for precise timing, which
+    is more accurate than the standard Delay() function.
+
+LIMITATIONS
+    Since this is a multi-tasking system, timing delays may be
+    approximate under heavy system load.
+
+    Long-running commands may affect the timing accuracy of subsequent
+    scheduled tasks.
+
+    The crontab file must be readable by the cron daemon.
+
+    Commands that require user interaction will not work properly.
+
+    Environment variables are not automatically set for cron jobs.
+
+    The daemon does not support the "%" character for newlines in
+    commands.
+
+TROUBLESHOOTING
+    If cron is not running:
+        - Check that the crontab file exists and is readable
+        - Verify the cron daemon is started
+        - Check for error messages in the cron window
+
+    If commands are not executing:
+        - Verify the crontab syntax is correct
+        - Check that commands exist and are executable
+        - Ensure the cron window is not blocked by user input
+
+    If timing is inaccurate:
+        - The system may be under heavy load
+        - Long-running commands may affect timing
+        - Restart the daemon to reset timing alignment
+
+COPYRIGHT
+    Copyright (c) 2025 amigazen project. All rights reserved.
+
+    This software is licensed under the BSD-2-Clause License.
+
+HISTORY
+    The original AmiCron was developed by Steve R. Sampson in 1987 and
+    released into the public domain. Rick Schaeffer ported it to the
+    Amiga in October 1987. Christian Balzer made further improvements
+    through versions 2.31-2.5 (1987-1988).
+
+    This POSIX-compliant version was created for the unsui POSIX runtime
+    environment, maintaining compatibility with the original AmiCron
+    functionality while adapting it for modern Amiga systems.
+
+SEE ALSO
+    crontab format documentation, cron command examples,
+    Amiga CLI documentation, startup-sequence configuration
