@@ -1,0 +1,40 @@
+Short:    echo replacement w/ C source
+Uploader: j.tevessen@line.org (Johnny Tevessen)
+Author:   j.tevessen@line.org (Johnny Tevessen)
+Version:  1.0
+Requires: AmigaOS 2.02
+Type:     util/batch
+
+Cologne/Germany, Sat, 1997/05/10
+
+mecho allows you to output any character sequence.
+C style escape sequences like '\r', '\n' or '\x22'
+are supported. Take a look at the beginning of the
+included C source for more examples. I wrote it
+because Commo's builtin echo lacks support of
+printing characters like CR.
+
+mecho is written in 100% plain ANSI C. The included
+executable was created using SAS/C 6.57, but it
+can easily be recompiled with GCC or any other
+ANSI compliant C compiler.
+
+Note: The program itself does not need any specific
+OS version or even OS (I successfully compiled
+it under Linux/68k), but this SAS/C compiled version
+requires AmigaOS 2.02 because I forced it to use
+utility.library.
+
+This program is (w) and (c) 1997 by Johnny Tevessen,
+Cologne/Germany. All Rights Reserved. It may be
+freely distributed as long as the whole archive
+remains intact. Comercial and military use is
+prohibited. The author cannot made responsible for
+any damage that is caused by this program. Use it
+at your own risk!
+
+I successfully compiled and run it on my A1k2,
+68030/'882, OS3.0, 2+8MB.
+
+Suggestions are always welcome.
+
