@@ -1,0 +1,12 @@
+# Startcron script for UNSUI POSIX cron command
+# This script launches the cron daemon with default settings
+# Place this in S: and reference it from startup-sequence
+
+# Launch cron daemon with default crontab file (S:CronTab)
+cron
+
+# Alternative: Launch with custom crontab file
+# cron RAM:MyCronTab
+
+# Alternative: Launch with verbose output for debugging
+# cron -v

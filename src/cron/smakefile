@@ -1,0 +1,46 @@
+# Cron command SMakefile for Unsui POSIX runtime
+
+# Tools
+CC = sc
+LD = slink
+RM = delete
+
+# Compiler flags for SAS/C
+CFLAGS = STRIPDEBUG NODEBUG BATCH NOICONS
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common/
+
+# Linker flags for SAS/C
+LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib NOICONS
+
+# Object files for cron (cron.c only, using Amiga.lib TimeDelay)
+OBJS = sc:lib/cres.o cron.o
+
+# Main target
+all: cron
+
+# Build cron command
+cron: $(OBJS)
+	$(LD) FROM $(OBJS) TO cron $(LDFLAGS)
+
+# Compile source files
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+cron.o: cron.c cron.h
+
+# Clean target
+clean:
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) cron
+
+# Install target
+install: cron
+	copy cron //SDK/C/cron
+
+# Help target
+help:
+	@echo "Available targets:"
+	@echo "  all     - Build cron command (default)"
+	@echo "  clean   - Remove build artifacts"
+	@echo "  install - Install cron to SDK"
+	@echo "  help    - Show this help message"

@@ -114,28 +114,11 @@ you'll be the first to know :-).
  *						<CB>
  */
 
-#include <stdio.h>
-#include <time.h>
+#include "cron.h"
 
-#ifndef LATTICE			/*LK*/
-#include <functions.h>		/*LK*/
-#endif				/*LK*/
-
-#ifdef LATTICE			/*LK*/
-#include <string.h>
-#include <proto/dos.h>
-#endif				/*LK -the last one*/
-
-#define TRUE 1
-#define FALSE 0
-
-#define CRONTAB "S:CronTab"	/* Our default path */
-
-#define MAXLINE	132
-#define SIZE	64
-
-#define TITLE "\x9B1;33mAmiCron v2.5\x9B0m by \x9B1m<CB>\x9B0m & - \x9B3mThe Software Brewery\x9B0m -\n"
-#define WHERE "Im Wingertsberg 45, D-6108 Weiterstadt, \x9B1mW-Germany\x9B0m\n"
+/* POSIX cron version information */
+#define VERSION "3.0"
+#define PROGRAM_NAME "cron"
  
 int	eof;
 short	sleepy;
@@ -152,12 +135,14 @@ FILE	*fd;
  */
 
 
-void main(argc, argv)
-int argc;
-char *argv[];
+void showhelp(void);
+void wakeup(void);
+char *scanner(register char *token, register char *offset);
+int match(register char *left, register int right);
+int getline(void);
+
+int main(int argc, char *argv[])
 {
-	void showhelp();
-	void wakeup();
 
 	/* Below we use the same functions & variables as in wakeup()
 	   just to get the current second  <CB>*/
@@ -166,30 +151,35 @@ char *argv[];
 	struct tm *localtime();
 	long cur_time;
  	
-	/* Tell the guy out there what he might do with this deamon
-	 * and who made it. <CB>*/
-
-	printf(TITLE);
-	printf(WHERE);
-	printf("Usage: %s [Path & Filename]\n",argv[0]);
-	printf("       or '%s ?' for help\n",argv[0]);
+	/* Display POSIX-compliant usage information */
+	printf("%s version %s\n", PROGRAM_NAME, VERSION);
+	printf("Usage: %s [crontab_file]\n", argv[0]);
+	printf("       %s -h for help\n", argv[0]);
 
 	/* Now let's see if the user told us to look someplace else
 	 * for our input file or if he want's some more usage hints <CB> */
   
 	if (argc == 2) {
-		if (argv[1][0] == '?') { 
+		if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) { 
 			showhelp();
-			exit(10);
+			exit(SUCCESS);
 		}
-		else (void)strcpy(crontabs, argv[1]);
-		
+		else if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0) {
+			printf("%s version %s\n", PROGRAM_NAME, VERSION);
+			exit(SUCCESS);
+		}
+		else {
+			(void)strcpy(crontabs, argv[1]);
+		}
 	}
-	else (void)strcpy(crontabs, CRONTAB);	
+	else {
+		(void)strcpy(crontabs, CRONTAB);
+	}	
 	/* If there isn't a user path, we'll use the default <CB>*/
 
-	/*Now tell the user with what path & filename we wound up*/
-	printf("CronTab path = %s \n",crontabs);
+	/* Display crontab file path */
+	printf("Using crontab file: %s\n", crontabs);
+	printf("%s daemon started, monitoring for scheduled tasks...\n", PROGRAM_NAME);
 
 	for (;;)  {
 
@@ -205,15 +195,15 @@ char *argv[];
 		/* PLEASE don't decrease the 60 above, believe me,
 		 * I know what I'm doing there! <CB> */ 
 
-		TimeDelay(sleepy,0,0);	
-		/* sleep 'till next minute */
+		/* Use Amiga.lib TimeDelay API for precise timing */
+		TimeDelay(UNIT_VBLANK, sleepy, 0);	
+		/* sleep 'till next minute using Amiga.lib TimeDelay */
 	}
 }
 
-void wakeup()
+void wakeup(void)
 {
 	register struct tm *tm;
-	struct tm *localtime();
 	long cur_time;
 	
 	char doit[80];
@@ -224,8 +214,8 @@ void wakeup()
 	/* Now let's see if there is a CronTab file out there <CB> */ 	
 
 	if ((fd = fopen(crontabs, "r")) == NULL) {
-	fprintf(stderr, "Can't open %s\nTry again\n", crontabs);
-	exit(1);
+		fprintf(stderr, "%s: cannot open crontab file '%s': No such file or directory\n", PROGRAM_NAME, crontabs);
+		exit(FAILURE);
 	}
 
 
@@ -236,6 +226,7 @@ void wakeup()
 		   match(hour,tm->tm_hour) && match(day,tm->tm_mday) &&
 		   match(month,tm->tm_mon+1) && match(wday,tm->tm_wday))  {
 		/* Weird localtime months ^ range from 0-11 !!! <CB>*/
+			printf("%s: executing scheduled command: %s\n", PROGRAM_NAME, command);
 			(void)strcpy(doit,"RUN ");
 			(void)strcat(doit,command);
 			(void)Execute(doit,NULL,NULL);
@@ -262,11 +253,11 @@ void wakeup()
  *	be executed by the CLI just as if typed from a console.
  */
  
-int getline()
+int getline(void)
 {
 	register char *p;
 	register int   i;
-	char    buffer[MAXLINE], *scanner(), *fgets();
+	char    buffer[MAXLINE];
  
 	if (fgets(buffer, sizeof buffer, fd) == NULL)  {
 		eof = TRUE;
@@ -283,9 +274,7 @@ int getline()
 }
  
  
-char *scanner(token, offset)
-register char   *token;		/* target buffer to receive scanned token */
-register char   *offset;	/* place holder into source buffer */
+char *scanner(register char *token, register char *offset)
 {
 	while ((*offset != ' ') && (*offset != '\t') && *offset)
 		*token++ = *offset++;
@@ -317,9 +306,7 @@ register char   *offset;	/* place holder into source buffer */
  *			the range of x thru y.
  */
  
-int match(left, right)
-register char   *left;
-register int    right;
+int match(register char *left, register int right)
 {
 	register int	n;
 	register char	c;
@@ -360,14 +347,28 @@ register int    right;
 		}
 }
 
-void showhelp()		/* by <CB> */
-
+void showhelp(void)
 { 
-	printf("\nWell, you really should read the .doc file,\n");
-	printf("but here are some more hints:\n");
-	printf("You might specify only ONE command line parameter,\n");
-	printf("the path were AmiCron should look for it's command table,\n");
-	printf("including the filename of the command table.\n");
-	printf("If you don't supply a path, AmiCron will use it's default\n");
-	printf("path (S:CronTab).\n");
+	printf("Usage: %s [OPTION] [crontab_file]\n", PROGRAM_NAME);
+	printf("       %s -h, --help     display this help and exit\n", PROGRAM_NAME);
+	printf("       %s -v, --version  display version information and exit\n", PROGRAM_NAME);
+	printf("\n");
+	printf("DESCRIPTION\n");
+	printf("  %s is a daemon that executes scheduled commands at specified times.\n", PROGRAM_NAME);
+	printf("  It reads commands from a crontab file and executes them at the\n");
+	printf("  appropriate intervals.\n");
+	printf("\n");
+	printf("  crontab_file  Path to the crontab file (default: %s)\n", CRONTAB);
+	printf("\n");
+	printf("EXAMPLES\n");
+	printf("  %s                    # Use default crontab file\n", PROGRAM_NAME);
+	printf("  %s /tmp/my.crontab   # Use custom crontab file\n", PROGRAM_NAME);
+	printf("  %s -v                # Show version information\n", PROGRAM_NAME);
+	printf("\n");
+	printf("CRONTAB FORMAT\n");
+	printf("  Each line contains: minute hour day month weekday command\n");
+	printf("  Fields: 0-59 0-23 1-31 1-12 0-6 (Sunday=0)\n");
+	printf("  Special: * (any), , (list), - (range), / (step)\n");
+	printf("\n");
+	printf("  Example: 0 2 * * 1 backup  # Every Monday at 2:00 AM\n");
 }

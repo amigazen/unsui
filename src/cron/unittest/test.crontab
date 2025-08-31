@@ -1,0 +1,29 @@
+# Test crontab file for UNSUI POSIX cron command
+# This file demonstrates various cron scheduling patterns
+
+# Run every minute - useful for testing
+* * * * * echo "Minute check: $(date)"
+
+# Run at the top of every hour
+0 * * * * echo "Hourly check: $(date)"
+
+# Run every day at 2:30 AM
+30 2 * * * echo "Daily backup check: $(date)"
+
+# Run every Monday at 9:00 AM
+0 9 * * 1 echo "Weekly report: $(date)"
+
+# Run every 15 minutes during business hours (9 AM to 5 PM)
+*/15 9-17 * * 1-5 echo "Business hours check: $(date)"
+
+# Run on the 1st and 15th of each month at 1:00 AM
+0 1 1,15 * * echo "Monthly maintenance: $(date)"
+
+# Run every 2 hours
+0 */2 * * * echo "Bi-hourly check: $(date)"
+
+# Run every Sunday at midnight
+0 0 * * 0 echo "Weekly cleanup: $(date)"
+
+# Run every 5 minutes during the day (6 AM to 10 PM)
+*/5 6-22 * * * echo "Frequent check: $(date)"

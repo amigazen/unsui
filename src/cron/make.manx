@@ -1,8 +1,0 @@
-AmiCron: Amicron25.o timer.o
-	ln -o AmiCron timer.o Amicron25.o -lc32
-
-Amicron25.o: Amicron25.c
-	cc +l Amicron25.c
-
-timer.o: timer.c
-	 cc +l timer.c	 
