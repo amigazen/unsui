@@ -7,6 +7,10 @@
 #include "position.h"
 #include <setjmp.h>
 #include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 public int      ispipe;
 public jmp_buf  main_loop;
@@ -44,10 +48,12 @@ extern int errmsgs;
 
 static void SeekRoot __PROTO((ULONG lock));
 
+/* Command line argument parsing */
+static void usage(void);
+static void parse_arguments(int argc, char **argv);
 
 #ifdef AMIGA
 /********** amiga **************/
-#include <ctype.h>
 #include <dos.h>
 #include <intuition/intuition.h>
 #include <exec/memory.h>
@@ -72,6 +78,139 @@ int IsV2;
 public char     *local_argv[MAXTEMPLATES];
 public int      local_argc;
 #endif
+
+/*
+ * Display usage information and exit.
+ */
+static void usage(void)
+{
+    printf("Usage: Less [OPTIONS] [FILE...]\n");
+    printf("View file contents with pagination.\n\n");
+    printf("OPTIONS:\n");
+    printf("  -b N          Set buffer size to N (default: 5 for files, 12 for pipes)\n");
+    printf("  -c            Repaint by clearing each line\n");
+    printf("  -d            Don't complain about dumb terminals\n");
+    printf("  -e            Quit at end-of-file\n");
+    printf("  -f            Assume data is clean (no nulls, etc.)\n");
+    printf("  -h N          Set backwards scroll limit to N lines\n");
+    printf("  -m            Use medium prompt\n");
+    printf("  -M            Use long prompt\n");
+    printf("  -n            Don't use line numbers\n");
+    printf("  -p PATTERN    Start at first line matching PATTERN\n");
+    printf("  -P PROMPT     Set prompt string\n");
+    printf("  -q            Suppress error messages\n");
+    printf("  -r            Display raw control characters\n");
+    printf("  -s            Squeeze multiple blank lines\n");
+    printf("  -t TAG        Find tag TAG\n");
+    printf("  -T TAGS       Use TAGS file\n");
+    printf("  -u            Underline special characters\n");
+    printf("  -w            Highlight first unread line\n");
+    printf("  -x N          Set tab stops every N characters\n");
+    printf("  -z N          Set window size to N lines\n");
+    printf("  -[WINDOW]     Set window position/size (Amiga specific)\n");
+    printf("  +COMMAND      Execute COMMAND before displaying\n");
+    printf("  ++COMMAND     Execute COMMAND before displaying each file\n");
+    printf("  -?            Show this help message\n");
+    printf("  --help        Show this help message\n");
+    printf("  --version     Show version information\n\n");
+    printf("FILE:\n");
+    printf("  File(s) to view. Use '-' for standard input.\n\n");
+    printf("ENVIRONMENT:\n");
+    printf("  LESS         Default options\n");
+    printf("  EDITOR       Editor to use for editing files\n\n");
+    printf("EXAMPLES:\n");
+    printf("  Less file.txt           View file.txt\n");
+    printf("  Less -z 20 file.txt     View with 20-line window\n");
+    printf("  Less -p \"search\" file   Start at first line containing \"search\"\n");
+    printf("  cat file.txt | Less     View from pipe\n");
+    exit(0);
+}
+
+/*
+ * Parse command line arguments using getopts-style parsing.
+ */
+static void parse_arguments(int argc, char **argv)
+{
+    int i, sc_window;
+    char *arg;
+    char *optarg;
+    
+    for (i = 1; i < argc; i++)
+    {
+        arg = argv[i];
+        
+        /* Handle help options */
+        if (strcmp(arg, "-?") == 0 || strcmp(arg, "--help") == 0)
+        {
+            usage();
+        }
+        
+        /* Handle version option */
+        if (strcmp(arg, "--version") == 0)
+        {
+            printf("Less version 1.7Z (Amiga port)\n");
+            printf("Copyright (c) 1984,1985 Mark Nudelman\n");
+            printf("Amiga port by Bob Leivian and others\n");
+            exit(0);
+        }
+        
+        /* Handle options starting with - */
+        if (arg[0] == '-' && arg[1] != '\0')
+        {
+            /* Handle -number for window size */
+            if (isdigit(arg[1]))
+            {
+                sc_window = atoi(&arg[1]);
+                continue;
+            }
+            
+            /* Handle other single-letter options */
+            if (arg[1] != '-' && arg[1] != '\0')
+            {
+                scan_option(arg);
+                continue;
+            }
+        }
+        
+        /* Handle + options */
+        if (arg[0] == '+')
+        {
+            if (arg[1] == '+')
+            {
+                every_first_cmd = &arg[2];
+            }
+            else
+            {
+                first_cmd = &arg[1];
+            }
+            continue;
+        }
+        
+        /* Handle window specification for Amiga */
+#ifdef AMIGA
+        if (arg[0] == '[' && arg[strlen(arg)-1] == ']')
+        {
+            scan_option(arg);
+            continue;
+        }
+#endif
+        
+        /* If we get here, this is a filename */
+        break;
+    }
+    
+    /* Update argc and argv to point to remaining arguments */
+    if (i < argc)
+    {
+        ac = argc - i;
+        av = &argv[i];
+    }
+    else
+    {
+        ac = 0;
+        av = NULL;
+    }
+}
 
 /*
  * Edit a new file.
@@ -442,11 +581,7 @@ main(argc, argv)
          */
         init_option();
         scan_option(getenv("LESS"));
-        argv++;
-        while ( (--argc > 0) &&
-                (argv[0][0] == '-' || argv[0][0] == '+') &&
-                 argv[0][1] != '\0')
-                scan_option(*argv++);
+        parse_arguments(argc, argv);
 
 #if EDITOR
         editor = getenv("EDITOR");

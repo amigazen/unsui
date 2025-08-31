@@ -55,12 +55,6 @@ extern void ttputs __PROTO((char *s));
 extern void Tputs __PROTO((char *s));
 extern struct Screen *MyFindWB __PROTO(( void ));
 extern void MyFreeWB __PROTO(( struct Screen * ));
-#ifdef AMIGA
-#define sprintf MySprintf /* uses exec.library, to save on code size */
-extern __stdargs void MySprintf __PROTO (( char *buffer, char *fmt, ... ));
-#else
-extern int sprintf __PROTO((char *, char *,...));
-#endif
 
 /* Prototypes for functions defined in line.c */
 

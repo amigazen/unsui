@@ -34,7 +34,7 @@ typedef long            POSITION;
 
 #define FILENAME        128     /* Max size of a filename */
 
-#define EOF             (0)
+
 #ifndef NULL
 #define NULL            (0)
 #endif
