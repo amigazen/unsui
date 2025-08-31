@@ -36,7 +36,7 @@ This project aims to provide a comprehensive set of POSIX utilities and librarie
 
 ### UnixLib3 - The _zafu_ (座蒲)
 
-**Standard C Library**: UnixLib3 is a (WIP) near complete POSIX and C99 standard C library implementation for Amiga and the SAS/C (and soon DICE) compiler. It provides many more functions and new versions of functions to extend the SAS/C standard C library, similar to VBCC's PosixLib. It does not replace the original SAS/C startup code or sc.lib except where the function prototype has changed since the days of ANSI/C89, in which case UnixLib3 provides a new modern version of the same function. 
+**Standard C Library**: UnixLib3 is a (WIP) near complete POSIX and C99 standard C library implementation for Amiga and the SAS/C (and soon DICE) compiler. It provides many more functions and new versions of functions to extend the SAS/C standard C library, similar to VBCC's PosixLib. It does not replace the original SAS/C startup code or sc.lib except where the function prototype has changed since the days of ANSI/C89, in which case UnixLib3 provides a new modern version of the same function. You could almost says it's an 'unClib'.
 
 Using UnixLib3 it should be possible to port more modern functions as well as taking advantage of C99 improvements such as the memory-safe string functions. 
 
@@ -104,6 +104,16 @@ Components integrated from other older projects are checked for compatible licen
 ### What does the name _unsui_ really mean? Is it meant to be UNix SUIte?
 
 It is left to the imagination of the reader to determine if there is greater meaning in the name _unsui_. Could it mean UNified Standard Unix-specification Implementation? Or UNix SUbsystem Interface? Perhaps _unsui_ is Not a Supported Unix Instance? Is it Unix-like System Userland Idiom? What do you think it means? Similarly, is _zafu_ a Zen Amiga Foundation for Unix? What else could that mean?
+
+### Where is the UnixLib3 and the other parts of _unsui_?
+
+You can find the work in progress new version of unix.lib on github in its own repository. _unsui_ is still work in progress with new _koans_ being added every week.
+
+### Will _unsui_ changes be contributed back to the original project mainlines, or updated to the latest ?
+
+Generally no, the code here should be considered forked from the original projects, since the forks often date back 10, 20 or even 30 or more years, and few if any of the upstream maintainers will accept Amiga specific patches nor would such patches easily fit into the modern cross-platform auto configuration system, even for GeekGadgets or OS4 versions. Keeping the forks forked is in the best interest of the project and allows _unsui_ to focus on optimisation for Amiga native features, and this approach is really no different from what macOS does. This is by no means a bad thing - many of the POSIX commands have barely changed in core functionality in that time, with additional code written to support more modern platforms, to support unicode, or 64-bit, or network and server features. Exactly the kind of code-bloat Amiga users eschew and which would conflict with the balance _unsui_ is designed to strike with regard to Amiga _kanso_ versus Unix complexity.
+
+New features that offer real value to Amiga users may be cherry picked from more recent versions from time to time.
 
 ### Will _unsui_ be released on Aminet?
 
