@@ -1,0 +1,15 @@
+
+The programming system comes in several lha archives with the needed directory
+structure. Simply make a directory (gccdir) and extract the archives in it.
+Then add to your user-startup file:
+
+assign gcc: gccdir
+assign glib: gcc:glib
+path gcc:bin add
+
+Then make a directory named gcc:amiga_include, get from Cbm the Amiga OS
+include files and put them in that directory.
+
+That's all folks.
+
+Davide Pasetto
