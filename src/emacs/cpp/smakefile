@@ -1,0 +1,23 @@
+# Makefile for cccp in the Emacs distribution only.
+# Here we assume that you are using SASC
+# (since cccp is used by Emacs only to deal with long strings in macros.
+
+CFLAGS=DEF EMACS idir src:unix/include/ def STACK_DIRECTION=-1 def OUTPUT_LINE_COMMANDS nowvret debug sf
+
+cpp: cccp
+	-delete cpp
+	makelink cpp cccp
+cccp: cccp.o cexp.tab.o alloca.o
+	sc link cccp.o alloca.o cexp.tab.o to cccp lib src:unix/src/unix.lib
+
+testexp: y.tab.c
+	cc -g -DTEST_EXP_READER y.tab.c -o testexp
+
+cexp.tab.c: cexp.y
+	echo "expect 40 shift/reduce conflicts"
+	bin:bison cexp.y >bison.debug
+
+cccp.o: cccp.c
+cexp.tab.o: cexp.tab.c
+alloca.o: /src/alloca.c
+	$(CC) $(CFLAGS) objname alloca.o /src/alloca.c

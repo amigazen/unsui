@@ -1,0 +1,5 @@
+FROM LIB:c.o "etags.o"
+TO "etags"
+LIB src:unix/src/unix.lib LIB:sc.lib LIB:amiga.lib
+QUIET
+

@@ -1,0 +1,134 @@
+
+(provide (quote rexx-mode))
+
+(autoload (quote rexx-debug) "rexx-debug" "\
+REXX source level debugger" t)
+
+(defconst rexx-indent 8 "\
+*This variable contains the indentation in rexx-mode.")
+
+(defconst rexx-end-indent 0 "\
+*This variable indicates the relative position of the \"end\" in REXX mode.")
+
+(defconst rexx-cont-indent 8 "\
+*This variable indicates how far a continued line shall be intended.")
+
+(defconst rexx-comment-col 32 "\
+*This variable gives the desired comment column 
+for comments to the right of text.")
+
+(defconst rexx-tab-always-indent t "\
+*Non-nil means TAB in REXX mode should always reindent the current line,
+regardless of where in the line point is when the TAB command is used.")
+
+(defconst rexx-special-regexp ".*\\(,\\|then\\|else\\)[ 	]*\\(/\\*.*\\*/\\)?[ 	]*$" "\
+*Regular expression for parsing lines which shall be followed by
+a extra indention")
+
+(defvar rexx-mode-map nil "\
+Keymap for REXX mode.")
+
+(if rexx-mode-map nil (setq rexx-mode-map (make-sparse-keymap)) (define-key rexx-mode-map "	" (quote rexx-indent-command)) (define-key rexx-mode-map "" (quote backward-delete-char-untabify)) (define-key rexx-mode-map "" (quote rexx-find-matching-do)) (define-key rexx-mode-map "" (quote rexx-debug)))
+
+(defvar rexx-mode-syntax-table nil "\
+Syntax table in use in REXX-mode buffers.")
+
+(if rexx-mode-syntax-table nil (setq rexx-mode-syntax-table (make-syntax-table)) (modify-syntax-entry 92 "\\" rexx-mode-syntax-table) (modify-syntax-entry 47 ". 14" rexx-mode-syntax-table) (modify-syntax-entry 42 ". 23" rexx-mode-syntax-table) (modify-syntax-entry 43 "." rexx-mode-syntax-table) (modify-syntax-entry 45 "." rexx-mode-syntax-table) (modify-syntax-entry 61 "." rexx-mode-syntax-table) (modify-syntax-entry 37 "." rexx-mode-syntax-table) (modify-syntax-entry 60 "." rexx-mode-syntax-table) (modify-syntax-entry 62 "." rexx-mode-syntax-table) (modify-syntax-entry 38 "." rexx-mode-syntax-table) (modify-syntax-entry 124 "." rexx-mode-syntax-table) (modify-syntax-entry 39 "\"" rexx-mode-syntax-table))
+
+(defvar rexx-mode-abbrev-table nil "\
+*Abbrev table in use in rexx-mode buffers.")
+
+(if rexx-mode-abbrev-table nil (define-abbrev-table (quote rexx-mode-abbrev-table) (quote (("address" "ADDRESS" rexx-check-expansion 0) ("arg" "ARG" rexx-check-expansion 0) ("break" "BREAK" rexx-check-expansion 0) ("call" "CALL" rexx-check-expansion 0) ("do" "DO" rexx-check-expansion 0) ("drop" "DROP" rexx-check-expansion 0) ("echo" "ECHO" rexx-check-expansion 0) ("else" "ELSE" rexx-check-expansion 0) ("end" "END" rexx-check-expansion 0) ("exit" "EXIT" rexx-check-expansion 0) ("if" "IF" rexx-check-expansion 0) ("interpret" "INTERPRET" rexx-check-expansion 0) ("iterate" "ITERATE" rexx-check-expansion 0) ("leave" "LEAVE" rexx-check-expansion 0) ("nop" "NOP" rexx-check-expansion 0) ("numeric" "NUMERIC" rexx-check-expansion 0) ("options" "OPTIONS" rexx-check-expansion 0) ("otherwise" "OTHERWISE" rexx-check-expansion 0) ("parse" "PARSE" rexx-check-expansion 0) ("procedure" "PROCEDURE" rexx-check-expansion 0) ("pull" "PULL" rexx-check-expansion 0) ("push" "PUSH" rexx-check-expansion 0) ("queue" "QUEUE" rexx-check-expansion 0) ("return" "RETURN" rexx-check-expansion 0) ("say" "SAY" rexx-check-expansion 0) ("select" "SELECT" rexx-check-expansion 0) ("shell" "SHELL" rexx-check-expansion 0) ("signal" "SIGNAL" rexx-check-expansion 0) ("then" "THEN" rexx-check-expansion 0) ("trace" "TRACE" rexx-check-expansion 0) ("upper" "UPPER" rexx-check-expansion 0) ("when" "WHEN" rexx-check-expansion 0) ("value" "VALUE" rexx-check-expansion 0) ("to" "TO" rexx-check-expansion 0) ("by" "BY" rexx-check-expansion 0) ("for" "FOR" rexx-check-expansion 0) ("forever" "FOREVER" rexx-check-expansion 0) ("while" "WHILE" rexx-check-expansion 0) ("until" "UNTIL" rexx-check-expansion 0) ("form" "FORM" rexx-check-expansion 0) ("digits" "DIGITS" rexx-check-expansion 0) ("fuzz" "FUZZ" rexx-check-expansion 0) ("scientific" "SCIENTIFIC" rexx-check-expansion 0) ("engineering" "ENGINEERING" rexx-check-expansion 0) ("failat" "FAILAT" rexx-check-expansion 0) ("prompt" "PROMPT" rexx-check-expansion 0) ("results" "RESULTS" rexx-check-expansion 0) ("upper" "UPPER" rexx-check-expansion 0) ("external" "EXTERNAL" rexx-check-expansion 0) ("source" "SOURCE" rexx-check-expansion 0) ("with" "WITH" rexx-check-expansion 0) ("command" "COMMAND" rexx-check-expansion 0) ("function" "FUNCTION" rexx-check-expansion 0) ("var" "VAR" rexx-check-expansion 0) ("version" "VERSION" rexx-check-expansion 0) ("expose" "EXPOSE" rexx-check-expansion 0) ("on" "ON" rexx-check-expansion 0) ("off" "OFF" rexx-check-expansion 0) ("abbrev" "ABBREV" rexx-check-expansion 0) ("abs" "ABS" rexx-check-expansion 0) ("addlib" "ADDLIB" rexx-check-expansion 0) ("b2c" "B2C" rexx-check-expansion 0) ("bitand" "BITAND" rexx-check-expansion 0) ("bitchg" "BITCHG" rexx-check-expansion 0) ("bitclr" "BITCLR" rexx-check-expansion 0) ("bitcomp" "BITCOMP" rexx-check-expansion 0) ("bitor" "BITOR" rexx-check-expansion 0) ("bittst" "BITTST" rexx-check-expansion 0) ("bitset" "BITSET" rexx-check-expansion 0) ("c2b" "C2B" rexx-check-expansion 0) ("c2d" "C2D" rexx-check-expansion 0) ("c2x" "C2X" rexx-check-expansion 0) ("center" "CENTER" rexx-check-expansion 0) ("centre" "CENTRE" rexx-check-expansion 0) ("close" "CLOSE" rexx-check-expansion 0) ("compress" "COMPRESS" rexx-check-expansion 0) ("compare" "COMPARE" rexx-check-expansion 0) ("copies" "COPIES" rexx-check-expansion 0) ("d2c" "D2C" rexx-check-expansion 0) ("datatype" "DATATYPE" rexx-check-expansion 0) ("delstr" "DELSTR" rexx-check-expansion 0) ("delword" "DELWORD" rexx-check-expansion 0) ("eof" "EOF" rexx-check-expansion 0) ("errortext" "ERRORTEXT" rexx-check-expansion 0) ("exists" "EXISTS" rexx-check-expansion 0) ("export" "EXPORT" rexx-check-expansion 0) ("freespace" "FREESPACE" rexx-check-expansion 0) ("getclip" "GETCLIP" rexx-check-expansion 0) ("getspace" "GETSPACE" rexx-check-expansion 0) ("hash" "HASH" rexx-check-expansion 0) ("import" "IMPORT" rexx-check-expansion 0) ("index" "INDEX" rexx-check-expansion 0) ("insert" "INSERT" rexx-check-expansion 0) ("lastpos" "LASTPOS" rexx-check-expansion 0) ("left" "LEFT" rexx-check-expansion 0) ("length" "LENGTH" rexx-check-expansion 0) ("max" "MAX" rexx-check-expansion 0) ("min" "MIN" rexx-check-expansion 0) ("open" "OPEN" rexx-check-expansion 0) ("overlay" "OVERLAY" rexx-check-expansion 0) ("pos" "POS" rexx-check-expansion 0) ("pragma" "PRAGMA" rexx-check-expansion 0) ("random" "RANDOM" rexx-check-expansion 0) ("randu" "RANDU" rexx-check-expansion 0) ("readch" "READCH" rexx-check-expansion 0) ("readln" "READLN" rexx-check-expansion 0) ("remlib" "REMLIB" rexx-check-expansion 0) ("reverse" "REVERSE" rexx-check-expansion 0) ("right" "RIGHT" rexx-check-expansion 0) ("seek" "SEEK" rexx-check-expansion 0) ("setclip" "SETCLIP" rexx-check-expansion 0) ("show" "SHOW" rexx-check-expansion 0) ("sign" "SIGN" rexx-check-expansion 0) ("space" "SPACE" rexx-check-expansion 0) ("storage" "STORAGE" rexx-check-expansion 0) ("strip" "STRIP" rexx-check-expansion 0) ("substr" "SUBSTR" rexx-check-expansion 0) ("subword" "SUBWORD" rexx-check-expansion 0) ("symbol" "SYMBOL" rexx-check-expansion 0) ("time" "TIME" rexx-check-expansion 0) ("trace" "TRACE" rexx-check-expansion 0) ("translate" "TRANSLATE" rexx-check-expansion 0) ("trim" "TRIM" rexx-check-expansion 0) ("verify" "VERIFY" rexx-check-expansion 0) ("word" "WORD" rexx-check-expansion 0) ("wordindex" "WORDINDEX" rexx-check-expansion 0) ("wordlength" "WORDLENGTH" rexx-check-expansion 0) ("words" "WORDS" rexx-check-expansion 0) ("writech" "WRITECH" rexx-check-expansion 0) ("writeln" "WRITELN" rexx-check-expansion 0) ("x2c" "X2C" rexx-check-expansion 0) ("xrange" "XRANGE" rexx-check-expansion 0) ("allocmem" "ALLOCMEM" rexx-check-expansion 0) ("baddr" "BADDR" rexx-check-expansion 0) ("bitxor" "BITXOR" rexx-check-expansion 0) ("break_c" "BREAK_C" rexx-check-expansion 0) ("break_d" "BREAK_D" rexx-check-expansion 0) ("break_e" "BREAK_E" rexx-check-expansion 0) ("break_f" "BREAK_F" rexx-check-expansion 0) ("cache" "CACHE" rexx-check-expansion 0) ("closeport" "CLOSEPORT" rexx-check-expansion 0) ("d2x" "D2X" rexx-check-expansion 0) ("date" "DATA" rexx-check-expansion 0) ("delay" "DELAY" rexx-check-expansion 0) ("delete" "DELETE" rexx-check-expansion 0) ("error" "ERROR" rexx-check-expansion 0) ("failure" "FAILURE" rexx-check-expansion 0) ("find" "FIND" rexx-check-expansion 0) ("forbid" "FORBID" rexx-check-expansion 0) ("freemem" "FREEMEM" rexx-check-expansion 0) ("getarg" "GETARG" rexx-check-expansion 0) ("getpkt" "GETPKT" rexx-check-expansion 0) ("halt" "HALT" rexx-check-expansion 0) ("ioerr" "IOERR" rexx-check-expansion 0) ("lines" "LINES" rexx-check-expansion 0) ("makedir" "MAKEDIR" rexx-check-expansion 0) ("next" "NEXT" rexx-check-expansion 0) ("novalue" "NOVALUE" rexx-check-expansion 0) ("null" "NULL" rexx-check-expansion 0) ("offset" "OFFSET" rexx-check-expansion 0) ("openport" "OPENPORT" rexx-check-expansion 0) ("permit" "PERMIT" rexx-check-expansion 0) ("rename" "RENAME" rexx-check-expansion 0) ("reply" "REPLY" rexx-check-expansion 0) ("showdir" "SHOWDIR" rexx-check-expansion 0) ("showlist" "SHOWLIST" rexx-check-expansion 0) ("sourceline" "SOURCELINE" rexx-check-expansion 0) ("statef" "STATEF" rexx-check-expansion 0) ("syntax" "SYNTAX" rexx-check-expansion 0) ("trunc" "TRUNC" rexx-check-expansion 0) ("typepkt" "TYPEPKT" rexx-check-expansion 0) ("waitpkt" "WAITPKT" rexx-check-expansion 0) ("x2d" "X2D" rexx-check-expansion 0)))))
+
+(defun rexx-mode nil "\
+Major mode for editing REXX code.
+\\{rexx-mode-map}
+
+Variables controlling indentation style:
+ rexx-indent
+	The basic indentation for do-blocks.
+ rexx-end-indent
+	The relative offset of the \"end\" statement. 0 places it in the
+	same column as the statements of the block. Setting it to the same
+	value as rexx-indent places the \"end\" under the do-line.
+ rexx-cont-indent
+	The indention for lines following \"then\", \"else\" and \",\"
+	(continued) lines.
+ rexx-tab-always-indent
+	Non-nil means TAB in REXX mode should always reindent the current 
+	line, regardless of where in the line the point is when the TAB
+	command is used.
+
+If you have set rexx-end-indent to a nonzero value, you probably want to
+remap RETURN to rexx-indent-newline-indent. It makes sure that lines
+indents correctly when you press RETURN.
+
+An extensive abbrevation table consisting of all the keywords of REXX are
+supplied. Expanded keywords are converted into upper case making it
+easier to distinguish them. To use this feature the buffer must be in
+abbrev-mode. (See example below.)
+
+Turning on REXX mode calls the value of the variable rexx-mode-hook with
+no args, if that value is non-nil.
+
+For example:
+(setq rexx-mode-hook '(lambda ()
+			(setq rexx-indent 4)
+			(setq rexx-end-indent 4)
+			(setq rexx-cont-indent 4)
+			(local-set-key \"\\C-m\" 'rexx-indent-newline-indent)
+			(abbrev-mode 1)
+			))
+
+will make the END aligned with the DO/SELECT. It will indent blocks and
+IF-statenents four steps and make sure that the END jumps into the
+correct position when RETURN is pressed. Finaly it will use the abbrev
+table to convert all REXX keywords into upper case." (interactive) (byte-code "ÓˆÔ ˆÕ!ˆÖ	!ˆ×‰ˆØ‰ˆ‰ˆÙÆ!ˆÇ‰ˆÙÈ!ˆÚ	P‰ˆÙÊ!ˆ‰
+ˆÙË!ˆÇ‰ˆÙÌ!ˆÛ‰ˆÙÍ!ˆÇ‰ˆÙÎ!ˆÜ‰ˆÙÏ!ˆÝ‰ˆÙÐ!ˆÞ‰ˆÙÑ!ˆß‰ˆÙÒ!ˆà‰ˆáâ!‡" [rexx-mode-map rexx-mode-syntax-table major-mode mode-name local-abbrev-table rexx-mode-abbrev-table case-fold-search t paragraph-start page-delimiter paragraph-separate paragraph-ignore-fill-prefix indent-line-function parse-sexp-ignore-comments comment-start comment-end comment-column comment-start-skip comment-indent-hook nil kill-all-local-variables use-local-map set-syntax-table rexx-mode "REXX" make-local-variable "^$\\|" rexx-indent-command "/* " " */" 32 "/\\*+ *" rexx-comment-indent run-hooks rexx-mode-hook] 16))
+
+(defun rexx-indent-command (&optional whole-exp) "\
+Indent the current line as REXX code." (interactive "P") (byte-code "Åˆƒ< Æ ÅÅŠ… Ç ˆ`‰ˆÈÉ!ˆ`‰ˆ
+bˆÊÉ!ˆ`‰)ˆ
+V…8 Ë
+	#+‚R ?…H ÌÍÎ!n?\"ƒP Ï ‚R Æ ‡" [whole-exp shift-amt beg end rexx-tab-always-indent nil rexx-indent-line beginning-of-line forward-sexp 1 forward-line indent-code-rigidly save-execursion skip-char-backwards " 	" insert-tab] 10))
+
+(defun rexx-indent-line nil "\
+Indent the current line as REXX code.
+Return the amount the indentation changed by." (byte-code "ÇÁ!ÁÁd`ZÈ ˆ`‰ˆÁ=ƒ  É ‰‚S Å=ƒ- Ê ‰‚S ËÌ!ƒ9 Í‰‚S ÎÏ!ˆ<…F @‰ˆËÐ!…S Z‰ˆÎÏ!ˆiZ‰ˆÑ!ƒs dZ`V…p dZb‚‡ Ò
+`\"ˆjˆdZ`V…‡ dZbˆ,‡" [indent nil beg shift-amt pos t rexx-end-indent rexx-calc-indent beginning-of-line current-indentation calculate-rexx-indent-within-comment looking-at "[ 	]*#" 0 skip-chars-forward " 	" "end" zerop delete-region] 12))
+
+(defun rexx-calc-indent (&optional parse-start) "\
+Return the appropriate indentation for this line as an int." (byte-code "ŠÈ ˆÉ ÊÊÊŠËÌ`Í#‰)ˆÎ
+8†  Ï
+8ƒ) Ï
+8‚– ÐÌ!ˆÈ ˆÉ ‰ˆ	V…I 	bˆÈ ˆÉ ‰ˆ‚5 ˆ`Vƒ„ Ñ!ƒ^ Ò \\‚ Ò ‰ˆÐÌ!ˆÈ ˆÑ!… Ò ‰ˆÐÌ!ˆÈ ˆ‚j ˆ‚– ÌUƒŽ Í‚– bˆÒ \\,)‡" [block beg state indent t rexx-special-regexp rexx-cont-indent rexx-indent beginning-of-line rexx-find-environment nil parse-partial-sexp 1 0 3 4 rexx-backup-to-noncomment looking-at current-indentation] 20))
+
+(defun rexx-backup-to-noncomment (lim) "\
+Backup the point to the previous noncomment REXX line." (byte-code "Ã?…/ ÄÅ	\"ˆ`Æ	\\Y… ŠÇÈ!ˆÉÊ!)ƒ( ËÌ	Í#‚+ Â‰ˆ‚ ˆ`	Y)‡" [stop lim t nil skip-chars-backward " 	
+" 2 forward-char -2 looking-at "\\*/" search-backward "/*" move] 8))
+
+(defun rexx-find-environment nil "\
+Return the position of the corresponding \"do\" or \"select\".
+If none found, return the beginning of buffer." (byte-code "ŠÄÂÅ	… Æ!?…[ ÇÈÄÂ#‰ˆŠÉÄ`Ê#)‰ˆË8†. Ì8ƒ5 Ê‚T ÍÎ!ƒ? Ï‚T ÍÐ!ƒI Ï‚T ÍÑ!ƒS Ä‚T Ê\\‰ˆ‚ ˆ	ƒd `‚e Ä+)‡" [do-level cont t state 1 nil zerop re-search-backward "\\b\\(do\\|select\\|end\\)\\b" parse-partial-sexp 0 3 4 looking-at "do" -1 "select" "end"] 9))
+
+(defun calculate-rexx-indent-within-comment nil "\
+Return the indentation amount for line, assuming that
+the current line is to be regarded as part of a block comment." (byte-code "ÃÃŠÄ ˆÅÆ!ˆgÇU‰ˆÈÉ!ˆ`‰ˆÄ ˆÅÆ!ˆÊËÂ#…2 	…2 ÌÍ!Tbˆi)*‡" [end star-start t nil beginning-of-line skip-chars-forward " 	" 42 skip-chars-backward " 	
+" re-search-forward "/\\*[ 	]*" match-beginning 0] 9))
+
+(defun rexx-comment-indent nil (byte-code "ÁÂ!ƒ
+ Ã‚ ŠÄÅ!ˆiT])‡" [comment-column looking-at "^/\\*" 0 skip-chars-backward " 	"] 4))
+
+(defun rexx-find-matching-do nil "\
+Set mark, look for the \"do\" or \"select\" for the present block." (interactive) (byte-code "ÀˆÁÀ!ˆÂ ˆÃ b‡" [nil set-mark-command beginning-of-line rexx-find-environment] 4))
+
+(defun rexx-check-expansion nil "\
+If abbrev was made within a comment or a string, de-abbrev!" (byte-code "ÂÃ`ÁÁ$Ä8† Å8… Æ )‡" [state nil parse-partial-sexp 1 3 4 unexpand-abbrev] 5))
+
+(defun rexx-indent-and-newline nil "\
+New newline-and-indent which expands abbrevs before running
+a regular newline-and-indent." (interactive) (byte-code "Áˆ… Â ˆÃ ‡" [abbrev-mode nil expand-abbrev newline-and-indent] 3))
+
+(defun rexx-indent-newline-indent nil "\
+New newline-and-indent which expands abbrevs and indent the line
+before running a regular newline-and-indent." (interactive) (byte-code "ÁˆÂ ˆ… Ã ˆÄ ‡" [abbrev-mode nil rexx-indent-command expand-abbrev newline-and-indent] 4))

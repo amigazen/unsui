@@ -1,0 +1,45 @@
+This directory contains several utilities sent by Tapio Hesikanen.
+
+Here follow a few explanations:
+
+From: hessu@fipnet.fi (Tapio Heiskanen)
+To: dgay@di.epfl.ch
+Subject: Here's a couple of software for you
+
+I was in need of fakemail and movemail, so I made them with some help of my
+friend. Both of those programs are in GNUEmacs distibution, so I thought if
+you'd like to include them.
+
+They should be developed further, but they fill my needs.
+If you make any changes to them, please send sources and binaries to me.
+
+I suppose you know how the progs should work so I won't write any docs for
+them.
+
+I also have an AREXX version of inews made up. If you would like to have,
+I could send to you. Maybe it should be in C, but REXX was enough for me.
+
+--
+ Tapio (hessu) Heiskanen  _|_  Internet: hessu@diode.fipnet.fi
+  Sarkiniementie 11 B 18  \ /  ICBM: 60 08 58 N / 24 52 53 E
+         00210  HELSINKI  _Y_  Telephone: +358 0 678284
+                 FINLAND   |   Data: +358 0 6822206
+
+From: hessu@fipnet.fi (Tapio Heiskanen)
+To: dgay@di.epfl.ch
+Subject: Re: GNU Emacs 18.58, Amiga port 1.24
+
+[...]
+
+BTW: Included is a emacs.rexx script I made to ease my life. It checks first
+if the REXX-port exists and then starts emacs or just sends a rexx command
+respectively.
+
+--
+ Tapio (hessu) Heiskanen  _|_  Internet: hessu@diode.fipnet.fi
+  Sarkiniementie 11 B 18  \ /  ICBM: 60 08 58 N / 24 52 53 E
+         00210  HELSINKI  _Y_  Telephone: +358 0 678284
+                 FINLAND   |   Data: +358 0 6822206
+
+distinews.lha contains directions for installing GNUS, the emacs news-reader,
+and a replacement for the inews command.

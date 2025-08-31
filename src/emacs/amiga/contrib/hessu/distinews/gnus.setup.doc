@@ -1,0 +1,46 @@
+GNUS needs inews to post a news. I have made a rexx-script to over come this
+problem, maybe I will do it in C later. I'll include this script.
+
+Installation:
+
+	1. Setup gnus straight from the gnus.tar.z. Don't make any changes
+	   into the elisp code, all changes can be made in the .emacs file.
+
+	2. Place the script in the directory you keep all your rexx-scripts.
+
+	3. Add the following lines in your .emacs file.
+
+		(setq gnus-startup-file "uulib:.newsrc")
+
+		(setq gnus-nntp-service nil)
+		(setq gnus-nntp-server "")
+		(setq gnus-local-domain "your.domain")
+		;;; Do not enter here your nodename, only domain!
+		
+		(setq gnus-organization-file "env:organization")
+		(setq gnus-local-organization "Ferry Island Technologies")
+		(setq news-inews-switches '("rexx:inews.rexx"))
+		(setq news-inews-program "rx")
+		(setq nnspool-inews-switches '("rexx:inews.rexx"))
+		(setq nnspool-inews-program "rx")
+		;;; Don't ask me why this is like this. But it works!
+
+		(setq nnspool-active-file "uulib:active")
+		(setq nnspool-history-file "uulib:history")
+
+		(autoload 'gnus "gnus" "Read network news." t)
+		(autoload 'gnus-post-news "gnuspost" "Post a news." t)
+
+	4. Set an environment variable "organization"
+
+	5. Place perg somewhere in your path.
+	   Perg is like grep (search). But it takes from stdin and puts
+	   to stdout. Here it is needed to stdin from gnus and stdout
+	   to a temp file.
+
+	6. You will also need fakeactive are similar. GNUS needs the active
+	   file to find out what groups there are.
+
+I am using a software made by Christian Wolf <chris@wolfhh.hanse.de>, to send
+and recieve news. This software supports the active-file system and lots
+more. It know what to do with control messages, like newgroup, rmgroup, etc.

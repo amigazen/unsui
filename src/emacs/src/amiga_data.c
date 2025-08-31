@@ -1,0 +1,1 @@
+/* Declarations of data that should not be squashed by the dump routine */

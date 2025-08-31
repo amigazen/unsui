@@ -1,0 +1,64 @@
+Subject: GNU Emacs 18.59, Amiga RELEASE 1.29, available for download
+
+[Note: This is *NOT* emacs 19, but a last version of emacs 18. See 
+explanation below]
+
+Emacs is a very powerful, but sometimes cryptic, text editor. Its basic
+features are similar to those of the MEmacs editor which comes with 
+AmigaDOS (in the Tools directory), but has numerous other facilities:
+- unlimited undo.
+- language specific editing, with automatic (re)indentation.
+- a dialect of lisp as extension language, leading to extreme 
+  reconfigurability.
+- abbreviations for commonly typed words.
+- complete on-line manual.
+- powerful search & replace facilities (including wildcards).
+
+In this Amiga version, I have tried to make it easier to use with menus, 
+mouse, clipboard, rexx and workbench support.
+
+This version (1.29) tracks the update from GNU Emacs 18.58 to 18.59. It
+is very close to the version on the FreshFish CD ROM, with a few bug
+fixes (and hopefully no problems).
+
+This is the last release that I will make. Porting of emacs 19 is
+being corrdinated by David Gilbert (dgilbert@gamiga.guelphnet.dweomer.org or
+dgilbert@snowhite.cis.uoguelph.ca), please send any queries to him.
+
+System requirements:
+- AmigaDOS 2.04
+- At least 2MB of memory (emacs uses about 750k + memory for the files
+  being edited).
+- 2.5MB of free disk space for the binary version, 8MB for the 
+  source version (but you can remove some of the files once it has been
+  installed).
+- Emacs works with a 68000 (A500,A2000), but is a bit slow. It is very
+  pleasant to use with a 68030/25MHz ...
+
+The following distributions are available:
+
+o binary only:
+  All the files necessary to use emacs. Has only a subset of the lisp files,
+  the rest may be got from a standard emacs distribution.
+  Distribution: ftp:
+    site: litamiga.epfl.ch (x.x.x.x) and other aminet sites
+    file: amiga/util/gnu/a1.29-emacs-18.59-bin.LHA
+
+o full amiga version:
+  All the files necessary to compile emacs, all the lisp files, etc.
+  Some of the source files of the Unix or VMS versions are not included.
+  This source is written for SAS C 6.2
+  Distribution: ftp:
+    site: litamiga.epfl.ch (x.x.x.x) and other aminet sites
+    file: amiga/util/gnu/a1.29-emacs-18.59-src.LHA
+
+
+This port was originally based on that of Mark Henning (gnuemacs
+v1.10), but after having made rather extensive modifications, added
+numerous features and updated it to Emacs 18.59, I decided to
+release it myself. 
+
+David Gay
+dgay@di.epfl.ch
+
+

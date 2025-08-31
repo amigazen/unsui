@@ -1,0 +1,286 @@
+From: chopps@ro-chp.UUCP (Chris Hopps)
+Subject: Emacs invoker.
+
+	This is the newest invoker of mine I am very pleased with it
+and think it would be good for inclusion in the main distribution.
+With the included rexx file (and some of the mods to emacs I sent you
+earlier,) this invoker supports multiple files on the cmd line.  It
+also supports turning backups off for the files loaded on that line,
+and a WAIT command that will have Emacs return the prompt only after
+the files specified on the command line have been killed.  The invoker
+also checks to see if Emacs is iconified if so it will de-iconify it.
+It brings emacs to the front and activates it (my mods needed for
+this.)
+
+This makes leaving GNUEmacs up and running all the time very feasable.
+The invoker can be used for programs like ``Arn'', ``Elm'' or whatever
+else kind of program that does something with a file after the editor
+returns.
+
+Here is the lisp code required for using the ``WAIT'' option of the
+invoker.  It should be loaded in the .emacs file.
+
+-------8<-------------8<-------------8<-------------8<-------------8<--
+;; [notify-rexx-wait.el] notification of kill of a buffer to rexx.
+;; Copyright © 1993 Christian E. Hopps.
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program; if not, write to the Free Software
+;; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+;; I can be contacted at:
+;; bix: chopps
+;; uucp: chopps@ro-chp.UUCP (sycom.mi.org!ro-chp!chopps)
+
+(provide 'notify-rexx-wait)
+
+(make-variable-buffer-local 'notify-rexx-port)
+(set-default 'notify-rexx-port nil)
+
+;;; Set old-kill-buffer to the internal version
+;; first check to see if it has already been bound.
+;; if not then bind it to the internal.
+;;
+(if (not (fboundp 'old-rexx-notify-kill-buffer ))
+    (fset 'old-rexx-notify-kill-buffer (symbol-function 'kill-buffer)))
+
+;;; redefine kill-buffer to check to see if it should
+;;  notify rexx that the buffer is being killed.
+;;
+(defun kill-buffer (buffer-strp)
+  "Notifys rexx that the current buffer is about to be killed. If it has one."
+  (interactive "bBuffer:")
+  (let ((buf nil))
+    (setq buf (get-buffer buffer-strp))
+    (switch-to-buffer buf)
+    (if (eq notify-rexx-port nil)
+	(old-rexx-notify-kill-buffer buffer-strp)
+      (amiga-arexx-send-command (concat "ADDRESS " notify-rexx-port "; QUIT") t)
+      (old-rexx-notify-kill-buffer buf))))
+-------8<-------------8<-------------8<-------------8<-------------8<--
+
+Here is the rexx code for the invoker, it can be copied to ``rexx:g.rexx''
+to be called from wshell with ``[prompt]g myfile.c WAIT'' or copied
+to ``s:g'' (or somewhere in path) to be called from the AmigaShell 
+(make sure to set the ``s'' script bit.
+-------8<-------------8<-------------8<-------------8<-------------8<--
+/***[g.rexx]***************************************************/
+/* An invoker for GNU Emacs.
+ * Copyright © 1993 Christian E. Hopps
+ *
+ * FILES/M,WAIT=STICKY/S,NOBACKUPS/S"
+ *
+ * use WAIT or STICKY option to have g.rexx wait for buffers 
+ * to be killed before returning (same as TurboText's ``WAIT''
+ * option or CED's ``STICKY'')
+ *
+ * NOBACKUPS will cause the files loaded by g.rexx not
+ * to perform backup saves.
+ *
+ * all options aply only to FILES that are specified on this
+ * invocation of g.rexx.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * I can be contacted at:
+ * bix: chopps
+ * uucp: chopps@ro-chp.UUCP (sycom.mi.org!ro-chp!chopps)
+ * 
+ */
+ 
+options results
+PARSE ARG argv
+
+/* wait for buffer to be killed */
+wait = 0
+/* files that are being waited on. */
+waitingfiles = 0
+
+/* do not make backups */
+nobackups = 0
+
+/* Parse the args from command line. */
+idx = 0
+DO WHILE argv ~= ""
+    carg = GetNextItem()
+    uarg = UPPER(carg)
+    IF uarg = "STICKY" | uarg = "WAIT" THEN
+	wait = 1
+    ELSE IF uarg = "NOBACKUPS" THEN
+	nobackups = 1
+    ELSE IF uarg = "?" THEN DO
+	SAY "template: FILES/M,WAIT=STICKY/S,NOBACKUPS/S"
+	EXIT 0
+    END
+    ELSE IF uarg ~= "" THEN DO
+	IF SUBSTR(uarg,1,5) = "FILES" THEN DO
+	    IF uarg = "FILES" THEN DO
+		file = GetNextItem()
+		IF file = "" THEN DO
+		    SAY "template: FILES/M,WAIT=STICKY/S,NOBACKUPS/S"
+		    EXIT 0
+		END
+	    END
+	    ELSE IF SUBSTR(uarg,6,1) = "=" THEN DO
+		file = SUBSTR(carg,7)
+		IF file = "" THEN DO
+		    SAY "template: FILES/M,WAIT=STICKY/S,NOBACKUPS/S"
+		    EXIT 0
+		END
+	    END
+
+	END
+	ELSE DO
+	    file = carg
+	    IF file = "" THEN DO
+		SAY "template: FILES/M,WAIT=STICKY/S,NOBACKUPS/S"
+		EXIT 0
+	    END
+	END
+	dir = PRAGMA('Directory')
+	IF 0 = pos(':',file) THEN DO
+	    IF lc ~= '/' & lc ~= ':' THEN
+		dir = dir || '/'
+	    filename = dir || file
+	END
+	ELSE DO
+	    IF lc ~= '/' & lc ~= ':' THEN
+		dir = dir || '/'
+	    filename = dir || file
+	END
+	filestoload.idx = filename
+	idx = idx + 1
+    END
+END
+
+IF wait = 1 THEN DO
+    start = 1
+    notifyport = "EMACS_NOTIFY" || start
+    DO WHILE SHOW('P',notifyport)
+	start = start + 1
+	notifyport = "EMACS_NOTIFY" || start
+    END
+
+    notifymp = OPENPORT(notifyport)
+    IF ~SHOW('P',notifyport) THEN DO
+	SAY "Cannot initialize the notification port."
+	EXIT 20
+    END
+END
+
+/* Load emacs if it is not already running */
+if (~show('p', 'EMACS1')) THEN DO
+    ADDRESS COMMAND
+    'run >NIL: emacs'
+    'waitforport EMACS1'
+END
+
+ADDRESS EMACS1
+
+IF wait = 1 THEN
+    "(require 'notify-rexx-wait)"
+
+/* will return either nil or t */
+"(symbol-value 'amiga-emacs-iconified)"
+
+IF result = "t" THEN
+    '(amiga-iconify)'
+
+fileidx = 0
+DO WHILE fileidx < idx
+    '(buffer-name)'
+    curbuf = RESULT
+
+    lisp = ' (progn '
+    IF curbuf ~= '"*scratch*"' THEN
+	lisp = lisp || ' (find-file-other-window "' || filestoload.fileidx || '"))'
+    ELSE
+	lisp = lisp || ' (find-file "' || filestoload.fileidx || '"))'
+
+    ADDRESS EMACS1 lisp
+
+    IF nobackups = 1 THEN DO
+	"(make-local-variable 'make-backup-files)"
+	'(setq make-backup-files nil)'
+    END
+
+    IF wait = 1 THEN DO
+	'(setq notify-rexx-port "' || notifyport || '")'
+	waitingfiles = waitingfiles + 1;
+    END
+    fileidx = fileidx + 1
+END
+
+'(amiga-window-to-front)'
+'(amiga-activate-window)'
+
+IF wait = 1 THEN DO
+    quitflag = 0
+    DO FOREVER
+	IF waitingfiles = 0 THEN
+	    EXIT 0
+	t = WAITPKT(notifyport)
+
+	DO FOREVER
+	    p = GETPKT(notifyport)
+	    IF C2D(p) = 0 THEN BREAK
+	    args = GETARG(p)
+
+	    PARSE VAR args argval args
+	    IF argval = "QUIT" THEN
+		waitingfiles = waitingfiles - 1
+
+	    t = REPLY(p,1)
+	END
+    END
+END
+
+EXIT 0
+
+GetNextItem: PROCEDURE EXPOSE argv
+ch = LEFT(argv,1)
+DO WHILE ch = " " | ch = "	"
+    argv = SUBSTR(argv,2)
+    ch = LEFT(argv,1)
+END
+ch = LEFT(argv,1)
+IF ch = '"' THEN
+    PARSE VAR argv '"'string'"' argv
+ELSE
+    PARSE VAR argv string argv
+RETURN string
+
+
+
+StripWS: PROCEDURE
+
+ARG string
+RETURN string
+-------8<-------------8<-------------8<-------------8<-------------8<--
+------------------------
+The Royal Oak Chophouse >> Chris Hopps
+Royal Oak, Michigan     >> sycom.mi.org!ro-chp!chopps
+
+

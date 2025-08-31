@@ -1,0 +1,50 @@
+dtags allows you to quickly lookup the autodocs for the AmigaOS functions
+while programming. It is a modification of the emacs TAGS facility.
+
+For example, you have forgotten the parameters for MakeLink. Your buffer contains:
+
+  if (MakeLink(
+
+you press the magic key (in my case M-g), and you get in an other buffer:
+
+dos.library/MakeLink                                     dos.library/MakeLink
+
+   NAME
+	MakeLink -- Creates a filesystem link (V36)
+
+   SYNOPSIS
+   [...]
+
+which should solve all your problems ...
+
+To install this facility, you must:
+
+a) Have an assign of DOCS: to the directory containing the AmigaOS 2.0 autodocs.
+
+b) Copy dtags.el and dtags.elc to your lisp directory (probably gnuemacs:lisp).
+
+c) Execute the make-dtags.el file once (with M-x load-file). This will create
+a file called DTAGS in DOCS: to help emacs find the functions in the autodocs.
+
+d) Add the following lines to your .emacs file:
+
+(autoload 'visit-dtags-table "dtags" nil t)
+(autoload 'doc-tag "dtags" nil t)
+(autoload 'dtags-search "dtags" nil t)
+(autoload 'list-dtags "dtags" nil t)
+(autoload 'dtags-apropos "dtags" nil t)
+(autoload 'make-dtags "dtags" nil t)
+
+and optionally a key definition to execute doc-tag (the autodoc lookup function):
+
+(define-key global-map "\M-g" 'doc-tag)
+
+Usage:
+-----
+
+You just press M-g (if you chose that key). Emacs will prompt you for the
+function to lookup, but it will propose as a default a word near your
+cursor. Once this has been chosen, emacs will display the appropriate autodoc.
+You can enter a substring of the function name, in which case emacs will display
+the first one that matches it. If you want to see other functions containing the
+same substring, press M-, (or M-x tags-loop-continue).

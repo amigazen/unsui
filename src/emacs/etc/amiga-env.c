@@ -1,0 +1,439 @@
+/* env.c - manipulate environment and execute a program
+   in that environment
+   Mly 861126
+
+   Copyright (C) 1986 Free Software Foundation, Inc.
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 1, or (at your option)
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+ In other words, you are welcome to use, share and improve this program.
+ You are forbidden to forbid anyone else to use, share and improve
+ what you give them.   Help stamp out software-hoarding!  */
+
+/* 
+
+   If first argument is "-", then a new environment is constructed
+   from scratch; otherwise the environment is inherited from the parent
+   process, except as modified by other options.
+   
+   So, "env - foo" will invoke the "foo" program in a null environment,
+   whereas "env foo" would invoke "foo" in the same environment as that
+   passed to "env" itself.
+
+   Subsequent arguments are interpreted as follows:
+   
+   * "variable=value" (ie an arg containing a "=" character)
+     means to set the specified environment variable to that value.
+     `value' may be of zero length ("variable=").  Note that setting
+     a variable to a zero-length value is different from unsetting it.
+
+   * "-u variable" or "-unset variable"
+     means to unset that variable
+     If that variable isn't set, does nothing.
+
+   * "-s variable value" or "-set variable value"
+     same as "variable=value"
+
+   * "-" or "--"
+     are used to indicate that the following argument is the program
+     to invoke.  This is only necessary when the program's name
+     begins with "-" or contains a "="
+
+   * anything else
+     The first remaining argument specifies a program to invoke
+     (it is searched for according to the specification of the PATH
+     environment variable) and any arguments following that are
+     passed as arguments to that program
+
+     If no program-name is specified following the environment
+     specifications the the resulting environment is printed
+     (The is like specifying a program-name of "printenv")
+
+   Examples:
+     If the environment passed to "env" is
+     { USER=rms EDITOR=emacs PATH=.:/gnubin:/hacks }
+
+     * "env DISPLAY=gnu:0 nemacs"
+        calls "nemacs" in the envionment
+	{ EDITOR=emacs USER=rms DISPLAY=gnu }
+
+     * "env - USER=foo /hacks/hack bar baz"
+       will call the "hack" program on arguments "bar" and "baz"
+       in an environment in which the only variable is "USER"
+       Note that the "-" option will clear out the PATH variable,
+       so one should be careful to specify in which directory
+       to find the program to call
+       
+     * "env -u EDITOR USER=foo PATH=/energy -- e=mc2 bar baz"
+       The program "/energy/e=mc2" is called with environment
+       { USER=foo PATH=/energy }
+
+*/
+
+#include <exec/types.h>
+#include <dos/dostags.h>
+#include <dos/var.h>
+#include <proto/dos.h>
+#include <proto/exec.h>
+
+#ifdef EMACS
+#define NO_SHORTNAMES
+#include "../src/config.h"
+#endif /* EMACS */
+
+#include <stdio.h>
+#include <errno.h>
+#include <setjmp.h>
+
+extern int execvp ();
+extern char *index ();
+
+char *xmalloc (), *xrealloc ();
+char *concat ();
+
+char *progname;
+void setenv ();
+void fatal ();
+
+#define index strchr
+
+struct MsgPort *end_port;
+struct {
+  struct Message msg;
+  int rc;
+} end_msg;
+int gargc;
+char **gargv;
+jmp_buf unixexit_buf;
+
+void __saveds unix_start(void)
+{
+  int rc;
+
+  if (!(rc = setjmp(unixexit_buf)))
+    {
+      unixmain(gargc, gargv);
+      rc = 1;
+    }
+  end_msg.rc = rc - 1;
+  end_msg.msg.mn_Length = sizeof(end_msg);
+  end_msg.msg.mn_Node.ln_Type = NT_MESSAGE;
+  PutMsg(end_port, &end_msg);
+}
+
+void unixexit(int rc)
+{
+  longjmp(unixexit_buf, rc + 1);
+}
+
+main(int argc, char **argv)
+{
+  int rc = 1;
+  long stacksize;
+  struct Process *us = (struct Process *)FindTask(0);
+
+  if (us->pr_CLI) stacksize = ((struct CommandLineInterface *)BADDR(us->pr_CLI))->cli_DefaultStack << 2;
+  else stacksize = us->pr_StackSize;
+
+  gargc = argc;
+  gargv = argv;
+  
+  end_port = CreateMsgPort();
+
+  if (end_port && CreateNewProcTags(NP_Entry, unix_start,
+				    NP_Input, Input(), NP_CloseInput, 0UL,
+				    NP_Output, Output(), NP_CloseOutput, 0UL,
+				    NP_StackSize, stacksize,
+				    NP_Cli, TRUE, TAG_END))
+    {
+      while (!GetMsg(end_port)) WaitPort(end_port);
+      rc = end_msg.rc;
+    }
+  if (end_port) DeleteMsgPort(end_port);
+  Delay(1);
+  exit(rc);
+}
+
+#define exit unixexit
+
+unixmain (argc, argv)
+     register int argc;
+     register char **argv;
+{
+  register char *tem;
+
+  progname = argv[0];
+  argc--;
+  argv++;
+
+  /* "-" flag means to not inherit parent's environment */
+  /* This is ignored on the amiga */
+  if (argc && !strcmp (*argv, "-"))
+    {
+      argc--;
+      argv++;
+    }
+
+  while (argc > 0)
+    {
+      tem = index (*argv, '=');
+      if (tem)
+	/* If arg contains a "=" it specifies to set a variable */
+	{
+	  *tem = '\000';
+	  setenv (*argv, tem + 1);
+	  argc--; argv++;
+	  continue;
+	}
+      
+      if (**argv != '-')
+	/* Remaining args are program name and args to pass it */
+	break;
+
+      if (argc < 2)
+	fatal ("No argument following \"%s\" switch", *argv);
+       if (!strcmp (*argv, "-u") ||
+	       !strcmp (*argv, "-unset"))
+	/* Unset a variable */
+	{
+	  argc--; argv++;
+	  setenv (*argv, 0);
+	  argc--; argv++;
+	}
+      else if (!strcmp (*argv, "-s") ||
+	       !strcmp (*argv, "-set"))
+	/* Set a variable */
+	{
+	  argc--; argv++;
+	  tem = *argv;
+	  if (argc < 2)
+	    fatal ("No value specified for variable \"%s\"",
+		   tem);
+	  argc--; argv++;
+	  setenv (tem, *argv);
+	  argc--; argv++;
+	}
+      else if (!strcmp (*argv, "-") || !strcmp (*argv, "--"))
+	{
+	  argc--; argv++;
+	  break;
+	}
+      else
+	{
+	  fatal ("unknown switch \"%s\"", *argv);
+	}
+    }
+
+  /* If no program specified print the environment and exit */
+  if (argc <= 0)
+    {
+      printenv();
+      exit (0);
+    }
+  else
+    {
+      extern int errno, sys_nerr;
+      extern char *sys_errlist[];
+
+      (void) execvp (*argv, argv);
+
+      fprintf (stderr, "%s: Cannot execute \"%s\"",
+	       progname, *argv);
+      if (errno < sys_nerr)
+	fprintf (stderr, ": %s\n" , sys_errlist[errno]);
+      else
+	putc ('\n', stderr);
+      exit (errno != 0 ? errno : 1);
+    }
+}
+
+int execvp(program, argv)
+char *program, **argv;
+{
+  int index, comsize;
+  char *combuf, *bp;
+  long err, rc;
+  
+  combuf = xmalloc(256);
+  comsize = 256;
+
+  bp = combuf;
+  for (index = 0; argv[index] != 0; index++)
+    {
+      char *s = argv[index];
+      int len;
+
+      len = 3;
+      while (*s) len += 1 + 2 * (*s++ == '"');
+      if (bp + len + 1 >= combuf + comsize)
+	{
+	  char *newbuf;
+	  int new_comsize;
+
+	  new_comsize = 2 * comsize + len;
+	  newbuf = xmalloc(new_comsize);
+	  memcpy(newbuf, combuf, comsize);
+
+	  bp = newbuf + (bp - combuf);
+	  combuf = newbuf;
+	  comsize = new_comsize;
+	}
+      *bp++ = ' ';
+      *bp++ = '"';
+      s = argv[index];
+      while (*s)
+	{
+	  if (*s == '"' || *s == '*') *bp++ = '*';
+	  *bp++ = *s++;
+	}
+      *bp++ = '"';
+    }
+  *bp = '\0';
+  rc = SystemTags(combuf,
+		  SYS_UserShell, 1UL,
+		  TAG_END);
+  err = IoErr();
+  free(combuf);
+  if (rc != -1) exit(rc);
+  
+  errno = convert_oserr(err);
+  return -1;
+}
+
+int convert_oserr(int ioerr)
+{
+  extern int _OSERR;
+
+  _OSERR = ioerr;
+  switch (ioerr)
+    {
+    case 0: return 0;
+    case ERROR_NO_FREE_STORE: return ENOMEM;
+    case ERROR_TASK_TABLE_FULL: return EAGAIN;
+    case ERROR_BAD_TEMPLATE: case ERROR_REQUIRED_ARG_MISSING:
+    case ERROR_KEY_NEEDS_ARG: case ERROR_TOO_MANY_ARGS:
+    case ERROR_UNMATCHED_QUOTES: case ERROR_LINE_TOO_LONG: return EINVAL;
+    case ERROR_OBJECT_IN_USE: return EBUSY;
+    case ERROR_OBJECT_EXISTS: return EEXIST;
+    case ERROR_DIR_NOT_FOUND: return ENOENT;
+    case ERROR_OBJECT_NOT_FOUND: return ENOENT;
+    case ERROR_BAD_STREAM_NAME: return EINVAL;
+    case ERROR_OBJECT_TOO_LARGE: return E2BIG;
+    case ERROR_ACTION_NOT_KNOWN: return EINVAL;
+    case ERROR_INVALID_COMPONENT_NAME: return EINVAL;
+    case ERROR_INVALID_LOCK: return EINVAL;
+    case ERROR_OBJECT_WRONG_TYPE: return EINVAL;
+    case ERROR_DISK_WRITE_PROTECTED: return EACCES;
+    case ERROR_SEEK_ERROR: return EIO;
+    case ERROR_DISK_FULL: return ENOSPC;
+    case ERROR_DELETE_PROTECTED: return EACCES;
+    case ERROR_WRITE_PROTECTED: return EACCES;
+    case ERROR_READ_PROTECTED: return EACCES;
+    case ERROR_RENAME_ACROSS_DEVICES: return EXDEV;
+    default: return EOSERR;
+    }
+}
+
+printenv(void)
+/* Effect: Prints a UNIX style environment from the AmigaDOS environment.
+*/
+{
+  struct LocalVar *scan_env;
+  struct Process *us = (struct Process *)FindTask(0);
+
+  for (scan_env = (struct LocalVar *)us->pr_LocalVars.mlh_Head;
+       scan_env->lv_Node.ln_Succ;
+       scan_env = (struct LocalVar *)scan_env->lv_Node.ln_Succ)
+    if (scan_env->lv_Node.ln_Type == LV_VAR &&
+	!(scan_env->lv_Flags & (GVF_GLOBAL_ONLY | GVF_BINARY_VAR)))
+      {
+	/* We only handle local text variables */
+	printf("%s=", scan_env->lv_Node.ln_Name);
+	fwrite(scan_env->lv_Value, 1, scan_env->lv_Len, stdout);
+	putchar('\n');
+      }
+}
+
+void
+setenv (var, val)
+  register char *var, *val;
+{
+  if (val) SetVar(var, val, -1, LV_VAR | GVF_LOCAL_ONLY);
+  else DeleteVar(var, LV_VAR | GVF_LOCAL_ONLY);
+}
+
+void
+fatal (msg, arg1, arg2)
+     char *msg, *arg1, *arg2;
+{
+  fprintf (stderr, "%s: ", progname);
+  fprintf (stderr, msg, arg1, arg2);
+  putc ('\n', stderr);
+  exit (1);
+}
+
+
+extern char *malloc (), *realloc ();
+
+void
+memory_fatal ()
+{
+  fatal ("Out of memory");
+}
+
+char *
+xmalloc (size)
+     int size;
+{
+  register char *value;
+  value = (char *) malloc (size);
+  if (!value) memory_fatal ();
+  return (value);
+}
+
+char *
+xrealloc (ptr, size)
+     char *ptr;
+     int size;
+{
+  register char *value;
+  value = (char *) realloc (ptr, size);
+  if (!value) memory_fatal ();
+  return (value);
+}
+
+/* Return a newly-allocated string whose contents concatenate those of s1, s2, s3.  */
+
+char *
+concat (s1, s2, s3)
+     char *s1, *s2, *s3;
+{
+  int len1 = strlen (s1), len2 = strlen (s2), len3 = strlen (s3);
+  char *result = (char *) xmalloc (len1 + len2 + len3 + 1);
+
+  strcpy (result, s1);
+  strcpy (result + len1, s2);
+  strcpy (result + len1 + len2, s3);
+  *(result + len1 + len2 + len3) = 0;
+
+  return result;
+}
+
+
+/*
+ * Local variables:
+ * compile-command: "lc -L -v amiga-env.c"
+ * end:
+ */

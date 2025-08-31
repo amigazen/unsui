@@ -1,0 +1,26 @@
+.key a1,a2,a3,a4,a5,a6,a7,a8,a9
+.bra {                                       
+.ket }   
+; Startup script for GNU Emacs                                    
+; Make sure the FIFO handler is ready        
+assign >NIL: FIFO: exists                    
+if warn                                      
+  if exists L:fifo-handler                   
+    echo "Starting fifo-handler"             
+    run <NIL: >NIL: L:fifo-handler           
+  else                                       
+    echo "Cannot find L:fifo-handler."       
+    echo "External processes will not work." 
+  endif                                      
+endif                                        
+; Increase the stack size as needed          
+set stack=`getstack`
+if not $stack gt 40000 val
+  stack 40000
+endif
+; Invoke GNU Emacs
+run gnuemacs:temacs {a1} {a2} {a3} {a4} {a5} {a6} {a7} {a8} {a9}
+; Restore the previous stack size                                       
+stack $stack
+unset stack
+

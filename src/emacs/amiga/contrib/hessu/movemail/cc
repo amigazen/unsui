@@ -1,0 +1,6 @@
+older movemail.o movemail.c
+if warn
+   incver version.h
+endif
+lc -L -M -E movemail.c
+protect movemail +p

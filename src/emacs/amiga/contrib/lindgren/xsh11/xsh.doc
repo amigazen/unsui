@@ -1,0 +1,91 @@
+
+
+			XX     XX  SSSSS   HH	 HH
+			 XX   XX  SS   SS  HH	 HH
+			  XX XX   SS	   HH 	 HH
+			   XXX     SSSSS   HHHHHHHH
+			  XX XX        SS  HH	 HH
+			 XX   XX  SS   SS  HH    HH
+			XX     XX  SSSSS   HH    HH
+
+		-----------------------------------------
+			       Release 1.1
+
+			       Written by:
+		    Anders Lindgren, d91ali@csd.uu.se
+
+		A simple Shell-dispatcher, which DOESN'T
+			      open a window
+
+				   and
+			
+		A emacs-filter which removes CTRL-O codes
+		-----------------------------------------
+
+	* Status
+	~~~~~~~~
+
+	This program is in the public domain.
+
+
+	* Introduction
+	~~~~~~~~~~~~~~	
+
+	A while ago I recieved the GNU-EMACS V1.26 briliantly ported
+	to the Amiga by David Gay. In this release asynchronous processes
+	were supported for the first time. Normally a shell can be run
+	in one of EMACS buffers, and a unix-sh-clone were supplied.
+
+	I wanted to get my WShell running under EMACS, but
+	the only way I know of starting WShell is by the command "NewWSH".
+	Unfourtuantely It opens a window which isn't that useful under 
+	these circumstances. What I wanted was a small command which 
+	started a standard shell using the current input/outputstream, 
+	a program which eventually became XSH.
+
+	To use WShell the "SetExecute" from the WShell distribution
+	must have been executed.
+
+	
+	* Install
+	~~~~~~~~~
+
+	To install XSH copy it to somewhere in your path.
+	copy the file "sshell.el" to a place where EMACS can
+	find it, for example "GnuEmacs:lisp".
+
+	Insert the following line in your "s:.emacs"-file:
+
+		(autoload 'sshell "sshell.el" nil t)
+
+	* Note
+	~~~~~~
+
+	Some applications, like some versions of LS, tries to determine
+	the width of the screen. If they don't handle a failure they
+	will probably crash the machine. Commodores dir and list
+	commands work allright though.
+
+
+	* Usage
+	~~~~~~~
+
+	To start a wshell, type "M-x xshell". (For you not familar with
+	EMACS syntax, press Escape, press "x", type "xshell" folloed
+	by a return).
+
+	A buffer, named *shell*, containing the shell will be opened.
+
+	* Bugs/Todo etc.
+	~~~~~~~~~~~~~~~~
+
+	- xsh outputs two prompts in the beginning. It's only a cosmetic
+	  problem so I haven't studied it at all.
+
+	* History
+	~~~~~~~~~
+
+	93-Jan    V1.0  First release.
+	93-Jun-09 V1.1  EList file and function changed name from
+			wshell to xshell. No change in the function
+			of the progran.

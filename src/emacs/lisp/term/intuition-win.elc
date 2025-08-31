@@ -1,0 +1,16 @@
+
+(load "s:.emacs-menu" t t)
+
+(setq command-switch-alist (append (quote (("-fn" . amiga-handle-set-font) ("-fg" . amiga-handle-set-foreground) ("-bg" . amiga-handle-set-background) ("-geometry" . amiga-handle-set-geometry) ("-screen" . amiga-handle-set-screen))) command-switch-alist))
+
+(defun amiga-handle-set-font (switch) (byte-code "ÀÁÂ‡" [err (byte-code "	@Ã	A@!@	AA‰ˆÄ
+\"*‡" [wfont command-line-args-left height read-from-string amiga-set-font] 4) ((error (byte-code "ÀÁ!‡" [message "Failed to load font"] 2)))] 3))
+
+(defun amiga-handle-set-foreground (switch) (byte-code "ÀÁÂ‡" [err (byte-code "Â	@!@	A‰ˆÃ!)‡" [pen command-line-args-left read-from-string amiga-set-foreground-color] 3) ((error (byte-code "ÀÁ!‡" [message "Failed to set foreground colour"] 2)))] 3))
+
+(defun amiga-handle-set-background (switch) (byte-code "ÀÁÂ‡" [err (byte-code "Â	@!@	A‰ˆÃ!)‡" [pen command-line-args-left read-from-string amiga-set-background-color] 3) ((error (byte-code "ÀÁ!‡" [message "Failed to set background colour"] 2)))] 3))
+
+(defun amiga-handle-set-screen (switch) (byte-code "ÀÁÂ‡" [err (byte-code "	@	A‰ˆÃÂÂÂÂ%)‡" [name command-line-args-left nil amiga-set-geometry] 6) ((error (byte-code "ÀÁ!‡" [message "Couldn't open on public screen"] 2)))] 3))
+
+(defun amiga-handle-set-geometry (switch) (byte-code "ÀÁÂ‡" [err (byte-code "Æ	@!@Æ	A@!@Æ	AA@!@Æ	AAA@!@	AAAA‰ˆÇ
+Å%,‡" [x command-line-args-left y w h nil read-from-string amiga-set-geometry] 10) ((error (byte-code "ÀÁ!‡" [message "Couldn't set window size"] 2)))] 3))

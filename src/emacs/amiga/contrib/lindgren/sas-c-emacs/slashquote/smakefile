@@ -1,0 +1,21 @@
+#
+#   FILE
+#	slashquote/smakefile
+#
+
+SCFLAGS = RESETOPTIONS STREQ STRINGMERGE NOSTKCHK LIBCODE OPT 
+
+
+slashquote.library : slashquote.o
+		slink	TO $@						\
+			FROM lib:libent.o lib:libinit.o slashquote.o	\
+			LIBPREFIX _LIB LIBFD slashquote.fd		\
+			LIBID ""					\
+			MAP slashquote.map hxsfl SWIDTH 10 PWIDTH 14 FWIDTH 14 \
+			BATCH NOALVS					\
+			SMALLCODE SMALLDATA
+		copy $@ to LIBS:
+		avail flush
+
+slashquote.o	: slashquote.c
+		sc $(SCFLAGS) $*

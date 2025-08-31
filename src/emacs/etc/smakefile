@@ -1,0 +1,17 @@
+all: env etags sh wakeup make-docfile
+
+env: amiga-env.c
+	echo "'sc link to env nostkchk amiga-env.c' should work (but doesn't)."
+	echo "You're welcome to try ..."
+
+make-docfile: make-docfile.c
+	sc link make-docfile.c
+
+sh: sh.c
+	sc link sh.c
+
+wakeup: wakeup.c
+	sc link wakeup.c
+
+etags: etags.c
+	sc link idir src:unix/include def ETAGS etags.c lib src:unix/src/unix.lib

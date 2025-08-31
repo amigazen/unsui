@@ -1,0 +1,6 @@
+older fakemail.o fakemail.c
+if warn
+   incver version.h
+endif
+lc -L -M -E fakemail.c
+protect fakemail +p

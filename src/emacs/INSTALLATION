@@ -1,0 +1,58 @@
+DON'T FORGET: This version of Emacs REQUIRES AMIGADOS V2.04 !!
+
+If you are updating from a previous version, the following steps apply:
+- You must redefine your GNUEMACS: assign (the name of the directory
+  has changed from emacs-18.58 to emacs-18.59).
+- You should make sure you are using the lisp files (*.el and *.elc) which
+  come with this release, as several of them have changed.
+
+New users should do the following (assuming you are in the emacs-18.59
+directory):
+
+1. Copy amiga/.emacs, amiga/.emacs-menu.menu, amiga/.emacs-menu.el to s:
+2. Copy amiga/c/#? to somewhere in your path.
+3. Add an assign GNUEMACS: <wherever you've put the emacs directory> to 
+   your User-Startup.
+4. Install Matt Dillon's fifo.library and fifo: handler if you want to use
+   external processes (This can be found on Fish disks). If you have any
+   problems, try a version at least as recent as that on Fish Disk 588.
+5. Define various environment variables (these all have defaults, so this
+   isn't absolutely necessary, except for ESHELL) :
+
+     USER     - a username (a la Unix) (default "user")
+     USERNAME - your full name (default same as $USER)
+     HOME     - your "home" directory (This is the directory refered to
+		by ~/<file>, and where the .emacs file is looked for)
+		(default "s:").
+     HOSTNAME - a name for your system (default "amiga")
+     ESHELL   - where to find an unix-like shell (no default). By unix-like
+		I mean that it should not open a window to get its input.
+		The only tested value for this is GNUEMACS:etc/sh.
+
+   For instance, I have the following values:
+     USER: dgay, USERNAME: David E. Gay, HOSTNAME: owl,
+     ESHELL: gnuemacs:etc/sh
+
+6. If you want to check that emacs is working, type 
+ 
+  assign gnuemacs: ""
+  emacs
+
+   If all goes well, emacs should open a window. If you get
+     memacs: Unknown command
+   you have an alias for emacs. Try editing s:Shell-Startup and removing it.
+
+   If you get
+     emacs: file is not executable
+   try typing
+     protect <wherever you put the commands from step 2>/emacs +s
+
+   And finally, if you get
+     wrong number of arguments
+     if failed returncode 10
+   make sure that you have getstack in your path
+
+7. If you are going to use emacs over a serial line, you must install 
+   the termcap file, which comes with the source version. To do so, type:
+
+     join gnuemacs:etc/termcap.ucb gnuemacs:etc/termcap.amiga as s:termcap

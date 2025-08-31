@@ -1,0 +1,35 @@
+To compile emacs, you will need SAS C 6.01 or later. If you try to
+make it work with Aztec C or gcc, you might run into difficulties with
+the dumping code: 
+- The "small" data model (A4-relative) is used, to get all the variables
+  in one hunk.
+- Some variables are declared with the "far" attribute to get them out
+  of this hunk (and the dumping code depends on this). Move these to
+  the amiga_data.c module (which is for variables that shouldn't be
+  dumped).
+
+To compile:
+
+a) Install my 'unix compatibility' library (available by ftp and on fish
+   disks).
+
+b) Install as usual (see INSTALLATION).
+
+c) Compile the C preprocessor (SAS's one has a few problems ...):
+
+     cd gnuemacs:cpp
+     smake
+
+d) Compile & dump emacs
+
+     stack 20000
+     cd gnuemacs:src
+     smake
+     copy temacs /
+
+   (This takes around 20 minutes from scratch on an A2500/30).
+
+If all goes well, you should have a new version of emacs ...
+
+[Note: The DOC strings are not remade systematically. To change this,
+edit ymakefile and remove the comment from the rule for xemacs]

@@ -1,0 +1,16 @@
+all: env etags sh wakeup make-docfile
+
+env: amiga-env.c _main.c
+	sc link to env nostkchk idir src:unix/include idir src:unix/include/internal idir src:unix/src amiga-env.c _main.c opt src:unix/src/unix.lib
+
+make-docfile: make-docfile.c
+	sc link make-docfile.c
+
+sh: sh.c
+	sc link sh.c
+
+wakeup: wakeup.c
+	sc link wakeup.c
+
+etags: etags.c
+	sc link idir src:unix/include def ETAGS etags.c lib src:unix/src/unix.lib
