@@ -25,6 +25,11 @@ $(OBJS):        sed.h
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
+#include "/common/getopt.h"
+
+/* POSIX sed version and usage information */
+#define SED_VERSION "4.0"
+#define SED_DATE "2024"
 
 /*+++++++++++++++*/
 
@@ -146,7 +151,7 @@ long linenum[MAXLINES];         /* numeric-addresses table */
 int nflag;                      /* -n option flag */
 int eargc;                      /* scratch copy of argument count */
 char **eargv;                   /* scratch copy of argument list */
-char bits[] = {1, 2, 4, 8, 16, 32, 64, 128};
+unsigned char bits[] = {1, 2, 4, 8, 16, 32, 64, 128};
 
 /***** module common stuff *****/
 
@@ -158,7 +163,7 @@ char bits[] = {1, 2, 4, 8, 16, 32, 64, 128};
 
 #define SKIPWS(pc)      while ((*pc==' ') || (*pc=='\t')) pc++
 /* [<][>][^][v][top][bottom][index][help] */
-#define ABORT(msg)      (fprintf(stderr, msg, linebuf), quit(2))
+#define ABORT(msg)      (fprintf(stderr, msg, linebuf), quit(1))
 /* [<][>][^][v][top][bottom][index][help] */
 #define IFEQ(x, v)      if (*x == v) x++ ,      /* do expression */
 /* [<][>][^][v][top][bottom][index][help] */
@@ -213,7 +218,6 @@ static int bcount = 0;          /* # tagged patterns in current RE */
 
 /* Compilation flags */
 static int eflag;               /* -e option flag */
-static int gflag;               /* -g option flag */
 
 /* Function prototypes - ANSI C compliant */
 int main(int argc, char *argv[]);
@@ -245,44 +249,288 @@ static char *getline(char *buf);
 static int Memcmp(char *a, char *b, int count);
 static void readout(void);
 
+/* Print usage information and exit */
+static void usage(const char *progname, int exit_code)
+{
+    fprintf(stderr, "Usage: %s [OPTION]... {script-only-if-no-other-script} [input-file]...\n", progname);
+    fprintf(stderr, "\n");
+    fprintf(stderr, "  -n, --quiet, --silent\n");
+    fprintf(stderr, "                 suppress automatic printing of pattern space\n");
+    fprintf(stderr, "  -e script, --expression=script\n");
+    fprintf(stderr, "                 add the script to the commands to be executed\n");
+    fprintf(stderr, "  -f script-file, --file=script-file\n");
+    fprintf(stderr, "                 add the contents of script-file to the commands to be executed\n");
+    fprintf(stderr, "  --follow-symlinks\n");
+    fprintf(stderr, "                 follow symlinks when processing in place\n");
+    fprintf(stderr, "  -i[SUFFIX], --in-place[=SUFFIX]\n");
+    fprintf(stderr, "                 edit files in place (makes backup if SUFFIX supplied)\n");
+    fprintf(stderr, "  -l N, --line-length=N\n");
+    fprintf(stderr, "                 specify the desired line-wrap length for the `l' command\n");
+    fprintf(stderr, "  --posix\n");
+    fprintf(stderr, "                 disable all GNU extensions\n");
+    fprintf(stderr, "  -r, --regexp-extended\n");
+    fprintf(stderr, "                 use extended regular expressions in the script\n");
+    fprintf(stderr, "  -s, --separate\n");
+    fprintf(stderr, "                 consider files as separate rather than as a single continuous\n");
+    fprintf(stderr, "                 long stream\n");
+    fprintf(stderr, "  -u, --unbuffered\n");
+    fprintf(stderr, "                 load minimal amounts of data from the input files and flush\n");
+    fprintf(stderr, "                 the output buffers more often\n");
+    fprintf(stderr, "  -z, --null-data\n");
+    fprintf(stderr, "                 separate lines by NUL characters, not newlines\n");
+    fprintf(stderr, "      --help     display this help and exit\n");
+    fprintf(stderr, "      --version  output version information and exit\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "If no -e, --expression, -f, or --file option is given, then the first\n");
+    fprintf(stderr, "non-option argument is taken as the sed script to interpret.  All remaining\n");
+    fprintf(stderr, "arguments are names of input files; if no input files are specified,\n");
+    fprintf(stderr, "then the standard input is read.\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "Note: Some advanced options (extended regex, in-place editing, etc.) are\n");
+    fprintf(stderr, "not yet fully implemented in this version.\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "UNSUI POSIX Runtime Environment\n");
+    fprintf(stderr, "Based on Eric S. Raymond's Public Domain implementation\n");
+    
+    exit(exit_code);
+}
+
+/* Print version information and exit */
+static void version(const char *progname)
+{
+    fprintf(stderr, "%s (UNSUI POSIX Runtime) %s\n", progname, SED_VERSION);
+    fprintf(stderr, "Copyright (C) %s UNSUI Project\n", SED_DATE);
+    fprintf(stderr, "Based on Eric S. Raymond's Public Domain implementation\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "This is free software; see the source for copying conditions.\n");
+    fprintf(stderr, "There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n");
+    
+    exit(0);
+}
+
 int main(int argc, char *argv[])
 /* [<][>][^][v][top][bottom][index][help] */
-/* Main sequence of the stream editor */
 {
+  int opt;
+  const char *optstring = "ef:gnrsuzil:";
+  int extended_regex = 0;       /* -r flag for extended regex */
+  int separate_files = 0;       /* -s flag for separate file processing */
+  int unbuffered = 0;           /* -u flag for unbuffered I/O */
+  int null_data = 0;            /* -z flag for NUL-separated data */
+  int in_place = 0;             /* -i flag for in-place editing */
+  char *backup_suffix = NULL;   /* backup suffix for -i option */
+  int line_length = 70;         /* default line length for l command */
+  
   eargc = argc;                 /* set local copy of argument count */
   eargv = argv;                 /* set local copy of argument list */
   cmdp->addr1 = pool;           /* 1st addr expand will be at pool start */
   if (eargc == 1) quit(0);      /* exit immediately if no arguments */
-  /* Scan through the arguments, interpreting each one */
-  while ((--eargc > 0) && (**++eargv == '-')) switch (eargv[0][1]) {
+  
+  /* Parse command line options using getopt */
+  reset_getopt(); /* Reset getopt state */
+  
+  while ((opt = getopt(eargc, eargv, optstring)) != -1) {
+        switch (opt) {
             case 'e':
                 eflag++;
                 compile();      /* compile with e flag on */
                 eflag = 0;
-                continue;       /* get another argument */
+                break;
             case 'f':
-                if (eargc-- <= 0)       /* barf if no -f file */
-                        quit(2);
-                if ((cmdf = fopen(*++eargv, "r")) == NULL) {
-                        fprintf(stderr, COCFI, *eargv);
-                        quit(2);
+                if ((cmdf = fopen(optarg, "r")) == NULL) {
+                        fprintf(stderr, COCFI, optarg);
+                        quit(1);
                 }
                 compile();      /* file is O.K., compile it */
                 fclose(cmdf);
-                continue;       /* go back for another argument */
-            case 'g':
-                gflag++;        /* set global flag on all s cmds */
-                continue;
+                break;
             case 'n':
                 nflag++;        /* no print except on p flag or w */
-                continue;
+                break;
+            case 'r':
+                extended_regex = 1;  /* enable extended regex */
+                break;
+            case 's':
+                separate_files = 1;  /* process files separately */
+                break;
+            case 'u':
+                unbuffered = 1;      /* unbuffered I/O */
+                break;
+            case 'z':
+                null_data = 1;       /* NUL-separated data */
+                break;
+            case 'i':
+                in_place = 1;        /* in-place editing */
+                if (optarg) {
+                    backup_suffix = optarg;
+                } else if (optind < argc && argv[optind] && argv[optind][0] != '-') {
+                    /* Check if next argument is a suffix (not an option) */
+                    backup_suffix = argv[optind];
+                    optind++; /* consume the suffix */
+                }
+                break;
+            case 'l':
+                line_length = atoi(optarg);
+                if (line_length <= 0) {
+                    fprintf(stderr, "sed: invalid line length: %s\n", optarg);
+                    quit(1);
+                }
+                break;
+            case '?':
+                /* getopt already printed error message */
+                quit(1);
+                break;
             default:
-                fprintf(stdout, UFLAG, eargv[0][1]);
-                continue;
+                fprintf(stderr, "sed: internal error in option parsing\n");
+                quit(1);
+                break;
         }
+  }
+  
+  /* Validate option combinations */
+  if (in_place && eargc == 0) {
+      fprintf(stderr, "sed: -i option requires at least one input file\n");
+      quit(1);
+  }
+  
+  if (null_data && in_place) {
+      fprintf(stderr, "sed: -z option cannot be used with -i option\n");
+      quit(1);
+  }
+  
+  /* Skip processed options */
+  eargc -= optind;
+  eargv += optind;
 
+  /* Check for --help, --version, --posix, and --follow-symlinks options */
+  if (eargc > 0 && strcmp(eargv[0], "--help") == 0) {
+      usage(argv[0], 0);
+  }
+  if (eargc > 0 && strcmp(eargv[0], "--version") == 0) {
+      version(argv[0]);
+  }
+  if (eargc > 0 && strcmp(eargv[0], "--posix") == 0) {
+      /* Disable GNU extensions for POSIX compliance */
+      extended_regex = 0;
+      separate_files = 0;
+      unbuffered = 0;
+      null_data = 0;
+      in_place = 0;
+      eargv++;
+      eargc--;
+  }
+  if (eargc > 0 && strcmp(eargv[0], "--follow-symlinks") == 0) {
+      /* Note: symlink following not yet implemented */
+      fprintf(stderr, "sed: --follow-symlinks option not yet implemented\n");
+      eargv++;
+      eargc--;
+  }
+  
+  /* Check for --expression and --file long options */
+  if (eargc > 0 && strncmp(eargv[0], "--expression=", 13) == 0) {
+      char *script = eargv[0] + 13;
+      if (*script == '\0') {
+          fprintf(stderr, "sed: --expression= requires a script argument\n");
+          quit(1);
+      }
+      eflag++;
+      /* Set up for script compilation */
+      eargv++;
+      eargc--;
+      compile();
+      eflag = 0;
+  }
+  if (eargc > 0 && strncmp(eargv[0], "--file=", 7) == 0) {
+      char *filename = eargv[0] + 7;
+      if (*filename == '\0') {
+          fprintf(stderr, "sed: --file= requires a filename argument\n");
+          quit(1);
+      }
+      if ((cmdf = fopen(filename, "r")) == NULL) {
+          fprintf(stderr, COCFI, filename);
+          quit(1);
+      }
+      compile();
+      fclose(cmdf);
+      eargv++;
+      eargc--;
+  }
+  
+  /* Check for --quiet and --silent long options (equivalent to -n) */
+  if (eargc > 0 && (strcmp(eargv[0], "--quiet") == 0 || strcmp(eargv[0], "--silent") == 0)) {
+      nflag++;
+      eargv++;
+      eargc--;
+  }
+  
+  /* Check for --regexp-extended long option (equivalent to -r) */
+  if (eargc > 0 && strcmp(eargv[0], "--regexp-extended") == 0) {
+      extended_regex = 1;
+      eargv++;
+      eargc--;
+  }
+  
+  /* Check for --separate long option (equivalent to -s) */
+  if (eargc > 0 && strcmp(eargv[0], "--separate") == 0) {
+      separate_files = 1;
+      eargv++;
+      eargc--;
+  }
+  
+  /* Check for --unbuffered long option (equivalent to -u) */
+  if (eargc > 0 && strcmp(eargv[0], "--unbuffered") == 0) {
+      unbuffered = 1;
+      eargv++;
+      eargc--;
+  }
+  
+  /* Check for --null-data long option (equivalent to -z) */
+  if (eargc > 0 && strcmp(eargv[0], "--null-data") == 0) {
+      null_data = 1;
+      eargv++;
+      eargc--;
+  }
+  
+  /* Check for --in-place long option (equivalent to -i) */
+  if (eargc > 0 && strncmp(eargv[0], "--in-place", 10) == 0) {
+      in_place = 1;
+      if (eargv[0][10] == '=') {
+          backup_suffix = eargv[0] + 11;
+      }
+      eargv++;
+      eargc--;
+  }
+  
+  /* Check for --line-length long option (equivalent to -l) */
+  if (eargc > 0 && strncmp(eargv[0], "--line-length=", 13) == 0) {
+      char *length_str = eargv[0] + 13;
+      if (*length_str == '\0') {
+          fprintf(stderr, "sed: --line-length= requires a number argument\n");
+          quit(1);
+      }
+      line_length = atoi(length_str);
+      if (line_length <= 0) {
+          fprintf(stderr, "sed: invalid line length: %s\n", length_str);
+          quit(1);
+      }
+      eargv++;
+      eargc--;
+  }
+  
+  /* Check for unknown long options */
+  if (eargc > 0 && eargv[0][0] == '-' && eargv[0][1] == '-') {
+      fprintf(stderr, "sed: unrecognized option '%s'\n", eargv[0]);
+      fprintf(stderr, "Try '%s --help' for more information.\n", argv[0]);
+      quit(1);
+  }
 
+  /* Check if we have any commands compiled */
   if (cmdp == cmds) {           /* no commands have been compiled */
+        if (eargc == 0) {
+            fprintf(stderr, "sed: no script given\n");
+            usage(argv[0], 1);
+        }
+        /* First argument is the script */
         eargv--;
         eargc++;
         eflag++;
@@ -291,6 +539,43 @@ int main(int argc, char *argv[])
         eargv++;
         eargc--;
   }
+  
+  /* Additional validation */
+  if (eargc < 0) {
+      fprintf(stderr, "sed: internal error: negative argument count\n");
+      quit(1);
+  }
+  
+  /* Validate extended regex support */
+  if (extended_regex) {
+      fprintf(stderr, "sed: -r/--regexp-extended option not yet implemented\n");
+      /* For now, just warn and continue without extended regex */
+  }
+  
+  /* Validate separate files support */
+  if (separate_files) {
+      fprintf(stderr, "sed: -s/--separate option not yet implemented\n");
+      /* For now, just warn and continue */
+  }
+  
+  /* Validate unbuffered I/O support */
+  if (unbuffered) {
+      fprintf(stderr, "sed: -u/--unbuffered option not yet implemented\n");
+      /* For now, just warn and continue */
+  }
+  
+  /* Validate null data support */
+  if (null_data) {
+      fprintf(stderr, "sed: -z/--null-data option not yet implemented\n");
+      /* For now, just warn and continue */
+  }
+  
+  /* Validate in-place editing support */
+  if (in_place) {
+      fprintf(stderr, "sed: -i/--in-place option not yet implemented\n");
+      /* For now, just warn and continue */
+  }
+  
   if (bdepth)                   /* we have unbalanced squigglies */
         ABORT(TMLBR);
 
@@ -307,7 +592,7 @@ int main(int argc, char *argv[])
 #define LOWCMD  56              /* = '8', lowest char indexed in cmdmask */
 
 /* Indirect through this to get command internal code, if it exists */
-static char cmdmask[] =
+static unsigned char cmdmask[] =
 {
  0, 0, H, 0, 0, H + EQCMD, 0, 0,
  0, 0, 0, 0, H + CDCMD, 0, 0, CGCMD,
@@ -492,7 +777,7 @@ static int cmdcomp(int cchar)
                 lastre = cmdp->u.lhs;   /* save the one just found */
         if ((cmdp->rhs = fp) > poolend) ABORT(TMTXT);
         if ((fp = rhscomp(cmdp->rhs, redelim)) == BAD) ABORT(CGMSG);
-        if (gflag) cmdp->flags.global ++;
+        /* Global flag is now handled per substitution command */
         while (*cp == 'g' || *cp == 'p' || *cp == 'P') {
                 IFEQ(cp, 'g') cmdp->flags.global ++;
                 IFEQ(cp, 'p') cmdp->flags.print = 1;
@@ -519,7 +804,7 @@ static int cmdcomp(int cchar)
         /* If didn't find one, open new out file */
         if ((cmdp->fout = fopen(fname[nwfiles], "w")) == NULL) {
                 fprintf(stderr, CCOFI, fname[nwfiles]);
-                quit(2);
+                quit(1);
         }
         fout[nwfiles++] = cmdp->fout;
         break;
@@ -533,13 +818,11 @@ static int cmdcomp(int cchar)
   return(0);                    /* succeeded in interpreting one command */
 }
 
-static char *rhscomp(rhsp, delim)       /* uses bcount */
-/* [<][>][^][v][top][bottom][index][help] */
- /* Generate replacement string for substitute command right hand side */
-register char *rhsp;            /* place to compile expression to */
-register char delim;            /* regular-expression end-mark to look for */
+static char *rhscomp(char *rhsp, int delim)       /* uses bcount */
+/* [<][>][v][top][bottom][index][help] */
+/* Generate replacement string for substitute command right hand side */
 {
-  register char *p = cp;        /* strictly for speed */
+  char *p = cp;        /* strictly for speed */
 
   for (;;)
         if ((*rhsp = *p++) == '\\') {   /* copy; if it's a \, */
@@ -562,9 +845,9 @@ static char *recomp(expbuf, redelim)    /* uses cp, bcount */
 char *expbuf;                   /* place to compile it to */
 char redelim;                   /* RE end-marker to look for */
 {
-  register char *ep = expbuf;   /* current-compiled-char pointer */
-  register char *sp = cp;       /* source-character ptr */
-  register int c;               /* current-character pointer */
+  char *ep = expbuf;   /* current-compiled-char pointer */
+  char *sp = cp;       /* source-character ptr */
+  int c;               /* current-character pointer */
   char negclass;                /* all-but flag */
   char *lastep;                 /* ptr to last expr compiled */
   char *svclass;                /* start of current char class */
@@ -692,23 +975,22 @@ char redelim;                   /* RE end-marker to look for */
   }
 }
 
-static int cmdline(cbuf)        /* uses eflag, eargc, cmdf */
+static int cmdline(char *cbuf)        /* uses eflag, eargc, cmdf */
 /* [<][>][^][v][top][bottom][index][help] */
- /* Read next command from -e argument or command file */
-register char *cbuf;
+/* Read next command from -e argument or command file */
 {
-  register int inc;             /* not char because must hold EOF */
+  int inc;             /* not char because must hold EOF */
 
   *cbuf-- = 0;                  /* so pre-increment points us at cbuf */
 
   /* E command flag is on */
   if (eflag) {
-        register char *p;       /* ptr to current -e argument */
+        char *p;       /* ptr to current -e argument */
         static char *savep;     /* saves previous value of p */
 
         if (eflag > 0) {        /* there are pending -e arguments */
                 eflag = -1;
-                if (eargc-- <= 0) quit(2);      /* if no arguments, barf */
+                if (eargc-- <= 0) quit(1);      /* if no arguments, barf */
 
                 /* Else transcribe next e argument into cbuf */
                 p = *++eargv;
@@ -752,13 +1034,12 @@ register char *cbuf;
   return(*++cbuf = '\0', -1);   /* end-of-file, no more chars */
 }
 
-static char *address(expbuf)    /* uses cp, linenum */
+static char *address(char *expbuf)    /* uses cp, linenum */
 /* [<][>][^][v][top][bottom][index][help] */
- /* Expand an address at *cp... into expbuf, return ptr at following char */
-register char *expbuf;
+/* Expand an address at *cp... into expbuf, return ptr at following char */
 {
   static int numl = 0;          /* current ind in addr-number table */
-  register char *rcp;           /* temp compile ptr for forwd look */
+  char *rcp;           /* temp compile ptr for forwd look */
   long lno;                     /* computed value of numeric address */
 
   if (*cp == '$') {             /* end-of-source address */
@@ -790,12 +1071,11 @@ register char *expbuf;
   return(NULL);                 /* no legal address was found */
 }
 
-static char *gettext(txp)       /* uses global cp */
+static char *gettext(char *txp)       /* uses global cp */
 /* [<][>][^][v][top][bottom][index][help] */
- /* Accept multiline input from *cp..., discarding leading whitespace */
-register char *txp;             /* where to put the text */
+/* Accept multiline input from *cp..., discarding leading whitespace */
 {
-  register char *p = cp;        /* this is for speed */
+  char *p = cp;        /* this is for speed */
 
   SKIPWS(p);                    /* discard whitespace */
   do {
@@ -810,30 +1090,29 @@ register char *txp;             /* where to put the text */
   return(txp);
 }
 
-static label *search(ptr)       /* uses global lablst */
+static label *search(label *ptr)
 /* [<][>][^][v][top][bottom][index][help] */
- /* Find the label matching *ptr, return NULL if none */
-register label *ptr;
+/* Find the label matching *ptr, return NULL if none */
 {
-  register label *rp;
+  label *rp;
   for (rp = lablst; rp < ptr; rp++)
         if ((rp->name != NULL) && (strcmp(rp->name, ptr->name) == 0))
                 return(rp);
   return(NULL);
 }
 
-static void resolve()
+static void resolve(void)
 /* [<][>][^][v][top][bottom][index][help] */
 {                               /* uses global lablst */
   /* Write label links into the compiled-command space */
-  register label *lptr;
-  register sedcmd *rptr, *trptr;
+  label *lptr;
+  sedcmd *rptr, *trptr;
 
   /* Loop through the label table */
   for (lptr = lablst; lptr < lab; lptr++)
         if (lptr->address == NULL) {    /* barf if not defined */
                 fprintf(stderr, ULABL, lptr->name);
-                quit(2);
+                quit(1);
         } else if (lptr->last) {/* if last is non-null */
                 rptr = lptr->last;      /* chase it */
                 while (trptr = rptr->u.link) {  /* resolve refs */
@@ -848,8 +1127,8 @@ static char *ycomp(char *ep, int delim)
 /* [<][>][^][v][top][bottom][index][help] */
 /* Compile a y (transliterate) command */
 {
-  register char *tp, *sp;
-  register int c;
+  char *tp, *sp;
+  int c;
 
   /* Scan the 'from' section for invalid chars */
   for (sp = tp = cp; *tp != delim; tp++) {
@@ -883,9 +1162,8 @@ static char *ycomp(char *ep, int delim)
   return(ep + 0x80);            /* return first free location past table end */
 }
 
-void quit(n)
+void quit(int n)
 /* [<][>][^][v][top][bottom][index][help] */
-int n;
 {
 /* Flush buffers and exit.  Now a historical relic.  Rely on exit to flush
  * the buffers.
@@ -909,24 +1187,6 @@ int n;
    readout() and Memcmp() are output and string-comparison utilities.
 */
 
-/* #include <stdio.h>   */
-/* #include <ctype.h>   */
-/* #include "sed.h"     */
-
-/***** shared variables imported from the main ******/
-
-/* Main data areas */
-extern char linebuf[];          /* current-line buffer */
-extern sedcmd cmds[];           /* hold compiled commands */
-extern long linenum[];          /* numeric-addresses table */
-
-/* Miscellaneous shared variables */
-extern int nflag;               /* -n option flag */
-extern int eargc;               /* scratch copy of argument count */
-extern char **eargv;            /* scratch copy of argument list */
-extern char bits[];             /* the bits table */
-
-/***** end of imported stuff *****/
 
 #define MAXHOLD  MAXBUF         /* size of the hold space */
 #define GENSIZ   MAXBUF         /* maximum genbuf size */
@@ -965,8 +1225,8 @@ void execute()
 /* [<][>][^][v][top][bottom][index][help] */
 /* Execute the compiled commands in cmds[] */
 {
-  register char *p1;            /* dummy copy ptrs */
-  register sedcmd *ipc;         /* ptr to current command */
+  char *p1;            /* dummy copy ptrs */
+  sedcmd *ipc;         /* ptr to current command */
   char *execp;                  /* ptr to source */
 
 
@@ -1020,8 +1280,8 @@ static int selected(sedcmd *ipc)
 /* [<][>][^][v][top][bottom][index][help] */
 /* Is current command selected */
 {
-  register char *p1 = ipc->addr1;       /* point p1 at first address */
-  register char *p2 = ipc->addr2;       /* and p2 at second */
+  char *p1 = ipc->addr1;       /* point p1 at first address */
+  char *p2 = ipc->addr2;       /* and p2 at second */
   int c;
   int sel = TRUE;               /* select by default */
 
@@ -1059,7 +1319,7 @@ static int match(expbuf, gf)    /* uses genbuf */
 char *expbuf;
 int gf;
 {
-  register char *p1, *p2, c;
+  char *p1, *p2, c;
 
   if (gf) {
         if (*expbuf) return(FALSE);
@@ -1106,7 +1366,7 @@ static int advance(char *lp, char *ep)
 /* [<][>][^][v][top][bottom][index][help] */
 /* Attempt to advance match pointer by one pattern element */
 {
-  register char *curlp;         /* save ptr for closures */
+  char *curlp;         /* save ptr for closures */
   char c;                       /* scratch character holder */
   char *bbeg;
   int ct;
@@ -1222,7 +1482,7 @@ static int advance(char *lp, char *ep)
 
             default:
                 fprintf(stderr, "sed: RE error, %o\n", *--ep);
-                quit(2);
+                quit(1);
         }
 }
 
@@ -1250,12 +1510,11 @@ static int substitute(sedcmd *ipc)
   return(TRUE);                 /* we succeeded */
 }
 
-static void dosub(rhsbuf)       /* uses linebuf, genbuf, spend */
+static void dosub(char *rhsbuf)       /* uses linebuf, genbuf, spend */
 /* [<][>][^][v][top][bottom][index][help] */
- /* Generate substituted right-hand side (of s command) */
-char *rhsbuf;                   /* where to put the result */
+/* Generate substituted right-hand side (of s command) */
 {
-  register char *lp, *sp, *rp;
+  char *lp, *sp, *rp;
   int c;
 
   /* Copy linebuf to genbuf up to location  1 */
@@ -1284,10 +1543,9 @@ char *rhsbuf;                   /* where to put the result */
   spend = lp - 1;
 }
 
-static char *place(asp, al1, al2)       /* uses genbuf */
+static char *place(char *asp, char *al1, char *al2)       /* uses genbuf */
 /* [<][>][^][v][top][bottom][index][help] */
- /* Place chars at *al1...*(al1 - 1) at asp... in genbuf[] */
-register char *asp, *al1, *al2;
+/* Place chars at *al1...*(al1 - 1) at asp... in genbuf[] */
 {
   while (al1 < al2) {
         *asp++ = *al1++;
@@ -1348,7 +1606,7 @@ static void command(sedcmd *ipc)
 {
   static char holdsp[MAXHOLD + 1];      /* the hold space */
   static char *hspend = holdsp; /* hold space end pointer */
-  register char *p1, *p2;
+  char *p1, *p2;
   char *execp;
   int didsub;                   /* true if last s succeeded */
 
@@ -1606,7 +1864,7 @@ static void readout(void)
 /* [<][>][^][v][top][bottom][index][help] */
 /* Write file indicated by r output */
 {
-  register int t;               /* hold input char or EOF */
+  int t;               /* hold input char or EOF */
   FILE *fi;                     /* ptr to file to be read */
 
   aptr = appends - 1;           /* arrange for pre-increment to work right */
