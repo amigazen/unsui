@@ -1,0 +1,9 @@
+
+If you want to make tar, you'll have to move some files around because
+I grabbed some .h and dirlib.c from other directories and put them here.
+
+You'll get some warning when compiling because I never got around to
+going back and casting the return values from some functions which
+were declared to return BPTR.
+
+-Jonathan
