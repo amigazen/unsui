@@ -53,7 +53,7 @@ static char rcsid[] = "$Id: touch.c,v 1.3 1994/03/03 10:20:12 pk Exp $";
 extern CHDR chdr;			/* converted header */
 extern char *archive;			/* archive name */
 
-touch()
+touch(void)
 {
 	int afd;
 
@@ -70,8 +70,7 @@ touch()
 	return(0);
 }
 
-settime(afd)
-	int afd;
+settime(int afd)
 {
 	struct ar_hdr *hdr;
 	off_t size;

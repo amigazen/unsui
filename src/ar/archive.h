@@ -53,7 +53,7 @@
 #define	AR_U	0x0800
 #define	AR_V	0x1000
 #define	AR_X	0x2000
-extern u_int options;
+extern unsigned int options;
 
 /* Set up file copy. */
 #define	SETCF(from, fromname, to, toname, pad) { \
@@ -73,7 +73,7 @@ typedef struct {
 #define	NOPAD	0x00			/* don't pad */
 #define	RPAD	0x01			/* pad on reads */
 #define	WPAD	0x02			/* pad on writes */
-	u_int flags;			/* pad flags */
+	unsigned int flags;			/* pad flags */
 } CF;
 
 /* Header structure internal format. */
@@ -83,7 +83,7 @@ typedef struct {
 	int lname;			/* size of the long name in bytes */
 	gid_t gid;			/* group */
 	uid_t uid;			/* owner */
-	u_short mode;			/* permissions */
+	unsigned short mode;			/* permissions */
 	char name[MAXNAMLEN + 1];	/* name */
 } CHDR;
 
@@ -99,9 +99,9 @@ typedef struct {
 
 struct stat;
 
-void	close_archive __P((int));
-void	copy_ar __P((CF *, off_t));
-int	get_arobj __P((int));
-int	open_archive __P((int));
-void	put_arobj __P((CF *, struct stat *));
-void	skip_arobj __P((int));
+void	close_archive(int);
+void	copy_ar(CF *, off_t);
+int	get_arobj(int);
+int	open_archive(int);
+void	put_arobj(CF *, struct stat *);
+void	skip_arobj(int);

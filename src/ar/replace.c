@@ -66,8 +66,7 @@ static char rcsid[] = "$NetBSD: replace.c,v 1.6 1995/03/26 03:28:01 glass Exp $"
  *	is specified, modification dates select for replacement.
  */
 int
-replace(argv)
-	char **argv;
+replace(char **argv)
 {
 	char *file;
 	int afd, curfd, errflg, exists, mods, sfd, tfd1, tfd2;

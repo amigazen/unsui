@@ -62,7 +62,7 @@ static char rcsid[] = "$NetBSD: misc.c,v 1.6 1995/03/26 03:27:55 glass Exp $";
 char *tname = "temporary file";		/* temporary file "name" */
 
 int
-tmp()
+tmp(void)
 {
 	extern char *envtmp;
 	sigset_t set, oset;
@@ -95,8 +95,7 @@ tmp()
  * 	does, remove it from the argument list.
  */
 char *
-files(argv)
-	char **argv;
+files(char **argv)
 {
 	char **list, *p;
 
@@ -111,8 +110,7 @@ files(argv)
 }
 
 void
-orphans(argv)
-	char **argv;
+orphans(char **argv)
 {
 
 	for (; *argv; ++argv)
@@ -120,8 +118,7 @@ orphans(argv)
 }
 
 char *
-rname(path)
-	char *path;
+rname(char *path)
 {
 	char *ind;
 
@@ -129,8 +126,7 @@ rname(path)
 }
 
 int
-compare(dest)
-	char *dest;
+compare(char *dest)
 {
 
 	if (options & AR_TR)
@@ -139,7 +135,7 @@ compare(dest)
 }
 
 void
-badfmt()
+badfmt(void)
 {
 
 	errno = EFTYPE;
@@ -147,8 +143,7 @@ badfmt()
 }
 
 void
-error(name)
-	char *name;
+error(char *name)
 {
 
 	err(1, "%s", name);

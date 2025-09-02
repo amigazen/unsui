@@ -63,8 +63,7 @@ static char rcsid[] = "$NetBSD: append.c,v 1.5 1995/03/26 03:27:37 glass Exp $";
  *	a new archive if named archive does not exist.
  */
 int
-append(argv)
-	char **argv;
+append(char **argv)
 {
 	int afd, fd, eval;
 	char *file;

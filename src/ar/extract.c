@@ -67,8 +67,7 @@ static char rcsid[] = "$NetBSD: extract.c,v 1.5 1995/03/26 03:27:53 glass Exp $"
  *	archive.
  */
 int
-extract(argv)
-	char **argv;
+extract(char **argv)
 {
 	char *file;
 	int afd, all, eval, tfd;

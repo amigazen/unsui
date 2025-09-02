@@ -42,22 +42,15 @@ static char *rcsid = "$Id: err.c,v 1.10 1994/12/17 16:16:00 pk Exp $";
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef __STDC__
 #include <stdarg.h>
-#else
-#include <varargs.h>
-#endif
 
 /*extern char *__progname;		/* Program name, from crt0. */
 #ifndef __progname
 #define __progname "ld"
 #endif
 
-__dead void
-verr(eval, fmt, ap)
-	int eval;
-	const char *fmt;
-	va_list ap;
+void
+verr(int eval, const char *fmt, va_list ap)
 {
 	int sverrno;
 
@@ -72,35 +65,18 @@ verr(eval, fmt, ap)
 }
 
 
-__dead void
-#ifdef __STDC__
+void
 err(int eval, const char *fmt, ...)
-#else
-err(va_alist)
-	va_dcl
-#endif
 {
 	va_list ap;
-#if __STDC__
 	va_start(ap, fmt);
-#else
-	int eval;
-	const char *fmt;
-
-	va_start(ap);
-	eval = va_arg(ap, int);
-	fmt = va_arg(ap, const char *);
-#endif
 	verr(eval, fmt, ap);
 	va_end(ap);
 }
 
 
-__dead void
-verrx(eval, fmt, ap)
-	int eval;
-	const char *fmt;
-	va_list ap;
+void
+verrx(int eval, const char *fmt, va_list ap)
 {
 	(void)fprintf(stderr, "%s: ", __progname);
 	if (fmt != NULL)
@@ -110,34 +86,18 @@ verrx(eval, fmt, ap)
 }
 
 
-__dead void
-#if __STDC__
+void
 errx(int eval, const char *fmt, ...)
-#else
-errx(va_alist)
-	va_dcl
-#endif
 {
 	va_list ap;
-#if __STDC__
 	va_start(ap, fmt);
-#else
-	int eval;
-	const char *fmt;
-
-	va_start(ap);
-	eval = va_arg(ap, int);
-	fmt = va_arg(ap, const char *);
-#endif
 	verrx(eval, fmt, ap);
 	va_end(ap);
 }
 
 
 void
-vwarn(fmt, ap)
-	const char *fmt;
-	va_list ap;
+vwarn(const char *fmt, va_list ap)
 {
 	int sverrno;
 
@@ -152,31 +112,17 @@ vwarn(fmt, ap)
 
 
 void
-#if __STDC__
 warn(const char *fmt, ...)
-#else
-warn(va_alist)
-	va_dcl
-#endif
 {
 	va_list ap;
-#if __STDC__
 	va_start(ap, fmt);
-#else
-	const char *fmt;
-
-	va_start(ap);
-	fmt = va_arg(ap, const char *);
-#endif
 	vwarn(fmt, ap);
 	va_end(ap);
 }
 
 
 void
-vwarnx(fmt, ap)
-	const char *fmt;
-	va_list ap;
+vwarnx(const char *fmt, va_list ap)
 {
 	(void)fprintf(stderr, "%s: ", __progname);
 	if (fmt != NULL)
@@ -186,22 +132,10 @@ vwarnx(fmt, ap)
 
 
 void
-#ifdef __STDC__
 warnx(const char *fmt, ...)
-#else
-warnx(va_alist)
-	va_dcl
-#endif
 {
 	va_list ap;
-#ifdef __STDC__
 	va_start(ap, fmt);
-#else
-	const char *fmt;
-
-	va_start(ap);
-	fmt = va_arg(ap, const char *);
-#endif
 	vwarnx(fmt, ap);
 	va_end(ap);
 }

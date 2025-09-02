@@ -51,7 +51,7 @@ static char rcsid[] = "$Id: misc.c,v 1.5 1995/06/27 00:28:40 jtc Exp $";
 extern char	*archive;			/* archive name */
 char		*tname = "temporary file";
 
-tmp()
+tmp(void)
 {
 	static char *envtmp;
 	sigset_t set, oset;
@@ -83,33 +83,30 @@ tmp()
 }
 
 void *
-emalloc(len)
-	int len;
+emalloc(int len)
 {
 	char *p;
 
-	if (!(p = malloc((u_int)len)))
+	if (!(p = malloc((unsigned int)len)))
 		error(archive);
 	return(p);
 }
 
 char *
-rname(path)
-	char *path;
+rname(char *path)
 {
-	register char *ind;
+	char *ind;
 
 	return((ind = rindex(path, '/')) ? ind + 1 : path);
 }
 
-badfmt()
+badfmt(void)
 {
 	errno = EFTYPE;
 	error(archive);
 }
 
-error(name)
-	char *name;
+error(char *name)
 {
 	(void)fprintf(stderr, "ranlib: %s: %s\n", name, strerror(errno));
 	exit(1);

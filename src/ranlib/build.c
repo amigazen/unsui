@@ -69,10 +69,10 @@ static FILE	*fp;
 static long	symcnt;			/* symbol count */
 static long	tsymlen;		/* total string length */
 
-static void	rexec(), symobj();
-extern void	*emalloc();
+static void	rexec(int, int), symobj(void);
+extern void	*emalloc(int);
 
-build()
+build(void)
 {
 	CF cf;
 	int afd, tfd;
@@ -120,14 +120,12 @@ build()
  *	exactly right.
  */
 static void
-rexec(rfd, wfd)
-	register int rfd;
-	int wfd;
+rexec(int rfd, int wfd)
 {
-	register RLIB *rp;
-	register long nsyms;
-	register int nr, symlen;
-	register char *strtab, *sym;
+	RLIB *rp;
+	long nsyms;
+	int nr, symlen;
+	char *strtab, *sym;
 	struct exec ebuf;
 	struct nlist nl;
 	off_t r_off, w_off;
@@ -217,9 +215,9 @@ bad1:	(void)lseek(rfd, (off_t)r_off, SEEK_SET);
  *	writing.
  */
 static void
-symobj()
+symobj(void)
 {
-	register RLIB *rp, *rnext;
+	RLIB *rp, *rnext;
 	struct ranlib rn;
 	char hb[sizeof(struct ar_hdr) + 1], pad;
 	long ransize, size, stroff;

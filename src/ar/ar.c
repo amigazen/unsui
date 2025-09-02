@@ -65,10 +65,10 @@ static char rcsid[] = "$NetBSD: ar.c,v 1.5 1995/03/26 03:27:44 glass Exp $";
 #include "extern.h"
 
 CHDR chdr;
-u_int options;
+unsigned int options;
 char *archive, *envtmp, *posarg, *posname;
-static void badoptions __P((char *));
-static void usage __P((void));
+static void badoptions(char *);
+static void usage(void);
 
 extern int optind;
 
@@ -79,13 +79,11 @@ extern int optind;
  *	option parsing and sanity checking.
  */
 int
-main(argc, argv)
-	int argc;
-	char **argv;
+main(int argc, char **argv)
 {
 	int c;
 	char *p;
-	int (*fcall) __P((char **));
+	int (*fcall)(char **);
 
 	if (argc < 3)
 		usage();
@@ -95,7 +93,7 @@ main(argc, argv)
 	 * Fix it, if necessary.
 	*/
 	if (*argv[1] != '-') {
-		if (!(p = malloc((u_int)(strlen(argv[1]) + 2))))
+		if (!(p = malloc((unsigned int)(strlen(argv[1]) + 2))))
 			err(1, NULL);
 		*p = '-';
 		(void)strcpy(p + 1, argv[1]);
@@ -220,8 +218,7 @@ main(argc, argv)
 }
 
 static void
-badoptions(arg)
-	char *arg;
+badoptions(char *arg)
 {
 
 	warnx("illegal option combination for %s", arg);
@@ -229,7 +226,7 @@ badoptions(arg)
 }
 
 static void
-usage()
+usage(void)
 {
 
 	(void)fprintf(stderr, "usage:  ar -d [-Tv] archive file ...\n");

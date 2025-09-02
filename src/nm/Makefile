@@ -1,7 +1,7 @@
 
 CC		= gcc
 
-CFLAGS		= -O2 -fbaserel -msmall-code
+CFLAGS		= -O2 -fbaserel -msmall-code -std=c89 -pedantic
 
 LDFLAGS		= -resident
 

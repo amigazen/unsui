@@ -48,15 +48,13 @@ static char *rcsid = "$Id: strerror.c,v 1.2 1993/10/09 00:11:01 jtc Exp $";
  */
 
 char *
-__strerror(num, buf)
-	int num;
-	char *buf;
+__strerror(int num, char *buf)
 {
 #define	UPREFIX	"Unknown error: "
 	extern char *sys_errlist[];
 	extern int sys_nerr;
-	register unsigned int errnum;
-	register char *p, *t;
+	unsigned int errnum;
+	char *p, *t;
 	char tmp[40];
 
 	errnum = num;				/* convert to unsigned */
@@ -81,8 +79,7 @@ __strerror(num, buf)
 
 
 char *
-strerror(num)
-	int num;
+strerror(int num)
 {
 	static char buf[40];			/* 64-bit number + slop */
 	return __strerror(num, buf);

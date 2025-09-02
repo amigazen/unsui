@@ -54,12 +54,10 @@ static char rcsid[] = "$Id: ranlib.c,v 1.3 1994/03/03 10:20:10 pk Exp $";
 extern int optind;
 
 CHDR chdr;
-u_int options;				/* UNUSED -- keep open_archive happy */
+unsigned int options;				/* UNUSED -- keep open_archive happy */
 char *archive;
 
-main(argc, argv)
-	int argc;
-	char **argv;
+main(int argc, char **argv)
 {
 	int ch, eval, tflag;
 
@@ -84,7 +82,7 @@ main(argc, argv)
 	exit(eval);
 }
 
-usage()
+usage(void)
 {
 	(void)fprintf(stderr, "usage: ranlib [-t] archive ...\n");
 	exit(1);

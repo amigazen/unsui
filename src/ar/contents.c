@@ -65,8 +65,7 @@ static char rcsid[] = "$NetBSD: contents.c,v 1.5 1995/03/26 03:27:49 glass Exp $
  *	skipping member contents.
  */
 int
-contents(argv)
-	char **argv;
+contents(char **argv)
 {
 	int afd, all;
 	struct tm *tp;

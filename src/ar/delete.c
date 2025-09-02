@@ -62,8 +62,7 @@ static char rcsid[] = "$NetBSD: delete.c,v 1.5 1995/03/26 03:27:52 glass Exp $";
  *	Deletes named members from the archive.
  */
 int
-delete(argv)
-	char **argv;
+delete(char **argv)
 {
 	CF cf;
 	off_t size;

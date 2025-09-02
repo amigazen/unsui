@@ -6,7 +6,7 @@ vpath %.c $(ARPATH)
 
 CC		= gcc
 
-CFLAGS		= -I$(ARPATH) -D__progname=\"ranlib\" -O2 -fbaserel -msmall-code
+CFLAGS		= -I$(ARPATH) -D__progname=\"ranlib\" -O2 -fbaserel -msmall-code -std=c89 -pedantic
 
 LDFLAGS		= -resident
 

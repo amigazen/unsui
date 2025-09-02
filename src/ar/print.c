@@ -60,8 +60,7 @@ static char rcsid[] = "$NetBSD: print.c,v 1.5 1995/03/26 03:27:59 glass Exp $";
  *	print those members, otherwise print all members.
  */
 int
-print(argv)
-	char **argv;
+print(char **argv)
 {
 	CF cf;
 	int afd, all;

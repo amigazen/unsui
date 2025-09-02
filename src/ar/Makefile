@@ -1,7 +1,7 @@
 
 CC		= gcc
 
-CFLAGS		= -I. -D__progname=\"ar\" -O2 -fbaserel -msmall-code
+CFLAGS		= -I. -D__progname=\"ar\" -O2 -fbaserel -msmall-code -std=c89 -pedantic
 
 LDFLAGS		= -resident
 

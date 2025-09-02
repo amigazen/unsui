@@ -43,9 +43,7 @@ static char *rcsid = "$Id: strmode.c,v 1.3 1993/08/26 00:51:54 jtc Exp $";
 #include <string.h>
 
 void
-strmode(mode, p)
-	register mode_t mode;
-	register char *p;
+strmode(mode_t mode, char *p)
 {
 	 /* print type */
 	switch (mode & S_IFMT) {

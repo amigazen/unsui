@@ -66,8 +66,7 @@ static char rcsid[] = "$NetBSD: move.c,v 1.5 1995/03/26 03:27:57 glass Exp $";
  *	are moved to end of archive.
  */
 int
-move(argv)
-	char **argv;
+move(char **argv)
 {
 	CF cf;
 	off_t size, tsize;

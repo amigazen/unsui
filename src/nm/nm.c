@@ -73,24 +73,22 @@ int print_file_each_line;
 int fcount;
 
 int rev;
-int fname(), rname(), value();
-int (*sfunc)() = fname;
+int fname(void *, void *), rname(void *, void *), value(void *, void *);
+int (*sfunc)(void *, void *) = fname;
 
 /* some macros for symbol type (nlist.n_type) handling */
 #define	IS_DEBUGGER_SYMBOL(x)	((x) & N_STAB)
 #define	IS_EXTERNAL(x)		((x) & N_EXT)
 #define	SYMBOL_TYPE(x)		((x) & (N_TYPE | N_STAB))
 
-void *emalloc(), *erealloc();
+void *emalloc(size_t), *erealloc(void *, size_t);
 
 /*
  * main()
  *	parse command line, execute process_file() for each file
  *	specified on the command line.
  */
-main(argc, argv)
-	int argc;
-	char **argv;
+main(int argc, char **argv)
 {
 	extern int optind;
 	int ch, errors;
@@ -148,8 +146,7 @@ main(argc, argv)
  *	show symbols in the file given as an argument.  Accepts archive and
  *	object files as input.
  */
-process_file(fname)
-	char *fname;
+process_file(char *fname)
 {
 	struct exec exec_head;
 	FILE *fp;
@@ -195,9 +192,7 @@ process_file(fname)
  * show_archive()
  *	show symbols in the given archive file
  */
-show_archive(fname, fp)
-	char *fname;
-	FILE *fp;
+show_archive(char *fname, FILE *fp)
 {
 	struct ar_hdr ar_head;
 	struct exec exec_head;
@@ -315,12 +310,10 @@ skip:		if (fseek(fp, last_ar_off + even(atol(ar_head.ar_size)),
  *	file pointer for fp is expected to be at the beginning of an a.out
  *	header.
  */
-show_objfile(objname, fp)
-	char *objname;
-	FILE *fp;
+show_objfile(char *objname, FILE *fp)
 {
-	register struct nlist *names, *np;
-	register int i, nnames, nrawnames;
+	struct nlist *names, *np;
+	int i, nnames, nrawnames;
 	struct exec head;
 	long stabsize;
 	char *stab;
@@ -448,9 +441,7 @@ show_objfile(objname, fp)
  * print_symbol()
  *	show one symbol
  */
-print_symbol(objname, sym)
-	char *objname;
-	register struct nlist *sym;
+print_symbol(char *objname, struct nlist *sym)
 {
 	char *typestring(), typeletter();
 
@@ -488,8 +479,7 @@ print_symbol(objname, sym)
  *	return the a description string for an STAB entry
  */
 char *
-typestring(type)
-	register u_char type;
+typestring(unsigned char type)
 {
 	switch(type) {
 	case N_BCOMM:
@@ -543,8 +533,7 @@ typestring(type)
  *	external, lower case for internal symbols.
  */
 char
-typeletter(type)
-	u_char type;
+typeletter(unsigned char type)
 {
 	switch(SYMBOL_TYPE(type)) {
 	case N_ABS:
@@ -573,26 +562,23 @@ typeletter(type)
 	return('?');
 }
 
-fname(a0, b0)
-	void *a0, *b0;
+fname(void *a0, void *b0)
 {
 	struct nlist *a = a0, *b = b0;
 
 	return(strcmp(a->n_un.n_name, b->n_un.n_name));
 }
 
-rname(a0, b0)
-	void *a0, *b0;
+rname(void *a0, void *b0)
 {
 	struct nlist *a = a0, *b = b0;
 
 	return(strcmp(b->n_un.n_name, a->n_un.n_name));
 }
 
-value(a0, b0)
-	void *a0, *b0;
+value(void *a0, void *b0)
 {
-	register struct nlist *a = a0, *b = b0;
+	struct nlist *a = a0, *b = b0;
 
 	if (SYMBOL_TYPE(a->n_type) == N_UNDF)
 		if (SYMBOL_TYPE(b->n_type) == N_UNDF)
@@ -613,8 +599,7 @@ value(a0, b0)
 }
 
 void *
-emalloc(size)
-	size_t size;
+emalloc(size_t size)
 {
 	char *p;
 
@@ -626,9 +611,7 @@ emalloc(size)
 }
 
 void *
-erealloc(p, size)
-	void   *p;
-	size_t size;
+erealloc(void *p, size_t size)
 {
 	/* NOSTRICT */
 	if (p = realloc(p, size))
@@ -637,7 +620,7 @@ erealloc(p, size)
 	exit(1);
 }
 
-usage()
+usage(void)
 {
 	(void)fprintf(stderr, "usage: nm [-agnopruw] [file ...]\n");
 	exit(1);
