@@ -1,5 +1,7 @@
 /* quickfix.c */
-int qf_init __PARMS((void));
-void qf_jump __PARMS((int dir, int errornr));
-void qf_list __PARMS((void));
-void qf_mark_adjust __PARMS((long line1, long line2, long inc));
+int qf_init __ARGS((char_u *efile, char_u *errorformat));
+void qf_jump __ARGS((int dir, int errornr, int forceit));
+void qf_list __ARGS((int all));
+void qf_older __ARGS((int count));
+void qf_newer __ARGS((int count));
+void qf_mark_adjust __ARGS((linenr_t line1, linenr_t line2, long amount, long amount_after));

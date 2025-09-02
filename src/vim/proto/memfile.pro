@@ -1,14 +1,15 @@
 /* memfile.c */
-struct memfile *mf_open __PARMS((unsigned char *fname, int new, int fail_nofile));
-int mf_open_file __PARMS((struct memfile *mfp, unsigned char *fname));
-void mf_close __PARMS((struct memfile *mfp, int delete));
-struct block_hdr *mf_new __PARMS((struct memfile *mfp, int negative, int page_count));
-struct block_hdr *mf_get __PARMS((struct memfile *mfp, long nr, int page_count));
-void mf_put __PARMS((struct memfile *mfp, struct block_hdr *hp, int dirty, int infile));
-void mf_free __PARMS((struct memfile *mfp, struct block_hdr *hp));
-int mf_sync __PARMS((struct memfile *mfp, int all, int check_char));
-int mf_release_all __PARMS((void));
-long mf_trans_del __PARMS((struct memfile *mfp, long old));
-void mf_fullname __PARMS((struct memfile *mfp));
-int mf_need_trans __PARMS((struct memfile *mfp));
-void mf_statistics __PARMS((void));
+MEMFILE *mf_open __ARGS((char_u *fname, int trunc_file));
+int mf_open_file __ARGS((MEMFILE *mfp, char_u *fname));
+void mf_close __ARGS((MEMFILE *mfp, int del_file));
+void mf_close_file __ARGS((BUF *buf));
+BHDR *mf_new __ARGS((MEMFILE *mfp, int negative, int page_count));
+BHDR *mf_get __ARGS((MEMFILE *mfp, blocknr_t nr, int page_count));
+void mf_put __ARGS((MEMFILE *mfp, BHDR *hp, int dirty, int infile));
+void mf_free __ARGS((MEMFILE *mfp, BHDR *hp));
+int mf_sync __ARGS((MEMFILE *mfp, int flags));
+int mf_release_all __ARGS((void));
+blocknr_t mf_trans_del __ARGS((MEMFILE *mfp, blocknr_t old_nr));
+void mf_set_ffname __ARGS((MEMFILE *mfp));
+void mf_fullname __ARGS((MEMFILE *mfp));
+int mf_need_trans __ARGS((MEMFILE *mfp));
