@@ -1,0 +1,19 @@
+Changes in version 1.5:
+
+Codification of dictionary size in file header has been changed. At
+least lzip 1.4 is needed to decompress files produced by lzip 1.5.
+
+A problem that prevented compilation with GCC 4.4 has been fixed.
+
+"--member-size" and "--volume-size" have been made more accurate.
+
+Compression ratio and speed have been improved at the cost of 4MiB more
+of RAM.
+
+Compression speed has been doubled for dictionary sizes < 64KiB.
+
+The chapter "Algorithm" has been added to the manual.
+
+Lzdiff and lzgrep now accept "-h" for "--help" and "-V" for "--version".
+
+Man page is now installed by default.

@@ -1,0 +1,570 @@
+This is lzip.info, produced by makeinfo version 4.13 from lzip.texinfo.
+
+INFO-DIR-SECTION Data Compression
+START-INFO-DIR-ENTRY
+* Lzip: (lzip).                 Data compressor based on the LZMA algorithm
+END-INFO-DIR-ENTRY
+
+
+File: lzip.info,  Node: Top,  Next: Introduction,  Up: (dir)
+
+Lzip
+****
+
+This manual is for Lzip (version 1.5, 12 April 2009).
+
+* Menu:
+
+* Introduction::	Purpose and features of lzip
+* Algorithm::		How lzip compresses the data
+* Invoking Lzip::	Command line interface
+* File Format::		Detailed format of the compressed file
+* Examples::		A small tutorial with examples
+* Lzdiff::		Comparing compressed files
+* Lzgrep::		Searching inside compressed files
+* Lziprecover::		Recovering data from damaged compressed files
+* Problems::		Reporting bugs
+* Concept Index::	Index of concepts
+
+
+   Copyright (C) 2008, 2009 Antonio Diaz Diaz.
+
+   This manual is free documentation: you have unlimited permission to
+copy, distribute and modify it.
+
+
+File: lzip.info,  Node: Introduction,  Next: Algorithm,  Prev: Top,  Up: Top
+
+1 Introduction
+**************
+
+Lzip is a lossless data compressor based on the LZMA algorithm, with
+very safe integrity checking and a user interface similar to the one of
+gzip or bzip2. Lzip decompresses almost as fast as gzip and compresses
+better than bzip2, which makes it well suited for software distribution
+and data archiving.
+
+   Lzip replaces every file given in the command line with a compressed
+version of itself, with the name "original_name.lz". Each compressed
+file has the same modification date, permissions, and, when possible,
+ownership as the corresponding original, so that these properties can be
+correctly restored at decompression time. Lzip is able to read from some
+types of non regular files if the `--stdout' option is specified.
+
+   If no file names are specified, lzip compresses (or decompresses)
+from standard input to standard output. In this case, lzip will decline
+to write compressed output to a terminal, as this would be entirely
+incomprehensible and therefore pointless.
+
+   Lzip will correctly decompress a file which is the concatenation of
+two or more compressed files. The result is the concatenation of the
+corresponding uncompressed files. Integrity testing of concatenated
+compressed files is also supported.
+
+   Lzip can produce multimember files and safely recover, with
+lziprecover, the undamaged members in case of file damage. Lzip can
+also split the compressed output in volumes of a given size, even when
+reading from standard input. This allows the direct creation of
+multivolume compressed tar archives.
+
+   The amount of memory required for compression is about 2 times the
+dictionary size limit plus 8 times the dictionary size really used. For
+decompression is a little more than the dictionary size really used.
+Lzip will automatically use the smallest possible dictionary size for
+each member without exceeding the given limit. It is important to
+appreciate that the decompression memory requirement is affected at
+compression time by the choice of dictionary size limit.
+
+   When decompressing, lzip attempts to guess the name for the
+decompressed file from that of the compressed file as follows:
+
+filename.lz    becomes   filename
+filename.tlz   becomes   filename.tar
+anyothername   becomes   anyothername.out
+
+   As a self-check for your protection, lzip stores in the member
+trailer the 32-bit CRC of the original data and the size of the
+original data, to make sure that the decompressed version of the data
+is identical to the original. This guards against corruption of the
+compressed data, and against undetected bugs in lzip (hopefully very
+unlikely). The chances of data corruption going undetected are
+microscopic, less than one chance in 4000 million for each member
+processed. Be aware, though, that the check occurs upon decompression,
+so it can only tell you that something is wrong. It can't help you
+recover the original uncompressed data.
+
+   Return values: 0 for a normal exit, 1 for environmental problems
+(file not found, invalid flags, I/O errors, etc), 2 to indicate a
+corrupt or invalid input file, 3 for an internal consistency error (eg,
+bug) which caused lzip to panic.
+
+
+File: lzip.info,  Node: Algorithm,  Next: Invoking Lzip,  Prev: Introduction,  Up: Top
+
+2 Algorithm
+***********
+
+Lzip implements a simplified version of the LZMA (Lempel-Ziv-Markov
+chain-Algorithm) algorithm. The original LZMA algorithm was designed by
+Igor Pavlov.
+
+   The high compression of LZMA comes from combining two basic,
+well-proven compression ideas: sliding dictionaries (LZ77/78) and
+markov models (the thing used by every compression algorithm that uses
+a range encoder or similar order-0 entropy coder as its last stage)
+with segregation of contexts according to what the bits are used for.
+
+   Lzip is a two stage compressor. The first stage is a Lempel-Ziv
+coder, which reduces redundancy by translating chunks of data to their
+corresponding distance-length pairs. The second stage is a range encoder
+that uses a different probability model for each type of data;
+distances, lengths, literal bytes, etc.
+
+   The match finder, part of the LZ coder, is the most important piece
+of the LZMA algorithm, as it is in many Lempel-Ziv based algorithms.
+Most of lzip's execution time is spent in the match finder, and it has
+the greatest influence on the compression ratio.
+
+   Here is how it works, step by step:
+
+   1) The member header is written to the output stream.
+
+   2) The first byte is coded literally, because there are no previous
+bytes to which the match finder can refer to.
+
+   3) The main encoder advances to the next byte in the input data and
+calls the match finder.
+
+   4) The match finder fills an array with the minimum distances before
+the current byte where a match of a given length can be found.
+
+   5) Go back to step 3 until a sequence (formed of pairs, repeated
+distances and literal bytes) of minimum price has been formed. Where the
+price represents the number of output bits produced.
+
+   6) The range encoder encodes the sequence produced by the main
+encoder and sends the produced bytes to the output stream.
+
+   7) Go back to step 3 until the input data is finished or until the
+member or volume size limits are reached.
+
+   8) The range encoder is flushed.
+
+   9) The member trailer is written to the output stream.
+
+   10) If there are more data to compress, go back to step 1.
+
+
+File: lzip.info,  Node: Invoking Lzip,  Next: File Format,  Prev: Algorithm,  Up: Top
+
+3 Invoking Lzip
+***************
+
+The format for running lzip is:
+
+     lzip [OPTIONS] [FILES]
+
+   Lzip supports the following options:
+
+`--help'
+`-h'
+     Print an informative help message describing the options and exit.
+
+`--version'
+`-V'
+     Print the version number of lzip on the standard output and exit.
+
+`--member-size=SIZE'
+`-b SIZE'
+     Produce a multimember file and set the member size limit to SIZE
+     bytes. Minimum member size limit is 100kB. Small member size may
+     degrade compression ratio, so use it only when needed. The default
+     is to produce single member files.
+
+`--stdout'
+`-c'
+     Compress or decompress to standard output. Needed when reading
+     from a named pipe (fifo) or from a device.
+
+`--decompress'
+`-d'
+     Decompress.
+
+`--force'
+`-f'
+     Force overwrite of output file.
+
+`--keep'
+`-k'
+     Keep (don't delete) input files during compression or
+     decompression.
+
+`--match-length=LENGTH'
+`-m LENGTH'
+     Set the match length limit in bytes. Valid values range from 5 to
+     273.  Larger values usually give better compression ratios but
+     longer compression times.
+
+`--output=FILE'
+`-o FILE'
+     When reading from standard input and `--stdout' has not been
+     specified, use `FILE' as the virtual name of the uncompressed
+     file. This produces a file named `FILE' when decompressing, a file
+     named `FILE.lz' when compressing, and several files named
+     `FILE00001.lz', `FILE00002.lz', etc, when compressing and
+     splitting the output in volumes.
+
+`--quiet'
+`-q'
+     Quiet operation. Suppress all messages.
+
+`--dictionary-size=SIZE'
+`-s SIZE'
+     Set the dictionary size limit in bytes. Valid values range from
+     4KiB to 512MiB. Lzip will use the smallest possible dictionary
+     size for each member without exceeding this limit. Note that
+     dictionary sizes are quantized. If the specified size does not
+     match one of the valid sizes, it will be rounded upwards.
+
+`--volume-size=SIZE'
+`-S SIZE'
+     Split the compressed output into several volume files with names
+     `original_name00001.lz', `original_name00002.lz', etc, and set the
+     volume size limit to SIZE bytes. Each volume is a complete, maybe
+     multimember, lzip file. Minimum volume size limit is 100kB. Small
+     volume size may degrade compression ratio, so use it only when
+     needed.
+
+`--test'
+`-t'
+     Check integrity of the specified file(s), but don't decompress
+     them.  This really performs a trial decompression and throws away
+     the result.  Use `-tvv' or `-tvvv' to see information about the
+     file.
+
+`--verbose'
+`-v'
+     Verbose mode. Show the compression ratio for each file processed.
+     Further -v's increase the verbosity level.
+
+`-1 .. -9'
+     Set the compression parameters (dictionary size and match length
+     limit) as shown in the table below. Note that `-9' can be much
+     slower than `-1'. These options have no effect when decompressing.
+
+     Level   Dictionary size   Match length limit
+     -1      4MiB              10 bytes
+     -2      4MiB              12 bytes
+     -3      4MiB              17 bytes
+     -4      4MiB              26 bytes
+     -5      4MiB              44 bytes
+     -6      8MiB              80 bytes
+     -7      16MiB             108 bytes
+     -8      16MiB             163 bytes
+     -9      32MiB             273 bytes
+
+`--fast'
+`--best'
+     Aliases for GNU gzip compatibility.
+
+
+
+   Numbers given as arguments to options may be followed by a multiplier
+and an optional `B' for "byte".
+
+   Table of SI and binary prefixes (unit multipliers):
+
+Prefix   Value                     |   Prefix   Value
+k        kilobyte  (10^3 = 1000)   |   Ki       kibibyte (2^10 = 1024)
+M        megabyte  (10^6)          |   Mi       mebibyte (2^20)
+G        gigabyte  (10^9)          |   Gi       gibibyte (2^30)
+T        terabyte  (10^12)         |   Ti       tebibyte (2^40)
+P        petabyte  (10^15)         |   Pi       pebibyte (2^50)
+E        exabyte   (10^18)         |   Ei       exbibyte (2^60)
+Z        zettabyte (10^21)         |   Zi       zebibyte (2^70)
+Y        yottabyte (10^24)         |   Yi       yobibyte (2^80)
+
+
+File: lzip.info,  Node: File Format,  Next: Examples,  Prev: Invoking Lzip,  Up: Top
+
+4 File Format
+*************
+
+In the diagram below, a box like this:
++---+
+|   | <-- the vertical bars might be missing
++---+
+
+   represents one byte; a box like this:
++==============+
+|              |
++==============+
+
+   represents a variable number of bytes.
+
+
+   A lzip file consists of a series of "members" (compressed data sets).
+The members simply appear one after another in the file, with no
+additional information before, between, or after them.
+
+   Each member has the following structure:
++--+--+--+--+----+----+=============+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| ID string | VN | DS | Lzma stream | CRC32 |   Data size   |  Member size  |
++--+--+--+--+----+----+=============+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+   All multibyte values are stored in little endian order.
+
+`ID string'
+     A four byte string, identifying the member type, with the value
+     "LZIP".
+
+`VN (version number, 1 byte)'
+     Just in case something needs to be modified in the future. Valid
+     values are 0 and 1. Version 0 files have only one member and lack
+     `Member size'.
+
+`DS (coded dictionary size, 1 byte)'
+     Bits 4-0 contain the base 2 logarithm of the base dictionary size.
+     Bits 7-5 contain the number of "wedges" to substract from the base
+     dictionary size to obtain the dictionary size. The size of a wedge
+     is (base dictionary size / 16).
+     Valid values for dictionary size range from 4KiB to 512MiB.
+
+`Lzma stream'
+     The lzma stream, finished by an end of stream marker. Uses default
+     values for encoder properties.
+
+`CRC32 (4 bytes)'
+     CRC of the uncompressed original data.
+
+`Data size (8 bytes)'
+     Size of the uncompressed original data.
+
+`Member size (8 bytes)'
+     Total size of the member, including header and trailer. This
+     facilitates safe recovery of undamaged members from multimember
+     files.
+
+
+
+File: lzip.info,  Node: Examples,  Next: Lzdiff,  Prev: File Format,  Up: Top
+
+5 A small tutorial with examples
+********************************
+
+WARNING! If your data is important, give the `--keep' option to lzip
+and do not remove the original file until you verify the compressed
+file with a command like `lzip -cd file.lz | cmp file -'.
+
+
+Example 1: Replace a regular file with its compressed version file.lz
+and show the compression ratio.
+
+     lzip -v file
+
+
+Example 2: Like example 1 but the created file.lz is multimember with a
+member size of 1MiB.
+
+     lzip -b 1MiB file
+
+
+Example 3: Compress a whole floppy in /dev/fd0 and send the output to
+file.lz.
+
+     lzip -c /dev/fd0 > file.lz
+
+
+Example 4: Create a multivolume compressed tar archive with a volume
+size of 1440KiB.
+
+     tar -c some_directory | lzip -S 1440KiB -o volume_name
+
+
+Example 5: Extract a multivolume compressed tar archive.
+
+     lzip -cd volume_name*.lz | tar -xf -
+
+
+Example 6: Create a multivolume compressed backup of a big database file
+with a volume size of 650MB, where each volume is a multimember file
+with a member size of 32MiB.
+
+     lzip -b 32MiB -S 650MB big_database
+
+
+Example 7: Recover the first volume of those created in example 6 from
+two copies, `big_database1_00001.lz' and `big_database2_00001.lz', with
+member 00007 damaged in the first copy and member 00018 damaged in the
+second copy. (Indented lines are lzip error messages).
+
+     lziprecover big_database1_00001.lz
+     lziprecover big_database2_00001.lz
+     lzip -t rec*big_database1_00001.lz
+       rec00007big_database1_00001.lz: crc mismatch
+     lzip -t rec*big_database2_00001.lz
+       rec00018big_database1_00001.lz: crc mismatch
+     cp rec00007big_database2_00001.lz rec00007big_database1_00001.lz
+     cat rec*big_database1_00001.lz > big_database3_00001.lz
+
+
+File: lzip.info,  Node: Lzdiff,  Next: Lzgrep,  Prev: Examples,  Up: Top
+
+6 Lzdiff
+********
+
+Lzdiff is a wrapper script around the diff and cmp commands that allows
+transparent comparison of any combination of compressed and
+non-compressed files. If any given file is compressed, its uncompressed
+content is used. The supported compressors are gzip, bzip2 and lzip.
+
+   The format for running lzdiff is:
+
+     lzdiff [OPTIONS] [DIFF_OPTIONS] FILE1 [FILE2]
+
+Compares FILE1 to FILE2. If FILE2 is omitted, compares FILE1 to the
+uncompressed contents of FILE1.[gz|bz2|lz] (depending on the default
+compressor selected). DIFF_OPTIONS are passed directly to diff or cmp.
+The exit status from diff or cmp is preserved.
+
+   Lzdiff supports the following options:
+
+`--help'
+`-h'
+     Print an informative help message describing the options and exit.
+
+`--version'
+`-V'
+     Print the version number of lzdiff on the standard output and exit.
+
+`--gzip'
+     Use gzip as default decompressor.
+
+`--bzip2'
+     Use bzip2 as default decompressor.
+
+`--lzip'
+     Use lzip as default decompressor (default).
+
+`--diff'
+     Use diff to compare files (default).
+
+`--cmp'
+     Use cmp to compare files.
+
+
+   Lzdiff has the limitation that messages from the diff or cmp programs
+refer to temporary filenames instead of those specified.
+
+
+File: lzip.info,  Node: Lzgrep,  Next: Lziprecover,  Prev: Lzdiff,  Up: Top
+
+7 Lzgrep
+********
+
+Lzgrep is a wrapper script around the grep command that allows
+transparent search on any combination of compressed and non-compressed
+files. If any given file is compressed, its uncompressed content is
+used. If a given file does not exist, lzgrep tries the compressed file
+name corresponding to the default compressor selected. The supported
+compressors are gzip, bzip2 and lzip.
+
+   The format for running lzgrep is:
+
+     lzgrep [OPTIONS] [GREP_OPTIONS] PATTERN [FILES]
+
+GREP_OPTIONS are passed directly to grep. The exit status from grep is
+preserved.
+
+   Lzgrep supports the following options:
+
+`--help'
+`-h'
+     Print an informative help message describing the options and exit.
+
+`--version'
+`-V'
+     Print the version number of lzgrep on the standard output and exit.
+
+`--gzip'
+     Use gzip as default decompressor.
+
+`--bzip2'
+     Use bzip2 as default decompressor.
+
+`--lzip'
+     Use lzip as default decompressor (default).
+
+
+
+File: lzip.info,  Node: Lziprecover,  Next: Problems,  Prev: Lzgrep,  Up: Top
+
+8 Lziprecover
+*************
+
+Lziprecover is a program that searches for members in .lz files, and
+writes each member in its own .lz file. You can then use `lzip -t' to
+test the integrity of the resulting files, and decompress those which
+are undamaged.
+
+   Lziprecover takes a single argument, the name of the damaged file,
+and writes a number of files `rec00001file.lz', `rec00002file.lz', etc,
+containing the extracted members. The output filenames are designed so
+that the use of wildcards in subsequent processing, for example,
+`lzip -dc rec*file.lz > recovered_data', processes the files in the
+correct order.
+
+
+File: lzip.info,  Node: Problems,  Next: Concept Index,  Prev: Lziprecover,  Up: Top
+
+9 Reporting Bugs
+****************
+
+There are probably bugs in lzip. There are certainly errors and
+omissions in this manual. If you report them, they will get fixed. If
+you don't, no one will ever know about them and they will remain unfixed
+for all eternity, if not longer.
+
+   If you find a bug in lzip, please send electronic mail to
+<lzip-bug@nongnu.org>. Include the version number, which you can find
+by running `lzip --version'.
+
+
+File: lzip.info,  Node: Concept Index,  Prev: Problems,  Up: Top
+
+Concept Index
+*************
+
+ [index ]
+* Menu:
+
+* algorithm:                             Algorithm.             (line 6)
+* bugs:                                  Problems.              (line 6)
+* examples:                              Examples.              (line 6)
+* File Format:                           File Format.           (line 6)
+* getting help:                          Problems.              (line 6)
+* introduction:                          Introduction.          (line 6)
+* invoking:                              Invoking Lzip.         (line 6)
+* Lzdiff:                                Lzdiff.                (line 6)
+* Lzgrep:                                Lzgrep.                (line 6)
+* Lziprecover:                           Lziprecover.           (line 6)
+* options:                               Invoking Lzip.         (line 6)
+* usage:                                 Invoking Lzip.         (line 6)
+* version:                               Invoking Lzip.         (line 6)
+
+
+
+Tag Table:
+Node: Top224
+Node: Introduction962
+Node: Algorithm4203
+Node: Invoking Lzip6429
+Node: File Format10668
+Node: Examples12622
+Node: Lzdiff14455
+Node: Lzgrep15774
+Node: Lziprecover16809
+Node: Problems17506
+Node: Concept Index18031
+
+End Tag Table

@@ -1,0 +1,130 @@
+#! /bin/sh
+# Lzgrep - Grep wrapper for compressed files.
+# Copyright (C) 2008, 2009 Antonio Diaz Diaz.
+#
+# This script is free software: you have unlimited permission
+# to copy, distribute and modify it.
+
+invocation_name=$0
+args=
+default_prog=lzip
+have_pat=0
+list=0
+no_name=0
+
+# Loop over args until pattern is found
+while [ x"$1" != x ] ; do
+
+	case "$1" in
+	--help | --he* | -h)
+		echo "Lzgrep - Grep wrapper for compressed files."
+		echo
+		echo "Lzgrep is a wrapper script around the grep command that allows"
+		echo "transparent search on any combination of compressed and non-compressed"
+		echo "files. If any given file is compressed, its uncompressed content is"
+		echo "used. If a given file does not exist, lzgrep tries the compressed file"
+		echo "name corresponding to the default compressor selected. The supported"
+		echo "compressors are gzip, bzip2 and lzip."
+		echo
+		echo "Usage: ${invocation_name} [OPTIONS] [GREP_OPTIONS] PATTERN [FILES]"
+		echo
+		echo "GREP_OPTIONS are passed directly to grep."
+		echo "The exit status from grep is preserved."
+		echo
+		echo "Options:"
+		echo "  -h, --help          display this help and exit"
+		echo "  -V, --version       output version information and exit"
+		echo "      --gzip          use gzip as default decompressor"
+		echo "      --bzip2         use bzip2 as default decompressor"
+		echo "      --lzip          use lzip as default decompressor (default)"
+		exit 0 ;;
+	--version | --ve* | -V)
+		echo "Lzgrep 0.3"
+		echo "Copyright (C) 2009 Antonio Diaz Diaz."
+		echo "This script is free software: you have unlimited permission"
+		echo "to copy, distribute and modify it."
+		exit 0 ;;
+	--gz*)
+		default_prog=gzip ;;
+	--bz*)
+		default_prog=bzip2 ;;
+	--lz*)
+		default_prog=lzip ;;
+	-[drRzZ] | --di* | --exc* | --inc* | --nu* | --rec*)
+		echo "${invocation_name}: option $1 not supported\n"
+		exit 1 ;;
+	-e?* | -f?* | --file=* | --reg*=*)
+		args="${args} $1"; have_pat=1 ;;
+	-e | -f | --file | --reg*)
+		args="${args} $1 $2"; shift; have_pat=1 ;;
+	--*=*)
+		args="${args} $1" ;;
+	-[ABCDm] | --af* | --be* | --binary-* | --con* | --de* | --[lm]a*)
+		args="${args} $1 $2"; shift ;;
+	-l | --files-with-*)
+		args="${args} $1"; list=1 ;;
+	-h | --no-f*)
+		args="${args} $1"; no_name=1 ;;
+	--)
+		break ;;
+	-?*)
+		args="${args} $1" ;;
+	 *)
+	 	if test ${have_pat} = 0; then args="${args} $1"; have_pat=1
+		else break
+		fi ;;
+	esac
+	shift
+done
+
+if test ${have_pat} = 0; then
+	echo "${invocation_name}: Pattern not found; use --help for usage." 1>&2
+	exit 1
+fi
+
+if test $# -eq 0; then
+	${default_prog} -cdfq | grep ${args}
+	exit $?
+fi
+
+retval=0
+for i in "$@" ; do
+	prog="${default_prog} -cdfq"
+	case "$i" in
+	*.gz | *.tgz)
+		prog="gzip -cdfq" ;;
+	*.bz2 | *.tbz2)
+		prog="bzip2 -cdfq" ;;
+	*.lz | *.tlz)
+		prog="lzip -cdfq" ;;
+	*)
+		if test -f "$i"; then prog=cat
+		else
+			case ${default_prog} in
+			gzip)
+				if test -f "$i.gz"; then i="$i.gz"; fi ;;
+			bzip2)
+				if test -f "$i.bz2"; then i="$i.bz2"; fi ;;
+			lzip)
+				if test -f "$i.lz"; then i="$i.lz"; fi ;;
+			esac
+		fi ;;
+	esac
+	if test ${list} -eq 1; then
+		${prog} -- "$i" | grep ${args} 2>&1 > /dev/null && echo $i
+		r=$?
+	elif test $# -eq 1 -o ${no_name} -eq 1; then
+		${prog} -- "$i" | grep ${args}
+		r=$?
+	else
+		j=${i//\\/\\\\}
+		j=${j//|/\\|}
+		j=${j//&/\\&}
+		j=`printf "%s" "$j" | tr '\n' ' '`
+		${prog} -- "$i" | grep ${args} | sed "s|^|${j}:|"
+		r=$?
+	fi
+	test "$r" -ne 0 && retval="$r"
+done
+
+exit ${retval}
