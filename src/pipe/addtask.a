@@ -1,0 +1,29 @@
+;
+; addtask.a (pipe)
+;
+; Copyright (c) 1994 Ville Saari
+; All rights reserved
+;
+; Created: 30-Dec-94
+;
+
+		csect	text
+
+_addtaskfunc:	move.l	a0,-(sp)
+		move.l	4.w,a0		; AbsExecBase
+cmpcmd:		cmp.l	#0,276(a0)	; ExecBase->ThisTask
+		bne.b	skip
+movecmd:	move.l	a1,0.l
+skip:		move.l	(sp)+,a0
+		dc.w	$4ef9		; jmp
+_origaddtask:
+
+_mytaskptr:	equ	cmpcmd+2
+_newtaskptrptr:	equ	movecmd+2
+
+		xdef	_addtaskfunc
+		xdef	_mytaskptr
+		xdef	_newtaskptrptr
+		xdef	_origaddtask
+
+		end

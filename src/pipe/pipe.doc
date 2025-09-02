@@ -1,0 +1,193 @@
+pipe									 pipe
+
+    NAME
+	pipe -- run commands and pipe their I/O together
+
+    SYNOPSIS
+	pipe <command> | <command> ...
+
+    DESCRIPTION
+	Pipe runs all the given shell commands and connects their I/O so that
+	pipe's  own  standard  input is  forwarded to the first command,  its
+	standard output to standard input of the next command and so on until
+	the  standard  output  of  the  last  command  is finally written out
+	through the standard output of the pipe itself.  All the commands are
+	launced  to  run  asynchronously and pipe itself waits until they all
+	have closed their standard input and standard output streams.
+
+	Command lines to be run should be separated by vertical bar character
+	(|) from each other:
+
+	    pipe ilbmtoppm mypic.iff | ppmquant 256 | ppmtogif >mypic.gif
+
+	will execute:
+	    ilbmtoppm mypic.iff
+	    ppmquant 256
+	    ppmtogif
+
+	If  the  separator character is located inside a double-quoted block,
+	pipe  won't recognize it as such,  so you can still use vertical bars
+	in your command lines:
+
+	    pipe search myfile "|" | wc
+
+	will execute:
+	    search myfile "|"
+	    wc
+
+	If the first word in the command line is quoted, pipe will remove the
+	quotes  before executing command.  This allows running command lines,
+	with vertical bars in them but which cannot accept the quotes:
+
+	    pipe ilbmtoppm mypic.iff | "pipe ppmquant 256 | ppmtogif" >my.gif
+
+	will execute:
+	    ilbmtoppm mypic.iff
+	    pipe ppmquant 256 | ppmtogif
+
+	In the above example the first pipe executes only two command lines -
+	ilbmtoppm  and  pipe.  The  other  pipe  then  executes  ppmquant and
+	ppmtogif. Other pipe never sees the quote characters.
+
+	Note however,  that this feature forces you to quote the command name
+	twice if you want to execute command, which has spaces in its name.
+
+	    pipe "*"command with spaces*"" argument1 argument2 | ...
+	or
+	    pipe "*"command with spaces*" argument1 argument2" | ...
+
+	will execute:
+	    "command with spaces" argument1 argument2
+	    ...
+
+	(The asterisks are here to escape the inner quotes)
+
+	If  the  command is quoted only once, the shell executing the command
+	will  not  see the quotes and tries to execute just the first word of
+	the command name and give the rest to it as parameters:
+
+	    command with spaces argument1 argument2
+
+	If you are using Amiga's ROM shell, executing command:
+
+	    set _pchar=|
+
+	will  force the shell to automatically add command `pipe' in front of
+	any command  line  containing  vertical bars.  This allows you to use
+	pipe without typing it's name:
+
+	    ilbmtoppm mypic.iff | ppmquant 256 | ppmtogif >my.gif
+
+    WHY TO USE
+	Several  different implementations of pipe exist.  Here are some good
+	reasons why you should use this particular one:
+
+	Pipe implements its own pipe-handler, so id doesn't need PIPE: or any
+	other similar device to be mounted.
+
+	Pipe  can  execute any command line the shell itself can.  The search
+	path is  traversed including the path-assigns,  resident programs are
+	checked, rexx-scripts with script flag set are automatically executed
+	and even the shell aliases work. This is possible by using the actual
+	shell to  actually execute the commands unlike some other implementa-
+	tions,  which use LoadSeg() and usually only support very limited set
+	of shell functions.
+
+	Those  other  implementations,  which really use the shell to execute
+	the commands, usually don't forward the break signals to the executed
+	commands  because  there  is  no  straightforward way to find out the
+	process pointer of the command executed by shell. This implementation
+	modifies  exec's  AddTask() function to get the needed pointer so the
+	breaking is possible. If any of the CTRL-C/D/E/F signals is received,
+	it  will  be forwarded to all running commands in case of the CTRL-C,
+	all  the pipes  are  invalidated  so that also those programs,  which
+	don't respond to break will hopefully exit when their I/O fails.
+
+	Pipe  copies  data straight form the buffer of the writing program to
+	the  buffer of  the  reading  program.  This  behaviour  has  several
+	advantages:
+
+	- Only  one  buffer copy is needed.  The external pipe handlers first
+	  copy the data  from  writer's  buffer to  their own buffer and then
+	  from  there  to the reader's buffer.  This doubles the speed of the
+	  data flow.
+
+	- No memory is needed for the intermediate buffer.
+
+	- Sizes  of the read and write operations are not limited by the size
+	  of  the  intermediate  buffer  but only by the size of the opposing
+	  ends I/O operation.  This makes the large data flows very effective
+	  and is  comparable to  an using external pipe handler with infinite
+	  buffer size.
+
+	- Only  other  of  the  two programs is active at any particular time
+	  while the  other is waiting  for  the  I/O to/from the other.  This
+	  keeps  the system load  quite low when compared  to  buffering pipe
+	  handlers which typically keep all the programs active simultaneous-
+	  ly.  It  increases  the throughput by lowering context switch over-
+	  head.
+
+    SPECIAL NOTE
+	When pipe is executed the first time after a reboot,  it will install
+	a  modification  to  the AddTask() function of the exec.library.  The
+	modification  is left there and reused by subsequent pipe executions.
+	If  you  run some other software,  which SetFunction()s the AddTask()
+	function  and you want that the other software is also able to remove
+	it's modification,  you have to make sure that the pipe is not called
+	first  time  while the other modification is  active.  Easiest way to
+	do it is to run the pipe in system startup before the other modifying
+	program.  If  you  don't  have any other use for pipe in the startup-
+	sequence, you can make a dummy call:
+
+	    pipe ""
+
+	Which  makes  the  pipe  to spawn a shell to execute an empty command
+	line  which effectively does  nothing.  the pipe however installs its
+	AddTask()  modification  and thus  makes  sure  that  nothing will be
+	installed later.  The  empty command line is required because if pipe
+	is  executed  with no parameters,  it will just display a short copy-
+	right and usage message and exit.
+
+    LICENSE
+	Pipe may be freely distributed as long as no more is charged than the
+	cost  of  the  media.  You  may modify pipe or use it as part of some
+	other  product and  distribute  this  new  product  provided that the
+	original author name is not removed and the new product complies with
+	this distribution policy and if the pipe itself is modified, it has
+
+	    a different name
+	or
+	    an extension appended to it's version number so that the original
+	    version  can be read,  but it is clearly distinguishable from the
+	    `official' version.  For example the original version number with
+	    your initials appended.
+
+	If you want to include pipe or parts of it in any commercial product,
+	please contact the author first.
+
+    DISCLAIMER
+	Pipe is provided as is without any guarantee or warranty. Author is
+	not responsible for any damage or losses of any kind caused by the
+	use or misuse of the program and he is under no obligation to provide
+	service, corrections, or upgrades to this program.
+
+    VERSION
+	This  manual is written 30th December 1994 and it covers pipe version
+	3.310.
+
+    AUTHOR
+	Ville Saari
+
+	Address: Tallbergin puistotie 7 B 21
+	         00200 Helsinki
+	         FINLAND
+
+	Phone:   +358 0 682 2226
+
+	Internet: vsaari@fipnet.fi
+
+	If you find bugs in pipe, please let me know.
+
+	Pipe is freely distributable,  but if you like it and absolutely want
+	to pay me something or give me a yacht or Ferrari or something,  then
+	do it.
