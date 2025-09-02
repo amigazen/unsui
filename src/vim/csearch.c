@@ -1,16 +1,14 @@
 /* vi:ts=4:sw=4
  *
- * VIM - Vi IMitation
+ * VIM - Vi IMproved		by Bram Moolenaar
  *
- * Code Contributions By:	Bram Moolenaar			mool@oce.nl
- *							Tim Thompson			twitch!tjt
- *							Tony Andrews			onecom!wldrdg!tony
- *							G. R. (Fred) Walter     watmath!watcgl!grwalter
+ * Read the file "credits.txt" for a list of people who contributed.
+ * Read the file "uganda.txt" for copying and usage conditions.
  */
 
 /*
  *
- * csearch.c: command line searching commands
+ * csearch.c: dosub() and doglob() for :s, :g and :v
  */
 
 #include "vim.h"
@@ -20,12 +18,6 @@
 
 /* we use modified Henry Spencer's regular expression routines */
 #include "regexp.h"
-
-int global_busy = 0;			/* set to 1 if global busy, 2 if global has
-									been called during a global command */
-int global_wait;				/* set to 1 if wait_return has to be called
-									after global command */
-extern regexp *myregcomp __ARGS((char *));
 
 /* dosub(lp, up, cmd)
  *
@@ -39,57 +31,96 @@ extern regexp *myregcomp __ARGS((char *));
  * The trailing 'c' is optional and, if present, indicates that a confirmation
  * will be asked for each replacement.
  * The usual escapes are supported as described in the regexp docs.
+ *
+ * use_old == 0 for :substitute
+ * use_old == 1 for :&
+ * use_old == 2 for :~
  */
 
-extern char *reg_prev_sub;		/* this is in regexp.c */
-
 	void
-dosub(lp, up, cmd, nextcommand)
+dosub(lp, up, cmd, nextcommand, use_old)
 	linenr_t	lp;
 	linenr_t	up;
-	char		*cmd;
-	u_char		**nextcommand;
+	char_u		*cmd;
+	char_u		**nextcommand;
+	int			use_old;
 {
 	linenr_t		lnum;
 	long			i;
-	char		   *ptr;
+	char_u		   *ptr;
+	char_u		   *old_line;
 	regexp		   *prog;
 	long			nsubs = 0;
 	linenr_t		nlines = 0;
-	int				do_all; 		/* do multiple substitutions per line */
-	int				do_ask; 		/* ask for confirmation */
-	char		   *pat, *sub = NULL;
-	static char    *old_sub = NULL;
+	static int		do_all = FALSE; 	/* do multiple substitutions per line */
+	static int		do_ask = FALSE; 	/* ask for confirmation */
+	char_u		   *pat = NULL, *sub = NULL;
+	static char_u   *old_sub = NULL;
 	int 			delimiter;
 	int 			sublen;
+	int				got_quit = FALSE;
+	int				got_match = FALSE;
+	int				temp;
+	int				which_pat;
+	
+	if (use_old == 2)
+		which_pat = 2;		/* use last used regexp */
+	else
+		which_pat = 1;		/* use last substitute regexp */
 
-	if (strchr("0123456789gc|\"#", *cmd) == NULL)       /* new pattern and substitution */
+								   /* new pattern and substitution */
+	if (use_old == 0 && *cmd != NUL && strchr("0123456789gcr|\"", *cmd) == NULL)
 	{
-		delimiter = *cmd++;			/* remember delimiter character */
-		pat = cmd;					/* remember the start of the regexp */
+		if (isalpha(*cmd))			/* don't accept alpha for separator */
+		{
+			emsg(e_invarg);
+			return;
+		}
+		/*
+		 * undocumented vi feature:
+		 *	"\/sub/" and "\?sub?" use last used search pattern (almost like //sub/r).
+		 *  "\&sub&" use last substitute pattern (like //sub/).
+		 */
+		if (*cmd == '\\')
+		{
+			++cmd;
+			if (strchr("/?&", *cmd) == NULL)
+			{
+				emsg(e_backslash);
+				return;
+			}
+			if (*cmd != '&')
+				which_pat = 0;				/* use last '/' pattern */
+			pat = (char_u *)"";				/* empty search pattern */
+			delimiter = *cmd++;				/* remember delimiter character */
+		}
+		else			/* find the end of the regexp */
+		{
+			delimiter = *cmd++;				/* remember delimiter character */
+			pat = cmd;						/* remember start of search pattern */
+			cmd = skip_regexp(cmd, delimiter);
+			if (cmd[0] == delimiter)		/* end delimiter found */
+				*cmd++ = NUL;				/* replace it by a NUL */
+		}
 
 		/*
-		 * do the next loop twice:
-		 *  i == 0: find the end of the regexp
-		 *  i == 1: find the end of the substitution
+		 * Small incompatibility: vi sees '\n' as end of the command, but in
+		 * Vim we want to use '\n' to find/substitute a NUL.
 		 */
-		for (i = 0; ; ++i)
+		sub = cmd;			/* remember the start of the substitution */
+
+		while (cmd[0])
 		{
-			while (cmd[0])
+			if (cmd[0] == delimiter)			/* end delimiter found */
 			{
-				if (cmd[0] == delimiter)			/* end delimiter found */
-				{
-					*cmd++ = NUL;					/* replace it by a NUL */
-					break;
-				}
-				if (cmd[0] == '\\' && cmd[1] != 0)	/* skip escaped characters */
-					++cmd;
-				++cmd;
-			}
-			if (i == 1)
+				*cmd++ = NUL;					/* replace it by a NUL */
 				break;
-			sub = cmd;				/* remember the start of the substitution */
+			}
+			if (cmd[0] == '\\' && cmd[1] != 0)	/* skip escaped characters */
+				++cmd;
+			++cmd;
 		}
+
 		free(old_sub);
 		old_sub = strsave(sub);
 	}
@@ -97,7 +128,7 @@ dosub(lp, up, cmd, nextcommand)
 	{
 		if (old_sub == NULL)    /* there is no previous command */
 		{
-			beep();
+			emsg(e_nopresub);
 			return;
 		}
 		pat = NULL; 			/* myregcomp() will use previous pattern */
@@ -107,14 +138,26 @@ dosub(lp, up, cmd, nextcommand)
 	/*
 	 * find trailing options
 	 */
-	do_all = FALSE;
-	do_ask = FALSE;
+	if (!p_ed)
+	{
+		if (p_gd)				/* default is global on */
+			do_all = TRUE;
+		else
+			do_all = FALSE;
+		do_ask = FALSE;
+	}
 	while (*cmd)
 	{
+		/*
+		 * Note that 'g' and 'c' are always inverted, also when p_ed is off
+		 * 'r' is never inverted.
+		 */
 		if (*cmd == 'g')
-			do_all = TRUE;
+			do_all = !do_all;
 		else if (*cmd == 'c')
-			do_ask = TRUE;
+			do_ask = !do_ask;
+		else if (*cmd == 'r')		/* use last used regexp */
+			which_pat = 2;
 		else
 			break;
 		++cmd;
@@ -137,146 +180,219 @@ dosub(lp, up, cmd, nextcommand)
 	}
 
 	/*
-	 * check for trailing '|', '"' or '#'
+	 * check for trailing '|', '"' or '\n'
 	 */
 	skipspace(&cmd);
 	if (*cmd)
 	{
-		if (strchr("|\"#", *cmd) != NULL)
-		{
-			*nextcommand = (u_char *)cmd;
-		}
-		else
+		if (strchr("|\"\n", *cmd) == NULL)
 		{
 			emsg(e_trailing);
 			return;
 		}
+		else
+			*nextcommand = cmd;
 	}
 
-	if ((prog = myregcomp(pat)) == NULL)
+	if ((prog = myregcomp(pat, 1, which_pat)) == NULL)
 	{
 		emsg(e_invcmd);
 		return;
 	}
 
-	for (lnum = lp; lnum <= up && !got_int; ++lnum)
+	/*
+	 * ~ in the substitute pattern is replaced by the old pattern.
+	 * We do it here once to avoid it to be replaced over and over again.
+	 */
+	sub = regtilde(sub, (int)p_magic);
+
+	old_line = NULL;
+	for (lnum = lp; lnum <= up && !(got_int || got_quit); ++lnum)
 	{
-		ptr = nr2ptr(lnum);
-		if (regexec(prog, ptr, (int)TRUE))  /* a match on this line */
+		ptr = ml_get(lnum);
+		if (regexec(prog, ptr, TRUE))  /* a match on this line */
 		{
-			char	   *ns, *sns = NULL, *p, *prevp, *oldp = NULL;
+			char_u		*new_end, *new_start = NULL;
+			char_u		*old_match, *old_copy;
+			char_u		*prev_old_match = NULL;
+			char_u		*p1;
 			int			did_sub = FALSE;
+			int			match, lastone;
 
-			if (nsubs == 0)
-					setpcmark();
-			/*
-			 * Save the line that was last changed for the final cursor
-			 * position (just like the real vi).
-			 */
-			Curpos.lnum = lnum;
-
-			prevp = p = ptr;
-			do
+			/* make a copy of the line, so it won't be taken away when updating
+				the screen */
+			if ((old_line = strsave(ptr)) == NULL)
+				continue;
+			regexec(prog, old_line, TRUE);  /* match again on this line to update the pointers. TODO: remove extra regexec() */
+			if (!got_match)
 			{
-				Curpos.col = prog->startp[0] - ptr;
+				setpcmark();
+				got_match = TRUE;
+			}
+
+			old_copy = old_match = old_line;
+			for (;;)			/* loop until nothing more to replace */
+			{
 				/*
-				 * First match empty string does not count, except for first match.
+				 * Save the position of the last change for the final cursor
+				 * position (just like the real vi).
+				 */
+				curwin->w_cursor.lnum = lnum;
+				curwin->w_cursor.col = (int)(prog->startp[0] - old_line);
+
+				/*
+				 * Match empty string does not count, except for first match.
 				 * This reproduces the strange vi behaviour.
 				 * This also catches endless loops.
 				 */
-				if (did_sub && p == oldp && p == prog->endp[0])
+				if (old_match == prev_old_match && old_match == prog->endp[0])
 				{
-					++p;
-					goto skip2;
+					++old_match;
+					goto skip;
 				}
-				if (do_ask)
+				old_match = prog->endp[0];
+				prev_old_match = old_match;
+
+				while (do_ask)		/* loop until 'y', 'n' or 'q' typed */
 				{
-						updateScreen(CURSUPD);
-						smsg("replace by %s (y/n/q)? ", sub);
-						setcursor();
-						if ((i = vgetc()) == 'q')
-						{
-							got_int = TRUE;
-							break;
-						}
-						else if (i != 'y')
-							goto skip;
+					temp = RedrawingDisabled;
+					RedrawingDisabled = FALSE;
+					comp_Botline(curwin);
+					updateScreen(CURSUPD);
+									/* same highlighting as for wait_return */
+					(void)set_highlight('r');
+					msg_highlight = TRUE;
+					smsg((char_u *)"replace by %s (y/n/q)?", sub);
+					showruler(TRUE);
+					setcursor();
+					RedrawingDisabled = temp;
+					if ((i = vgetc()) == 'q' || i == ESC || i == Ctrl('C'))
+					{
+						got_quit = TRUE;
+						break;
+					}
+					else if (i == 'n')
+						goto skip;
+					else if (i == 'y')
+						break;
 				}
+				if (got_quit)
+					break;
 
 						/* get length of substitution part */
-				sublen = regsub(prog, sub, ptr, 0, (int)p_magic);
-				if (did_sub == FALSE)
+				sublen = regsub(prog, sub, old_line, 0, (int)p_magic);
+				if (new_start == NULL)
 				{
 					/*
 					 * Get some space for a temporary buffer to do the substitution
 					 * into.
 					 */
-					if ((sns = alloc((unsigned)(strlen(ptr) + sublen + 5))) == NULL)
+					if ((new_start = alloc((unsigned)(STRLEN(old_line) + sublen + 5))) == NULL)
 						goto outofmem;
-					*sns = NUL;
-					did_sub = TRUE;
+					*new_start = NUL;
 				}
 				else
 				{
 					/*
 					 * extend the temporary buffer to do the substitution into.
 					 */
-					if ((ns = alloc((unsigned)(strlen(sns) + strlen(prevp) + sublen + 1))) == NULL)
+					if ((p1 = alloc((unsigned)(STRLEN(new_start) + STRLEN(old_copy) + sublen + 1))) == NULL)
 						goto outofmem;
-					strcpy(ns, sns);
-					free(sns);
-					sns = ns;
+					STRCPY(p1, new_start);
+					free(new_start);
+					new_start = p1;
 				}
 
-				for (ns = sns; *ns; ns++)
+				for (new_end = new_start; *new_end; new_end++)
 					;
 				/*
 				 * copy up to the part that matched
 				 */
-				while (prevp < prog->startp[0])
-					*ns++ = *prevp++;
+				while (old_copy < prog->startp[0])
+					*new_end++ = *old_copy++;
 
-				regsub(prog, sub, ns, 1, (int)p_magic);
+				regsub(prog, sub, new_end, 1, (int)p_magic);
 				nsubs++;
-				/*
-				 * Regsub may have replaced a ~ by the old sub.
-				 * We have to use the result, otherwise the ~ is replaced
-				 * over and over again.
-				 */
-				sub = reg_prev_sub;
+				did_sub = TRUE;
 
-				prevp = prog->endp[0];	/* remember last copied character */
+				/*
+				 * Now the trick is to replace CTRL-Ms with a real line break.
+				 * This would make it impossible to insert CTRL-Ms in the text.
+				 * That is the way vi works. In Vim the line break can be
+				 * avoided by preceding the CTRL-M with a CTRL-V. Now you can't
+				 * precede a line break with a CTRL-V, big deal.
+				 */
+				while ((p1 = STRCHR(new_end, CR)) != NULL)
+				{
+					if (p1 == new_end || p1[-1] != Ctrl('V'))
+					{
+						if (u_inssub(lnum))				/* prepare for undo */
+						{
+							*p1 = NUL;					/* truncate up to the CR */
+							mark_adjust(lnum, MAXLNUM, 1L);
+							ml_append(lnum - 1, new_start, (colnr_t)(p1 - new_start + 1), FALSE);
+							++lnum;
+							++up;					/* number of lines increases */
+							STRCPY(new_start, p1 + 1);	/* copy the rest */
+							new_end = new_start;
+						}
+					}
+					else							/* remove CTRL-V */
+					{
+						STRCPY(p1 - 1, p1);
+						new_end = p1;
+					}
+				}
+
+				old_copy = prog->endp[0];	/* remember next character to be copied */
 				/*
 				 * continue searching after the match
 				 * prevent endless loop with patterns that match empty strings,
 				 * e.g. :s/$/pat/g or :s/[a-z]* /(&)/g
 				 */
 skip:
-				p = prog->endp[0];
-				oldp = p;
-				if (*p == NUL)      /* end of line: quit here */
-					break;
+				match = -1;
+				lastone = (*old_match == NUL || got_int || got_quit || !do_all);
+				if (lastone || do_ask || (match = regexec(prog, old_match, (int)FALSE)) == 0)
+				{
+					if (new_start)
+					{
+						/*
+						 * Copy the rest of the line, that didn't match.
+						 * Old_match has to be adjusted, we use the end of the line
+						 * as reference, because the substitute may have changed
+						 * the number of characters.
+						 */
+						STRCAT(new_start, old_copy);
+						i = old_line + STRLEN(old_line) - old_match;
+						if (u_savesub(lnum))
+							ml_replace(lnum, new_start, TRUE);
 
-skip2:
+						free(old_line);			/* free the temp buffer */
+						old_line = new_start;
+						new_start = NULL;
+						old_match = old_line + STRLEN(old_line) - i;
+						if (old_match < old_line)		/* safety check */
+						{
+							EMSG("dosub internal error: old_match < old_line");
+							old_match = old_line;
+						}
+						old_copy = old_line;
+					}
+					if (match == -1 && !lastone)
+						match = regexec(prog, old_match, (int)FALSE);
+					if (match <= 0)		/* quit loop if there is no more match */
+						break;
+				}
 					/* breakcheck is slow, don't call it too often */
 				if ((nsubs & 15) == 0)
 					breakcheck();
 
-			} while (!got_int && do_all && regexec(prog, p, (int)FALSE));
-
-			if (did_sub)
-			{
-					/*
-					 * copy the rest of the line, that didn't match
-					 */
-					strcat(sns, prevp);
-
-					if ((ptr = save_line(sns)) != NULL)
-							u_savesub(lnum, replaceline(lnum, ptr));
-
-					free(sns);          /* free the temp buffer */
-					++nlines;
 			}
+			if (did_sub)
+				++nlines;
+			free(old_line);		/* free the copy of the original line */
+			old_line = NULL;
 		}
 			/* breakcheck is slow, don't call it too often */
 		if ((lnum & 15) == 0)
@@ -284,27 +400,30 @@ skip2:
 	}
 
 outofmem:
+	free(old_line);		/* may have to free an allocated copy of the line */
 	if (nsubs)
 	{
 		CHANGED;
 		updateScreen(CURSUPD); /* need this to update LineSizes */
 		beginline(TRUE);
 		if (nsubs > p_report)
-			smsg("%s%ld substitution%s on %ld line%s",
+			smsg((char_u *)"%s%ld substitution%s on %ld line%s",
 								got_int ? "(Interrupted) " : "",
 								nsubs, plural(nsubs),
 								(long)nlines, plural((long)nlines));
 		else if (got_int)
-				msg(e_interr);
+				emsg(e_interr);
 		else if (do_ask)
-				msg("");
+				MSG("");
 	}
-	else if (got_int)
-		msg(e_interr);
-	else
-		msg("No match");
+	else if (got_int)		/* interrupted */
+		emsg(e_interr);
+	else if (got_match)		/* did find something but nothing substituted */
+		MSG("");
+	else					/* nothing found */
+		emsg(e_nomatch);
 
-	free((char *) prog);
+	free(prog);
 }
 
 /*
@@ -330,47 +449,66 @@ outofmem:
 doglob(type, lp, up, cmd)
 	int 		type;
 	linenr_t	lp, up;
-	char		*cmd;
+	char_u		*cmd;
 {
 	linenr_t		lnum;		/* line number according to old situation */
-	linenr_t		old_lcount; /* line_count before the command */
+	linenr_t		old_lcount; /* curbuf->b_ml.ml_line_count before the command */
 	int 			ndone;
 
-	char			delim;		/* delimiter, normally '/' */
-	char		   *pat;
+	char_u			delim;		/* delimiter, normally '/' */
+	char_u		   *pat;
 	regexp		   *prog;
 	int				match;
+	int				which_pat;
 
 	if (global_busy)
 	{
-		emsg("Cannot do :global recursive");
+		EMSG("Cannot do :global recursive");
 		++global_busy;
 		return;
 	}
 
-	delim = *cmd++; 			/* skip the delimiter */
-	pat = cmd;
+	which_pat = 2;			/* default: use last used regexp */
 
-	while (cmd[0])
+	/*
+	 * undocumented vi feature:
+	 *	"\/" and "\?": use previous search pattern.
+	 *  	     "\&": use previous substitute pattern.
+	 */
+	if (*cmd == '\\')
 	{
-		if (cmd[0] == delim)				/* end delimiter found */
-		{
-			*cmd++ = NUL;					/* replace it by a NUL */
-			break;
-		}
-		if (cmd[0] == '\\' && cmd[1] != 0)	/* skip escaped characters */
-			++cmd;
 		++cmd;
+		if (strchr("/?&", *cmd) == NULL)
+		{
+			emsg(e_backslash);
+			return;
+		}
+		if (*cmd == '&')
+			which_pat = 1;		/* use previous substitute pattern */
+		else
+			which_pat = 0;		/* use previous search pattern */
+		++cmd;
+		pat = (char_u *)"";
+	}
+	else
+	{
+		delim = *cmd; 			/* get the delimiter */
+		if (delim)
+			++cmd;				/* skip delimiter if there is one */
+		pat = cmd;				/* remember start of pattern */
+		cmd = skip_regexp(cmd, delim);
+		if (cmd[0] == delim)				/* end delimiter found */
+			*cmd++ = NUL;					/* replace it by a NUL */
 	}
 
 	reg_ic = p_ic;           /* set "ignore case" flag appropriately */
 
-	if ((prog = myregcomp(pat)) == NULL)
+	if ((prog = myregcomp(pat, 2, which_pat)) == NULL)
 	{
 		emsg(e_invcmd);
 		return;
 	}
-	msg("");
+	MSG("");
 
 /*
  * pass 1: set marks for each (not) matching line
@@ -378,10 +516,10 @@ doglob(type, lp, up, cmd)
 	ndone = 0;
 	for (lnum = lp; lnum <= up && !got_int; ++lnum)
 	{
-		match = regexec(prog, nr2ptr(lnum), (int)TRUE);     /* a match on this line? */
+		match = regexec(prog, ml_get(lnum), (int)TRUE);     /* a match on this line? */
 		if ((type == 'g' && match) || (type == 'v' && !match))
 		{
-			setmarked(lnum);
+			ml_setmarked(lnum);
 			ndone++;
 		}
 			/* breakcheck is slow, don't call it too often */
@@ -393,34 +531,51 @@ doglob(type, lp, up, cmd)
  * pass 2: execute the command for each line that has been marked
  */
 	if (got_int)
-		msg("Interrupted");
+		MSG("Interrupted");
 	else if (ndone == 0)
-		msg("No match");
+		msg(e_nomatch);
 	else
 	{
 		global_busy = 1;
-		global_wait = 0;
+		dont_sleep = 1;			/* don't sleep in emsg() */
+		no_wait_return = 1;		/* dont wait for return until finished */
+		need_wait_return = FALSE;
 		RedrawingDisabled = TRUE;
-		old_lcount = line_count;
-		while (!got_int && (lnum = firstmarked()) != 0 && global_busy == 1)
+		old_lcount = curbuf->b_ml.ml_line_count;
+		did_msg = FALSE;
+		while (!got_int && (lnum = ml_firstmarked()) != 0 && global_busy == 1)
 		{
-			Curpos.lnum = lnum;
-			Curpos.col = 0;
-			if (*cmd == NUL)
-				docmdline((u_char *)"p");
+			/*
+			 * If there was a message from the previous command, scroll
+			 * the lines up for the next, otherwise it will be overwritten.
+			 * did_msg is set by msg_start().
+			 */
+			if (did_msg)
+			{
+				cmdline_row = msg_row;
+				did_msg = FALSE;
+			}
+			curwin->w_cursor.lnum = lnum;
+			curwin->w_cursor.col = 0;
+			if (*cmd == NUL || *cmd == '\n')
+				docmdline((char_u *)"p");
 			else
-				docmdline((u_char *)cmd);
+				docmdline(cmd);
 			breakcheck();
 		}
 
 		RedrawingDisabled = FALSE;
-		if (global_wait)                /* wait for return */
+		global_busy = 0;
+		dont_sleep = 0;
+		no_wait_return = 0;
+		if (need_wait_return)                /* wait for return now */
 			wait_return(FALSE);
-		updateScreen(CLEAR);
-		msgmore(line_count - old_lcount);
+
+		screenclear();
+		updateScreen(CURSUPD);
+		msgmore(curbuf->b_ml.ml_line_count - old_lcount);
 	}
 
-	clearmarked();      /* clear rest of the marks */
-	global_busy = 0;
-	free((char *) prog);
+	ml_clearmarked();      /* clear rest of the marks */
+	free(prog);
 }

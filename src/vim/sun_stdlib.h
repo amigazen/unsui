@@ -1,13 +1,28 @@
+/* vi:ts=4:sw=4
+ *
+ * VIM - Vi IMproved		by Bram Moolenaar
+ *
+ * Read the file "credits.txt" for a list of people who contributed.
+ * Read the file "uganda.txt" for copying and usage conditions.
+ */
+
 /*
  * sun_stdlib.h: declararions used on a sun
  */
 
 #ifndef __stdlib_h
+extern int atoi (char *);
+extern long atol(char *);
 extern void free(void *);
+extern char *getenv(char *);
 extern void *malloc(unsigned);
 extern void *realloc(void *, unsigned);
 extern void *calloc(unsigned, unsigned);
+extern int read(int, char *, unsigned);
+extern int write(int, char *, unsigned);
+extern int unlink(char *);
 #endif
+
 #ifdef __sys_types_h
 extern off_t lseek(int, off_t, int);
 
@@ -22,14 +37,9 @@ extern long lseek(int, long, int);
 extern long tell(int);
 extern void perror(char *);
 
-#ifndef __sys_fcntlcom_h
-extern int open(char *, int, ...);
-#endif
+#include <fcntl.h>
+
 extern int close(int);
-extern int read(int, char *, unsigned);
-extern int write(int, char *, unsigned);
-extern int ioctl(int, int, ...);
-extern int unlink(char *);
 
 #ifdef FILE
 extern int _filbuf(FILE *);
@@ -50,28 +60,21 @@ extern int scanf(char *, ...);
 extern int sscanf(char *, char *, ...);
 
 extern int system(char *);
-extern char *getenv(char *);
 
+#ifndef __sys_unistd_h
 extern char *getcwd(char *, int);
-extern char *getwd(char *);
-
 extern int chdir(char *);
 extern int getuid(void);
 extern int getgid(void);
+#endif /* __sys_unistd_h */
 
-extern int atoi (char *);
-extern long atol(char *);
 extern long strtol(char * , char **, int);
-
-extern void bcopy(char *, char *, int);
-extern int bcmp(char *, char *, int);
-extern void bzero(char *, int);
 
 extern char *memccpy(char *, char *, int, int);
 extern char *memchr(char *, int, int);
 extern char *memset(char *, int, int);
 
-extern int strncmp(char *, char *, int);
+#include <string.h>
 extern int strcasecmp(char *, char *);
 
 extern int toupper(int);

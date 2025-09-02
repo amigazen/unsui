@@ -1,3 +1,11 @@
+/* vi:ts=4:sw=4
+ *
+ * VIM - Vi IMproved		by Bram Moolenaar
+ *
+ * Read the file "credits.txt" for a list of people who contributed.
+ * Read the file "uganda.txt" for copying and usage conditions.
+ */
+
 /*
  * ptx_stdlib.h: declarations which are needed for sequent
  */
@@ -5,10 +13,8 @@
 extern void free(void *);
 #ifdef SIZE_T /* sys/types.h */
 extern void *malloc(size_t);
-extern off_t lseek(int, off_t, int);
 #else
 extern void *malloc(unsigned);
-extern int lseek(int, int, int);
 #endif
 
 #ifndef _FCNTL_H_
@@ -21,8 +27,6 @@ extern int ioctl(int, int, ...);
 extern int unlink(char *);
 
 extern char *getenv(char *);
-extern int getuid(void);
-extern int getgid(void);
 
 #ifdef _NFILE /* stdio.h */
 extern int _filbuf(FILE *);

@@ -1,11 +1,9 @@
 /* vi:ts=4:sw=4
  *
- * VIM - Vi IMitation
+ * VIM - Vi IMproved		by Bram Moolenaar
  *
- * Code Contributions By:	Bram Moolenaar			mool@oce.nl
- *							Tim Thompson			twitch!tjt
- *							Tony Andrews			onecom!wldrdg!tony 
- *							G. R. (Fred) Walter		watmath!watcgl!grwalter 
+ * Read the file "credits.txt" for a list of people who contributed.
+ * Read the file "uganda.txt" for copying and usage conditions.
  */
 
 /*
@@ -18,16 +16,17 @@
 #include "param.h"
 #include "ops.h"	/* for operator */
 
-extern u_char *get_inserted();
+extern char_u *get_inserted();
 static void start_arrow __ARGS((void));
 static void stop_arrow __ARGS((void));
 static void stop_insert __ARGS((void));
+static int echeck_abbr __ARGS((int));
 
-int arrow_used;			/* Normally FALSE, set to TRUE after hitting
+int arrow_used;				/* Normally FALSE, set to TRUE after hitting
 							 * cursor key in insert mode. Used by vgetorpeek()
 							 * to decide when to call u_sync() */
-int restart_edit;		/* call edit when next command finished */
-static u_char	*last_insert = NULL;
+int restart_edit = 0;		/* call edit when next command finished */
+static char_u	*last_insert = NULL;
 							/* the text of the previous insert */
 static int		last_insert_skip;
 							/* number of chars in front of the previous insert */
@@ -38,25 +37,62 @@ static int		new_insert_skip;
 edit(count)
 	long count;
 {
-	u_char		 c;
-	u_char		 cc;
-	u_char		*ptr;
+	int			 c;
+	int			 cc;
+	char_u		*ptr;
+	char_u		*saved_line = NULL;		/* saved line for replace mode */
+	linenr_t	 saved_lnum = 0;		/* lnum of saved line */
+	int			 saved_char = NUL;		/* char replaced by NL */
 	linenr_t	 lnum;
-	int 		 temp = 0, mode;
+	int 		 temp = 0;
+	int			 mode;
 	int			 nextc = 0;
+	int			 lastc = 0;
+	colnr_t		 mincol;
+	static linenr_t o_lnum = 0;
+	static int	 o_eol = FALSE;
+#ifdef WEBB_KEYWORD_COMPL
+	FPOS		 complete_pos;
+	FPOS		 first_match;
+	char_u		 *complete_pat = NULL;
+	char_u		 *completion_str = NULL;
+	char_u		 *last_completion_str = NULL;
+	char_u		 *tmp_ptr;
+	int			 previous_c = 0;
+	int			 complete_col = 0;			/* init for gcc */
+	int			 complete_direction;
+	int			 complete_any_word = 0;		/* true -> ^N/^P hit with no prefix
+											 * init for gcc */
+	int			 done;
+	int			 found_error = FALSE;
+	char_u		 backup_char = 0;			/* init for gcc */
 
-#ifdef DIGRAPHS
-	int			 inserted = 0;		/* last 'normal' inserted char */
-	int			 backspaced = 0;	/* last backspace char */
-#endif /* DIGRAPHS */
+	c = NUL;
+#endif /* WEBB_KEYWORD_COMPL */
 
 	if (restart_edit)
 	{
 		arrow_used = TRUE;
-		restart_edit = FALSE;
+		restart_edit = 0;
+		/*
+		 * If the cursor was after the end-of-line before the CTRL-O
+		 * and it is now at the end-of-line, put it after the end-of-line
+		 * (this is not correct in very rare cases).
+		 */
+		if (o_eol && curwin->w_cursor.lnum == o_lnum &&
+				*((ptr = ml_get(curwin->w_cursor.lnum)) + curwin->w_cursor.col) != NUL &&
+				*(ptr + curwin->w_cursor.col + 1) == NUL)
+			++curwin->w_cursor.col;
 	}
 	else
+	{
 		arrow_used = FALSE;
+		o_eol = FALSE;
+	}
+
+#ifdef DIGRAPHS
+	dodigraph(-1);					/* clear digraphs */
+#endif
 
 /*
  * Get the current length of the redo buffer, those characters have to be
@@ -64,90 +100,147 @@ edit(count)
  */
 
 	ptr = get_inserted();
-	new_insert_skip = strlen((char *)ptr);
+	new_insert_skip = STRLEN(ptr);
 	free(ptr);
+
+	old_indent = 0;
 
 	for (;;)
 	{
 		if (arrow_used)		/* don't repeat insert when arrow key used */
 			count = 0;
 
-		set_want_col = TRUE;	/* set Curswant in case of K_DARROW or K_UARROW */
-		cursupdate();		/* Figure out where the cursor is based on Curpos. */
+		if (!arrow_used)
+			curwin->w_set_curswant = TRUE;	/* set curwin->w_curswant for next K_DARROW or K_UARROW */
+		cursupdate();		/* Figure out where the cursor is based on curwin->w_cursor. */
+		showruler(0);
 		setcursor();
+#ifdef WEBB_KEYWORD_COMPL
+		previous_c = c;
+#endif /* WEBB_KEYWORD_COMPL */
 		if (nextc)			/* character remaining from CTRL-V */
 		{
 			c = nextc;
 			nextc = 0;
 		}
 		else
+		{
 			c = vgetc();
+			if (c == Ctrl('C'))
+				got_int = FALSE;
+		}
+#ifdef WEBB_KEYWORD_COMPL
+		if (previous_c == Ctrl('N') || previous_c == Ctrl('P'))
+		{
+			/* Show error message from attempted keyword completion (probably
+			 * 'Pattern not found') until another key is hit, then go back to
+			 * showing what mode we are in.
+			 */
+			showmode();
+			if (c != Ctrl('N') && c != Ctrl('P'))
+			{
+				/* Get here when we have finished typing a sequence of ^N and
+				 * ^P. Free up memory that was used, and make sure we can redo
+				 * the insert.
+				 */
+				if (completion_str != NULL)
+					AppendToRedobuff(completion_str);
+				free(complete_pat);
+				free(completion_str);
+				free(last_completion_str);
+				complete_pat = completion_str = last_completion_str = NULL;
+			}
+		}
+#endif /* WEBB_KEYWORD_COMPL */
+		if (c != Ctrl('D'))			/* remember to detect ^^D and 0^D */
+			lastc = c;
+
+/*
+ * In replace mode a backspace puts the original text back.
+ * We save the current line to be able to do that.
+ * If characters are appended to the line, they will be deleted.
+ * If we start a new line (with CR) the saved line will be empty, thus
+ * the characters will be deleted.
+ * If we backspace over the new line, that line will be saved.
+ */
+		if (State == REPLACE && saved_lnum != curwin->w_cursor.lnum)
+		{
+			free(saved_line);
+			saved_line = strsave(ml_get(curwin->w_cursor.lnum));
+			saved_lnum = curwin->w_cursor.lnum;
+		}
 
 #ifdef DIGRAPHS
-		if (p_dg)
-		{
-			if (backspaced)
-				c = getdigraph(backspaced, c);
-			backspaced = 0;
-			if (c == BS && inserted)
-				backspaced = inserted;
-			else
-				inserted = c;
-		}
+		c = dodigraph(c);
 #endif /* DIGRAPHS */
 
 		if (c == Ctrl('V'))
 		{
-				outchar('^');
-				AppendToRedobuff("\026");	/* CTRL-V */
-				cursupdate();
-				setcursor();
+			screen_start();
+			screen_outchar('^', curwin->w_row, curwin->w_col);
+			AppendToRedobuff((char_u *)"\026");	/* CTRL-V */
+			cursupdate();
+			setcursor();
 
-				c = get_literal(&nextc);
+			c = get_literal(&nextc);
 
-			/* erase the '^' */
-				if ((cc = gcharCurpos()) == NUL)
-					outchar(' ');
-				else
-					outstrn(transchar(cc));
-
-				insertchar(c);
-				continue;
+			insertchar(c);
+			continue;
 		}
 		switch (c)		/* handle character in insert mode */
 		{
 			  case Ctrl('O'):		/* execute one command */
+			    if (echeck_abbr(Ctrl('O') + 0x100))
+					break;
 			  	count = 0;
-				restart_edit = TRUE;
+				if (State == INSERT)
+					restart_edit = 'I';
+				else
+					restart_edit = 'R';
+				o_lnum = curwin->w_cursor.lnum;
+				o_eol = (gchar_cursor() == NUL);
+				goto doESCkey;
+
+			  case ESC: 			/* an escape ends input mode */
+			    if (echeck_abbr(ESC + 0x100))
+					break;
 				/*FALLTHROUGH*/
 
-			  case ESC: /* an escape ends input mode */
-		doESCkey:
+			  case Ctrl('C'):
+doESCkey:
 				if (!arrow_used)
 				{
 					AppendToRedobuff(ESC_STR);
 
 					if (--count > 0)		/* repeat what was typed */
 					{
-							start_redo_ins();
+							(void)start_redo_ins();
 							continue;
 					}
 					stop_insert();
 				}
-				set_want_col = TRUE;
+				if (!restart_edit)
+					curwin->w_set_curswant = TRUE;
 
 				/*
 				 * The cursor should end up on the last inserted character.
 				 */
-				if (Curpos.col != 0 && (!restart_edit || gcharCurpos() == NUL))
-					decCurpos();
+				if (curwin->w_cursor.col != 0 && (!restart_edit || gchar_cursor() == NUL) && !p_ri)
+					dec_cursor();
+				if (extraspace)			/* did reverse replace in column 0 */
+				{
+					(void)delchar(FALSE);
+					updateline();
+					extraspace = FALSE;
+				}
 				State = NORMAL;
-				script_winsize_pp();	/* may need to put :winsize in script */
 					/* inchar() may have deleted the "INSERT" message */
 				if (Recording)
 					showmode();
-				else if (p_mo)
-					msg("");
+				else if (p_smd)
+					MSG("");
+				free(saved_line);
+				old_indent = 0;
 				return;
 
 			  	/*
@@ -164,9 +257,14 @@ edit(count)
 			  	/*
 				 * insert the contents of a register
 				 */
-			  case Ctrl('B'):
-			  	if (!insertbuf(vgetc()))
+			  case Ctrl('R'):
+			  	if (insertbuf(vgetc()) == FAIL)
 					beep();
+				break;
+
+			  case Ctrl('B'):			/* toggle reverse insert mode */
+			  	p_ri = !p_ri;
+				showmode();
 				break;
 
 				/*
@@ -180,21 +278,37 @@ edit(count)
 			  case Ctrl('T'):		/* make indent one shiftwidth greater */
 			  case Ctrl('D'): 		/* make indent one shiftwidth smaller */
 				stop_arrow();
-				AppendToRedobuff(mkstr(c));
+				AppendCharToRedobuff(c);
+				if ((lastc == '0' || lastc == '^') && curwin->w_cursor.col)
+				{
+					--curwin->w_cursor.col;
+					(void)delchar(FALSE);			/* delete the '^' or '0' */
+					if (lastc == '^')
+						old_indent = get_indent();	/* remember current indent */
 
-					/* determine offset from first non-blank */
-				temp = Curpos.col;
-				beginline(TRUE);
-				temp -= Curpos.col;
-
-		  		shift_line(c == Ctrl('D'));
-
-					/* try to put cursor on same character */
-				temp += Curpos.col;
-				if (temp <= 0)
-					Curpos.col = 0;
+						/* determine offset from first non-blank */
+					temp = curwin->w_cursor.col;
+					beginline(TRUE);
+					temp -= curwin->w_cursor.col;
+					set_indent(0, TRUE);	/* remove all indent */
+				}
 				else
-					Curpos.col = temp;
+				{
+ins_indent:
+						/* determine offset from first non-blank */
+					temp = curwin->w_cursor.col;
+					beginline(TRUE);
+					temp -= curwin->w_cursor.col;
+
+					shift_line(c == Ctrl('D'), TRUE, 1);
+
+						/* try to put cursor on same character */
+					temp += curwin->w_cursor.col;
+				}
+				if (temp <= 0)
+					curwin->w_cursor.col = 0;
+				else
+					curwin->w_cursor.col = temp;
 				did_ai = FALSE;
 				did_si = FALSE;
 				can_si = FALSE;
@@ -205,77 +319,146 @@ edit(count)
 nextbs:
 				mode = 0;
 dodel:
+				/* can't delete anything in an empty file */
 				/* can't backup past first character in buffer */
-				/* can't backup past starting point unless "backspace" > 1 */
-				/* can backup to a previous line if "backspace" == 0 */
-				if ((Curpos.lnum == 1 && Curpos.col <= 0) ||
+				/* can't backup past starting point unless 'backspace' > 1 */
+				/* can backup to a previous line if 'backspace' == 0 */
+				if (bufempty() || (!p_ri &&
+						((curwin->w_cursor.lnum == 1 && curwin->w_cursor.col <= 0) ||
 						(p_bs < 2 && (arrow_used ||
-							(Curpos.lnum == Insstart.lnum &&
-							Curpos.col <= Insstart.col) ||
-							(Curpos.col <= 0 && p_bs == 0))))
+							(curwin->w_cursor.lnum == Insstart.lnum &&
+							curwin->w_cursor.col <= Insstart.col) ||
+							(curwin->w_cursor.col <= 0 && p_bs == 0))))))
 				{
 					beep();
 					goto redraw;
 				}
 
 				stop_arrow();
-				if (Curpos.col <= 0)		/* delete newline! */
+				if (p_ri)
+					inc_cursor();
+				if (curwin->w_cursor.col <= 0)		/* delete newline! */
 				{
-					if (Curpos.lnum == Insstart.lnum)
+					lnum = Insstart.lnum;
+					if (curwin->w_cursor.lnum == Insstart.lnum || p_ri)
 					{
-						if (!u_save((linenr_t)(Curpos.lnum - 2), (linenr_t)(Curpos.lnum + 1)))
+						if (!u_save((linenr_t)(curwin->w_cursor.lnum - 2), (linenr_t)(curwin->w_cursor.lnum + 1)))
 							goto redraw;
 						--Insstart.lnum;
 						Insstart.col = 0;
+						/* this is in xvim, why?
+						if (curbuf->b_p_ai)
+							for (ptr = ml_get(Insstart.lnum);
+											iswhite(*ptr++); Insstart.col++)
+								; */
 					}
-				/* in replace mode with 'repdel' off we only move the cursor */
-					if (State != REPLACE || p_rd)
+				/* in replace mode, in the line we started replacing, we
+														only move the cursor */
+					if (State != REPLACE || curwin->w_cursor.lnum > lnum)
 					{
-						temp = gcharCurpos();		/* remember current char */
-						--Curpos.lnum;
-						dojoin(FALSE);
-						if (temp == NUL && gcharCurpos() != NUL)
-							++Curpos.col;
+						temp = gchar_cursor();		/* remember current char */
+						--curwin->w_cursor.lnum;
+						(void)dojoin(FALSE, TRUE);
+						if (temp == NUL && gchar_cursor() != NUL)
+							++curwin->w_cursor.col;
+						if (saved_char)				/* restore what NL replaced */
+						{
+							State = NORMAL;			/* no replace for this char */
+							inschar(saved_char);	/* but no showmatch */
+							State = REPLACE;
+							saved_char = NUL;
+							if (!p_ri)
+								dec_cursor();
+						}
+						else if (p_ri)				/* in reverse mode */
+							saved_lnum = 0;			/* save this line again */
 					}
 					else
-						decCurpos();
+						dec_cursor();
 					did_ai = FALSE;
 				}
 				else
 				{
+					if (p_ri && State != REPLACE)
+						dec_cursor();
+					mincol = 0;
+					if (mode == 3 && !p_ri && curbuf->b_p_ai)	/* keep indent */
+					{
+						temp = curwin->w_cursor.col;
+						beginline(TRUE);
+						if (curwin->w_cursor.col < temp)
+							mincol = curwin->w_cursor.col;
+						curwin->w_cursor.col = temp;
+					}
+
 					/* delete upto starting point, start of line or previous word */
 					do
 					{
-						decCurpos();
+						if (!p_ri)
+							dec_cursor();
+
 								/* start of word? */
-						if (mode == 1 && !isspace(gcharCurpos()))
+						if (mode == 1 && !isspace(gchar_cursor()))
 						{
 							mode = 2;
-							temp = isidchar(gcharCurpos());
+							temp = isidchar(gchar_cursor());
 						}
 								/* end of word? */
-						if (mode == 2 && isidchar(gcharCurpos()) != temp)
+						else if (mode == 2 && (isspace(cc = gchar_cursor()) || isidchar(cc) != temp))
 						{
-							incCurpos();
+							if (!p_ri)
+								inc_cursor();
+							else if (State == REPLACE)
+								dec_cursor();
 							break;
 						}
-						if (State != REPLACE || p_rd)
-							delchar(TRUE);
+						if (State == REPLACE)
+						{
+							if (saved_line)
+							{
+								if (extraspace)
+								{
+									if ((int)STRLEN(ml_get(curwin->w_cursor.lnum)) - 1 > (int)STRLEN(saved_line))
+										(void)delchar(FALSE);
+									else
+									{
+										dec_cursor();
+										(void)delchar(FALSE);
+										extraspace = FALSE;
+										pchar_cursor(*saved_line);
+									}
+								}
+								else if (curwin->w_cursor.col < STRLEN(saved_line))
+									pchar_cursor(saved_line[curwin->w_cursor.col]);
+								else if (!p_ri)
+									(void)delchar(FALSE);
+							}
+						}
+						else  /* State != REPLACE */
+						{
+							(void)delchar(FALSE);
+							if (p_ri && gchar_cursor() == NUL)
+								break;
+						}
 						if (mode == 0)		/* just a single backspace */
 							break;
-					} while (Curpos.col > 0 && (Curpos.lnum != Insstart.lnum ||
-							Curpos.col != Insstart.col));
+						if (p_ri && State == REPLACE && inc_cursor())
+							break;
+					} while (p_ri || (curwin->w_cursor.col > mincol && (curwin->w_cursor.lnum != Insstart.lnum ||
+							curwin->w_cursor.col != Insstart.col)));
+					if (extraspace)
+						dec_cursor();
 				}
 				did_si = FALSE;
 				can_si = FALSE;
-				if (Curpos.col <= 1)
+				if (curwin->w_cursor.col <= 1)
 					did_ai = FALSE;
 				/*
 				 * It's a little strange to put backspaces into the redo
 				 * buffer, but it makes auto-indent a lot easier to deal
 				 * with.
 				 */
-				AppendToRedobuff(mkstr(c));
+				AppendCharToRedobuff(c);
 				if (vpeekc() == BS)
 				{
 						c = vgetc();
@@ -286,24 +469,34 @@ redraw:
 				updateline();
 				break;
 
-			  case Ctrl('W'):
-			  	/* delete word before cursor */
+			  case Ctrl('W'):		/* delete word before cursor */
 			  	mode = 1;
 			  	goto dodel;
 
-			  case Ctrl('U'):
+			  case Ctrl('U'):		/* delete inserted text in current line */
 				mode = 3;
 			  	goto dodel;
 
 			  case K_LARROW:
-			  	if (oneleft())
+			  	if (oneleft() == OK)
+				{
 					start_arrow();
+				}
+					/* if 'whichwrap' set for cursor in insert mode may go
+					 * to previous line */
+				else if ((p_ww & 16) && curwin->w_cursor.lnum > 1)
+				{
+					start_arrow();
+					--(curwin->w_cursor.lnum);
+					coladvance(MAXCOL);
+					curwin->w_curswant = MAXCOL;	/* so we stay at the end */
+				}
 				else
 					beep();
 				break;
 
 			  case K_SLARROW:
-			  	if (Curpos.lnum > 1 || Curpos.col > 0)
+			  	if (curwin->w_cursor.lnum > 1 || curwin->w_cursor.col > 0)
 				{
 					bck_word(1L, 0);
 					start_arrow();
@@ -313,20 +506,29 @@ redraw:
 				break;
 
 			  case K_RARROW:
-				if (gcharCurpos() != NUL)
+				if (gchar_cursor() != NUL)
 				{
-					set_want_col = TRUE;
+					curwin->w_set_curswant = TRUE;
 					start_arrow();
-					++Curpos.col;
+					++curwin->w_cursor.col;
+				}
+					/* if 'whichwrap' set for cursor in insert mode may go
+					 * to next line */
+				else if ((p_ww & 16) && curwin->w_cursor.lnum < curbuf->b_ml.ml_line_count)
+				{
+					curwin->w_set_curswant = TRUE;
+					start_arrow();
+					++curwin->w_cursor.lnum;
+					curwin->w_cursor.col = 0;
 				}
 				else
 					beep();
 				break;
 
 			  case K_SRARROW:
-			  	if (Curpos.lnum < line_count || gcharCurpos() != NUL)
+			  	if (curwin->w_cursor.lnum < curbuf->b_ml.ml_line_count || gchar_cursor() != NUL)
 				{
-					fwd_word(1L, 0);
+					fwd_word(1L, 0, 0);
 					start_arrow();
 				}
 				else
@@ -362,50 +564,219 @@ redraw:
 				break;
 
 			  case TAB:
-			  	if (!p_et)
+			    if (echeck_abbr(TAB + 0x100))
+					break;
+			  	if ((!curbuf->b_p_et && !(p_sta && inindent())) || (p_ri && State == REPLACE))
 					goto normalchar;
-										/* expand a tab into spaces */
+
+				AppendToRedobuff((char_u *)"\t");
+
+				if (!curbuf->b_p_et)				/* insert smart tab */
+					goto ins_indent;
+
+										/* p_te set: expand a tab into spaces */
 				stop_arrow();
 				did_ai = FALSE;
 				did_si = FALSE;
 				can_si = FALSE;
-				insstr("                " + 16 - (p_ts - Curpos.col % p_ts));
-				AppendToRedobuff("\t");
+				if (p_sta && inindent())
+					temp = (int)curbuf->b_p_sw;
+				else
+					temp = (int)curbuf->b_p_ts;
+				temp -= curwin->w_cursor.col % temp;
+				inschar(' ');			/* delete one char in replace mode */
+				while (--temp)
+					insstr((char_u *)" ");		/* insstr does not delete chars */
 				goto redraw;
 
 			  case CR:
 			  case NL:
+			    if (echeck_abbr(c + 0x100))
+					break;
 				stop_arrow();
-				if (State == REPLACE)           /* DMT added, 12/89 */
-					delchar(FALSE);
+				if (State == REPLACE)
+				{
+					saved_char = gchar_cursor();
+					(void)delchar(FALSE);
+				}
+				/*
+				 * When 'autoindent' set delete white space after the cursor.
+				 * Vi does this, although it probably does it implicitly due
+				 * to the way it does auto-indent -- webb.
+				 */
+				if (curbuf->b_p_ai || curbuf->b_p_si)
+					while ((c = gchar_cursor()) == ' ' || c == TAB)
+						(void)delchar(FALSE);
+
 				AppendToRedobuff(NL_STR);
-				if (!Opencmd(FORWARD, TRUE))
+				if (!Opencmd(FORWARD, TRUE, State == INSERT))
 					goto doESCkey;		/* out of memory */
+				if (p_ri)
+				{
+					dec_cursor();
+					if (State == REPLACE && curwin->w_cursor.col > 0)
+						dec_cursor();
+				}
 				break;
 
 #ifdef DIGRAPHS
 			  case Ctrl('K'):
-				outchar('?');
-				AppendToRedobuff("\026");	/* CTRL-V */
+				screen_start();
+				screen_outchar('?', curwin->w_row, curwin->w_col);
 				setcursor();
 			  	c = vgetc();
-				outstrn(transchar(c));
-				setcursor();
-				c = getdigraph(c, vgetc());
-				goto normalchar;
+				if (c != ESC)
+				{
+					if (charsize(c) == 1)
+					{
+						screen_start();
+						screen_outchar(c, curwin->w_row, curwin->w_col);
+					}
+					setcursor();
+					cc = vgetc();
+					if (cc != ESC)
+					{
+						AppendToRedobuff((char_u *)"\026");	/* CTRL-V */
+						c = getdigraph(c, cc, TRUE);
+						goto normalchar;
+					}
+				}
+				updateline();
+				goto doESCkey;
 #endif /* DIGRAPHS */
 
-			  case Ctrl('R'):
-				/*
-				 * addition by mool: copy from previous line
-				 */
-				lnum = Curpos.lnum - 1;
+#ifdef WEBB_KEYWORD_COMPL
+			  case Ctrl('P'):			/* Do previous pattern completion */
+			  case Ctrl('N'):			/* Do next pattern completion */
+				if (c == Ctrl('P'))
+					complete_direction = BACKWARD;
+				else
+					complete_direction = FORWARD;
+				if (previous_c != Ctrl('N') && previous_c != Ctrl('P'))
+				{
+					/* First time we hit ^N or ^P (in a row, I mean) */
+					complete_pos = curwin->w_cursor;
+					ptr = ml_get(complete_pos.lnum);
+					complete_col = complete_pos.col;
+					temp = complete_col - 1;
+					if (temp < 0 || !isidchar(ptr[temp]))
+					{
+						complete_pat = strsave((char_u *)"\\<[a-zA-Z_]");
+						complete_any_word = TRUE;
+					}
+					else
+					{
+						while (temp >= 0 && isidchar(ptr[temp]))
+							temp--;
+						temp++;
+						complete_pat = alloc(curwin->w_cursor.col - temp + 3);
+						if (complete_pat != NULL)
+							sprintf((char *)complete_pat, "\\<%.*s",
+								(int)(curwin->w_cursor.col - temp), ptr + temp);
+						complete_any_word = FALSE;
+					}
+					last_completion_str = strsave((char_u *)" ");
+				}
+				else
+				{
+					/* This is not the first ^N or ^P we have hit in a row */
+					while (curwin->w_cursor.col != complete_col)
+					{
+						curwin->w_cursor.col--;
+						delchar(FALSE);
+					}
+					if (completion_str != NULL)
+					{
+						free(last_completion_str);
+						last_completion_str = strsave(completion_str);
+					}
+				}
+				if (complete_pat == NULL || last_completion_str == NULL)
+				{
+					found_error = TRUE;
+					break;
+				}
+				if (!complete_any_word)
+				{
+					ptr = ml_get(curwin->w_cursor.lnum);
+					backup_char = ptr[complete_col - 1];
+					ptr[complete_col - 1] = ' ';
+				}
+				done = FALSE;
+				found_error = FALSE;
+				first_match.lnum = 0;
+				keep_old_search_pattern = TRUE;
+				while (!done)
+				{
+					if (complete_direction == BACKWARD)
+					{
+						ptr = ml_get(complete_pos.lnum);
+						while (isidchar(ptr[complete_pos.col]))
+							complete_pos.col--;
+						complete_pos.col++;
+					}
+					if (!searchit(&complete_pos, complete_direction,
+						complete_pat, 1L, TRUE, TRUE))
+					{
+						found_error = TRUE;
+						break;
+					}
+					if (complete_any_word)
+						ptr = ml_get_pos(&complete_pos);
+					else
+						ptr = ml_get_pos(&complete_pos) + 1;
+					tmp_ptr = ptr;
+					temp = 1;
+					while (*tmp_ptr != NUL && isidchar(*tmp_ptr++))
+						temp++;
+					free (completion_str);
+					tmp_ptr = completion_str = alloc(temp);
+					if (completion_str == NULL)
+					{
+						found_error = TRUE;
+						break;
+					}
+					while (*ptr != NUL && isidchar(*ptr))
+						*(tmp_ptr++) = *(ptr++);
+					*tmp_ptr = NUL;
+					if (completion_str[0] != NUL &&
+							STRCMP(completion_str, last_completion_str) != 0)
+						done = TRUE;
+					else if (first_match.lnum == 0)
+					{
+						first_match.lnum = complete_pos.lnum;
+						first_match.col = complete_pos.col;
+					}
+					else if (complete_pos.lnum == first_match.lnum
+						 && complete_pos.col == first_match.col)
+					{
+						if (completion_str[0] == NUL)
+							EMSG("Exact match only");
+						else
+							EMSG("No other matches");
+						done = TRUE;
+					}
+				}
+				if (!found_error)
+					insstr(completion_str);
+				if (!complete_any_word)
+				{
+					ptr = ml_get(curwin->w_cursor.lnum);
+					ptr[complete_col - 1] = backup_char;
+				}
+				keep_old_search_pattern = FALSE;
+				updateline();
+				break;
+#endif /* WEBB_KEYWORD_COMPL */
+
+			  case Ctrl('Y'):				/* copy from previous line */
+				lnum = curwin->w_cursor.lnum - 1;
 				goto copychar;
 
-			  case Ctrl('E'):
-				lnum = Curpos.lnum + 1;
+			  case Ctrl('E'):				/* copy from next line */
+				lnum = curwin->w_cursor.lnum + 1;
 copychar:
-				if (lnum < 1 || lnum > line_count)
+				if (lnum < 1 || lnum > curbuf->b_ml.ml_line_count)
 				{
 					beep();
 					break;
@@ -413,11 +784,11 @@ copychar:
 
 				/* try to advance to the cursor column */
 				temp = 0;
-				ptr = (u_char *)nr2ptr(lnum);
-				while (temp < Cursvcol && *ptr)
-						temp += chartabsize(*ptr++, temp);
+				ptr = ml_get(lnum);
+				while (temp < curwin->w_virtcol && *ptr)
+						temp += chartabsize(*ptr++, (long)temp);
 
-				if (temp > Cursvcol)
+				if (temp > curwin->w_virtcol)
 						--ptr;
 				if ((c = *ptr) == NUL)
 				{
@@ -428,9 +799,36 @@ copychar:
 				/*FALLTHROUGH*/
 			  default:
 normalchar:
-				if (Curpos.col > 0 && ((can_si && c == '}') || (did_si && c == '{')))
-					shift_line(TRUE);
-				insertchar(c);
+				/*
+				 * do some very smart indenting when entering '{' or '}' or '#'
+				 */
+				if (curwin->w_cursor.col > 0 && ((can_si && c == '}') || (did_si && c == '{')))
+				{
+					FPOS	*pos, old_pos;
+					int		i;
+
+						/* for '}' set indent equal to matching '{' */
+					if (c == '}' && (pos = showmatch('{')) != NULL)
+					{
+						old_pos = curwin->w_cursor;
+						curwin->w_cursor = *pos;
+						i = get_indent();
+						curwin->w_cursor = old_pos;
+						set_indent(i, TRUE);
+					}
+					else
+						shift_line(TRUE, TRUE, 1);
+				}
+					/* set indent of '#' always to 0 */
+				if (curwin->w_cursor.col > 0 && can_si && c == '#')
+				{
+								/* remember current indent for next line */
+					old_indent = get_indent();
+					set_indent(0, TRUE);
+				}
+
+				if (isidchar(c) || !echeck_abbr(c))
+					insertchar(c);
 				break;
 			}
 	}
@@ -445,14 +843,19 @@ normalchar:
 get_literal(nextc)
 	int *nextc;
 {
-	u_char		 cc;
-	u_char		 nc;
+	int			 cc;
+	int			 nc;
 	int			 oldstate;
 	int			 i;
 
 	oldstate = State;
 	State = NOMAPPING;		/* next characters not mapped */
 
+	if (got_int)
+	{
+		*nextc = NUL;
+		return Ctrl('C');
+	}
 	cc = 0;
 	for (i = 0; i < 3; ++i)
 	{
@@ -466,12 +869,15 @@ get_literal(nextc)
 	{
 		cc = nc;
 		nc = 0;
+		if (cc == K_ZERO)	/* NUL is stored as NL */
+			cc = '\n';
 	}
 	else if (cc == 0)		/* NUL is stored as NL */
 		cc = '\n';
 
 	State = oldstate;
 	*nextc = nc;
+	got_int = FALSE;		/* CTRL-C typed after CTRL-V is not an interrupt */
 	return cc;
 }
 
@@ -489,61 +895,88 @@ get_literal(nextc)
 insertchar(c)
 	unsigned	c;
 {
-	int		must_redraw = FALSE;
+	int		haveto_redraw = FALSE;
+	int		textwidth;
 
 	stop_arrow();
+
+	/*
+	 * find out textwidth to be used:
+	 *	if 'textwidth' option is set, use it
+	 *	else if 'wrapmargin' option is set, use Columns - 'wrapmargin'
+	 *	if invalid value, us 0.
+	 */
+	textwidth = curbuf->b_p_tw;
+	if (textwidth == 0 && curbuf->b_p_wm)
+		textwidth = Columns - curbuf->b_p_wm;
+	if (textwidth < 0)
+		textwidth = 0;
+
 	/*
 	 * If the cursor is past 'textwidth' and we are inserting a non-space,
 	 * try to break the line in two or more pieces. If c == NUL then we have
-	 * been called to do formatting only.
+	 * been called to do formatting only. If textwidth == 0 it does nothing.
+	 * Don't do this if an existing character is being replaced.
 	 */
-	if (c == NUL || !isspace(c))
+	if (c == NUL || !(isspace(c) || (State == REPLACE && *ml_get_cursor() != NUL)))
 	{
-		while (Cursvcol >= p_tw)
+		while (textwidth && curwin->w_virtcol >= textwidth)
 		{
 			int		startcol;		/* Cursor column at entry */
 			int		wantcol;		/* column at textwidth border */
 			int		foundcol;		/* column for start of word */
-			int		mincol;			/* minimum column for break */
 
-			if ((startcol = Curpos.col) == 0)
+			if ((startcol = curwin->w_cursor.col) == 0)
 				break;
-			coladvance((int)p_tw);	/* find column of textwidth border */
-			wantcol = Curpos.col;
-			beginline((int)p_ai);			/* find start of text */
-			mincol = Curpos.col;
+			coladvance(textwidth);			/* find column of textwidth border */
+			wantcol = curwin->w_cursor.col;
 
-			Curpos.col = startcol - 1;
+			curwin->w_cursor.col = startcol - 1;
 			foundcol = 0;
-			while (Curpos.col > mincol)	/* find position to break at */
+			while (curwin->w_cursor.col > 0)			/* find position to break at */
 			{
-				if (isspace(gcharCurpos()))
+				if (isspace(gchar_cursor()))
 				{
-					foundcol = Curpos.col + 1;
-					while (Curpos.col > 1 && isspace(gcharCurpos()))
-						--Curpos.col;
-					if (Curpos.col < wantcol)
+					while (curwin->w_cursor.col > 0 && isspace(gchar_cursor()))
+						--curwin->w_cursor.col;
+					if (curwin->w_cursor.col == 0)	/* only spaces in front of text */
+						break;
+					foundcol = curwin->w_cursor.col + 1;
+					if (curwin->w_cursor.col < wantcol)
 						break;
 				}
-				--Curpos.col;
+				--curwin->w_cursor.col;
 			}
 
-			if (foundcol == 0)	/* no spaces, cannot break line */
+			if (foundcol == 0)			/* no spaces, cannot break line */
 			{
-				Curpos.col = startcol;
+				curwin->w_cursor.col = startcol;
 				break;
 			}
-			Curpos.col = foundcol;
-			startcol -= Curpos.col;
-			Opencmd(FORWARD, FALSE);
-			Curpos.col += startcol;
-			curs_columns();			/* update Cursvcol */
-			must_redraw = TRUE;
+			curwin->w_cursor.col = foundcol;		/* put cursor after pos. to break line */
+			startcol -= foundcol;
+			Opencmd(FORWARD, FALSE, FALSE);
+			while (isspace(gchar_cursor()) && startcol)		/* delete blanks */
+			{
+				(void)delchar(FALSE);
+				--startcol;				/* adjust cursor pos. */
+			}
+			curwin->w_cursor.col += startcol;
+			curs_columns(FALSE);		/* update curwin->w_virtcol */
+			haveto_redraw = TRUE;
 		}
-		if (c == NUL)		/* formatting only */
+		if (c == NUL)					/* formatting only */
 			return;
-		if (must_redraw)
+		if (haveto_redraw)
+		{
+			/*
+			 * If the cursor ended up just below the screen we scroll up here
+			 * to avoid a redraw of the whole screen in the most common cases.
+			 */
+ 			if (curwin->w_cursor.lnum == curwin->w_botline && !curwin->w_empty_rows)
+				win_del_lines(curwin, 0, 1, TRUE, TRUE);
 			updateScreen(CURSUPD);
+		}
 	}
 
 	did_ai = FALSE;
@@ -554,16 +987,21 @@ insertchar(c)
 	 * If there's any pending input, grab up to MAX_COLUMNS at once.
 	 * This speeds up normal text input considerably.
 	 */
-	if (vpeekc() != NUL && State != REPLACE)
+	if (vpeekc() != NUL && State != REPLACE && !p_ri)
 	{
-		char			p[MAX_COLUMNS + 1];
+		char_u			p[MAX_COLUMNS + 1];
 		int 			i;
 
 		p[0] = c;
 		i = 1;
 		while ((c = vpeekc()) != NUL && !ISSPECIAL(c) && i < MAX_COLUMNS &&
-					(Cursvcol += charsize(p[i - 1])) < p_tw)
+					(textwidth == 0 || (curwin->w_virtcol += charsize(p[i - 1])) < textwidth) &&
+					!(!no_abbr && !isidchar(c) && isidchar(p[i - 1])))
 			p[i++] = vgetc();
+#ifdef DIGRAPHS
+		dodigraph(-1);					/* clear digraphs */
+		dodigraph(p[i-1]);				/* may be the start of a digraph */
+#endif
 		p[i] = '\0';
 		insstr(p);
 		AppendToRedobuff(p);
@@ -571,12 +1009,16 @@ insertchar(c)
 	else
 	{
 		inschar(c);
-		AppendToRedobuff(mkstr(c));
+		AppendCharToRedobuff(c);
 	}
+
+	/*
+	 * TODO: If the cursor has shifted past the end of the screen, should
+	 * adjust the screen display. Avoids extra redraw.
+	 */
 
 	updateline();
 }
-
 
 /*
  * start_arrow() is called when an arrow key is used in insert mode.
@@ -602,10 +1044,10 @@ stop_arrow()
 {
 	if (arrow_used)
 	{
-		u_saveCurpos();			/* errors are ignored! */
-		Insstart = Curpos;		/* new insertion starts here */
-		ResetBuffers();
-		AppendToRedobuff("1i");	/* pretend we start an insertion */
+		u_save_cursor();			/* errors are ignored! */
+		Insstart = curwin->w_cursor;		/* new insertion starts here */
+		ResetRedobuff();
+		AppendToRedobuff((char_u *)"1i");	/* pretend we start an insertion */
 		arrow_used = FALSE;
 	}
 }
@@ -631,9 +1073,10 @@ stop_insert()
 	 */
 	if (did_ai && !arrow_used)
 	{
-		*nr2ptr(Curpos.lnum) = NUL;
-		canincrease(0);
-		Curpos.col = 0;
+		ml_replace(curwin->w_cursor.lnum, (char_u *)"", TRUE);
+		curwin->w_cursor.col = 0;
+		if (curwin->w_p_list)			/* the deletion is only seen in list mode */
+			updateline();
 	}
 	did_ai = FALSE;
 	did_si = FALSE;
@@ -641,89 +1084,96 @@ stop_insert()
 }
 
 /*
+ * move cursor to start of line
+ * if flag == TRUE move to first non-white
+ */
+	void
+beginline(flag)
+	int			flag;
+{
+	curwin->w_cursor.col = 0;
+	if (flag)
+	{
+		register char_u *ptr;
+
+		for (ptr = ml_get(curwin->w_cursor.lnum); iswhite(*ptr); ++ptr)
+			++curwin->w_cursor.col;
+	}
+	curwin->w_set_curswant = TRUE;
+}
+
+/*
  * oneright oneleft onedown oneup
  *
- * Move one char {right,left,down,up}.	Return TRUE when sucessful, FALSE when
- * we hit a boundary (of a line, or the file).
+ * Move one char {right,left,down,up}.
+ * Return OK when sucessful, FAIL when we hit a line of file boundary.
  */
 
 	int
 oneright()
 {
-	char *ptr;
+	char_u *ptr;
 
-	ptr = pos2ptr(&Curpos);
-	set_want_col = TRUE;
-
+	ptr = ml_get_cursor();
 	if (*ptr++ == NUL || *ptr == NUL)
-		return FALSE;
-	++Curpos.col;
-	return TRUE;
+		return FAIL;
+	curwin->w_set_curswant = TRUE;
+	++curwin->w_cursor.col;
+	return OK;
 }
 
 	int
 oneleft()
 {
-	set_want_col = TRUE;
-
-	if (Curpos.col == 0)
-		return FALSE;
-	--Curpos.col;
-	return TRUE;
-}
-
-	void
-beginline(flag)
-	int			flag;
-{
-	Curpos.col = 0;
-	if (flag)
-	{
-		register char *ptr;
-
-		for (ptr = nr2ptr(Curpos.lnum); isspace(*ptr); ++ptr)
-			++Curpos.col;
-	}
-	set_want_col = TRUE;
+	if (curwin->w_cursor.col == 0)
+		return FAIL;
+	curwin->w_set_curswant = TRUE;
+	--curwin->w_cursor.col;
+	return OK;
 }
 
 	int
 oneup(n)
 	long n;
 {
-	if (n != 0 && Curpos.lnum == 1)
-		return FALSE;
-	if (n >= Curpos.lnum)
-		Curpos.lnum = 1;
+	if (n != 0 && curwin->w_cursor.lnum == 1)
+		return FAIL;
+	if (n >= curwin->w_cursor.lnum)
+		curwin->w_cursor.lnum = 1;
 	else
-		Curpos.lnum -= n;
+		curwin->w_cursor.lnum -= n;
 
 	if (operator == NOP)
-		cursupdate();				/* make sure Topline is valid */
+		cursupdate();				/* make sure curwin->w_topline is valid */
 
 	/* try to advance to the column we want to be at */
-	coladvance(Curswant);
-	return TRUE;
+	coladvance(curwin->w_curswant);
+	return OK;
 }
 
 	int
 onedown(n)
 	long n;
 {
-	if (n != 0 && Curpos.lnum == line_count)
-		return FALSE;
-	Curpos.lnum += n;
-	if (Curpos.lnum > line_count)
-		Curpos.lnum = line_count;
+	if (n != 0 && curwin->w_cursor.lnum == curbuf->b_ml.ml_line_count)
+		return FAIL;
+	curwin->w_cursor.lnum += n;
+	if (curwin->w_cursor.lnum > curbuf->b_ml.ml_line_count)
+		curwin->w_cursor.lnum = curbuf->b_ml.ml_line_count;
 
 	if (operator == NOP)
-		cursupdate();				/* make sure Topline is valid */
+		cursupdate();				/* make sure curwin->w_topline is valid */
 
 	/* try to advance to the column we want to be at */
-	coladvance(Curswant);
-	return TRUE;
+	coladvance(curwin->w_curswant);
+	return OK;
 }
 
+/*
+ * move screen 'count' pages up or down and update screen
+ *
+ * return FAIL for failure, OK otherwise
+ */
 	int
 onepage(dir, count)
 	int		dir;
@@ -732,40 +1182,61 @@ onepage(dir, count)
 	linenr_t		lp;
 	long			n;
 
-	if (line_count == 1)	/* nothing to do */
-		return FALSE;
+	if (curbuf->b_ml.ml_line_count == 1)	/* nothing to do */
+		return FAIL;
 	for ( ; count > 0; --count)
 	{
-		if (dir == FORWARD ? (Topline >= line_count - 1) : (Topline == 1))
+		if (dir == FORWARD ? (curwin->w_topline >= curbuf->b_ml.ml_line_count - 1) : (curwin->w_topline == 1))
 		{
 			beep();
-			return FALSE;
-		}
-		lp = Topline;
-		n = 0;
-		if (dir == BACKWARD)
-		{
-			if (lp < line_count)
-				++lp;
-			Curpos.lnum = lp;
-		}
-		while (n < Rows - 1 && lp >= 1 && lp <= line_count)
-		{
-			n += plines(lp);
-			lp += dir;
+			return FAIL;
 		}
 		if (dir == FORWARD)
 		{
-			if (--lp > 1)
-				--lp;
-			Topline = Curpos.lnum = lp;
+			if (curwin->w_botline > curbuf->b_ml.ml_line_count)				/* at end of file */
+				curwin->w_topline = curbuf->b_ml.ml_line_count;
+			else if (plines(curwin->w_botline) >= curwin->w_height - 2 ||	/* next line is big */
+					curwin->w_botline - curwin->w_topline <= 3)		/* just three lines on screen */
+				curwin->w_topline = curwin->w_botline;
+			else
+				curwin->w_topline = curwin->w_botline - 2;
+			curwin->w_cursor.lnum = curwin->w_topline;
+			if (count != 1)
+				comp_Botline(curwin);
 		}
-		else
-			Topline = lp + 1;
+		else	/* dir == BACKWARDS */
+		{
+			lp = curwin->w_topline;
+			/*
+			 * If the first two lines on the screen are not too big, we keep
+			 * them on the screen.
+			 */
+			if ((n = plines(lp)) > curwin->w_height / 2)
+				--lp;
+			else if (lp < curbuf->b_ml.ml_line_count && n + plines(lp + 1) < curwin->w_height / 2)
+				++lp;
+			curwin->w_cursor.lnum = lp;
+			n = 0;
+			while (n <= curwin->w_height && lp >= 1)
+			{
+				n += plines(lp);
+				--lp;
+			}
+			if (n <= curwin->w_height)				/* at begin of file */
+				curwin->w_topline = 1;
+			else if (lp >= curwin->w_topline - 2)		/* happens with very long lines */
+			{
+				--curwin->w_topline;
+				comp_Botline(curwin);
+				curwin->w_cursor.lnum = curwin->w_botline - 1;
+			}
+			else
+				curwin->w_topline = lp + 2;
+		}
 	}
 	beginline(TRUE);
 	updateScreen(VALID);
-	return TRUE;
+	return OK;
 }
 
 	void
@@ -774,26 +1245,51 @@ stuff_inserted(c, count, no_esc)
 	long	count;
 	int		no_esc;
 {
-	u_char		*esc_ptr = NULL;
-	u_char		*ptr;
+	char_u		*esc_ptr = NULL;
+	char_u		*ptr;
 
 	if (last_insert == NULL)
 	{
-		beep();
+		EMSG("No inserted text yet");
 		return;
 	}
 	if (c)
-		stuffReadbuff(mkstr(c));
-	if (no_esc && (esc_ptr = (u_char *)strrchr((char *)last_insert, 27)) != NULL)
+		stuffcharReadbuff(c);
+	if (no_esc && (esc_ptr = (char_u *)STRRCHR(last_insert, 27)) != NULL)
 		*esc_ptr = NUL;		/* remove the ESC */
 
 			/* skip the command */
 	ptr = last_insert + last_insert_skip;
 
 	do
-		stuffReadbuff((char *)ptr);
+		stuffReadbuff(ptr);
 	while (--count > 0);
 
 	if (no_esc && esc_ptr)
 		*esc_ptr = 27;		/* put the ESC back */
+}
+
+	char_u *
+get_last_insert()
+{
+	if (last_insert == NULL)
+		return NULL;
+	return last_insert + last_insert_skip;
+}
+
+/*
+ * Check the word in front of the cursor for an abbreviation.
+ * Called when the non-id character "c" has been entered.
+ * When an abbreviation is recognized it is removed from the text and
+ * the replacement string is inserted in typestr, followed by "c".
+ */
+	static int
+echeck_abbr(c)
+	int c;
+{
+	if (p_paste || no_abbr)			/* no abbreviations or in paste mode */
+		return FALSE;
+
+	return check_abbr(c, ml_get(curwin->w_cursor.lnum), curwin->w_cursor.col,
+				curwin->w_cursor.lnum == Insstart.lnum ? Insstart.col : 0);
 }

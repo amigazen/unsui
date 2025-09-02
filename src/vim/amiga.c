@@ -1,11 +1,9 @@
 /* vi:ts=4:sw=4
  *
- * VIM - Vi IMitation
+ * VIM - Vi IMproved		by Bram Moolenaar
  *
- * Code Contributions By:	Bram Moolenaar			mool@oce.nl
- *							Tim Thompson			twitch!tjt
- *							Tony Andrews			onecom!wldrdg!tony 
- *							G. R. (Fred) Walter		watmath!watcgl!grwalter 
+ * Read the file "credits.txt" for a list of people who contributed.
+ * Read the file "uganda.txt" for copying and usage conditions.
  */
 
 /*
@@ -25,17 +23,19 @@
 #undef FALSE
 
 #ifndef LATTICE
-#  include <exec/types.h>
-#  include <exec/exec.h>
-#  include <libraries/dos.h>
-#  include <libraries/dosextens.h>
-#  include <intuition/intuition.h>
+# include <exec/types.h>
+# include <exec/exec.h>
+# include <libraries/dos.h>
+# include <libraries/dosextens.h>
+# include <intuition/intuition.h>
 #else
-#  include <proto/dos.h>
-#  include <libraries/dosextens.h>
-#  include <proto/intuition.h>
-#  include <proto/exec.h>
+# include <proto/dos.h>
+# include <libraries/dosextens.h>
+# include <proto/intuition.h>
+# include <proto/exec.h>
 #endif
+
+#include <exec/memory.h>
 
 #ifndef NO_ARP
 #include <libraries/arpbase.h>		/* for arp.library */
@@ -58,8 +58,9 @@
 #ifndef AZTEC_C
 static long dos_packet __ARGS((struct MsgPort *, long, long));
 #endif
-static int lock2name __ARGS((BPTR lock, char *buf, long	len));
-static struct FileInfoBlock *get_fib __ARGS((char *));
+static int lock2name __ARGS((BPTR lock, char_u *buf, long	len));
+static struct FileInfoBlock *get_fib __ARGS((char_u *));
+static int sortcmp __ARGS((char **a, char **b));
 
 static BPTR				raw_in = (BPTR)NULL;
 static BPTR				raw_out = (BPTR)NULL;
@@ -71,8 +72,7 @@ struct ArpBase			*ArpBase = NULL;
 #endif
 
 static struct Window	*wb_window;
-static char				*oldwindowtitle = NULL;
-static int				quickfix = FALSE;
+static char_u			*oldwindowtitle = NULL;
 
 #ifndef NO_ARP
 int						dos2 = FALSE;		/* Amiga DOS 2.0x or higher */
@@ -82,75 +82,52 @@ int						size_set = FALSE;	/* set to TRUE if window size was set */
 	void
 win_resize_on()
 {
-	outstrn("\033[12{");
+	OUTSTRN("\033[12{");
 }
 
 	void
 win_resize_off()
 {
-	outstrn("\033[12}");
+	OUTSTRN("\033[12}");
 }
 
-/*
- * the number of calls to Write is reduced by using the buffer "outbuf"
- */
-#define BSIZE	2048
-static u_char			outbuf[BSIZE];
-static int				bpos = 0;		/* number of chars in outbuf */
-
-/*
- * flushbuf(): flush the output buffer
- */
 	void
-flushbuf()
+mch_write(p, len)
+	char_u	*p;
+	int		len;
 {
-	if (bpos != 0)
-	{
-		Write(raw_out, (char *)outbuf, (long)bpos);
-		bpos = 0;
-	}
-}
-
-/*
- * outchar(c): put a character into the output buffer.
- *			   Flush it if it becomes full.
- */
-	void
-outchar(c)
-	unsigned	c;
-{
-	outbuf[bpos] = c;
-	++bpos;
-	if (bpos >= BSIZE)
-		flushbuf();
+	Write(raw_out, (char *)p, (long)len);
 }
 
 /*
  * GetChars(): low level input funcion.
  * Get a characters from the keyboard.
- * If type == T_PEEK do not wait for characters.
- * If type == T_WAIT wait a short time for characters.
- * If type == T_BLOCK wait for characters.
+ * If time == 0 do not wait for characters.
+ * If time == n wait a short time for characters.
+ * If time == -1 wait forever for characters.
+ *
+ * Return number of characters read.
  */
 	int
-GetChars(buf, maxlen, type)
-	char	*buf;
+GetChars(buf, maxlen, time)
+	char_u	*buf;
 	int		maxlen;
-	int		type;
+	int		time;				/* milli seconds */
 {
 	int		len;
-	long	time = 1000000L;	/* one second */
-
-	switch (type)
+	long	utime;
+	
+	if (time >= 0)
 	{
-	case T_PEEK:
-		time = 100L;
-	case T_WAIT:
-		if (WaitForChar(raw_in, time) == 0)	/* no character available */
+		if (time == 0)
+			utime = 100L;			/* time = 0 causes problems in DOS 1.2 */
+		else
+			utime = time * 1000L;	/* convert from milli to micro secs */
+		if (WaitForChar(raw_in, utime) == 0)	/* no character available */
 			return 0;
-		break;
-
-	case T_BLOCK:
+	}
+	else	/* time == -1 */
+	{
 	/*
 	 * If there is no character available within 2 seconds (default)
 	 * write the autoscript file to disk
@@ -161,10 +138,19 @@ GetChars(buf, maxlen, type)
 
 	for (;;)		/* repeat until we got a character */
 	{
-		len = Read(raw_in, buf, (long)maxlen);
+		len = Read(raw_in, (char *)buf, (long)maxlen);
 		if (len > 0)
 			return len;
 	}
+}
+
+/*
+ * return non-zero if a character is available
+ */
+	int
+mch_char_avail()
+{
+	return (WaitForChar(raw_in, 100L) != 0);
 }
 
 	void
@@ -179,6 +165,13 @@ sleep(n)
 		Delay((long)(50L * n));
 }
 
+	long
+mch_avail_mem(special)
+	int		special;
+{
+	return (long)AvailMem(special ? (long)MEMF_CHIP : (long)MEMF_ANY);
+}
+
 	void
 vim_delay()
 {
@@ -191,10 +184,8 @@ vim_delay()
 void
 mch_suspend()
 {
-	outstr("new shell started\n");
-	stoptermcap();
-	call_shell(NULL, 0);
-	starttermcap();
+	OUTSTR("new shell started\n");
+	(void)call_shell(NULL, 0, TRUE);
 }
 
 #define DOS_LIBRARY     ((UBYTE *) "dos.library")
@@ -227,7 +218,7 @@ mch_windinit()
 		fprintf(stderr, "cannot open %s!?\n", intlibname);
 		mch_windexit(3);
 	}
-	mch_get_winsize();
+	(void)mch_get_winsize();
 }
 
 #include <workbench/startup.h>
@@ -239,7 +230,7 @@ mch_windinit()
  * work properly (Why? probably because we are then running in a background CLI).
  * This also is the best way to assure proper working in a next Workbench release.
  *
- * For the -e option (quickfix mode) we open our own window and disable :sh.
+ * For the -e option (quickfix mode) and -x we open our own window and disable :sh.
  * Otherwise the compiler would never know when editing is finished.
  */
 #define BUF2SIZE 320		/* lenght of buffer for argument with complete path */
@@ -251,18 +242,19 @@ check_win(argc, argv)
 {
 	int				i;
 	BPTR			nilfh, fh;
-	char			buf1[20];
-	char			buf2[BUF2SIZE];
-	static char		*(constrings[3]) = {"con:0/0/662/210/",
-									  "con:0/0/640/200/",
-									  "con:0/0/320/200/"};
-	static char		winerr[] = "VIM: Can't open window!\n";
+	char_u			buf1[20];
+	char_u			buf2[BUF2SIZE];
+	static char_u	*(constrings[3]) = {(char_u *)"con:0/0/662/210/",
+									  (char_u *)"con:0/0/640/200/",
+									  (char_u *)"con:0/0/320/200/"};
+	static char_u	winerr[] = "VIM: Can't open window!\n";
 	struct WBArg	*argp;
 	int				ac;
 	char			*av;
-	char			*device = NULL;
+	char_u			*device = NULL;
 	int				exitval = 4;
 	struct Library	*DosBase;
+	int				usewin = FALSE;
 
 /*
  * check if we are running under DOS 2.0x or higher
@@ -290,7 +282,7 @@ check_win(argc, argv)
 	}
 
 /*
- * scan argv[] for the '-e' and '-d' arguments
+ * scan argv[] for the '-e', '-x' and '-d' arguments
  */
 	for (i = 1; i < argc; ++i)
 		if (argv[i][0] == '-')
@@ -298,12 +290,13 @@ check_win(argc, argv)
 			switch (argv[i][1])
 			{
 			case 'e':
-				quickfix = TRUE;
+			case 'x':
+				usewin = TRUE;
 				break;
 
 			case 'd':
 				if (i < argc - 1)
-					device = argv[i + 1];
+					device = (char_u *)argv[i + 1];
 				break;
 			}
 		}
@@ -319,8 +312,9 @@ check_win(argc, argv)
 /*
  * If we are in quickfix mode, we open our own window. We can't use the
  * newcli trick below, because the compiler would not know when we are finished.
+ * We do the same with the '-x' option, for mail, rn, etc.
  */
-	if (quickfix)
+	if (usewin)
 	{
 		/*
 		 * Try to open a window. First try the specified device.
@@ -336,7 +330,7 @@ check_win(argc, argv)
 		}
 		if (raw_in == (BPTR)NULL)		/* all three failed */
 		{
-			fprintf(stderr, winerr);
+			fprintf(stderr, (char *)winerr);
 			goto exit;
 		}
 		raw_out = raw_in;
@@ -353,10 +347,10 @@ check_win(argc, argv)
 	/*
 	 * make a unique name for the temp file (which we will not delete!)
 	 */
-	sprintf(buf1, "t:nc%ld", buf1);	/* nobody else is using our stack */
+	sprintf((char *)buf1, "t:nc%ld", (char *)buf1);	/* nobody else is using our stack */
 	if ((fh = Open((UBYTE *)buf1, (long)MODE_NEWFILE)) == (BPTR)NULL)
 	{
-		fprintf(stderr, "Cannot create %s\n", buf1);
+		fprintf(stderr, "Cannot create %s\n", (char *)buf1);
 		goto exit;
 	}
 	/*
@@ -374,16 +368,16 @@ check_win(argc, argv)
 			*buf2 = NUL;
 			argp = &(((struct WBStartup *)argv)->sm_ArgList[i]);
 			if (argp->wa_Lock)
-				lock2name(argp->wa_Lock, buf2, (long)(BUF2SIZE - 1));
+				(void)lock2name(argp->wa_Lock, buf2, (long)(BUF2SIZE - 1));
 #ifndef NO_ARP
 			if (dos2)		/* use 2.0 function */
 #endif
 				AddPart((UBYTE *)buf2, (UBYTE *)argp->wa_Name, (long)(BUF2SIZE - 1));
 #ifndef NO_ARP
 			else			/* use arp function */
-				TackOn(buf2, argp->wa_Name);
+				TackOn((char *)buf2, argp->wa_Name);
 #endif
-			av = buf2;
+			av = (char *)buf2;
 		}
 		else
 			av = argv[i];
@@ -414,7 +408,7 @@ check_win(argc, argv)
 			device = constrings[i];
 		else if (device == NULL)
 			continue;
-		sprintf(buf2, "newcli <nil: >nil: %s from %s", device, buf1);
+		sprintf((char *)buf2, "newcli <nil: >nil: %s from %s", (char *)device, (char *)buf1);
 #ifndef NO_ARP
 		if (dos2)
 		{
@@ -433,7 +427,7 @@ check_win(argc, argv)
 	if (i == 3)		/* all three failed */
 	{
 		DeleteFile((UBYTE *)buf1);
-		fprintf(stderr, winerr);
+		fprintf(stderr, (char *)winerr);
 		goto exit;
 	}
 	exitval = 0;	/* The Execute succeeded: exit this program */
@@ -452,7 +446,7 @@ exit:
  */
 	void
 fname_case(name)
-	char *name;
+	char_u	*name;
 {
 	register struct FileInfoBlock	*fib;
 	register size_t					len;
@@ -460,9 +454,9 @@ fname_case(name)
 	fib = get_fib(name);
 	if (fib != NULL)
 	{
-		len = strlen(name);
+		len = STRLEN(name);
 		if (len == strlen(fib->fib_FileName))	/* safety check */
-				memmove(name, fib->fib_FileName, len);
+			memmove((char *)name, fib->fib_FileName, len);
 		free(fib);
 	}
 }
@@ -474,7 +468,7 @@ fname_case(name)
  */
 	static struct FileInfoBlock *
 get_fib(fname)
-	char *fname;
+	char_u *fname;
 {
 	register BPTR					flock;
 	register struct FileInfoBlock	*fib;
@@ -497,84 +491,120 @@ get_fib(fname)
 }
 
 /*
- * settitle(): set titlebar of our window
+ * set the title of our window
+ * icon name is not set
  */
-static char *lasttitle = NULL;
-
 	void
-settitle(str)
-	char *str;
+mch_settitle(title, icon)
+	char_u	*title;
+	char_u	*icon;
 {
-
-	if (wb_window != NULL)
-	{
-		free(lasttitle);
-		lasttitle = alloc((unsigned)(strlen(str) + 7));
-		if (lasttitle != NULL)
-		{
-			sprintf(lasttitle, "VIM - %s", str);
-			SetWindowTitles(wb_window, (UBYTE *)lasttitle, (UBYTE *)-1L);
-		}
-	}
-}
-
-	void
-resettitle()
-{
-		if (wb_window != NULL && lasttitle != NULL)
-				SetWindowTitles(wb_window, (UBYTE *)lasttitle, (UBYTE *)-1L);
+	if (wb_window != NULL && title != NULL)
+		SetWindowTitles(wb_window, (UBYTE *)title, (UBYTE *)-1L);
 }
 
 /*
- * get name of current directory into buffer 'buf' of length 'len' bytes
+ * Restore the window/icon title.
+ * which is one of:
+ *	1  Just restore title
+ *  2  Just restore icon (which we don't have)
+ *	3  Restore title and icon (which we don't have)
  */
-dirname(buf, len)
-	char		*buf;
+	void
+mch_restore_title(which)
+	int which;
+{
+	mch_settitle((which & 1) ? oldwindowtitle : NULL, NULL);
+}
+
+/*
+ * Get name of current directory into buffer 'buf' of length 'len' bytes.
+ * Return OK for success, FAIL for failure.
+ */
+	int
+vim_dirname(buf, len)
+	char_u		*buf;
 	int			len;
 {
-	return FullName("", buf, len);
+	return FullName((char_u *)"", buf, len);
 }
 
 /*
  * get absolute filename into buffer 'buf' of length 'len' bytes
+ *
+ * return FAIL for failure, OK otherwise
  */
+	int
 FullName(fname, buf, len)
-	char		*fname, *buf;
+	char_u		*fname, *buf;
 	int			len;
 {
 	BPTR		l;
-	int			retval = 0;
+	int			retval = FAIL;
+	int			i;
 
+	*buf = NUL;
 	if (fname == NULL)	/* always fail */
-		return 0;
+		return FAIL;
 
-	if ((l = Lock((UBYTE *)fname, (long)ACCESS_READ)))/* lock the file */
+	if ((l = Lock((UBYTE *)fname, (long)ACCESS_READ)) != (BPTR)0)/* lock the file */
 	{
 		retval = lock2name(l, buf, (long)len);
 		UnLock(l);
 	}
-	if (retval == 0 || *buf == 0 || *buf == ':')
-		strcpy(buf, fname);			/* something failed; use the filename */
+	else if (!isFullName(fname))		/* not a full path yet */
+	{
+		/*
+		 * if cannot lock the file, try to lock the current directory and then
+		 * concatenate the file name
+		 */
+		if ((l = Lock((UBYTE *)"", (long)ACCESS_READ)) != (BPTR)NULL) /* lock current dir */
+		{
+			retval = lock2name(l, buf, (long)len);
+			UnLock(l);
+			if (retval == OK)
+			{
+				i = STRLEN(buf);
+				if (i < len - 1 && (i == 0 || buf[i - 1] != ':'))
+					buf[i++] = '/';
+				STRNCPY(buf + i, fname, (size_t)(len - i));	/* concatenate the fname */
+			}
+		}
+	}
+	if (retval == FAIL || *buf == 0 || *buf == ':')
+		STRCPY(buf, fname);	/* something failed; use the filename */
 	return retval;
+}
+
+/*
+ * return TRUE is fname is an absolute path name
+ */
+	int
+isFullName(fname)
+	char_u		*fname;
+{
+	return (STRCHR(fname, ':') != NULL);
 }
 
 /*
  * Get the full filename from a lock. Use 2.0 function if possible, because
  * the arp function has more restrictions on the path length.
+ *
+ * return FAIL for failure, OK otherwise
  */
 	static int
 lock2name(lock, buf, len)
 	BPTR	lock;
-	char	*buf;
+	char_u	*buf;
 	long	len;
 {
 #ifndef NO_ARP
 	if (dos2)				/* use 2.0 function */
 #endif
-		return (int)NameFromLock(lock, (UBYTE *)buf, len);
+		return ((int)NameFromLock(lock, (UBYTE *)buf, len) ? OK : FAIL);
 #ifndef NO_ARP
 	else				/* use arp function */
-		return (int)PathName(lock, buf, (long)(len/32));
+		return ((int)PathName(lock, (char *)buf, (long)(len/32)) ? OK : FAIL);
 #endif
 }
 
@@ -583,7 +613,7 @@ lock2name(lock, buf, len)
  */
 	long
 getperm(name)
-	char		*name;
+	char_u		*name;
 {
 	struct FileInfoBlock	*fib;
 	long 					retval = -1;
@@ -599,20 +629,26 @@ getperm(name)
 
 /*
  * set file permission for 'name' to 'perm'
+ *
+ * return FAIL for failure, OK otherwise
  */
+	int
 setperm(name, perm)
-	char		*name;
+	char_u		*name;
 	long		perm;
 {
 	perm &= ~FIBF_ARCHIVE;				/* reset archived bit */
-	return (int)SetProtection((UBYTE *)name, (long)perm);
+	return (SetProtection((UBYTE *)name, (long)perm) ? OK : FAIL);
 }
 
 /*
- * check if "name" is a directory
+ * return FALSE if "name" is not a directory
+ * return TRUE if "name" is a directory.
+ * return -1 for error.
  */
+	int
 isdir(name)
-	char		*name;
+	char_u		*name;
 {
 	struct FileInfoBlock	*fib;
 	int 					retval = -1;
@@ -620,7 +656,7 @@ isdir(name)
 	fib = get_fib(name);
 	if (fib != NULL)
 	{
-		retval = (fib->fib_DirEntryType >= 0);
+		retval = ((fib->fib_DirEntryType >= 0) ? TRUE : FALSE);
 		free(fib);
 	}
 	return retval;
@@ -644,14 +680,15 @@ mch_windexit(r)
 		{
 			win_resize_off();		/* window resize events de-activated */
 			if (size_set)
-				outstr("\233t\233u");		/* reset window size (CSI t CSI u) */
+				OUTSTR("\233t\233u");		/* reset window size (CSI t CSI u) */
 		}
 		flushbuf();
 	}
 
-	if (wb_window != NULL)			/* disable window title */
-		SetWindowTitles(wb_window, (UBYTE *)oldwindowtitle, (UBYTE *)-1L);
-	stopscript();					/* remove autoscript file */
+	mch_restore_title(3);			/* restore window title */
+
+	ml_close_all(); 				/* remove all memfiles */
+
 #ifndef NO_ARP
 	if (ArpBase)
 		CloseLibrary((struct Library *) ArpBase);
@@ -659,7 +696,7 @@ mch_windexit(r)
 	if (close_win)
 		Close(raw_in);
 	if (r)
-		printf("exiting with %d\n", r);	/* somehow this makes :cq work!? */
+		printf("Vim exiting with %d\n", r);	/* somehow this makes :cq work!? */
 	exit(r);
 }
 
@@ -694,6 +731,17 @@ mch_settmode(raw)
 }
 
 /*
+ * set screen mode, always fails.
+ */
+	int
+mch_screenmode(arg)
+	char_u	 *arg;
+{
+	EMSG("Screen mode setting not supported");
+	return FAIL;
+}
+
+/*
  * Code for this routine came from the following :
  *
  * ConPackets.c -  C. Scheppner, A. Finkel, P. Lindsay	CBM
@@ -709,7 +757,7 @@ mch_settmode(raw)
 
 /*
  * try to get the real window size
- * return non-zero for failure
+ * return FAIL for failure, OK otherwise
  */
 	int
 mch_get_winsize()
@@ -719,7 +767,7 @@ mch_get_winsize()
 	struct InfoData *id;
 
 	if (!term_console)	/* not an amiga window */
-		return 1;
+		return FAIL;
 
 	/* insure longword alignment */
  	id = (struct InfoData *)(((long)id_a + 3L) & ~3L);
@@ -730,7 +778,7 @@ mch_get_winsize()
 	 * is rarely needed, so we skip it now, unless we changed the size.
 	 */
 	if (size_set)
-		outstr("\233t\233u");	/* CSI t CSI u */
+		OUTSTR("\233t\233u");	/* CSI t CSI u */
 	flushbuf();
 
 	if (dos_packet(MP(raw_out), (long)ACTION_DISK_INFO, ((ULONG) id) >> 2) == 0 ||
@@ -739,14 +787,14 @@ mch_get_winsize()
 		/* it's not an amiga window, maybe aux device */
 		/* terminal type should be set */
 		term_console = FALSE;
-		return 1;
+		return FAIL;
 	}
 	if (oldwindowtitle == NULL)
-		oldwindowtitle = (char *)wb_window->Title;
+		oldwindowtitle = (char_u *)wb_window->Title;
 	if (id->id_InUse == (BPTR)NULL)
 	{
 		fprintf(stderr, "mch_get_winsize: not a console??\n");
-		return (2);
+		return FAIL;
 	}
 	conUnit = (struct ConUnit *) ((struct IOStdReq *) id->id_InUse)->io_Unit;
 
@@ -758,13 +806,11 @@ mch_get_winsize()
 		Columns = 80;
 		Rows = 24;
 		term_console = FALSE;
-		return 1;
+		return FAIL;
 	}
-
 	check_winsize();
-	script_winsize();
 
-	return 0;
+	return OK;
 }
 
 /*
@@ -801,7 +847,7 @@ mch_set_winsize()
 
 	void
 set_keymap(name)
-	char *name;
+	char_u *name;
 {
  	char					id_a[sizeof(struct InfoData) + 3];
 	struct InfoData			*id;
@@ -818,12 +864,12 @@ set_keymap(name)
 
 	if (dos_packet(MP(raw_out), (long)ACTION_DISK_INFO, ((ULONG) id) >> 2) == 0)
 	{
-		emsg("dos_packet failed");
+		EMSG("dos_packet failed");
 		return;
 	}
 	if (id->id_InUse == (BPTR)NULL)
 	{
-		emsg("not a console??");
+		EMSG("not a console??");
 		return;
 	}
 	request = (struct IOStdReq *) id->id_InUse;
@@ -835,7 +881,7 @@ set_keymap(name)
 		request->io_Data = (APTR)old;
 		DoIO((struct IORequest *)request);
 		if (request->io_Error)
-			emsg("Cannot reset keymap");
+			EMSG("Cannot reset keymap");
 		else				/* no error, free the allocated memory */
 		{
 			UnLoadSeg(segment);
@@ -848,13 +894,13 @@ set_keymap(name)
 		segment = LoadSeg(name);
 		if (segment == (BPTR)NULL)
 		{
-			emsg("Cannot open keymap file");
+			EMSG("Cannot open keymap file");
 			return;
 		}
 		old = (struct KeyMap *)AllocMem(sizeof(struct KeyMap), MEMF_PUBLIC);
 		if (old == NULL)
 		{
-			emsg(e_outofmem);
+			EMSG(e_outofmem);
 			UnLoadSeg(segment);
 			segment = (BPTR)NULL;
 		}
@@ -866,7 +912,7 @@ set_keymap(name)
 			DoIO((struct IORequest *)request);
 			if (request->io_Error)
 			{
-				emsg("Cannot get old keymap");
+				EMSG("Cannot get old keymap");
 				UnLoadSeg(segment);
 				segment = (BPTR)NULL;
 				FreeMem(old, sizeof(struct KeyMap));
@@ -878,7 +924,7 @@ set_keymap(name)
 				request->io_Data = (APTR)((segment << 2) + 18);
 				DoIO((struct IORequest *)request);
 				if (request->io_Error)
-					emsg("Cannot set keymap");
+					EMSG("Cannot set keymap");
 
 				/* test for blocking */
 				request->io_Command = CMD_READ;
@@ -886,7 +932,7 @@ set_keymap(name)
 				request->io_Data = (APTR)&c;
 				DoIO((struct IORequest *)request);	/* BLOCK HERE! */
 				if (request->io_Error)
-					emsg("Cannot set keymap");
+					EMSG("Cannot set keymap");
 			}
 		}
 	}
@@ -964,86 +1010,98 @@ dos_packet(pid, action, arg)
 #endif
 
 /*
- * call shell, return non-zero for failure
+ * call shell, return FAIL for failure, OK otherwise
  */
 	int
-call_shell(cmd, filter)
-		char	*cmd;
-		int		filter;		/* if != 0: called by dofilter() */
+call_shell(cmd, filter, cooked)
+	char_u	*cmd;
+	int		filter;		/* if != 0: called by dofilter() */
+	int		cooked;
 {
-	BPTR mydir;
-	int x;
+	BPTR	mydir;
+	int		x;
 #ifndef LATTICE
-	int	use_execute;
-	char *shellcmd = NULL;
-	char *shellarg;
+	int		use_execute;
+	char_u	*shellcmd = NULL;
+	char_u	*shellarg;
 #endif
-	int	retval = 0;
+	int	retval = OK;
 
 	if (close_win)
 	{
 		/* if Vim opened a window: Executing a shell may cause crashes */
-		emsg("Cannot execute shell with -e option");
-		return 1;
+		EMSG("Cannot execute shell with -e or -x option");
+		return FAIL;
 	}
 
 	if (term_console)
-		win_resize_off(); 	/* window resize events de-activated */
+		win_resize_off(); 			/* window resize events de-activated */
 	flushbuf();
 
-	settmode(0); 				/* set to cooked mode */
+	if (cooked)
+		settmode(0); 				/* set to cooked mode */
 	mydir = Lock((UBYTE *)"", (long)ACCESS_READ);	/* remember current directory */
 
-#ifdef LATTICE		/* not tested very much */
+#ifdef LATTICE						/* not tested very much */
 	if (cmd == NULL)
 	{
-#ifndef NO_ARP
+# ifndef NO_ARP
 		if (dos2)
-#endif
+# endif
 			x = SystemTags(p_sh, SYS_UserShell, TRUE, TAG_DONE);
-#ifndef NO_ARP
+# ifndef NO_ARP
 		else
 			x = Execute(p_sh, raw_in, raw_out);
-#endif
+# endif
 	}
 	else
 	{
-#ifndef NO_ARP
+# ifndef NO_ARP
 		if (dos2)
-#endif
-			x = SystemTags(cmd, SYS_UserShell, TRUE, TAG_DONE);
-#ifndef NO_ARP
+# endif
+			x = SystemTags((char *)cmd, SYS_UserShell, TRUE, TAG_DONE);
+# ifndef NO_ARP
 		else
-			x = Execute(cmd, 0L, raw_out);
-#endif
+			x = Execute((char *)cmd, 0L, raw_out);
+# endif
 	}
-#ifdef NO_ARP
+# ifdef NO_ARP
 	if (x < 0)
-#else
+# else
 	if ((dos2 && x < 0) || (!dos2 && !x))
-#endif
+# endif
 	{
+		outstr((char_u *)"Cannot execute ");
 		if (cmd == NULL)
-			smsg("Cannot execute shell %s", p_sh);
+		{
+			outstr((char_u *)"shell ");
+			outstr(p_sh);
+		}
 		else
-			smsg("Cannot execute %s", cmd);
+			outstr(cmd);
 		outchar('\n');
-		retval = 1;
+		retval = FAIL;
 	}
-#ifdef NO_ARP
+# ifdef NO_ARP
 	else if (x)
-#else
+# else
 	else if (!dos2 || x)
-#endif
+# endif
 	{
 		if (x = IoErr())
 		{
-			smsg("%d returned", x);
-			outchar('\n');
-			retval = 1;
+#ifdef WEBB_COMPLETE
+			if (!expand_interactively)
+#endif
+			{
+				outchar('\n');
+				outnum(x);
+				outstr((char_u *)" returned\n");
+			}
+			retval = FAIL;
 		}
 	}
-#else
+#else	/* !LATTICE */
 	if (p_st >= 4 || (p_st >= 2 && !filter))
 		use_execute = 1;
 	else
@@ -1059,84 +1117,103 @@ call_shell(cmd, filter)
 		else
 		{
 			shellarg = shellcmd;
-			skiptospace(&shellarg);
-			*shellarg = NUL;
-			skipspace(&shellarg);
+			skiptospace(&shellarg);	/* find start of arguments */
+			if (*shellarg != NUL)
+			{
+				*shellarg++ = NUL;
+				skipspace(&shellarg);
+			}
 		}
 	}
 	if (cmd == NULL)
 	{
 		if (use_execute)
 		{
-#ifndef NO_ARP
+# ifndef NO_ARP
 			if (dos2)
-#endif
+# endif
 				x = SystemTags((UBYTE *)p_sh, SYS_UserShell, TRUE, TAG_DONE);
-#ifndef NO_ARP
+# ifndef NO_ARP
 			else
 				x = !Execute((UBYTE *)p_sh, raw_in, raw_out);
-#endif
+# endif
 		}
 		else
-			x = fexecl(shellcmd, shellcmd, shellarg, NULL);
+			x = fexecl((char *)shellcmd, (char *)shellcmd, (char *)shellarg, NULL);
 	}
 	else if (use_execute)
 	{
-#ifndef NO_ARP
+# ifndef NO_ARP
 		if (dos2)
-#endif
+# endif
 			x = SystemTags((UBYTE *)cmd, SYS_UserShell, TRUE, TAG_DONE);
-#ifndef NO_ARP
+# ifndef NO_ARP
 		else
 			x = !Execute((UBYTE *)cmd, 0L, raw_out);
-#endif
+# endif
 	}
 	else if (p_st & 1)
-		x = fexecl(shellcmd, shellcmd, shellarg, cmd, NULL);
+		x = fexecl((char *)shellcmd, (char *)shellcmd, (char *)shellarg, (char *)cmd, NULL);
 	else
-		x = fexecl(shellcmd, shellcmd, shellarg, "-c", cmd, NULL);
-#ifdef NO_ARP
+		x = fexecl((char *)shellcmd, (char *)shellcmd, (char *)shellarg, "-c", (char *)cmd, NULL);
+# ifdef NO_ARP
 	if (x < 0)
-#else
+# else
 	if ((dos2 && x < 0) || (!dos2 && x))
-#endif
+# endif
 	{
+		outstr((char_u *)"Cannot execute ");
 		if (use_execute)
-			smsg("Cannot execute %s", cmd == NULL ? p_sh : cmd);
+		{
+			if (cmd == NULL)
+				outstr(p_sh);
+			else
+				outstr(cmd);
+		}
 		else
-			smsg("Cannot execute shell %s", shellcmd);
+		{
+			outstr((char_u *)"shell ");
+			outstr(shellcmd);
+		}
 		outchar('\n');
-		retval = 1;
+		retval = FAIL;
 	}
 	else
 	{
 		if (use_execute)
 		{
-#ifdef NO_ARP
+# ifdef NO_ARP
 			if (x)
-#else
+# else
 			if (!dos2 || x)
-#endif
+# endif
 				x = IoErr();
 		}
 		else
 			x = wait();
 		if (x)
 		{
-			smsg("%d returned", x);
-			outchar('\n');
-			retval = 1;
+#ifdef WEBB_COMPLETE
+			if (!expand_interactively)
+#endif
+			{
+				outchar('\n');
+				outnum((long)x);
+				outstrn((char_u *)" returned\n");
+			}
+			retval = FAIL;
 		}
 	}
 	free(shellcmd);
-#endif
+#endif	/* !LATTICE */
 
 	if (mydir = CurrentDir(mydir))		/* make sure we stay in the same directory */
 		UnLock(mydir);
-	settmode(1); 						/* set to raw mode */
+	if (cooked)
+		settmode(1); 					/* set to raw mode */
 	resettitle();
 	if (term_console)
-		win_resize_on(); 			/* window resize events activated */
+		win_resize_on(); 				/* window resize events activated */
 	return retval;
 }
 
@@ -1149,10 +1226,7 @@ call_shell(cmd, filter)
 breakcheck()
 {
    if (SetSignal(0L, (long)(SIGBREAKF_CTRL_C|SIGBREAKF_CTRL_D|SIGBREAKF_CTRL_E|SIGBREAKF_CTRL_F)) & SIGBREAKF_CTRL_C)
-	{
 		got_int = TRUE;
-		flush_buffers();	/* remove all typeahead and macro stuff */
-	}
 }
 
 /* this routine causes manx to use this Chk_Abort() rather than it's own */
@@ -1169,7 +1243,6 @@ Chk_Abort()
 	return(0L);
 }
 
-#ifdef WILD_CARDS
 /*
  * ExpandWildCard() - this code does wild-card pattern matching using the arp
  *					  routines. This is based on WildDemo2.c (found in arp1.1
@@ -1189,13 +1262,13 @@ Chk_Abort()
  * file is pointer to array of pointers to matched file names
  * if file_only is TRUE we match only files, no dirs
  * if list_notfound is TRUE we include not-found entries (probably locked)
- * return 0 for success, 1 for error (you may loose some memory)
+ * return OK for success, FAIL for error (you may loose some memory)
  *-------------------------------------------------------------------------
  */
 
 /* #include <arpfunctions.h> */
 extern void *malloc __ARGS((size_t)), *calloc __ARGS((size_t, size_t));
-static int insfile __ARGS((char *));
+static int insfile __ARGS((char_u *, int));
 static void freefiles __ARGS((void));
 
 #define ANCHOR_BUF_SIZE (512)
@@ -1207,27 +1280,30 @@ static void freefiles __ARGS((void));
 struct onefile
 {
 	struct onefile	*next;
-	char			name[1];	/* really longer */
+	char_u			name[1];	/* really longer */
 } *namelist = NULL;
 
 /*
  * insert one file into the list of file names
- * return -1 for failure
- * return 0 for success
+ * return FAIL for failure
+ * return OK for success
  */
 	static int
-insfile(name)
-	char *name;
+insfile(name, isdir)
+	char_u	*name;
+	int		isdir;
 {
 	struct onefile *new;
 
-	new = (struct onefile *)alloc((unsigned)(sizeof(struct onefile) + strlen(name)));
+	new = (struct onefile *)alloc((unsigned)(sizeof(struct onefile) + STRLEN(name) + isdir));
 	if (new == NULL)
-		return -1;
-	strcpy(&(new->name[0]), name);
+		return FAIL;
+	STRCPY(&(new->name[0]), name);
+	if (isdir)
+		STRCAT(&(new->name[0]), "/");
 	new->next = namelist;
 	namelist = new;
-	return 0;
+	return OK;
 }
 
 /*
@@ -1246,11 +1322,19 @@ freefiles()
 	}
 }
 
+	static int
+sortcmp(a, b)
+	char **a, **b;
+{
+	return strcmp(*a, *b);
+}
+
+	int
 ExpandWildCards(num_pat, pat, num_file, file, files_only, list_notfound)
 	int 			num_pat;
-	char		  **pat;
+	char_u		  **pat;
 	int 		   *num_file;
-	char		 ***file;
+	char_u		 ***file;
 	int			files_only;
 	int			list_notfound;
 {
@@ -1259,11 +1343,12 @@ ExpandWildCards(num_pat, pat, num_file, file, files_only, list_notfound)
 	int						domatchend = FALSE;
 	LONG					Result;
 	struct onefile			*p;
-	char					*errmsg = NULL;
-	char					*starbuf, *sp, *dp;
+	char_u					*errmsg = NULL;
+	char_u					*starbuf, *sp, *dp;
+	int						foundone;
 
 	*num_file = 0;
-	*file = (char **)"";
+	*file = (char_u **)"";
 
 	/* Get our AnchorBase */
 	Anchor = (struct AnchorPath *) calloc((size_t)1, (size_t)ANCHOR_SIZE);
@@ -1283,7 +1368,7 @@ ExpandWildCards(num_pat, pat, num_file, file, files_only, list_notfound)
 		{
 #endif
 				/* hack to replace '*' by '#?' */
-			starbuf = alloc((unsigned)(2 * strlen(pat[i]) + 1));	/* maximum required */
+			starbuf = alloc((unsigned)(2 * STRLEN(pat[i]) + 1));	/* maximum required */
 			if (starbuf == NULL)
 				goto OUT_OF_MEMORY;
 			for (sp = pat[i], dp = starbuf; *sp; ++sp)
@@ -1302,20 +1387,22 @@ ExpandWildCards(num_pat, pat, num_file, file, files_only, list_notfound)
 #ifndef NO_ARP
 		}
 		else
-			Result = FindFirst(pat[i], Anchor);
+			Result = FindFirst((char *)pat[i], Anchor);
 #endif
 		domatchend = TRUE;
+		foundone = FALSE;
 		while (Result == 0)
 		{
 			if (!files_only || Anchor->ap_Info.fib_DirEntryType < 0)
 			{
 				(*num_file)++;
-				if (insfile(Anchor->ap_Buf))
+				if (insfile((char_u *)Anchor->ap_Buf, Anchor->ap_Info.fib_DirEntryType >= 0) == FAIL)
 				{
 OUT_OF_MEMORY:
-					errmsg = "Out of memory";
+					errmsg = (char_u *)"Out of memory";
 					goto Return;
 				}
+				foundone = TRUE;
 			}
 #ifndef NO_ARP
 			if (dos2)
@@ -1328,44 +1415,61 @@ OUT_OF_MEMORY:
 		}
 		if (Result == ERROR_BUFFER_OVERFLOW)
 		{
-			errmsg = "ANCHOR_BUF_SIZE too small.";
+			errmsg = (char_u *)"ANCHOR_BUF_SIZE too small.";
 			goto Return;
 		}
-		if (Result != ERROR_NO_MORE_ENTRIES)
+		if (!foundone)
 		{
 			if (list_notfound)	/* put object with error in list */
 			{
 				(*num_file)++;
-				if (insfile(pat[i]))
+				if (insfile(pat[i], FALSE) == FAIL)
 					goto OUT_OF_MEMORY;
 			}
-			else if (Result != ERROR_OBJECT_NOT_FOUND)
+			else if (Result != ERROR_OBJECT_NOT_FOUND && Result != ERROR_NO_MORE_ENTRIES)
 			{
-				errmsg = "I/O ERROR";
+				errmsg = (char_u *)"I/O ERROR";
 				goto Return;
 			}
 		}
-		MatchEnd(Anchor);
+#ifndef NO_ARP
+		if (dos2)
+#endif
+			MatchEnd(Anchor);
+#ifndef NO_ARP
+		else
+			FreeAnchorChain(Anchor);
+#endif
 		domatchend = FALSE;
 	}
 
 	p = namelist;
 	if (p)
 	{
-		*file = (char **) malloc(sizeof(char *) * (*num_file));
+		*file = (char_u **) malloc(sizeof(char_u *) * (*num_file));
 		if (*file == NULL)
 			goto OUT_OF_MEMORY;
 		for (i = *num_file - 1; p; p = p->next, --i)
 		{
-			(*file)[i] = (char *) malloc(strlen(p->name) + 1);
+			(*file)[i] = (char_u *) malloc(STRLEN(p->name) + 1);
 			if ((*file)[i] == NULL)
 				goto OUT_OF_MEMORY;
-			strcpy((*file)[i], p->name);
+			STRCPY((*file)[i], p->name);
 		}
+		qsort((void *)*file, (size_t)*num_file, sizeof(char_u *), sortcmp);
 	}
 Return:
 	if (domatchend)
-		MatchEnd(Anchor);
+	{
+#ifndef NO_ARP
+		if (dos2)
+#endif
+			MatchEnd(Anchor);
+#ifndef NO_ARP
+		else
+			FreeAnchorChain(Anchor);
+#endif
+	}
 	if (Anchor)
 		free(Anchor);
 	freefiles();
@@ -1373,53 +1477,53 @@ Return:
 	{
 		emsg(errmsg);
 		*num_file = 0;
-		return 1;
+		return FAIL;
 	}
-	return 0;
+	return OK;
 }
 
-void
+	void
 FreeWild(num, file)
-		int num;
-		char **file;
+	int		num;
+	char_u	**file;
 {
-		if (file == NULL || num == 0)
-				return;
-		while (num--)
-				free(file[num]);
-		free(file);
+	if (file == NULL || num == 0)
+		return;
+	while (num--)
+		free(file[num]);
+	free(file);
 }
 
 	int
 has_wildcard(p)
-	char *p;
+	char_u *p;
 {
 	for ( ; *p; ++p)
 		if (strchr("*?[(~#", *p) != NULL)
-			return 1;
-	return 0;
+			return TRUE;
+	return FALSE;
 }
-#endif /* WILD_CARDS */
 
 /*
  * With 2.0 support for reading local environment variables
+ * Careful: uses IObuff!
  */
 
-	char *
+	char_u *
 vimgetenv(var)
-	char *var;
+	char_u *var;
 {
-  int len;
+	int len;
 
 #ifndef NO_ARP
-  if (!dos2)
-		return getenv(var);
+	if (!dos2)
+		return (char_u *)getenv((char *)var);
 #endif
 
-  len = GetVar((UBYTE *)var, (UBYTE *)IObuff, (long)(IOSIZE - 1), (long)0);
+	len = GetVar((UBYTE *)var, (UBYTE *)IObuff, (long)(IOSIZE - 1), (long)0);
 
-  if (len == -1)
-      return NULL;
-  else
-      return IObuff;
+	if (len == -1)
+		return NULL;
+	else
+		return IObuff;
 }

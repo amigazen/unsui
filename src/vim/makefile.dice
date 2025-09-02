@@ -1,10 +1,11 @@
 #
 # Makefile for VIM, using DICE 2.06.40 and 2.06.21
 #
+# LAST CHANGES NOT TESTED
+#
 
 #>>>>> choose options:
 ### -DDIGRAPHS		digraph support (at the cost of 1.6 Kbyte code)
-### -DWILD_CARDS	wildcard expansion code
 ### -DNO_ARP		do not use arp.library, DOS 2.0 required
 ### -DCOMPATIBLE	start in vi-compatible mode
 ### -DNOBACKUP		default is no backup file
@@ -16,10 +17,14 @@
 ###				(use only without -DNO_BUILTIN_TCAPS)
 ### -DALL_BUILTIN_TCAPS	include all builtin termcap entries
 ###				(use only without -DNO_BUILTIN_TCAPS)
-DEFINES = -DWILD_CARDS -DTERMCAP -DDIGRAPHS -DSOME_BUILTIN_TCAPS
+### -DWEBB_COMPLETE	include Webb's code for command line completion
+### -DWEBB_KEYWORD_COMPL include Webb's code for keyword completion
+### -DNOTITLE		'title' option off by default
+DEFINES = -DTERMCAP -DDIGRAPHS -DSOME_BUILTIN_TCAPS \
+		-DWEBB_COMPLETE -DWEBB_KEYWORD_COMPL
 
-#>>>>> if TERMCAP is defined termlib.o has to be used
-TERMLIB = termlib.o
+#>>>>> if TERMCAP is defined obj/termlib.o has to be used
+TERMLIB = obj/termlib.o
 #TERMLIB = 
 
 #>>>>> end of choices
@@ -36,95 +41,103 @@ LD = dcc
 .c.o:
 	${CC} ${PRE} ${CFLAGS} $*.c -o $@
 
-OBJ =	alloc.o amiga.o buffers.o charset.o cmdline.o csearch.o digraph.o \
-	edit.o fileio.o help.o linefunc.o main.o mark.o message.o misccmds.o \
-	normal.o ops.o param.o quickfix.o regexp.o regsub.o screen.o \
-	script.o search.o storage.o tag.o undo.o $(TERMLIB)
+OBJ =	obj/alloc.o obj/amiga.o obj/buffer.o obj/charset.o obj/cmdcmds.o obj/cmdline.o \
+	obj/csearch.o obj/digraph.o obj/edit.o obj/fileio.o obj/getchar.o obj/help.o \
+	obj/linefunc.o obj/main.o obj/mark.o obj/memfile.o obj/memline.o obj/message.o obj/misccmds.o \
+	obj/normal.o obj/ops.o obj/param.o obj/quickfix.o obj/regexp.o \
+	obj/regsub.o obj/screen.o obj/search.o \
+	obj/tag.o obj/term.o obj/undo.o obj/window.o $(TERMLIB)
 
 /Vim: $(OBJ) version.c
-	${CC} $(CFLAGS) version.c -o version.o
-	${LD} -o /Vim $(OBJ) version.o $(LIBS)
+	${CC} $(CFLAGS) version.c -o obj/version.o
+	${LD} -o /Vim $(OBJ) obj/version.o $(LIBS)
 
 debug: $(OBJ) version.c
-	${CC} $(CFLAGS) version.c -o version.o
-	${LD} -s -o /Vim $(OBJ) version.o $(LIBS)
+	${CC} $(CFLAGS) version.c -o obj/version.o
+	${LD} -s -o /Vim $(OBJ) obj/version.o $(LIBS)
 
 ctags:
 	csh -c ctags *.c *.h
 
 # can't use delete here, too many file names
 clean:
-	csh -c rm -f $(OBJ) version.o mkcmdtab.o /Vim $(INCL) mkcmdtab
+	csh -c rm -f $(OBJ) obj/version.o obj/mkcmdtab.o /Vim $(INCL) mkcmdtab cmdtab.h
 
-$(INCL)  : vim.h globals.h keymap.h macros.h ascii.h term.h amiga.h
+$(INCL)  : vim.h globals.h keymap.h macros.h ascii.h term.h amiga.h structs.h
 	delete $(INCL)
 
 ###########################################################################
 
-alloc.o:	alloc.c  $(INCL)
+obj/alloc.o:	alloc.c  $(INCL)
 
-amiga.o:	amiga.c  $(INCL) amiga.h
+obj/amiga.o:	amiga.c  $(INCL) amiga.h
 
-buffers.o:	buffers.c  $(INCL)
+obj/buffer.o:	buffer.c  $(INCL)
 
-charset.o:	charset.c  $(INCL)
+obj/charset.o:	charset.c  $(INCL)
 
-cmdline.o:	cmdline.c  $(INCL) cmdtab.h
+obj/cmdcmds.o:	cmdcmds.c  $(INCL)
 
-csearch.o:	csearch.c  $(INCL) regexp.h
+obj/cmdline.o:	cmdline.c  $(INCL) cmdtab.h
 
-digraph.o: digraph.c	$(INCL)
+obj/csearch.o:	csearch.c  $(INCL) regexp.h
 
-edit.o: edit.c	$(INCL)
+obj/digraph.o: digraph.c	$(INCL)
 
-fileio.o:	fileio.c  $(INCL)
+obj/edit.o: edit.c	$(INCL)
 
-help.o: help.c	$(INCL)
+obj/fileio.o:	fileio.c  $(INCL)
 
-linefunc.o:	linefunc.c  $(INCL)
+obj/getchar.o: getchar.c	$(INCL)
 
-main.o: main.c
+obj/help.o: help.c	$(INCL)
+
+obj/linefunc.o:	linefunc.c  $(INCL)
+
+obj/main.o: main.c
 	${CC} ${CFLAGS} main.c -o main.o
 
-mark.o: mark.c	$(INCL) mark.h
+obj/mark.o: mark.c	$(INCL)
 
-message.o:	message.c  $(INCL)
+obj/memfile.o:	memfile.c  $(INCL)
 
-misccmds.o:	misccmds.c  $(INCL)
+obj/memline.o:	memline.c  $(INCL)
 
-normal.o:	normal.c  $(INCL) ops.h
+obj/message.o:	message.c  $(INCL)
 
-ops.o:	ops.c  $(INCL) ops.h
+obj/misccmds.o:	misccmds.c  $(INCL)
 
-param.o:	param.c  $(INCL)
+obj/normal.o:	normal.c  $(INCL) ops.h
+
+obj/ops.o:	ops.c  $(INCL) ops.h
+
+obj/param.o:	param.c  $(INCL)
 # Because of a bug in DC1 2.06.40, initialisation of unions does not
 # work correctly. dc1-21 is DC1 2.06.21 which does work.
 	rename dc1-21 dc1
 	${CC} ${CFLAGS} param.c -o param.o
 	rename dc1 dc1-21
 
-quickfix.o:	quickfix.c  $(INCL)
+obj/quickfix.o:	quickfix.c  $(INCL)
 
-regexp.o:	regexp.c  $(INCL) regexp.h
+obj/regexp.o:	regexp.c  $(INCL) regexp.h
 
-regsub.o:	regsub.c  $(INCL) regexp.h
+obj/regsub.o:	regsub.c  $(INCL) regexp.h
 
-screen.o:	screen.c  $(INCL)
+obj/screen.o:	screen.c  $(INCL)
 
-script.o:	script.c  $(INCL)
+obj/search.o:	search.c  $(INCL) regexp.h
 
-search.o:	search.c  $(INCL) regexp.h
+obj/tag.o:	tags.c  $(INCL)
 
-tag.o:	tags.c  $(INCL) mark.h
+obj/termlib.o:	termlib.c $(INCL)
 
-termlib.o:	termlib.c $(INCL)
+obj/undo.o: undo.c	$(INCL)
 
-storage.o:	storage.c  $(INCL)
-
-undo.o: undo.c	$(INCL)
+obj/window.o: window.c	$(INCL)
 
 cmdtab.h: cmdtab.tab mkcmdtab
 	mkcmdtab cmdtab.tab cmdtab.h
 
-mkcmdtab: mkcmdtab.o
-	${LD} -o mkcmdtab mkcmdtab.o
+mkcmdtab: obj/mkcmdtab.o
+	${LD} -o mkcmdtab obj/mkcmdtab.o

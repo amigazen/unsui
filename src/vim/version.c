@@ -1,12 +1,9 @@
-/* vi:ts=4:sw=4:tw=77
+/* vi:ts=4:sw=4:tw=78
  *
+ * VIM - Vi IMproved		by Bram Moolenaar
  *
- * VIM - Vi IMitation
- *
- * Code Contributions By:	Bram Moolenaar			mool@oce.nl
- *							Tim Thompson			twitch!tjt
- *							Tony Andrews			onecom!wldrdg!tony 
- *							G. R. (Fred) Walter		watmath!watcgl!grwalter 
+ * Read the file "credits.txt" for a list of people who contributed.
+ * Read the file "uganda.txt" for copying and usage conditions.
  */
 
 /*
@@ -246,11 +243,38 @@
 			search command accepts same flags as normal search command. Fixed 
 			'?' in tag search pattern. 'New file' message was wrong when 'bk' 
 			and 'wb' options were both off.
+
+ Vim 1.29 to 1.31 and Vim 2.0	See ../readme2.0.
+
+ Vim 2.0	When reading and writing files and in some other cases use short
+ 			filename if ":cd" not used. Fixes problem with networks. Deleted
+			"#include <ctype.h>" from regexp.c. ":v" without argument was not
+			handled correctly in doglob(). Check for tail recursion removed
+			again, because it forbids ":map! foo ^]foo", which is OK. Removed
+			redraw on exit for msdos. Fixed return value for FullName in
+			unix.c. Call_shell does not always use cooked mode, fixes problem
+			with typing CR while doing filename completion in unix. "r<TAB>"
+			now done by edit() to make expandtab works. Implemented FullName
+			for msdos. Implemented the drive specifier for the :cd command for
+			MSDOS. Added CTRL-B and CTRL-E to command line editing. Del key
+			for msdos not mapped to "x" in command mode, could not delete last
+			char of count. Fixed screen being messed up with long commands
+			when 'sc' is set. Fixed use of CR-LF in tags file. Added check
+			for abbreviation when typing ESC or CTRL-O in insert mode. Doing
+			a ":w file" does overwrite when "file" is the current file. Unmap
+			will check for 'to' string if there is no match with 'from'
+			string; Fixes ":unab foo" after ":ab foo bar". Fixed problem in
+			addstar() for msdos: Check for negative index. Added possibility
+			to switch off undo ":set ul=-1". Allow parameters to be set to
+			numbers >32000 for machines with 16 bit ints.
+
+ Vim 2.1 to 3.0: see readme3.0
+
 */
 
-char		   *Version = "VIM 1.27";
-#if !defined(linux) && defined(BSD) || defined(SYSV)
-char		   *longVersion = "Vi IMitation 1.27 (1993 April 6) by Bram Moolenaar";
+char		   *Version = "VIM 3.0";
+#if !defined(__DATE__) || !defined(__TIME__)
+char		   *longVersion = "Vi IMproved 3.0 by Bram Moolenaar (1994 Aug 12)";
 #else
-char		   *longVersion = "Vi IMitation 1.27 (" __DATE__ " " __TIME__ ") by Bram Moolenaar";
+char		   *longVersion = "Vi IMproved 3.0 by Bram Moolenaar (1994 Aug 12, compiled " __DATE__ " " __TIME__ ")";
 #endif

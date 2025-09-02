@@ -1,103 +1,119 @@
 /* vi:ts=4:sw=4
  *
- * VIM - Vi IMitation
+ * VIM - Vi IMproved		by Bram Moolenaar
  *
- * Code Contributions By:	Bram Moolenaar			mool@oce.nl
- *							Tim Thompson			twitch!tjt
- *							Tony Andrews			onecom!wldrdg!tony 
- *							G. R. (Fred) Walter		watmath!watcgl!grwalter 
+ * Read the file "credits.txt" for a list of people who contributed.
+ * Read the file "uganda.txt" for copying and usage conditions.
  */
 
 /*
  * alloc.c
  *
  * This file contains various routines dealing with allocation and
- * deallocation of data structures.
+ * deallocation of memory. And some funcions for copying text.
  */
 
 #include "vim.h"
 #include "globals.h"
 #include "proto.h"
 
-#ifdef AMIGA
-# undef FALSE			/* these are redefined in exec/types.h */
-# undef TRUE
-# include <exec/types.h>
-# include <exec/memory.h>
-# undef FALSE
-# define FALSE 0		/* define FALSE and TRUE as ints instead of longs */
-# undef TRUE
-# define TRUE 1
-#endif /* AMIGA */
+/*
+ * Some memory is reserved for error messages and for being able to
+ * call mf_release_all(), which needs some memory for mf_trans_add().
+ */
+#define KEEP_ROOM 8192L
 
-#ifdef MSDOS
-# include <alloc.h>
-#endif /* MSDOS */
-
-#define PANIC_FACTOR_CHIP 8192L
-
-	char *
+/*
+ * Note: if unsinged is 16 bits we can only allocate up to 64K with alloc().
+ * Use lalloc for larger blocks.
+ */
+	char_u *
 alloc(size)
 	unsigned		size;
 {
-	return (lalloc((u_long)size, TRUE));
+	return (lalloc((long_u)size, TRUE));
 }
 
-	char *
+	char_u *
 lalloc(size, message)
-	u_long			size;
+	long_u			size;
 	int				message;
 {
-	register char   *p;			/* pointer to new storage space */
+	register char_u   *p;			/* pointer to new storage space */
+	static int	releasing = FALSE;	/* don't do mf_release_all() recursive */
+	int			try_again;
 
-	if ((p = (char *)malloc(size)) != NULL)
-	{
-#ifdef AMIGA
-		if (AvailMem((long)MEMF_CHIP) < PANIC_FACTOR_CHIP)
-		{ 								/* System is low... no go! */
-				free(p);
-				p = NULL;
-		}
-#endif
 #ifdef MSDOS
-		if (coreleft() < PANIC_FACTOR_CHIP)
-		{ 								/* System is low... no go! */
-				free(p);
-				p = NULL;
-		}
+	if (size >= 0xfff0)			/* in MSDOS we can't deal with >64K blocks */
+		p = NULL;
+	else
 #endif
+
+	/*
+	 * If out of memory, try to release some memfile blocks.
+	 * If some blocks are released call malloc again.
+	 */
+	for (;;)
+	{
+		if ((p = (char_u *)malloc(size)) != NULL)
+		{
+			if (mch_avail_mem(TRUE) < KEEP_ROOM && !releasing)
+			{ 								/* System is low... no go! */
+					free((char *)p);
+					p = NULL;
+			}
+		}
+	/*
+	 * Remember that mf_release_all() is being called to avoid an endless loop,
+	 * because mf_release_all() may call alloc() recursively.
+	 */
+		if (p != NULL || releasing)
+			break;
+		releasing = TRUE;
+		try_again = mf_release_all();
+		releasing = FALSE;
+		if (!try_again)
+			break;
 	}
-	if (message && p == NULL)
+
+	/*
+	 * Avoid repeating the error message many times (they take 1 second each).
+	 * Did_outofmem_msg is reset when a character is read.
+	 */
+	if (message && p == NULL && !did_outofmem_msg)
+	{
 		emsg(e_outofmem);
+		did_outofmem_msg = TRUE;
+	}
 	return (p);
 }
 
 /*
  * copy a string into newly allocated memory
  */
-	char *
+	char_u *
 strsave(string)
-	char		   *string;
+	char_u		   *string;
 {
-	char *p;
+	char_u *p;
 
-	p = alloc((unsigned) (strlen(string) + 1));
+	p = alloc((unsigned) (STRLEN(string) + 1));
 	if (p != NULL)
-		strcpy(p, string);
+		STRCPY(p, string);
 	return p;
 }
 
-	char *
+	char_u *
 strnsave(string, len)
-	char		*string;
+	char_u		*string;
 	int 		len;
 {
-	char *p;
+	char_u *p;
 
 	p = alloc((unsigned) (len + 1));
 	if (p != NULL)
 	{
-		strncpy(p, string, (size_t)len);
+		STRNCPY(p, string, (size_t)len);
 		p[len] = NUL;
 	}
 	return p;
@@ -108,32 +124,28 @@ strnsave(string, len)
  */
 	void
 copy_spaces(ptr, count)
-	char	*ptr;
+	char_u	*ptr;
 	size_t	count;
 {
-	register size_t	j;
+	register size_t	i = count;
+	register char_u	*p = ptr;
 
-	while (count)		/* copy 15 spaces at a time */
-	{
-		j = count;
-		if (j > 15)
-			j = 15;
-		memmove(ptr, spaces, j);
-		ptr += j;
-		count -= j;
-	}
+	while (i--)
+		*p++ = ' ';
 }
 
-	char *
-mkstr(c)
-	unsigned	  c;
+/*
+ * delete spaces at the end of the string
+ */
+	void
+del_spaces(ptr)
+	char_u *ptr;
 {
-	static char	  s[2];
+	char_u	*q;
 
-	s[0] = c;
-	s[1] = NUL;
-
-	return s;
+	q = ptr + STRLEN(ptr);
+	while (--q > ptr && isspace(q[0]) && q[-1] != '\\' && q[-1] != Ctrl('V'))
+		*q = NUL;
 }
 
 #ifdef NO_FREE_NULL
@@ -150,7 +162,7 @@ nofreeNULL(x)
 }
 #endif
 
-#ifdef BSD
+#ifdef BSD_UNIX
 	char *
 bsdmemset(ptr, c, size)
 	char	*ptr;
@@ -164,3 +176,59 @@ bsdmemset(ptr, c, size)
 	return ptr;
 }
 #endif
+
+#ifdef MEMMOVE
+/*
+ * Version of memmove that handles overlapping source and destination.
+ * For systems that don't have a function that is guaranteed to do that (SYSV).
+ */
+	void *
+#ifdef __sgi
+memmove(desti, source, len)
+	void	*source, *desti;
+	size_t	len;
+#else
+memmove(desti, source, len)
+	void	*source, *desti;
+	int		len;
+#endif
+{
+	char	*src = (char *)source;
+	char	*dst = (char *)desti;
+
+	if (dst > src && dst < src + len)	/* overlap, copy backwards */
+	{
+		src +=len;
+		dst +=len;
+		while (len-- > 0)
+			*--dst = *--src;
+	}
+	else								/* copy forwards */
+		while (len-- > 0)
+			*dst++ = *src++;
+	return desti;
+}
+#endif
+
+/*
+ * compare two strings, ignoring case
+ * return 0 for match, 1 for difference
+ */
+	int
+vim_strnicmp(s1, s2, len)
+	char_u	*s1;
+	char_u	*s2;
+	size_t	len;
+{
+	while (len)
+	{
+		if (TO_UPPER(*s1) != TO_UPPER(*s2))
+			return 1;						/* this character different */
+		if (*s1 == NUL)
+			return 0;						/* strings match until NUL */
+		++s1;
+		++s2;
+		--len;
+	}
+	return 0;								/* strings match */
+}
