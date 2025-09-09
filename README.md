@@ -10,21 +10,21 @@ This is _unsui_, a POSIX environment for Amiga.
 
 *Minds awaken, free*
 
-**amigazen project** uses modern software development tools and methods to update and rerelease classic Amiga open source software. Releases include a new AWeb, the _unsui_ platform, and the ToolKit project - a universal SDK for Amiga.
+**amigazen project** uses modern software development tools and methods to update and rerelease classic Amiga open source software. Releases include a new AWeb, this new Amiga Python 2, and the ToolKit project - a universal SDK for Amiga.
 
-Key to the amigazen project approach is ensuring every project can be built with the same common set of development tools and configurations, so the ToolKit was created to provide a standard configuration for Amiga development. All *amigazen project* releases will be guaranteed to build against the ToolKit standard so that anyone can download and begin contributing straightaway without having to tailor the toolchain for their own setup.
+Key to the amigazen project approach is ensuring every project can be built with the same common set of development tools and configurations, so the ToolKit project was created to provide a standard configuration for Amiga development. All *amigazen project* releases will be guaranteed to build against the ToolKit standard so that anyone can download and begin contributing straightaway without having to tailor the toolchain for their own setup.
 
-The original authors of the libraries and commands included here are not affiliated with the amigazen project. This software is redistributed on terms described in the documentation, particularly the file LICENSE.md and individual LICENSE.md files for each component.
-
-Our philosophy is based on openness:
+The amigazen project philosophy is based on openness:
 
 *Open* to anyone and everyone	- *Open* source and free for all	- *Open* your mind and create!
 
-PRs for all amigazen projects are gratefully received at [GitHub](https://github.com/amigazen/). While the amigazen project focus now is on classic 68k software, it is intended that all amigazen project releases can be ported to other Amiga and Amiga-like systems including AROS and MorphOS where feasible.
+PRs for all of amigazen projects are gratefully received at [GitHub](https://github.com/amigazen/). While the focus now is on classic 68k software, it is intended that all amigazen project releases can be ported to other Amiga-like systems including AROS and MorphOS where feasible.
+
+The original authors of the libraries and commands included here are not affiliated with the amigazen project. This software is redistributed on terms described in the documentation, particularly the file LICENSE.md and individual LICENSE.md files for each component. Since the software in this project is derived from many different sources, each is licensed independently, as some carry GPL licenses while others are licensed under BSD or more specific license terms.
 
 ## About _unsui_
 
-_unsui_ is a Unix-like runtime environment for Amiga consisting of UnixLib3, a POSIX and C99 standard C library, shami, a POSIX-like shell, and the _koans_ - individual Amiga ports of standard commands found on BSD and Linux operating systems.
+_unsui_ is a Unix-like runtime environment for Amiga consisting of *UniLib3*, a POSIX and C99 standard C library, _shami_, a POSIX-like shell, and the _koans_ - individual Amiga ports of standard commands found on BSD and Linux operating systems.
 
 The name _unsui_ (雲水) refers to Zen monks who travel from monastery to monastery seeking enlightenment, symbolizing the journey of learning and discovery through individual command implementations. Each _koan_ represents a step on this path.
 
@@ -34,17 +34,17 @@ unsui follows the principle of "harmony through compatibility" - Unix standards 
 
 This project aims to provide a comprehensive set of POSIX utilities and libraries for Amiga, ensuring they can be built out of the box against the ToolKit standard by anyone with an Amiga computer.
 
-### UnixLib3 - The _zafu_ (座蒲)
+### UniLib3 - The _zafu_ (座蒲)
 
-**Standard C Library**: UnixLib3 is a (WIP) near complete POSIX and C99 standard C library implementation for Amiga and the SAS/C (and soon DICE) compiler. It provides many more functions and new versions of functions to extend the SAS/C standard C library, similar to VBCC's PosixLib. It does not replace the original SAS/C startup code or sc.lib except where the function prototype has changed since the days of ANSI/C89, in which case UnixLib3 provides a new modern version of the same function. You could almost says it's an 'unClib'.
+**Standard C Library**: UniLib3 is a (WIP) near complete POSIX and C99 standard C library implementation for Amiga and the SAS/C (and soon DICE) compiler. It provides many more functions and new versions of functions to extend the SAS/C standard C library, similar to VBCC's PosixLib. It does not replace the original SAS/C startup code or sc.lib except where the function prototype has changed since the days of ANSI/C89, in which case UniLib3 provides a new modern version of the same function. You could almost says it's an 'unClib'.
 
-Using UnixLib3 it should be possible to port more modern functions as well as taking advantage of C99 improvements such as the memory-safe string functions. 
+Using UniLib3 it should be possible to port more modern functions as well as taking advantage of C99 improvements such as the memory-safe string functions. 
 
-UnixLib3 is a new version of original emacs-for-Amiga developer David Gay's BSD compatible unix.lib including the extensions added by Amiga xfig developer Enrico Forestieri, as well as code added in from Irmen de Jong's Amiga Python, and all-new code from amigazen project. 
+UniLib3 is a new version of original emacs-for-Amiga developer David Gay's BSD compatible unix.lib including the extensions added by Amiga xfig developer Enrico Forestieri, as well as code added in from Irmen de Jong's Amiga Python, and all-new code from amigazen project. 
 
-Furthermore UnixLib3 includes some modern resource tracking and cleanup features to make Amiga software developed with it more stable, and unlike earlier versions makes full use of the latest operating system features. Apart from unix.lib, additional popular libraries found on Unix-like systems are also planned for inclusion, collectively forming the _zafu_ for _unsui_.
+Furthermore UniLib3 includes some modern resource tracking and cleanup features to make Amiga software developed with it more stable, and unlike earlier versions makes full use of the latest operating system features. Apart from unix.lib, additional popular libraries found on Unix-like systems are also planned for inclusion, collectively forming the _zafu_ for _unsui_.
 
-In zen buddhism, the _zafu_ (座蒲) is the meditation cushion that provides the foundation for proper posture and balance. Just as the zafu supports the practitioner's meditation, UnixLib3 serves as a stable base for all software in the runtime environment.
+In zen buddhism, the _zafu_ (座蒲) is the meditation cushion that provides the foundation for proper posture and balance. Just as the zafu supports the practitioner's meditation, UniLib3 serves as a stable base for all software in the runtime environment.
 
 ### POSIX environment - The _shami_ (沙弥) 
 
@@ -69,15 +69,13 @@ Each _koan_ is designed to be:
 
 ### How does amigazen project decide what software to include in the _unsui_ runtime?
 
-The _unsui_ selects items for inclusion based on a combination what would be useful and what's already available as Open Source that can be updated and integrated.
+The _unsui_ selects items for inclusion based on a combination what would be useful and what's already available as Open Source that can be updated and integrated. The goal is to offer a full complement of POSIX-compliant command line tools, excepting those which make no sense in Amiga's single user context or simply cannot be made to work on Amiga architecture, as well as additional useful tools commonly found in Unix/Linux based distributions.
 
 ### Is _unsui_ intended to be a certified POSIX compatible environment?
 
 No _unsui_ is a pragmatic solution providing the most common tools found in environments that adhere to Unix standard such as POSIX, the Single Unix Specification, or what was the Linux Standard Base, while taking into account the Amiga's single user, personal computing purpose.
 
-Like modern macOS, _unsui_ includes only things that are useful to the user, without adhering to a strict specification and without necessarily always having the best version with the very latest features. Indeed, since many Amiga ports have not been updated for a long time, you can expect that functional and stable releases have been included over the cutting edge.
-
-That means that useful tools originating from Unix platforms that are NOT part of any standard specification will also be included.
+Like modern macOS, _unsui_ includes only things that are useful to the user, without adhering to a strict specification and without necessarily always having the best version with the very latest features. Indeed, since many Amiga ports have not been updated for a long time, you can expect that functional and stable releases have been included here rather than the latest and most feature-full releases.
 
 ### Is this like GeekGadgets, or Cygwin/cygnix, or even Homebrew?
 
@@ -105,7 +103,7 @@ Components integrated from other older projects are checked for compatible licen
 
 It is left to the imagination of the reader to determine if there is greater meaning in the name _unsui_. Could it mean UNified Standard Unix-specification Implementation? Or UNix SUbsystem Interface? Perhaps _unsui_ is Not a Supported Unix Instance? Is it Unix-like System Userland Idiom? What do you think it means? Similarly, is _zafu_ a Zen Amiga Foundation for Unix? What else could that mean?
 
-### Where is the UnixLib3 and the other parts of _unsui_?
+### Where is the UniLib3 and the other parts of _unsui_?
 
 You can find the work in progress new version of unix.lib on github in its own repository. _unsui_ is still work in progress with new _koans_ being added every week.
 
@@ -113,7 +111,7 @@ You can find the work in progress new version of unix.lib on github in its own r
 
 Generally no, the code here should be considered forked from the original projects, since the forks often date back 10, 20 or even 30 or more years, and few if any of the upstream maintainers will accept Amiga specific patches nor would such patches easily fit into the modern cross-platform auto configuration system, even for GeekGadgets or OS4 versions. Keeping the forks forked is in the best interest of the project and allows _unsui_ to focus on optimisation for Amiga native features, and this approach is really no different from what macOS does. This is by no means a bad thing - many of the POSIX commands have barely changed in core functionality in that time, with additional code written to support more modern platforms, to support unicode, or 64-bit, or network and server features. Exactly the kind of code-bloat Amiga users eschew and which would conflict with the balance _unsui_ is designed to strike with regard to Amiga _kanso_ versus Unix complexity.
 
-New features that offer real value to Amiga users may be cherry picked from more recent versions from time to time.
+New features that offer real value to Amiga users may be cherry picked from more recent versions from time to time. Forking in this way allows implementations to deviate from retaining cross platform compatibility and use Amiga native mechanisms internally wherever possible, to being back some of that Amiga _kanso_.
 
 ### Will _unsui_ be released on Aminet?
 
