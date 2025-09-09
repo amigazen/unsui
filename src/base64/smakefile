@@ -1,0 +1,36 @@
+# base64 - Base64 encoder/decoder for Amiga
+# Hybrid Amiga/POSIX command following arguments.md pattern
+
+CC = sc
+CFLAGS = OPTIMIZE INCLUDEDIR=/common INCLUDEDIR=include:
+LDFLAGS = 
+LIBS = sc:lib/sc.lib lib:small.lib
+
+# Target executable
+TARGET = base64
+
+# Source files
+SOURCES = base64.c
+OBJECTS = base64.o /common/common.o /common/getopt.o
+
+# Default target
+all: $(TARGET)
+
+# Build the executable
+$(TARGET): $(OBJECTS)
+	$(CC) LINK $(LDFLAGS) TO $(TARGET) FROM $(OBJECTS) LIB $(LIBS)
+
+# Compile source files
+base64.o: base64.c base64.h
+	$(CC) $(CFLAGS) base64.c
+
+# Clean up
+clean:
+	-delete all $(OBJECTS) $(TARGET)
+
+# Install (if needed)
+install: $(TARGET)
+	copy $(TARGET) //SDK/C/ CLONE
+
+# Dependencies
+base64.o: base64.h /common/common.h /common/getopt.h
