@@ -58,7 +58,7 @@ extern char *optarg;
 extern int optind;
 
 /* Version tag for Amiga */
-static const char *verstag = "$VER: rm 1.0 (30/08/25)\n";
+static const char *verstag = "$VER: rm 1.0 (10/09/25)\n";
 static const char *stack_cookie = "$STACK: 4096";
 
 /* Magic numbers suggested or required by Posix specification */
