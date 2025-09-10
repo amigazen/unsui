@@ -1,0 +1,34 @@
+# RM command SMakefile for Unsui POSIX runtime
+
+# Tools
+CC = sc
+LD = slink
+RM = delete
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS
+LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib LIB lib:utility.lib NOICONS
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
+
+# Object files for rm
+OBJS = sc:lib/cres.o rm.o /common/common.o /common/getopt.o
+
+# Main target
+all: rm
+
+# Build rm command
+rm: $(OBJS)
+	$(LD) $(LDFLAGS) FROM $(OBJS) TO rm
+
+# Compile source files
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+rm.o: rm.c /common/common.h /common/getopt.h
+
+# Clean target
+clean:
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) rm
+
+# Install target
+install: rm
+	copy rm //SDK/C/rm

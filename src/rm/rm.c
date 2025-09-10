@@ -28,6 +28,7 @@
 #include <proto/dos.h>
 #include <proto/exec.h>
 #include <proto/icon.h>
+#include <proto/utility.h>
 
 #include "common.h"
 #include "getopt.h"
@@ -46,6 +47,16 @@ int snprintf(char *str, size_t size, const char *format, ...) {
 }
 #endif
 
+/* External function declarations from common library */
+extern char *my_basename(char *path);
+extern int is_getopt_style(int argc, char **argv);
+extern char *build_command_string(int argc, char **argv, const char *exclude);
+extern int tokenize_string(char *str, char **argv, int max_args);
+extern void reset_getopt(void);
+extern int getopt(int argc, char * const argv[], const char *optstring);
+extern char *optarg;
+extern int optind;
+
 /* Version tag for Amiga */
 static const char *verstag = "$VER: rm 1.0 (30/08/25)\n";
 static const char *stack_cookie = "$STACK: 4096";
@@ -53,9 +64,6 @@ static const char *stack_cookie = "$STACK: 4096";
 /* Magic numbers suggested or required by Posix specification */
 #define SUCCESS 0               /* exit code in case of success */
 #define FAILURE 1               /* or failure */
-
-/* Maximum template items for ReadArgs */
-#define MAX_TEMPLATE_ITEMS 32
 
 /* For ReadArgs template */
 enum {
@@ -116,8 +124,6 @@ int main(int argc, char **argv)
     int file_count;
     char initial_args_str[256];
     char user_input_buf[256];
-    char *temp_str;
-    size_t combined_len;
 
     if (argc < 1) {
         exit(FAILURE);
