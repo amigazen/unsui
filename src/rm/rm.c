@@ -178,16 +178,8 @@ int main(int argc, char **argv)
         }
 
         if (interactive_help) {
-            /* Interactive help mode */
-            printf("rm - Remove files and directories\n\n");
-            printf("Usage: rm [OPTIONS] FILES...\n\n");
-            printf("Options:\n");
-            printf("  FORCE/S     Force deletion without prompting\n");
-            printf("  INTERACTIVE/S  Prompt before each deletion\n");
-            printf("  RECURSIVE/S    Remove directories recursively\n");
-            printf("  VERBOSE/S      Verbose output\n");
-            printf("  POSIX/K/F      POSIX-style arguments\n\n");
-            printf("Enter POSIX arguments (or press Enter for Amiga style): ");
+            /* Interactive help mode - output ReadArgs template */
+            printf("FORCE/S,INTERACTIVE/S,RECURSIVE/S,VERBOSE/S,POSIX/K/F");
             
             if (fgets(user_input_buf, sizeof(user_input_buf), stdin)) {
                 /* Remove newline */
@@ -359,7 +351,7 @@ void parse_getopt_args(int argc, char **argv, RmOptions *options, int *file_star
  * @return Exit code
  */
 int run_rm_logic(RmOptions *options, int file_count, char **files, const char *program) {
-    int i;
+	int i;
     int result = SUCCESS;
     char *pattern;
     
