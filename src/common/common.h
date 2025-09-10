@@ -33,4 +33,9 @@ char *my_basename(char *path);
 struct RDArgs* setup_readargs(const char *template, char *cmd_string);
 void cleanup_readargs(struct RDArgs *rdargs, char *cmd_string);
 
+/* Wildcard expansion functions */
+char **wildexpand(char *w);
+void wildfree(char **freelist);
+int amigaizepath(char *to);
+
 #endif /* COMMON_H */

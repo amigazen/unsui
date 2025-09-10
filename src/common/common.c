@@ -12,7 +12,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "stat.h"
+#include "dir.h"
 #include "common.h"
+
+/* Forward declaration for stat function */
+extern int stat(const char *path, struct stat *buf);
+
+/* Forward declarations for wildcard expansion */
+static int indircmp(char **l, char **r);
+static void AddDirFile(char *dir, char *file);
+static void recursive_expand(char *w);
+static int wildmatch(char *str, char *pat);
 
 /**
  * @brief Detect if command line arguments follow POSIX style
@@ -23,17 +34,13 @@
 int is_getopt_style(int argc, char **argv) {
     if (argc < 2) return FALSE;
 
-    /* Check for standard options like -n, -c, -f, -v, -h */
+    /* Check for standard options like -n, -c, -f, -v, -h, -w */
     if (argv[1][0] == '-' && argv[1][1] != '\0' && 
-        strchr("cfnvhV", argv[1][1])) {
+        strchr("cfnvhVw", argv[1][1])) {
         return TRUE;
     }
 
-    /* Check for historical syntax like +5 or -10 */
-    if ((argv[1][0] == '+') ||
-        (argv[1][0] == '-' && (isdigit((unsigned char)argv[1][1])))) {
-        return TRUE;
-    }
+
 
     return FALSE;
 }
@@ -172,4 +179,257 @@ void cleanup_readargs(struct RDArgs *rdargs, char *cmd_string) {
     if (cmd_string) {
         free(cmd_string);
     }
+}
+
+/**
+ * @brief Free wildcard expansion result
+ * @param freelist Array of strings to free
+ */
+void wildfree(char **freelist) {
+    char **cpp;
+
+    if (!freelist) return;
+    for (cpp = freelist; *cpp; cpp++)
+        free(*cpp);
+
+    free(freelist);
+}
+
+/**
+ * @brief Expand wildcards in filename pattern
+ * @param w Wildcard pattern to expand
+ * @return Array of matching filenames, NULL-terminated
+ */
+char **wildexpand(char *w) {
+    static char **listp = NULL;
+    static int curcount = 0, maxcount = 0;
+    static char *workpath, *curp;
+    char *cp, *getenv();
+    int i;
+
+    curcount = maxcount = 0;
+    listp = NULL;
+    curp = workpath = (char *)malloc(1024); /* Bigger than AmigaDOS path */
+
+    if (*w == '~' && *(w+1) == '/') {
+        if (cp = getenv("HOME")) {
+            strcpy(workpath, cp);
+            i = strlen(cp);
+            if (workpath[i-1] != '/' && workpath[i-1] != ':')
+                workpath[i++] = '/';
+            curp += i;
+            w += 2;
+        }
+    }
+    recursive_expand(w);
+
+    free(workpath);
+
+    if (listp)
+        qsort(listp, curcount, sizeof(char *), indircmp);
+    else
+        AddDirFile(w, "");
+
+    listp[curcount] = NULL;
+    return(listp);
+}
+
+/**
+ * @brief Amigaize path by converting Unix-style paths to Amiga format
+ * @param to Path string to modify
+ * @return Number of characters removed
+ */
+int amigaizepath(char *to) {
+    char *from = to;
+    int last = 0, removed = 0;
+
+    while (*from == ' ') {
+        from++;
+        removed++;
+    }
+
+    if (*from == '/') {
+        if (strncmp(from, "/dev/", 5)) return(removed);
+
+        from += 5;
+        if (!strcmp(from, "null")) {
+            strcpy(to, "NULL:");
+            removed += 4;
+        } else if (!strcmp(from, "tty")) {
+            strcpy(to, "CON:");
+            removed += 4;
+        } else if (!strcmp(from, "console")) {
+            strcpy(to, "CON:");
+            removed += 8;
+        }
+        return (removed);
+    }
+
+    while (*from) {
+        if (*from == '.') {			/* Found ".", need hacking? */
+            /* If beginning of line or last char was not alphanumeric */
+            if (!last || !isalnum(last)) {
+                if (!last) {			/* Look for plain "." & ".." */
+                    if (!*(from + 1)) {
+                        *from = '\0';		/* Change it to "" */
+                        return(0);
+                    } else if (*(from + 1) == '.' && !*(from + 2)) {
+                        *from = '/';		/* Change it to "/" */
+                        *(from+1) = '\0';
+                        return(0);
+                    }
+                }
+
+                if (*(from + 1) == '/') {
+                    from += 2;			/* Skip "./" */
+                    removed += 2;
+                    last = '/';
+                    continue;			/* And go on to next char */
+                } else if (*(from + 1) == '.') {
+                    if (*(from + 2) == '/') {	/* Found "../"; skip ".." and */
+                        from += 2;		/*  fall through allowing '/' */
+                        removed += 2;
+                    }
+                }				/*  to be assigned below      */
+            }
+        }
+        last = *from;
+        *to++ = *from++;
+    }
+    *to = '\0';
+    return (removed);
+}
+
+/* Helper functions for wildcard expansion */
+static char wildlist[] = "\\~*?[";	/* List of chars we want to look at */
+
+static int indircmp(char **l, char **r) {
+    return (strcmp(*l, *r));
+}
+
+static void AddDirFile(char *dir, char *file) {
+    static char **listp = NULL;
+    static int curcount = 0, maxcount = 0;
+    char *cp;
+
+    if (curcount + 1 >= maxcount) {	/* Need room for final NULL */
+        maxcount += 32;
+        listp = (char **)realloc(listp, maxcount * sizeof (char *));
+        /* listp is null at start, which realloc takes to mean "malloc" */
+    }
+    cp = listp[curcount++] = (char *)malloc(strlen(dir) + strlen(file) + 1);
+    strcpy(cp, dir);
+    if (*file) strcat(cp, file);
+}
+
+static void recursive_expand(char *w) {
+    static char **listp = NULL;
+    static int curcount = 0, maxcount = 0;
+    static char *workpath, *curp;
+    char *cp, *hold_curp = curp;
+    struct direct *d;
+    DIR *dp;
+
+    if (!(cp = strpbrk(w, wildlist))) {
+        *curp = '\0';
+        return;
+    }
+    for (; cp > w && *cp != '/' && *cp != ':'; cp--) ;
+    if (*cp == '/' || *cp == ':') cp++;
+
+    if (cp > w) {
+        strncpy(curp, w, cp - w);
+        curp += cp - w;
+    }
+    *curp = '\0';
+
+    if (!(dp = opendir(workpath))) return;
+    while (d = readdir(dp)) {
+        if (!(d->d_ino)) continue;
+        if (*(d->d_name) == '.' && *cp != '.') continue;
+        if (wildmatch(d->d_name, cp))
+            AddDirFile(workpath, d->d_name);
+    }
+    closedir(dp);
+    curp = hold_curp;
+    *curp = '\0';
+}
+
+static int wildmatch(char *str, char *pat) {
+    char *cp, *sp = str;
+    struct stat st;
+    int c, c2, patc, not;
+
+    while (patc = *pat++) {
+        switch (patc) {
+        case '?':
+            if (!*str) return (0);
+            str++;
+            break;
+
+        case '\\':
+            if (*pat++ != *str++) return(0);
+            break;
+
+        case '[':
+            /* All the tests for '\0' mean: "if bad pattern, no match." */
+            if (!(c = *str++)) return(0);
+            if (not = (*pat == '^')) pat++;
+
+            if (!(patc = *pat++)) return (0);
+            if (patc == ']') return(0);
+            for (;;) {
+                if (patc == ']') break;
+                if (patc == '\\') if (!(patc = *pat++)) return (0);
+
+                if (c != patc) {
+                    if (!(c2 = *pat)) return (0);
+                    if (c2 == '\\') { patc = c2; continue; }
+                    pat++;
+
+                    if (c2 == '-') {
+                        if (!(c2 = *pat++)) return (0);
+                        if (c2 == '\\') if (!(c2 = *pat++)) return (0);
+
+                    } else {
+                        patc = c2;
+                        continue;
+                    }
+                    if (c < patc || c > c2) {
+                        if (!(patc = *pat++)) return (0);
+                        continue;
+                    }
+                }
+                /* We wind up here on a match */
+                if (not) return(0);
+                while (patc && patc != ']') {
+                    patc = *pat++;
+                    if (patc == '\\') pat++;
+                }
+                if (!patc) return (0);
+                not = 1;  /* "*hack*" to get a "break" outside loop */
+                break;
+            }
+            if (not) break;	/* no match, but didn't want to (or "*hack*")*/
+            return (0);	/* no match  and wanted to */
+
+        case '*':
+            if (!*pat) return (1);
+            if (*pat != '/') {
+                for (cp = str; *cp; cp++)
+                    if (wildmatch(cp, pat))
+                        return (1);
+                return (0);
+            }
+            /* fall through */
+        case '/':
+            if (*str) return (0);	/* If str(ing) continues, no match */
+            return (0);
+
+        default:
+            if (patc != *str++) return (0);
+            break;
+        }
+    }
+    return (!*str);
 }
