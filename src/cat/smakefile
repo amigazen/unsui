@@ -1,0 +1,34 @@
+# cat command SMakefile for unsui POSIX runtime
+
+# Tools
+CC = sc
+LD = slink
+RM = delete
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS
+LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib LIB lib:utility.lib NOICONS
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
+
+# Object files for cat
+OBJS = sc:lib/cres.o cat.o /common/common.o /common/getopt.o /common/dir.o
+
+# Main target
+all: cat
+
+# Build cat command
+cat: $(OBJS)
+	$(LD) $(LDFLAGS) FROM $(OBJS) TO cat
+
+# Compile source files
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+cat.o: cat.c /common/common.h /common/getopt.h
+
+# Clean target
+clean:
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) cat
+
+# Install target
+install: cat
+	copy cat //SDK/C/cat

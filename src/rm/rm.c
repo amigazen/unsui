@@ -1,5 +1,5 @@
 /*
- * rm - Unsui POSIX runtime for Amiga
+ * rm - unsui POSIX runtime for Amiga
  * 
  * Copyright (c) 2025 amigazen project. All rights reserved.
  * 
@@ -179,7 +179,7 @@ int main(int argc, char **argv)
 
         if (interactive_help) {
             /* Interactive help mode - output ReadArgs template */
-            printf("FORCE/S,INTERACTIVE/S,RECURSIVE/S,VERBOSE/S,POSIX/K/F");
+            printf("FORCE/S,INTERACTIVE/S,RECURSIVE/S,VERBOSE/S,POSIX/K/F: ");
             
             if (fgets(user_input_buf, sizeof(user_input_buf), stdin)) {
                 /* Remove newline */
