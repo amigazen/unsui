@@ -9,7 +9,7 @@ LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib LIB lib:utility.lib NOICONS
 SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
 
 # Object files for rm
-OBJS = sc:lib/cres.o rm.o /common/common.o /common/getopt.o
+OBJS = sc:lib/cres.o rm.o /common/common.o /common/getopt.o /common/dir.o
 
 # Main target
 all: rm

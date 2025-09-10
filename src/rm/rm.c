@@ -56,9 +56,12 @@ extern void reset_getopt(void);
 extern int getopt(int argc, char * const argv[], const char *optstring);
 extern char *optarg;
 extern int optind;
+extern char **wildexpand(char *w);
+extern void wildfree(char **freelist);
+extern int amigaizepath(char *to);
 
 /* Version tag for Amiga */
-static const char *verstag = "$VER: rm 1.0 (10/09/25)\n";
+static const char *verstag = "rm 1.1 (10/09/25)\n";
 static const char *stack_cookie = "$STACK: 4096";
 
 /* Magic numbers suggested or required by Posix specification */
@@ -99,6 +102,8 @@ static int delete_directory_recursive(const char *dirname, RmOptions *options, c
 static BOOL confirm_deletion(const char *filename, const char *program);
 static void print_error(const char *program, const char *filename, LONG error_code);
 static BOOL check_filename_safety(const char *filename, const char *program);
+static int process_wildcard_pattern(const char *pattern, RmOptions *options, const char *program);
+static int sanitize_path(char *path, const char *program);
 
 /* Main function: dispatcher for parsing style */
 int main(int argc, char **argv)
@@ -354,14 +359,36 @@ void parse_getopt_args(int argc, char **argv, RmOptions *options, int *file_star
  * @return Exit code
  */
 int run_rm_logic(RmOptions *options, int file_count, char **files, const char *program) {
-	int i;
+    int i;
     int result = SUCCESS;
+    char *pattern;
     
     for (i = 0; i < file_count; i++) {
         if (files[i] && strlen(files[i]) > 0) {
-            if (delete_file(files[i], options, program) != SUCCESS) {
+            /* Make a copy for path sanitization */
+            pattern = strdup(files[i]);
+            if (!pattern) {
+                fprintf(stderr, "%s: out of memory\n", program);
+                result = FAILURE;
+                continue;
+            }
+            
+            /* Sanitize the path */
+            if (sanitize_path(pattern, program) != SUCCESS) {
+                free(pattern);
+                result = FAILURE;
+                continue;
+            }
+            
+            /* Convert Unix-style paths to Amiga format */
+            amigaizepath(pattern);
+            
+            /* Process the pattern (handles wildcards) */
+            if (process_wildcard_pattern(pattern, options, program) != SUCCESS) {
                 result = FAILURE;
             }
+            
+            free(pattern);
         }
     }
     
@@ -660,6 +687,8 @@ void usage(const char *program) {
     printf("  -v, --verbose   explain what is being done\n");
     printf("  -h, --help      display this help and exit\n");
     printf("  -V, --version   output version information and exit\n\n");
+    printf("FILE may contain wildcards: * matches any characters, ? matches any single\n");
+    printf("character, [abc] matches any character in the set, and ~ expands to home directory.\n\n");
     printf("By default, rm does not remove directories.  Use the --recursive (-r or -R)\n");
     printf("option to remove each listed directory, too, along with all of its contents.\n\n");
     printf("To remove a file whose name starts with a '-', for example '-foo',\n");
@@ -674,4 +703,81 @@ void usage(const char *program) {
  */
 void print_version(const char *program) {
     printf("%s", verstag);
+}
+
+/**
+ * @brief Process wildcard pattern and expand it to actual files
+ * @param pattern Pattern to expand (may contain wildcards)
+ * @param options Options structure
+ * @param program Program name for error messages
+ * @return SUCCESS or FAILURE
+ */
+static int process_wildcard_pattern(const char *pattern, RmOptions *options, const char *program) {
+    char **expanded_files;
+    char **file_ptr;
+    int result = SUCCESS;
+    
+    /* Check if pattern contains wildcards */
+    if (strpbrk(pattern, "*?[\\~")) {
+        /* Expand wildcards */
+        expanded_files = wildexpand((char *)pattern);
+        if (expanded_files) {
+            /* Process each expanded file */
+            for (file_ptr = expanded_files; *file_ptr; file_ptr++) {
+                if (delete_file(*file_ptr, options, program) != SUCCESS) {
+                    result = FAILURE;
+                }
+            }
+            wildfree(expanded_files);
+        } else {
+            /* No matches found for wildcard pattern */
+            if (!options->force_flag) {
+                fprintf(stderr, "%s: no matches found: %s\n", program, pattern);
+                result = FAILURE;
+            }
+        }
+    } else {
+        /* No wildcards, process as regular file */
+        if (delete_file(pattern, options, program) != SUCCESS) {
+            result = FAILURE;
+        }
+    }
+    
+    return result;
+}
+
+/**
+ * @brief Sanitize and validate a file path
+ * @param path Path to sanitize (will be modified)
+ * @param program Program name for error messages
+ * @return SUCCESS or FAILURE
+ */
+static int sanitize_path(char *path, const char *program) {
+    char *last;
+    int i, slash_count = 0;
+    
+    if (!path || strlen(path) == 0) {
+        return FAILURE;
+    }
+    
+    /* Check for device protection (paths ending with ':') */
+    last = &path[strlen(path) - 1];
+    if (*last == ':') {
+        fprintf(stderr, "%s: cannot remove '%s': Cannot delete device\n", program, path);
+        return FAILURE;
+    }
+    
+    /* Remove trailing slashes and count them */
+    for (i = 0; *last == '/'; i++, last--) {
+        *last = '\0';
+        slash_count++;
+    }
+    
+    /* Validate path after slash removal */
+    if (!*path || slash_count > 1) {
+        fprintf(stderr, "%s: invalid path '%s': Too many trailing slashes\n", program, path);
+        return FAILURE;
+    }
+    
+    return SUCCESS;
 }
