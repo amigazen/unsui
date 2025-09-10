@@ -90,6 +90,7 @@ static int delete_file(const char *filename, RmOptions *options, const char *pro
 static int delete_directory_recursive(const char *dirname, RmOptions *options, const char *program);
 static BOOL confirm_deletion(const char *filename, const char *program);
 static void print_error(const char *program, const char *filename, LONG error_code);
+static BOOL check_filename_safety(const char *filename, const char *program);
 
 /* Main function: dispatcher for parsing style */
 int main(int argc, char **argv)
@@ -420,6 +421,16 @@ static int delete_file(const char *filename, RmOptions *options, const char *pro
         return delete_directory_recursive(filename, options, program);
     }
     
+    /* Check filename safety for long names (Amiga filesystem truncation protection) */
+    if (!check_filename_safety(filename, program)) {
+        if (!options->force_flag) {
+            fprintf(stderr, "%s: refusing to delete potentially unsafe filename\n", program);
+            return FAILURE;
+        } else {
+            fprintf(stderr, "%s: proceeding with potentially unsafe deletion due to -f flag\n", program);
+        }
+    }
+    
     /* Interactive confirmation */
     if (options->interactive_flag && !options->force_flag) {
         if (!confirm_deletion(filename, program)) {
@@ -501,6 +512,16 @@ static int delete_directory_recursive(const char *dirname, RmOptions *options, c
     
     /* If all contents were deleted successfully, delete the directory itself */
     if (result == SUCCESS) {
+        /* Check filename safety for long directory names */
+        if (!check_filename_safety(dirname, program)) {
+            if (!options->force_flag) {
+                fprintf(stderr, "%s: refusing to delete potentially unsafe directory name\n", program);
+                return FAILURE;
+            } else {
+                fprintf(stderr, "%s: proceeding with potentially unsafe directory deletion due to -f flag\n", program);
+            }
+        }
+        
         /* Interactive confirmation for directory */
         if (options->interactive_flag && !options->force_flag) {
             if (!confirm_deletion(dirname, program)) {
@@ -546,6 +567,46 @@ static BOOL confirm_deletion(const char *filename, const char *program) {
     }
     
     return FALSE;
+}
+
+/**
+ * @brief Check filename safety to prevent wrong file deletion due to truncation
+ * @param filename Name of file to check
+ * @param program Program name for error messages
+ * @return TRUE if safe to delete, FALSE if potentially dangerous
+ */
+static BOOL check_filename_safety(const char *filename, const char *program) {
+    BPTR lock1, lock2;
+    BOOL is_safe = TRUE;
+    char truncated[31];
+    
+    /* Check if filename is longer than Amiga's typical 30-character limit */
+    if (strlen(filename) > 30) {
+        /* Get lock on the full filename */
+        lock1 = Lock((STRPTR)filename, ACCESS_READ);
+        if (lock1) {
+            /* Create truncated version (30 characters) */
+            strncpy(truncated, filename, 30);
+            truncated[30] = '\0';
+            
+            /* Get lock on the truncated filename */
+            lock2 = Lock((STRPTR)truncated, ACCESS_READ);
+            if (lock2) {
+                /* Check if the locks point to the same file */
+                if (SameLock(lock1, lock2) == LOCK_SAME) {
+                    /* Potential risk - files might be the same due to truncation */
+                    fprintf(stderr, "%s: WARNING: Filename '%s' may be truncated by filesystem\n", program, filename);
+                    fprintf(stderr, "%s: This could result in deleting the wrong file\n", program);
+                    fprintf(stderr, "%s: Truncated name would be: '%s'\n", program, truncated);
+                    is_safe = FALSE;
+                }
+                UnLock(lock2);
+            }
+            UnLock(lock1);
+        }
+    }
+    
+    return is_safe;
 }
 
 /**
