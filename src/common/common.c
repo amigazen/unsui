@@ -17,7 +17,7 @@
 #include "common.h"
 
 /* Forward declaration for stat function */
-extern int stat(const char *path, struct stat *buf);
+extern int stat(char *path, struct stat *buf);
 
 /* Forward declarations for wildcard expansion */
 static int indircmp(char **l, char **r);
@@ -100,8 +100,9 @@ char* build_command_string(int argc, char **argv, const char* exclude) {
  * @return The number of tokens found
  */
 int tokenize_string(char *str, char **argv, int max_args) {
-    int count = 0;
+    int count = 0, i;
     char *p = str;
+    
 
     while (*p && count < max_args) {
         /* Skip leading whitespace */
@@ -111,7 +112,7 @@ int tokenize_string(char *str, char **argv, int max_args) {
 
         if (*p) {
             /* This is the start of a token */
-            argv[count++] = p;
+            char *token_start = p;
 
             /* Find the end of the token */
             while (*p && !isspace((unsigned char)*p)) {
@@ -123,6 +124,15 @@ int tokenize_string(char *str, char **argv, int max_args) {
                 *p = '\0';
                 p++;
             }
+            
+            /* Skip any additional whitespace after the token */
+            while (*p && isspace((unsigned char)*p)) {
+                p++;
+            }
+            
+            /* Set the token pointer to the start of the token */
+            argv[count] = token_start;
+            count++;
         }
     }
     return count;

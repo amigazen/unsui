@@ -1,7 +1,13 @@
-/* stat.h	1 May 1990 David G. Grubbs (-dgg-)
+/*
+ * stat.h - POSIX stat structure and macros for stat command
+ *
+ * Copyright (c) 2025 amigazen project. All rights reserved.
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ * See LICENSE.md for full license text.
+ *
+ */
 
-   Amiga support for Unix "stat" function.
-*/
 #ifndef __STAT_H__
 #define __STAT_H__
 
@@ -61,4 +67,4 @@ struct	stat
 #define	S_ISSOCK(mode)	(((mode) & S_IFMT) == S_IFSOCK)
 #define	S_ISFIFO(mode)	(((mode) & S_IFMT) == S_IFIFO)
 
-#endif
+#endif /* __STAT_H__ */

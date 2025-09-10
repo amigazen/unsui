@@ -1,0 +1,36 @@
+# stat command SMakefile for unsui POSIX runtime
+
+# Tools
+CC = sc
+LD = slink
+RM = delete
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS
+LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib NOICONS
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
+
+# Object files for stat
+OBJS = sc:lib/cres.o stat.o stamp.o /common/common.o /common/getopt.o /common/dir.o
+
+# Main target
+all: stat
+
+# Build stat command
+stat: $(OBJS)
+	$(LD) $(LDFLAGS) FROM $(OBJS) TO stat
+
+# Compile source files
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+stat.o: stat.c /common/common.h /common/getopt.h stat.h
+
+stamp.o: stamp.c
+
+# Clean target
+clean:
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) stat
+
+# Install target
+install: stat
+	copy stat //SDK/C/stat
