@@ -1,0 +1,359 @@
+
+ MAN, written by Kai Iske February 28. 1994
+      This is PUBLIC DOMAIN; you may do with it whatever you like
+
+
+If you change/republish/delete/sell the program or do anything similar, please
+be so kind to keep my name within the program and all the other files, even
+though you`re not obliged to, as for the definition of Public Domain
+
+MAN  was  written  because  of  the fact that MRMan (by Mark Rinfret) had some
+severe  problems  under  OS 2.x (or was it 3.x).  Anyway, I wrote this tool in
+order not to have to keep in mind the locations of all the various man pages I
+spread across the subdirectories of my MAN:  directory.
+
+MAN was written using SAS-C 6.51....
+
+!!! Man requires OS 2.x and up to run !!!
+
+
+-----------------
+What does MAN ???
+-----------------
+
+
+Well, it is a MAN command similar to the one found on any UNIX System.  Simply
+type  "man dummy" and the manual pages (documentation) for a file called dummy
+will  be searched for.  If man was successful in finding the appropriate file,
+a textviewer will be used to display the documentation.
+
+You may configure MAN in order to tell the program where to find the man pages
+and  what  text  viewers  to  use.   Wait a minute.  Textviewers ???  Yep, MAN
+recognizes the following suffixes as to be part of man pages:
+
+  .doc   - Simple ASCII text file
+  .man   - Simple ASCII text file
+  .guide - Got it, AmigaGuide compatible guide file.
+  .dvi   - Whoops, TeX .DVI output
+
+So now you know why there are different textviewers.
+
+   For example...
+
+      You have the documentation for a program called "KCommodity" somewhere
+      within your docs directory. The doc file is called "KCommodity.Man". In
+      order to get the documentation loaded by man, simply type:
+
+          MAN KCommodity
+
+      ...and the ASCII textviewer will be used. If your filename ends up with
+      .guide ("KCommodity.guide"), MAN assumes it to be a GUIDE file and will
+      use the GUIDE Viewer instead...
+
+      See, no suffixes needed. MAN will take the first file matching a
+      suffix mentioned above.
+
+
+You may even add features to MAN using environment variables. Read on...
+
+
+----------------------
+How to install MAN ???
+----------------------
+
+Copy the main program to a directory within your search path (i.e. C:).
+
+Simply set an environment variable, so that MAN knows what to do.
+The template for this variable (MANOPT) is as follows:
+
+   MANPATHS/K/A,MANVIEW/K/A,MANVIEWAG/K/A,MANVIEWDVI/K/A,MANNRMEXT/K,MANAGEXT/K,
+   MANDVIEXT/K,MANNOVIEW/K,MANGETFILE/S,MANBASENAME/S
+
+
+  *REMEMBER* to enclose parameters containing spaces by quotes. If you don`t
+want to write a file MANOPT to your ENVARC: directory but like to use SetEnv
+from within your S:User-StartUp file, use something like this :
+
+
+  SetEnv MANOPT "... MANVIEWAG=*"SYS:Utilities/AmigaGuide PUBSCREEN 'Dummy'*""
+
+The ellipsis "..." is only meant to shorten the example, of course you have
+to add the other (needed) parameters as well. You see, if you want to set a
+variable to a string which contains spaces you have to use the special
+escape charater *" to force quotes.
+
+Required parameters are : MANPATHS, MANVIEW, MANVIEWAG, and MANVIEWDVI
+
+
+                             --------------------
+
+
+The meaning of the keywords :
+
+   MANPATHS    - This option tells man where to look for man pages.
+
+   For example...
+
+      MANPATHS=MAN:,MAN:CSHDOC|MAN:HPDOCS,MAN:AUTODOCS
+
+   You see, you may either use "," or the "|" as seperators between
+   directory names.
+
+
+
+
+   MANVIEW     - This one is the path (including filename) for the
+                 textviewer you wish to use for displaying normal
+                 ASCII files.
+
+   For example...
+
+      MANVIEW=SYS:Utilities/More
+
+   REMEMBER: Complete path and filename
+
+
+
+
+
+   MANVIEWAG   - This one is used to set the path (and filename) for
+                 the AmigaGuide GUIDE-Viewer.
+
+   For example...
+
+      MANVIEWAG=SYS:Utilities/AmigaGuide
+
+   REMEMBER : Complete path and filename
+
+
+
+
+   MANVIEWDVI  - This one is used to set the path (and filename) for
+                 the DVI-Viewer.
+
+   For example...
+
+      MANVIEWDVI=TeX:bin/ShowDVI
+
+   REMEMBER : Complete path and filename
+
+
+
+
+
+Additionally there are six more keywords you may use to add
+extensions and functions to man. These are :
+
+   MANNRMEXT   - You may use this option to add extensions to the already
+                 known, which should be treated (shown) as plain ASCII files.
+
+   For example...
+
+      MANNRMEXT=.txt|.asc|.dok
+
+   Will add these extensions to known ASCII files
+
+
+
+
+   MANAGEXT    - Using this option you may add extensions for AmigaGuide
+                 files
+
+   For example
+
+      MANAGEXT=.bla|.blo|.blu
+
+   Will add these extensions to known AmigaGuide compatible files
+
+
+
+
+   MANDVIEXT   - Using this option you may add extensions for DVI
+                 files
+
+   For example
+
+      MANDVIEXT=.ble|.bli
+
+   Will add these extensions to known DVI compatible files
+
+
+
+
+   MANNOVIEW   - If a file doesn`t end up with an extension (starting with a
+                 dot), MAN will use the predefined ASCII viewer to display
+                 such a file. You may change the viewer for such files using
+                 this option. Additionally this option may be turned off,
+                 when you issue "NONE".
+
+   For example
+
+      MANNOVIEW=SYS:Utilities/AmigaGuide
+
+   Will tell MAN to display files, without extension, using AmigaGuide
+
+
+
+
+   MANGETFILE  - If MAN didn`t succeed in finding the required man page
+                 it will pop up a FileRequester asking for a file to
+                 be loaded. The requester will pop up if you didn`t
+                 specify any manpage, too. In this case MAN won`t
+                 issue an error, but it will if you omit this keyword.
+
+                 Simply add this option to your MANOPT environment var,
+                 if you want MAN to pop up a FileRequester.
+
+
+
+
+   MANBASENAME - Normally you would call MAN with only a filename/manpage,
+                 but if you launch MAN from within (ie) ToolsDaemon, it might
+                 be launched with a pathname as well. The pathpart of a
+                 manpage will be cut off if you supply this attribute
+                 to MANOPT.
+
+
+
+A more complete example
+
+
+   SetEnv MANOPT "MANPATHS=docs:|guide: MANVIEW=More MANVIEWAG=AmigaGuide
+             MANVIEWDVI=ShowDVI"
+
+
+
+It is best to place this line within your S:User-StartUp file, or simply edit
+a file called MANOPT in your ENVARC: directory containing the parameters. The
+copy the file to ENV:, or simply reboot.
+
+
+                             --------------------
+
+
+
+-----------
+Version 1.0
+-----------
+  - initial release
+
+
+-----------
+Version 1.1
+-----------
+  - Accidentially called Exit() instead of exit(), which
+    prevented the program to pass the cleanup code of SAS.
+    So a lock to the directory was kept and the shell could
+    never been left.............
+
+
+-----------
+Version 1.2
+-----------
+  - Used MAN as a keyword for the template which prevented MAN
+    to accept inputs like "man man".
+
+
+-----------
+Version 1.3
+-----------
+  - Added CTRL-C checking
+  - Recompiled using SAS 6.50
+  - Reduced stack usage
+  - Reduced executable size
+
+
+-----------
+Version 1.4
+-----------
+  - DOS-Library wasn`t closed
+
+
+-----------
+Version 1.5
+-----------
+  - Referenced free memory area
+
+
+-----------
+Version 1.6
+-----------
+  - Added MANRMEXT, MANAGEXT and MANNOVIEW options,
+    which may be used for extensibility of MAN
+    (Somehow suggested by : Michael 'Mick' Hohmann)
+
+
+-----------
+Version 1.7
+-----------
+  - All config variables have been moved to a single one,
+    which will be parsed just like a CommandLine
+    (Suggested by : Michael 'Mick' Hohmann)
+
+
+-----------
+Version 1.8
+-----------
+  - Man now correctly handles multi-assigns, since ExAll
+    doesn`t....;)
+    (Reported by : Jan Hoeydahl)
+
+
+-----------
+Version 1.9
+-----------
+  - Recompiled using SAS/C 6.51
+  - Added MANGETFILE parameter
+    (Requested by : Bill Hogsett)
+
+
+------------
+Version 1.10
+------------
+  - Mike Barsoom added MANBASENAME attribute for stripping
+    off any path names from the manpage name. Useful when
+    launching MAN from within (ie) ToolsDaemon
+    (Submitted by : Mike Barsoom)
+
+
+------------
+Version 1.11
+------------
+  - Man will no longer issue an error if you a) didn`t specify a
+    manpage and b) set the MANGETFILE attribute for the File
+    Requester. This way the Requester will popup if you
+    call MAN without any arguments
+    (Requested by : Bill Hogsett)
+  - The FileRequester will pop up on the default PubScreen now
+    (Requested by : Bill Hogsett)
+  - The default path for the FileRequester will be set to the
+    first Dir of the MANPATHS now
+    (Requested by : Bill Hogsett)
+  - Support for DVI files added
+  - MAN will set the Viewer`s current dir of that where the
+    man page resides in
+
+
+-------------
+Version 1.11a
+-------------
+  - Man produced an enforcer hit when no manpage was supplied
+    (Reported by : Michael van Elst)
+
+
+Hope you like it, if not, delete it......
+
+
+
+So long,
+
+     Kai
+
+
+
+
+ --- Kai Iske
+ Brucknerstrasse 18, 63452 Hanau, Germany, Tel.: +49-(0)6181-850181
+ Z-Net    : KAI@SWEET.ZER            usenet : kai@iske.adsp.sub.org
+ internet : iske@informatik.uni-frankfurt.de              IRC:kiske
+ ---- Life sucks ----

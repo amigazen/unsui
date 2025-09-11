@@ -1,0 +1,48 @@
+.name
+Man
+.type
+CLI tool
+.short
+Unix type Man command
+.description
+This is a simple MAN command, known from UNIX systems.
+The advantage is, that it recognizes .guide files to be
+AmigaGuide© documents. MAN then uses a different viewer
+in order to display the AmigaGuide© document. Furthermore
+MAN recognizes TeX-DVI files as well, using a different
+viewer to display them. You may configure MAN using
+environment variables.
+.version
+1.11a
+.date
+1994.03.05
+.author
+Kai Iske
+.requirements
+Requires OS 2.0 (37.175)
+.distribution
+Public Domain
+.address
+Kai Iske
+Brucknerstrasse 18
+63452 Hanau
+Germany
+.email
+kai@iske.adsp.sub.org
+iske@informatik.uni-frankfurt.de
+.source
+SAS/C source included 24K
+.construction
+SAS/C 6.51 with optimization
+.docs
+Man.doc
+.contents
+Man		A simple MAN command, known from UNIX systems.  The advantage
+		is, that it recognizes .guide files to be AmigaGuide© documents.
+		MAN then uses a different viewer in order to display the
+		AmigaGuide© document.  Furthermore MAN recognizes TeX-DVI files
+		as well, using a different viewer to display them.  You may
+		configure MAN using environment variables.  Version 1.11a,
+		Public Domain, includes Source.
+		Author:  Kai Iske
+
