@@ -1,0 +1,196 @@
+.TH PWD 1 "September 11, 2025" "unsui POSIX Runtime" "General Commands Manual"
+.SH NAME
+pwd \- print name of current/working directory (Amiga hybrid POSIX/Amiga)
+.SH SYNOPSIS
+.B pwd
+[\-L | \-P] [\-h | \-V]
+.br
+.B pwd
+[LOGICAL] [PHYSICAL] [POSIX options]
+.br
+.B pwd
+?
+.SH DESCRIPTION
+The
+.B pwd
+utility writes the absolute pathname of the current working
+directory to the standard output. This Amiga implementation provides
+hybrid POSIX/Amiga argument parsing with native Amiga filesystem
+integration for superior path resolution.
+
+The utility automatically detects whether the user is using POSIX-style
+arguments (starting with -) or Amiga-style arguments, and dispatches
+to the appropriate parser accordingly.
+.SH OPTIONS
+The following options are available:
+.TP
+.B \-L
+Display the logical current working directory using the PWD
+environment variable, even if it contains symlinks.
+.TP
+.B \-P
+Display the physical current working directory with all symbolic
+links resolved (default behavior).
+.TP
+.B \-h, \-V
+Display help and version information.
+
+If no options are specified, the
+.B \-P
+option is assumed for maximum
+reliability and accuracy.
+.SH AMIGA SPECIFIC FEATURES
+This implementation includes several Amiga-specific enhancements:
+.IP \(bu 3
+Native Amiga path resolution using Lock() and ParentDir() APIs
+.IP \(bu 3
+Proper Amiga path formatting with : for root directories and / for
+subdirectories (e.g., RAM:Temp/Subdir)
+.IP \(bu 3
+RAM disk detection and special handling
+.IP \(bu 3
+Memory-safe resource management with proper FileLock cleanup
+.IP \(bu 3
+Fallback to POSIX getcwd() if Amiga methods fail
+
+Amiga-style usage:
+.br
+.B pwd ?
+.RS
+Interactive template help
+.RE
+.br
+.B pwd
+LOGICAL
+.RS
+Use logical path (same as -L)
+.RE
+.br
+.B pwd
+PHYSICAL
+.RS
+Use physical path (same as -P, default)
+.RE
+.br
+.B pwd
+POSIX -L
+.RS
+Force POSIX parsing with -L option
+.RE
+.br
+.B pwd
+POSIX -P -h
+.RS
+Force POSIX parsing with multiple options
+.RE
+.SH ENVIRONMENT
+The following environment variables affect the execution of
+.B pwd:
+.TP
+.B PWD
+Logical current working directory (used with -L option).
+.SH EXIT STATUS
+The
+.B pwd
+utility exits 0 on success, and >0 if an error occurs.
+.SH EXAMPLES
+Show current working directory with symbolic links resolved (default):
+.RS
+$ pwd
+.br
+RAM:Temp/MyProject
+.RE
+
+Show the logical current directory using PWD environment variable:
+.RS
+$ pwd -L
+.br
+/home/user/project
+.RE
+
+Show help information:
+.RS
+$ pwd -h
+.br
+Version: pwd 3.0 (11/09/25)
+.br
+Usage (POSIX): pwd [OPTIONS]
+.br
+Usage (Amiga): pwd [POSIX/K]
+.br
+               pwd ? for template
+.br
+OPTIONS:
+.br
+  -L          use PWD from environment, even if it contains symlinks
+.br
+  -P          avoid all symlinks (default)
+.br
+  -h, -V      display this help and version
+.RE
+
+Use Amiga-style interactive help:
+.RS
+$ pwd ?
+.br
+POSIX/K/F: -L
+.br
+RAM:Temp/MyProject
+.RE
+
+Use Amiga-style switches:
+.RS
+$ pwd LOGICAL
+.br
+/home/user/project
+.RE
+
+Force POSIX parsing with Amiga-style syntax:
+.RS
+$ pwd POSIX -L -h
+.br
+Version: pwd 2.0 (29/08/25)
+.br
+[help output continues...]
+.RE
+.SH SEE ALSO
+.BR cd (1),
+.BR getcwd (3),
+.BR dos.library (3),
+.BR ParentDir (3),
+.BR Lock (3)
+.SH STANDARDS
+The
+.B pwd
+utility conforms to IEEE Std 1003.1-2001 ("POSIX.1") with
+Amiga-specific extensions for enhanced filesystem integration.
+.SH HISTORY
+Amiga
+.B pwd
+command released in unsui POSIX runtime by amigazen project.
+
+Key improvements in this version:
+.IP \(bu 3
+Hybrid POSIX/Amiga argument parsing
+.IP \(bu 3
+Native Amiga filesystem integration
+.IP \(bu 3
+Superior default behavior (-P instead of -L)
+.IP \(bu 3
+Enhanced error handling and fallback support
+.IP \(bu 3
+Memory-safe resource management
+.SH BUGS
+The
+.B \-L
+option requires the PWD environment variable to be set by the
+shell. If PWD is not set or is empty, the utility falls back to
+physical path resolution (-P behavior).
+
+Some shells may provide a builtin pwd command which may conflict with
+this utility. Use the full path (/bin/pwd) to ensure this version is
+executed.
+.SH AUTHOR
+Part of unsui from amigazen project.
+.br
+Inspired by the original Oberon implementation by Roland Jesse.

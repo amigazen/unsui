@@ -1,0 +1,34 @@
+# PWD command SMakefile for Unsui POSIX runtime
+
+# Tools
+CC = sc
+LD = slink
+RM = delete
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS
+LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib NOICONS
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
+
+# Object files for pwd
+OBJS = sc:lib/cres.o pwd.o /common/common.o /common/getopt.o
+
+# Main target
+all: pwd
+
+# Build pwd command
+pwd: $(OBJS)
+	$(LD) $(LDFLAGS) FROM $(OBJS) TO pwd
+
+# Compile source files
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+pwd.o: pwd.c pwd.h /common/common.h /common/getopt.h
+
+# Clean target
+clean:
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) pwd
+
+# Install target
+install: pwd
+	copy pwd //SDK/C/pwd
