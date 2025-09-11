@@ -179,7 +179,7 @@ int main(int argc, char **argv)
 
         if (interactive_help) {
             /* Interactive help mode - output ReadArgs template */
-            printf("FORCE/S,INTERACTIVE/S,RECURSIVE/S,VERBOSE/S,POSIX/K/F: ");
+            printf("%s: ", template);
             
             if (fgets(user_input_buf, sizeof(user_input_buf), stdin)) {
                 /* Remove newline */
@@ -671,7 +671,8 @@ static void print_error(const char *program, const char *filename, LONG error_co
  * @param program Program name
  */
 void usage(const char *program) {
-    printf("Usage: %s [OPTION]... FILE...\n", program);
+    printf("Usage (POSIX): %s [OPTION]... FILE...\n", program);
+    printf("Usage (Amiga): %s FILE/M [FORCE/S] [INTERACTIVE/S] [RECURSIVE/S] [VERBOSE/S] [POSIX/K/F]\n", program);
     printf("Remove (unlink) the FILE(s).\n\n");
     printf("  -f, --force     ignore nonexistent files and arguments, never prompt\n");
     printf("  -i              prompt before every removal\n");
