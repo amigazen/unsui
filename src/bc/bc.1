@@ -1,0 +1,175 @@
+.TH BC 1 "2025" "unsui POSIX runtime" "User Commands"
+.SH NAME
+bc \- arbitrary precision calculator language
+.SH SYNOPSIS
+.B bc
+[\fI\-h\fR] [\fI\-v\fR] [\fI\-q\fR] [\fIfile\fR...]
+.SH DESCRIPTION
+The \fBbc\fR utility is an interactive processor for a language that resembles C but provides arbitrary precision arithmetic. It takes input from any files given, then reads from the standard input.
+
+The language processed by \fBbc\fR is a C-like language. The syntax is similar to C, but there are substantial differences. Unlike C, \fBbc\fR offers arbitrary precision numbers, not limited to the precision of the machine word size.
+
+.SH OPTIONS
+The following options are supported:
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Print a usage message and exit.
+.TP
+\fB\-v\fR, \fB\-\-version\fR
+Print the version of \fBbc\fR and exit.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress the normal welcome message.
+.SH OPERANDS
+The following operand is supported:
+.TP
+\fIfile\fR
+A pathname of a text file containing \fBbc\fR program statements. If no \fIfile\fR operands are specified, \fBbc\fR reads from standard input.
+
+.SH STDIN
+The standard input shall be a text file consisting of \fBbc\fR program statements. If the standard input is a terminal and no \fIfile\fR operands are specified, \fBbc\fR shall write a prompt to the standard output before reading from the standard input.
+
+.SH INPUT FILES
+Input files shall be text files containing \fBbc\fR program statements.
+
+.SH ENVIRONMENT VARIABLES
+The following environment variables shall affect the execution of \fBbc\fR:
+.TP
+\fBLC_ALL\fR
+Determine the locale for the interpretation of sequences of bytes of text data as characters (for example, single-byte as opposed to multi-byte characters in arguments and input files) and for the behavior of character classes within regular expressions.
+.TP
+\fBLC_CTYPE\fR
+Determine the locale for the interpretation of sequences of bytes of text data as characters and the behavior of character classes within regular expressions.
+.TP
+\fBLC_MESSAGES\fR
+Determine the locale that should be used to affect the format and contents of diagnostic messages written to standard error.
+.TP
+\fBLANG\fR
+Provide a default value for the internationalization variables that are unset or null.
+
+.SH ASYNCHRONOUS EVENTS
+The \fBbc\fR utility shall terminate gracefully upon receipt of a SIGINT signal.
+
+.SH STDOUT
+The standard output of \fBbc\fR shall be a text file consisting of the results of the program statements that have been executed. The format of the results is implementation-defined, except that:
+
+.RS
+.IP \(bu 2
+An error message shall be identified by the word "error" on a line by itself.
+.IP \(bu 2
+The results of print statements shall appear as they are specified in the program.
+.IP \(bu 2
+The results of expression statements shall be written as the value of the expression, followed by a <newline>.
+.RE
+
+.SH STDERR
+The standard error shall be used only for diagnostic messages.
+
+.SH OUTPUT FILES
+None.
+
+.SH EXTENDED DESCRIPTION
+The \fBbc\fR utility shall process a language that is a subset of the C language. The \fBbc\fR language supports the following features:
+
+.RS
+.IP \(bu 2
+Arbitrary precision numbers
+.IP \(bu 2
+Variables and arrays
+.IP \(bu 2
+Functions
+.IP \(bu 2
+Control structures (if, while, for)
+.IP \(bu 2
+Comments
+.IP \(bu 2
+Built-in functions
+.RE
+
+.SS Variables
+Variables are simple identifiers that can be assigned values. Variable names must start with a letter and can contain letters, digits, and underscores.
+
+.SS Numbers
+Numbers can be integers or floating-point numbers. The precision of calculations is controlled by the \fIscale\fR variable.
+
+.SS Built-in Variables
+The following built-in variables are available:
+.TP
+\fIscale\fR
+Controls the number of digits after the decimal point in results. Must be between 0 and 20.
+.TP
+\fIibase\fR
+Controls the input base for numbers. Must be between 2 and 16.
+.TP
+\fIobase\fR
+Controls the output base for numbers. Must be between 2 and 16.
+
+.SS Built-in Functions
+The following built-in functions are available:
+.TP
+\fIsqrt(x)\fR
+Returns the square root of x.
+.TP
+\fIsin(x)\fR
+Returns the sine of x (in radians).
+.TP
+\fIcos(x)\fR
+Returns the cosine of x (in radians).
+.TP
+\fIatan2(y,x)\fR
+Returns the arctangent of y/x (in radians).
+.TP
+\fIlog(x)\fR
+Returns the natural logarithm of x.
+.TP
+\fIexp(x)\fR
+Returns e raised to the power of x.
+
+.SH EXIT STATUS
+The following exit values are returned:
+.TP
+0
+Successful completion.
+.TP
+1
+An error occurred.
+
+.SH CONSEQUENCES OF ERRORS
+Default.
+
+.SH APPLICATION USAGE
+The \fBbc\fR utility is typically used for mathematical calculations that require arbitrary precision arithmetic. It is particularly useful for financial calculations and other applications where floating-point precision is insufficient.
+
+.SH EXAMPLES
+The following examples demonstrate common usage of \fBbc\fR:
+
+.RS
+.IP \(bu 2
+Calculate the square root of 2:
+.br
+\fBecho "sqrt(2)" | bc\fR
+.IP \(bu 2
+Set the scale and calculate pi:
+.br
+\fBecho "scale=10; 4*a(1)" | bc\fR
+.IP \(bu 2
+Convert from decimal to hexadecimal:
+.br
+\fBecho "obase=16; 255" | bc\fR
+.RE
+
+.SH RATIONALE
+The \fBbc\fR utility is based on the historical \fBbc\fR calculator, which was designed to provide arbitrary precision arithmetic in a C-like language. This implementation is adapted for Amiga while maintaining POSIX compatibility.
+
+.SH FUTURE DIRECTIONS
+None.
+
+.SH SEE ALSO
+\fBdc\fR(1), \fBexpr\fR(1)
+
+.SH COPYRIGHT
+Copyright (C) 2025 amigazen project
+.br
+Based on Eval 1.13 by Will Menninger
+.br
+Licensed under the GNU General Public License v2 or later

@@ -166,6 +166,7 @@ int     getobase        (void);
 int     getibase        (void);
 int     get_scinote     (void);
 int     get_fix         (void);
+int     get_sigfig      (void);
 int     precision       (int base);
 void    print_outtype   (void);
 double  asciiconv       (int base,char *s);

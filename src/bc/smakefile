@@ -9,7 +9,7 @@ LDFLAGS = LIB sc:lib/sc.lib LIB sc:lib/scmieee.lib LIB lib:small.lib NOICONS
 SCOPTIONS = MATH=IEEE DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
 
 # Object files for bc
-OBJS = sc:lib/c.o eval.o funcs.o parse.o estack.o base.o bitwise.o etable.o help.o emath.o
+OBJS = sc:lib/c.o bc.o funcs.o parse.o estack.o base.o bitwise.o etable.o help.o emath.o /common/common.o /common/getopt.o
 
 # Main target
 all: bc
@@ -23,7 +23,7 @@ bc: $(OBJS)
 	$(CC) $(SCOPTIONS) $< TO $@
 
 # Header dependencies
-eval.o: eval.c eval.h
+bc.o: bc.c eval.h /common/common.h /common/getopt.h
 funcs.o: funcs.c eval.h
 parse.o: parse.c eval.h
 estack.o: estack.c eval.h

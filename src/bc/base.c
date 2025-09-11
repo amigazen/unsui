@@ -142,6 +142,13 @@ int get_fix(void)
     }
 
 
+int get_sigfig(void)
+
+    {
+    return(sigfig);
+    }
+
+
 int precision(int base)
 
     {
