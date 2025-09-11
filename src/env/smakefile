@@ -1,0 +1,34 @@
+# env command SMakefile for unsui POSIX runtime
+
+# Tools
+CC = sc
+LD = slink
+RM = delete
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS
+LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib NOICONS
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
+
+# Object files for env
+OBJS = sc:lib/cres.o env.o /common/common.o /common/getopt.o /common/dir.o
+
+# Main target
+all: env
+
+# Build env command
+env: $(OBJS)
+	$(LD) $(LDFLAGS) FROM $(OBJS) TO env
+
+# Compile source files
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+env.o: env.c /common/common.h /common/getopt.h
+
+# Clean target
+clean:
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) env
+
+# Install target
+install: env
+	copy env //SDK/C/env
