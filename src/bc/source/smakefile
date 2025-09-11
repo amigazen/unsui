@@ -1,0 +1,42 @@
+# BC command SMakefile for Unsui POSIX runtime
+
+# Tools
+CC = sc
+LD = slink
+RM = delete
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS
+LDFLAGS = LIB sc:lib/sc.lib LIB sc:lib/scmieee.lib LIB lib:small.lib NOICONS
+SCOPTIONS = MATH=IEEE DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
+
+# Object files for bc
+OBJS = sc:lib/c.o eval.o funcs.o parse.o estack.o base.o bitwise.o etable.o help.o emath.o
+
+# Main target
+all: bc
+
+# Build bc command
+bc: $(OBJS)
+	$(LD) $(LDFLAGS) FROM $(OBJS) TO bc
+
+# Compile source files
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+eval.o: eval.c eval.h
+funcs.o: funcs.c eval.h
+parse.o: parse.c eval.h
+estack.o: estack.c eval.h
+base.o: base.c eval.h
+bitwise.o: bitwise.c eval.h
+etable.o: etable.c eval.h
+help.o: help.c eval.h
+emath.o: emath.c eval.h
+
+# Clean target
+clean:
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) bc
+
+# Install target
+install: bc
+	copy bc //SDK/C/bc
