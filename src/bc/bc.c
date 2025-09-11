@@ -1,13 +1,14 @@
 /*
-**
-** bc.c        POSIX bc calculator
-**             Main source module.
-**
-** POSIX bc calculator implementation based on Eval 1.13
-** This file last updated for POSIX bc compatibility
-** Copyright (C) 1993  Will Menninger (original Eval)
-** Copyright (C) 2025 amigazen project
-**
+ * bc - POSIX calculator
+ * Main source module
+ *
+ * POSIX bc calculator implementation based on Eval 1.13
+ *
+ * Copyright (C) 1993  Will Menninger (original Eval)
+ * Copyright (C) 2025 amigazen project
+ *
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
 ** To add a new constant to the Eval program
 ** -----------------------------------------
 ** 1.  Update the size of MAXC in eval.h
@@ -28,6 +29,7 @@
 
 /* External variables for getopt */
 extern int optind;
+extern int getopt(int argc, char * const argv[], const char *optstring);
 
 static char    tempname[80];
 static char    wdir[100];
@@ -36,7 +38,11 @@ static FILE   *tempfile;
 static int     linecount;
 
 /* POSIX bc specific constants */
-#define BC_VERSION "1.0.0"
+#define BC_VERSION "2.0"
+
+static const char *verstag = "$VER: bc 2.0 (12/09/25)\n";
+
+static const char *stack_cookie = "$STACK: 8192";
 
 static VAR     clist[MAXC]=  {
                 {"_acres_per_sq_km",247.1},
@@ -49,6 +55,7 @@ static VAR     clist[MAXC]=  {
                 {"_cm_per_in",2.54},
                 {"_coulomb_const",8.98755e9},
                 {"_deg_per_rad",57.2958},
+                {"_e",2.71828182845904523536},
                 {"_earth_esc_spd",1.12e4},
                 {"_earth_grav",9.80665},
                 {"_earth_mass",5.98e24},
@@ -119,15 +126,54 @@ static int nextline(char *s,FILE *stream);
 static void close_temp(int showout);
 static int srchpath(char *name);
 static void cwdir(char *name);
+static int parse_in_current_base(char *s);
 
 
 int main(int argc,char *argv[])
 
     {
     VAR     vlist[MAXV];
-    char    arg[MAXINPUT+1];
-    int     i,nargs,c;
+    int     opt, i;
+    FILE    *input_file;
+    BOOLEAN show_help = FALSE;
+    BOOLEAN show_version = FALSE;
+    BOOLEAN quiet = FALSE;
 
+    /* Parse command line arguments */
+    while ((opt = getopt(argc, argv, "hvq")) != -1) {
+        switch (opt) {
+            case 'h':
+                show_help = TRUE;
+                break;
+            case 'v':
+                show_version = TRUE;
+                break;
+            case 'q':
+                quiet = TRUE;
+                break;
+            default:
+                fprintf(stderr, "Usage: bc [-h] [-v] [-q] [file...]\n");
+                return 1;
+        }
+    }
+
+    /* Handle help and version options */
+    if (show_help) {
+        printf("bc - POSIX calculator\n");
+        printf("Options:\n");
+        printf("  -h, --help     Show this help message\n");
+        printf("  -v, --version  Show version information\n");
+        printf("  -q, --quiet    Suppress welcome message\n");
+        printf("  file           Read commands from file(s)\n");
+        printf("                 If no files specified, read from stdin\n");
+        return 0;
+    }
+    if (show_version) {
+        printf("bc %s - POSIX calculator for Amiga\n", BC_VERSION);
+        return 0;
+    }
+
+    /* Initialize calculator */
     init_varlist(vlist);
     wdir[0]=EOS;
     rpath[0]=EOS;
@@ -139,37 +185,26 @@ int main(int argc,char *argv[])
     set_dplace(10);
     set_maxexp(5);
     tempfile=NULL;
-    arg[0]=EOS;
-    for (i=1;i<argc;i++)
-        {
-        if (strlen(arg)+strlen(argv[i])>MAXINPUT-1)
-            break;
-        if (i>1)
-            strcat(arg," ");
-        strcat(arg,argv[i]);
+
+    /* Process input files or stdin */
+    if (optind < argc) {
+        /* Process files specified on command line */
+        for (i = optind; i < argc; i++) {
+            input_file = fopen(argv[i], "r");
+            if (input_file == NULL) {
+                fprintf(stderr, "bc: cannot open %s\n", argv[i]);
+                return 1;
+            }
+            while (!process_line(input_file, 0, 1, vlist, clist, ""));
+            fclose(input_file);
         }
-    nargs=i-1;
-    if (arg[0]=='@')
-        {
-        for (i=1;arg[i]==' ';i++);
-        c=arg[i];
-        }
-    else
-        c=arg[0];
-    if (c==EOS)
-        nargs=0;
-    if (nargs && c!='<')
-        {
-        process_line(NULL,0,1,vlist,clist,arg);
-        close_temp(1);
-        return(0);
-        }
-    printf(license,VERSION);
-    if (nargs)
-        process_line(NULL,1,1,vlist,clist,arg);
-    while (!process_line(stdin,0,1,vlist,clist,""));
+    } else {
+        /* Process stdin */
+        while (!process_line(stdin, 1, 1, vlist, clist, ""));
+    }
+
     close_temp(1);
-    return(0);
+    return 0;
     }
 
 
@@ -255,7 +290,7 @@ static BOOLEAN process_line(FILE *stream,int showinp,int showout,VARPTR vlist,
             linecount++;
             }
         if (showinp && !bequiet && input[i]!=EOS)
-            printf("%s%s\n",PROMPT,input);
+            printf("%s%s\n", PROMPT, input);
         /* POSIX bc quit commands */
         if (!strcmp(&input[i],"quit") || !strcmp(&input[i],"exit") ||
             !strcmp(&input[i],"stop") || !strcmp(&input[i],"end"))
@@ -285,7 +320,7 @@ static BOOLEAN process_line(FILE *stream,int showinp,int showout,VARPTR vlist,
             {
             if (input[i+5]!=EOS)
                 {
-                n=atoi(&input[i+5]);
+                n=parse_in_current_base(&input[i+5]);
                 if (n>=0 && n<=20)  /* POSIX allows scale 0-20 */
                     {
                     set_sigfig(n);
@@ -311,7 +346,7 @@ static BOOLEAN process_line(FILE *stream,int showinp,int showout,VARPTR vlist,
             {
             if (input[i+5]!=EOS)
                 {
-                n=atoi(&input[i+5]);
+                n=parse_in_current_base(&input[i+5]);
                 if (n>=2 && n<=16)  /* POSIX allows ibase 2-16 */
                     {
                     setibase(n);
@@ -336,7 +371,7 @@ static BOOLEAN process_line(FILE *stream,int showinp,int showout,VARPTR vlist,
             {
             if (input[i+5]!=EOS)
                 {
-                n=atoi(&input[i+5]);
+                n=parse_in_current_base(&input[i+5]);
                 if (n>=2 && n<=16)  /* POSIX allows obase 2-16 */
                     {
                     setobase(n);
@@ -987,4 +1022,26 @@ static void cwdir(char *name)
         return;
     fclose(f);
     strcpy(name,buf);
+    }
+
+
+static int parse_in_current_base(char *s)
+
+    {
+    int     base, val, i;
+    char    c;
+
+    base = getibase();
+    val = 0;
+    for (i = 0; s[i] != EOS; i++)
+        {
+        c = tolower((int)s[i]);
+        if (c >= '0' && c <= '9')
+            val = val * base + (c - '0');
+        else if (c >= 'a' && c <= 'f')
+            val = val * base + (c - 'a' + 10);
+        else
+            break;
+        }
+    return val;
     }

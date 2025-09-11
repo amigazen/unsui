@@ -1,15 +1,16 @@
 /*
-**
-** PARSE.C     Divides an input string into tokens and evaluates an
-**             expression.
-**
-** Originally written 5/89 in ANSI C
-**
-** Eval is a floating point expression evaluator.
-** This file last updated in version 1.10
-** For the version number, see eval.h
-** Copyright (C) 1993  Will Menninger
-**
+ * parse.c - Expression parser and tokenizer
+ * Divides an input string into tokens and evaluates expressions
+ *
+ * Originally written 5/89 in ANSI C
+ * Eval is a floating point expression evaluator
+ * For the version number, see eval.h
+ *
+ * Copyright (C) 1993  Will Menninger
+ * Copyright (C) 2025 amigazen project
+ *
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
 */
 
 #include   "eval.h"

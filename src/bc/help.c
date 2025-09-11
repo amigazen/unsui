@@ -1,9 +1,14 @@
 /*
-**
-** HELP.C      Eval help text.
-**
-** Will Mennninger, ANSI C
-**
+ * help.c - Help system and documentation
+ * Contains help text and documentation for the bc calculator
+ *
+ * Will Menninger, ANSI C
+ *
+ * Copyright (C) 1993  Will Menninger
+ * Copyright (C) 2025 amigazen project
+ *
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
 */
 
 char *bhelp =

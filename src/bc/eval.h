@@ -1,32 +1,16 @@
 /*
-**
-** EVAL.H  Master include file for Eval.
-**         Contains function definitions and global definitions
-**         and typecasts
-**
-** originally written 5/89
-**
-** Eval is a floating point expression evaluator.
-** This is version 1.13
-** Copyright (C) 1993  Will Menninger
-**
-** This program is free software; you can redistribute it and/or modify it
-** under the terms of the GNU General Public License as published by the
-** Free Software Foundation; either version 2 of the License, or any
-** later version.
-**
-** This program is distributed in the hope that it will be useful, but
-** WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-** General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License along
-** with this program; if not, write to the Free Software Foundation, Inc.,
-** 675 Mass Ave, Cambridge, MA 02139, USA.
-**
-** The author until 9/93 can be contacted at:
-** e-mail:     willus@ilm.pfc.mit.edu
-** U.S. mail:  Will Menninger, 45 River St., #2, Boston, MA 02108-1124
+ * eval.h - Master include file for bc calculator
+ * Contains function definitions, global definitions and type casts
+ *
+ * Originally written 5/89
+ * Eval is a floating point expression evaluator
+ * This is version 2.0, a POSIX compliant bc derived from Eval 1.13
+ *
+ * Copyright (C) 1993  Will Menninger
+ * Copyright (C) 2025 amigazen project
+ *
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
 **
 */
 
@@ -46,10 +30,10 @@
 
 
 /* Global definitions */
-#define    VERSION     "1.13"
+#define    VERSION     "2.0"
 #define    TRUE        1
 #define    FALSE       0
-#define    MAXC        56
+#define    MAXC        57
 #define    MAXV        100
 #define    MAXNAMELEN  16
 #define    MAXINPUT    160
@@ -59,7 +43,7 @@
 #define    MAXARGS     10
 #define    EOS          '\0'
 #define    NLINES      21
-#define    PROMPT      "Ex>"
+#define    PROMPT      ">>> "
 
 #define    MAXOUTLEN   1100
 /* I removed the original definition of MAXOUTLEN because it was

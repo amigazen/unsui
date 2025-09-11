@@ -1,30 +1,16 @@
 /*
-** BASE.C   Handles float to ASCII and ASCII to float conversion
-**          in any number base.
-** Will Menninger, 11-14-92, ANSI C
-**
-** Eval is a floating point expression evaluator.
-** This file last updated in version 1.10
-** For the version number, see eval.h
-** Copyright (C) 1993  Will Menninger
-**
-** This program is free software; you can redistribute it and/or modify it
-** under the terms of the GNU General Public License as published by the
-** Free Software Foundation; either version 2 of the License, or any
-** later version.
-**
-** This program is distributed in the hope that it will be useful, but
-** WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-** General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License along
-** with this program; if not, write to the Free Software Foundation, Inc.,
-** 675 Mass Ave, Cambridge, MA 02139, USA.
-**
-** The author until 9/93 can be contacted at:
-** e-mail:     willus@ilm.pfc.mit.edu
-** U.S. mail:  Will Menninger, 45 River St., #2, Boston, MA 02108-1124
+ * base.c - Number base conversion utilities
+ * Handles float to ASCII and ASCII to float conversion in any number base
+ *
+ * Will Menninger, 11-14-92, ANSI C
+ * Eval is a floating point expression evaluator
+ * For the version number, see eval.h
+ *
+ * Copyright (C) 1993  Will Menninger
+ * Copyright (C) 2025 amigazen project
+ *
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
 **
 **
 */

@@ -1,10 +1,9 @@
 /*
-**
-** FUNCS.C     A module to be included with EVAL.C that handles
-**             the manipulation of functions.
-**
-** Originally written 5/89 in ANSI C
-**
+ * funcs.c - Function management system
+ * A module that handles the manipulation of mathematical functions
+ *
+ * Originally written 5/89 in ANSI C
+ *
 ** To add/change the functions in Eval:
 ** --------------------------------------------------------------
 ** 1. If the name of your function is longer than MAXFLEN, or the
@@ -25,11 +24,14 @@
 ** 6. Recompile ALL modules.
 **
 **
-** Eval is a floating point expression evaluator.
-** This file last updated in version 1.12
-** For the version number, see eval.h
-** Copyright (C) 1993  Will Menninger
-**
+ * Eval is a floating point expression evaluator
+ * For the version number, see eval.h
+ *
+ * Copyright (C) 1993  Will Menninger
+ * Copyright (C) 2025 amigazen project
+ *
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
 */
 
 #include   "eval.h"

@@ -1,45 +1,17 @@
 /*
-**
-** EMATH.C     A module to be included with EVAL.C that supplies
-**             math functions not included in ANSI C.
-**
-** To add/change the functions in Eval, see funcs.c.
-**
-** NOTICE about this part of the Eval source code:
-** ------------------------------------------------------------------------
-** If you add source code to this module that is copied from "Numerical
-** Recipes in C" or some other book of C math functions, make sure you
-** clearly read the license agreement from that book.  In particular,
-** "Numerical Recipes in C" forbids you to distribute their source code.
-** Because my license agreement requires free distribution of ALL source
-** code, you may not add code from a book like "Numerical Recipes in C" and
-** then redistribute any of the source or executables.  The upshot of all
-** this is that you must write your own versions of whatever math functions
-** you add to this code if you plan to redistribute it.
-**
-**
-** Eval is a floating point expression evaluator.
-** This file last updated in version 1.12
-** For the version number, see eval.h
-** Copyright (C) 1993  Will Menninger
-**
-** This program is free software; you can redistribute it and/or modify it
-** under the terms of the GNU General Public License as published by the
-** Free Software Foundation; either version 2 of the License, or any
-** later version.
-**
-** This program is distributed in the hope that it will be useful, but
-** WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-** General Public License for more details.
-**
-** You should have received a copy of the GNU General Public License along
-** with this program; if not, write to the Free Software Foundation, Inc.,
-** 675 Mass Ave, Cambridge, MA 02139, USA.
-**
-** The author until 9/93 can be contacted at:
-** e-mail:     willus@ilm.pfc.mit.edu
-** U.S. mail:  Will Menninger, 45 River St., #2, Boston, MA 02108-1124
+ * emath.c - Extended mathematical functions
+ * A module that supplies math functions not included in ANSI C
+ *
+ * To add/change the functions in Eval, see funcs.c
+ *
+ * Eval is a floating point expression evaluator
+ * For the version number, see eval.h
+ *
+ * Copyright (C) 1993  Will Menninger
+ * Copyright (C) 2025 amigazen project
+ *
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
 **
 */
 

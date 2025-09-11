@@ -1,14 +1,16 @@
 /*
-**
-** BITWISE.C    Bit-wise operations on floating point numbers.
-**
-** Written 11-15-92 in ANSI C
-**
-** Eval is a floating point expression evaluator.
-** This file last updated in version 1.10
-** For the version number, see eval.h
-** Copyright (C) 1993  Will Menninger
-**
+ * bitwise.c - Bitwise operations on floating point numbers
+ * Implements bitwise AND, OR, XOR, and shift operations
+ *
+ * Written 11-15-92 in ANSI C
+ * Eval is a floating point expression evaluator
+ * For the version number, see eval.h
+ *
+ * Copyright (C) 1993  Will Menninger
+ * Copyright (C) 2025 amigazen project
+ *
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
 */
 
 #include "eval.h"
