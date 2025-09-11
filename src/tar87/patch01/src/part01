@@ -1,0 +1,127 @@
+#! rnews 4012
+Path: van-bc!zaphod.mps.ohio-state.edu!samsung!xanth!cs.odu.edu!Amiga-Request
+From: Amiga-Request@cs.odu.edu (Amiga Sources/Binaries Moderator)
+Newsgroups: comp.sources.amiga
+Subject: v90i171: tar patch 01 - patch to tar, tape archive utility, Part01/01
+Message-ID: <12694@xanth.cs.odu.edu>
+Date: 3 Jun 90 21:36:30 GMT
+Sender: tadguy@cs.odu.edu
+Reply-To: hue@netcom.uucp (Jonathan Hue)
+Lines: 113
+Approved: tadguy@cs.odu.edu (Tad Guy)
+X-Mail-Submissions-To: Amiga@cs.odu.edu
+X-Post-Discussions-To: comp.sys.amiga
+
+Submitted-by: hue@netcom.uucp (Jonathan Hue)
+Posting-number: Volume 90, Issue 171
+Archive-name: unix/tar/patch01/part01
+
+[ a patch to the executable is also included.  ...tad ]
+
+I found a serious bug in the tar program that was posted to
+comp.sources.amiga and comp.binaries.amiga (my fault, I ported it, I
+introduced the bug).  Tar will sometimes guru when extracting tar files
+created on other machines.  If anyone has found any other bugs, please
+report them to me.  When all the bugs that need fixing are found and
+fixed I will release a new version.
+
+#!/bin/sh
+# This is a shell archive.  Remove anything before this line, then unpack
+# it by saving it into a file and typing "sh file".  To overwrite existing
+# files, type "sh file -c".  You can also feed this as standard input via
+# unshar, or by typing "sh <file", e.g..  If this archive is complete, you
+# will see the following message at the end:
+#		"End of archive 1 (of 1)."
+# Contents:  bin.patch1 src.patch1
+# Wrapped by tadguy@xanth on Sun Jun  3 17:36:19 1990
+PATH=/bin:/usr/bin:/usr/ucb ; export PATH
+if test -f 'bin.patch1' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'bin.patch1'\"
+else
+echo shar: Extracting \"'bin.patch1'\" \(655 characters\)
+sed "s/^X//" >'bin.patch1' <<'END_OF_FILE'
+XFor the truly adventurous who don't have Lattice C, here is a
+Xbinary patch you can apply with NewZap.  Go to sector 51 and type
+Xin the replacement.  Here are the diffs, there are 16 bytes, address on
+Xthe left, old data in the middle, new data on the right:
+X
+X0x6438: 0x20 0x48
+X0x643a: 0x0 0xff
+X0x643b: 0xc 0xf4
+X0x643c: 0x2f 0x20
+X0x643d: 0x28 0x6d
+X0x643f: 0x4 0xc
+X0x6440: 0x61 0x2f
+X0x6441: 0x0 0x28
+X0x6442: 0x2 0x0
+X0x6443: 0x14 0x4
+X0x6444: 0x48 0x61
+X0x6445: 0x6d 0x0
+X0x6446: 0xff 0x2
+X0x6447: 0xf4 0x10
+X0x6448: 0x2f 0x2e
+X0x6449: 0x0 0x80
+X
+XI tried it, it produces a binary identical to the fixed version and it
+Xextracts foreign tar files properly.
+X
+X-Jonathan
+END_OF_FILE
+if test 655 -ne `wc -c <'bin.patch1'`; then
+    echo shar: \"'bin.patch1'\" unpacked with wrong size!
+fi
+# end of 'bin.patch1'
+fi
+if test -f 'src.patch1' -a "${1}" != "-c" ; then 
+  echo shar: Will not clobber existing file \"'src.patch1'\"
+else
+echo shar: Extracting \"'src.patch1'\" \(426 characters\)
+sed "s/^X//" >'src.patch1' <<'END_OF_FILE'
+X*** t:,RDFt1A30598	Mon Apr 09 16:18:54 1990
+X--- utime.c	Mon Apr 09 16:00:20 1990
+X***************
+X*** 35,42 ****
+X  {
+X      struct DateStamp dateStamp;
+X  
+X!     return(utime_from_stamp(filename, seconds2AmiTime(unixtime[1]),
+X! 			    &dateStamp));
+X  }
+X  
+X  int
+X--- 35,42 ----
+X  {
+X      struct DateStamp dateStamp;
+X  
+X!     return(utime_from_stamp(filename, seconds2AmiTime(unixtime[1],
+X! 						      &dateStamp)));
+X  }
+X  
+X  int
+END_OF_FILE
+if test 426 -ne `wc -c <'src.patch1'`; then
+    echo shar: \"'src.patch1'\" unpacked with wrong size!
+fi
+# end of 'src.patch1'
+fi
+echo shar: End of archive 1 \(of 1\).
+cp /dev/null ark1isdone
+MISSING=""
+for I in 1 ; do
+    if test ! -f ark${I}isdone ; then
+	MISSING="${MISSING} ${I}"
+    fi
+done
+if test "${MISSING}" = "" ; then
+    echo You have the archive.
+    rm -f ark[1-9]isdone
+else
+    echo You still need to unpack the following archives:
+    echo "        " ${MISSING}
+fi
+##  End of shell archive.
+exit 0
+-- 
+Mail submissions (sources or binaries) to <amiga@cs.odu.edu>.
+Mail comments to the moderator at <amiga-request@cs.odu.edu>.
+Post requests for sources, and general discussion to comp.sys.amiga.
