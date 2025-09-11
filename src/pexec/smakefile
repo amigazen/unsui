@@ -1,0 +1,34 @@
+# pexec command SMakefile for unsui POSIX runtime
+
+# Tools
+CC = sc
+LD = slink
+RM = delete
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS
+LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib NOICONS
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
+
+# Object files for pexec
+OBJS = sc:lib/cres.o pexec.o /common/common.o
+
+# Main target
+all: pexec
+
+# Build pexec command
+pexec: $(OBJS)
+	$(LD) $(LDFLAGS) FROM $(OBJS) TO pexec
+
+# Compile source files
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+pexec.o: pexec.c /common/common.h /common/getopt.h
+
+# Clean target
+clean:
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) pexec
+
+# Install target
+install: pexec
+	copy pexec //SDK/C/pexec
