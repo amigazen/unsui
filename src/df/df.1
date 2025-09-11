@@ -1,0 +1,298 @@
+.TH DF 1 "September 10, 2025" "unsui POSIX Runtime" "General Commands Manual"
+.SH NAME
+df \- display free disk space (Amiga hybrid POSIX/Amiga)
+.SH SYNOPSIS
+.B df
+[\-aikP] [\-t \fItype\fP] [\-h | \-V] [\fIfile\fP | \fIfilesystem\fP ...]
+.br
+.B df
+[FS=FILESYSTEM/M] [ALL/S] [KB=KILOBYTES/S] [P=PORTABILITY/S] [INODES/S] [TYPE/K] [POSIX/K/F]
+.br
+.B df
+?
+.SH DESCRIPTION
+The
+.B df
+utility displays statistics about the amount of free disk space on
+the specified mounted \fIfilesystem\fP or on the filesystem of which \fIfile\fP is
+a part. By default block counts are displayed with an assumed block size
+of 512 bytes. If neither a file or a filesystem operand is specified,
+statistics for all mounted filesystems are displayed (subject to the \-t
+option below).
+
+This Amiga implementation provides hybrid POSIX/Amiga argument parsing with
+native Amiga filesystem integration using dos.library Info() API for
+superior filesystem enumeration and disk space reporting.
+
+The utility automatically detects whether the user is using POSIX-style
+arguments (starting with -) or Amiga-style arguments, and dispatches
+to the appropriate parser accordingly.
+.SH OPTIONS
+The following options are available:
+.TP
+.B \-a
+Show all mount points, including those that were mounted with the
+MNT_IGNORE flag. This is implied for filesystems specified on
+the command line.
+.TP
+.B \-i
+Include statistics on the number of free and used inodes. In
+conjunction with the \-h or \-H options, the number of inodes is
+scaled by powers of 1000. In case the filesystem has no inodes
+then '-' is displayed instead of the usage percentage.
+
+This option is now the default to conform to Version 3 of the
+Single UNIX Specification ("SUSv3"). Use \-I to suppress this
+output.
+.TP
+.B \-k
+Use 1024 byte (1 Kibibyte) blocks rather than the default. This
+overrides the \-P option and any BLOCKSIZE specification from the
+environment.
+.TP
+.B \-P
+Explicitly use 512 byte blocks, overriding any BLOCKSIZE
+specification from the environment. This is the same as the \-b
+option. The \-g and \-k options override this option. In
+compatibility mode, this also suppresses inode counts.
+.TP
+.B \-t \fItype\fP
+Select filesystems to display. More than one type may be
+specified in a comma separated list. The list of filesystem
+types can be prefixed with "no" to specify the filesystem types
+for which action should \fInot\fP be taken. If used in combination
+with the \-l option, the parameters of this option will modify the
+list of locally-mounted filesystems selected by the \-l option.
+For example, the df command:
+
+      df -t nodos,volume
+
+lists all filesystems except those of type DOS and VOLUME.
+.TP
+.B \-h, \-V
+Display help and version information.
+.SH AMIGA SPECIFIC FEATURES
+This implementation includes several Amiga-specific enhancements:
+.IP \(bu 3
+Native Amiga filesystem enumeration using LockDosList() API
+.IP \(bu 3
+Amiga DOS filesystem information using Info() API
+.IP \(bu 3
+Proper Amiga device naming (DF0:, DH0:, RAM:, etc.)
+.IP \(bu 3
+Memory-safe resource management with proper FileLock cleanup
+.IP \(bu 3
+Hybrid command-line argument parsing (getopt + ReadArgs)
+.IP \(bu 3
+Interactive help support with template system
+
+Amiga-style usage:
+.br
+.B df ?
+.RS
+Interactive template help
+.RE
+.br
+.B df
+ALL KILOBYTES
+.RS
+Show all filesystems in 1K blocks
+.RE
+.br
+.B df
+TYPE=DOS
+.RS
+Show only DOS filesystems
+.RE
+.br
+.B df
+POSIX -k -t DOS
+.RS
+Force POSIX parsing with -k and -t options
+.RE
+.SH ENVIRONMENT
+The following environment variables affect the execution of
+.B df:
+.TP
+.B BLOCKSIZE
+Specifies the units in which to report block counts. This
+allows units of bytes or numbers scaled with the letters
+\fIk\fP (for multiples of 1024 bytes), \fIm\fP (for multiples
+of 1048576 bytes) or \fIg\fP (for gibibytes). The
+allowed range is 512 bytes to 1 GB. If the value is outside,
+it will be set to the appropriate limit.
+.TP
+.B POSIXLY_CORRECT
+When set, forces 1024-byte blocks instead of 512-byte blocks.
+.SH FILESYSTEM TYPES
+The following filesystem types are recognized on Amiga systems:
+.TP
+.B DOS
+Standard Amiga DOS filesystem (hard drives, floppy disks)
+.TP
+.B VOLUME
+Amiga volume (mounted filesystems)
+.TP
+.B RAM
+RAM disk filesystem
+.SH EXIT STATUS
+The
+.B df
+utility exits 0 on success, and >0 if an error occurs.
+.SH EXAMPLES
+Show all mounted filesystems:
+.RS
+$ df
+.br
+Filesystem          512-blocks  Used Available Capacity Mounted on
+.br
+RAM:                   269586       21   269565     1% RAM Disk
+.br
+DH0:                    65534    19953    45581    31% System
+.br
+DF0:                     1758      837      921    48% Floppy
+.br
+DH1:                   819198   753260    65938    92% Work
+.RE
+
+Show filesystems in 1K blocks:
+.RS
+$ df -k
+.br
+Filesystem        1024-blocks  Used Available Capacity Mounted on
+.br
+RAM:                   134793       10   134783     1% RAM Disk
+.br
+DH0:                    32767     9976    22790    31% System
+.br
+DF0:                      879      418      460    48% Floppy
+.br
+DH1:                   409599   376630    32969    92% Work
+.RE
+
+Show only DOS filesystems:
+.RS
+$ df -t DOS
+.br
+Filesystem          512-blocks  Used Available Capacity Mounted on
+.br
+DH0:                    65534    19953    45581    31% System
+.br
+DF0:                     1758      837      921    48% Floppy
+.br
+DH1:                   819198   753260    65938    92% Work
+.RE
+
+Show all filesystems including zero-size ones:
+.RS
+$ df -a
+.br
+Filesystem          512-blocks  Used Available Capacity Mounted on
+.br
+RAM:                   269586       21   269565     1% RAM Disk
+.br
+DH0:                    65534    19953    45581    31% System
+.br
+DF0:                     1758      837      921    48% Floppy
+.br
+DH1:                   819198   753260    65938    92% Work
+.br
+VOLUME:                      0       0        0     0% Unmounted
+.RE
+
+Use Amiga-style interactive help:
+.RS
+$ df ?
+.br
+FILESYSTEM/M,ALL/S,KILOBYTES/S,PORTABILITY/S,INODES/S,TYPE/K,POSIX/K/F: -k
+.br
+Filesystem        1024-blocks  Used Available Capacity Mounted on
+.br
+RAM:                   134793       10   134783     1% RAM Disk
+.br
+DH0:                    32767     9976    22790    31% System
+.br
+[output continues...]
+.RE
+
+Use Amiga-style switches:
+.RS
+$ df KILOBYTES ALL
+.br
+Filesystem        1024-blocks  Used Available Capacity Mounted on
+.br
+RAM:                   134793       10   134783     1% RAM Disk
+.br
+DH0:                    32767     9976    22790    31% System
+.br
+[output continues...]
+.RE
+
+Force POSIX parsing with Amiga-style syntax:
+.RS
+$ df POSIX -k -t DOS
+.br
+Filesystem        1024-blocks  Used Available Capacity Mounted on
+.br
+DH0:                    32767     9976    22790    31% System
+.br
+DF0:                      879      418      460    48% Floppy
+.br
+[output continues...]
+.RE
+.SH SEE ALSO
+.BR du (1),
+.BR mount (1),
+.BR dos.library (3),
+.BR LockDosList (3),
+.BR Info (3),
+.BR Lock (3)
+.SH STANDARDS
+The
+.B df
+utility conforms to IEEE Std 1003.1-2004 ("POSIX.1") with
+Amiga-specific extensions for enhanced filesystem integration.
+
+POSIX.1 defines only the \-k, \-P and \-t options. This implementation
+provides additional functionality while maintaining full compliance
+with the standard.
+.SH HISTORY
+Amiga
+.B df
+command released in unsui POSIX runtime by amigazen project.
+
+Converted from the original InfoQ utility by "Quarky" Dieter Temme (1992)
+and adapted for POSIX compliance with hybrid argument parsing.
+
+Key improvements in this version:
+.IP \(bu 3
+Full POSIX.1-2004 compliance with \-k, \-P, and \-t options
+.IP \(bu 3
+Hybrid POSIX/Amiga argument parsing
+.IP \(bu 3
+Native Amiga filesystem integration using dos.library
+.IP \(bu 3
+BLOCKSIZE environment variable support
+.IP \(bu 3
+Enhanced error handling and fallback support
+.IP \(bu 3
+Memory-safe resource management
+.IP \(bu 3
+Interactive help support
+.SH BUGS
+The \-i option for inode information is limited on Amiga systems
+as the underlying filesystem may not provide detailed inode statistics.
+
+Some Amiga filesystems may not report accurate block counts due to
+filesystem-specific limitations. The utility attempts to provide
+the best available information using the Amiga DOS Info() API.
+
+Memory allocation failures are handled gracefully, but may result
+in incomplete filesystem listings on systems with very limited
+memory.
+.SH AUTHOR
+Part of unsui from amigazen project.
+.br
+Converted from InfoQ by "Quarky" Dieter Temme (1992)
+.br
+POSIX adaptation and hybrid parsing by amigazen project (2025)
