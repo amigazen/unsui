@@ -1,0 +1,77 @@
+Amiga Tar
+
+This is tar for the Amiga.  I used John Gilmore's (gnu@toad.COM) public
+domain tar program as a base for this tar.  This program, and the files it
+produces are supposed to be fully compatible with UNIX tar.
+
+Amiga Specific Features
+
+There are a couple of Amiga specific features which I've added.  In an unused
+part of the header I store a magic number, the original Amiga file bits, the
+file's date stamp (including ticks), and the file comment.  When this program
+extracts it looks for the magic number.  If it is present, it uses the stored
+file bits to set the mode rather than the mode stored in the regular tar
+header.  The file's comment is also set, and the timestamp set from the
+original timestamp.  There is also some filename translation which goes on,
+each leading / translates to ../, null string translates to ./, so the files
+are compatible with UNIX.  The reverse of these translations is done when
+extracting.  Since some shells have difficulty giving tar a null string as an
+argument, "." can be used to specify the current directory, as in
+"tar cvf ram:mybackup ." to add every file in and below the current directory
+to the tar archive.  You may need to quote the single period in some shells,
+like Sksh, as it will expand to the absolute pathname otherwise.
+
+Archiving
+
+If you specify the modifier "a" on the command line, the archived bit of every
+file will be set as it is added to the tar archive.  You can use tar as a file
+backup utility this way.  Regardless of command line options, the archived bit
+is always cleared upon extraction.
+
+If you specify the modifier "A" on the command line, tar will not archive
+any regular file which has its archived bit set.  Directories are always
+written to the archive.
+
+Differences
+
+If you say something like "tar cvf ram:foo .", the output might not be what
+you would expect.  To get the normal amount of verbosity, you need to specify
+"v" twice, as in "tar cvvf ram:foo".  I think the reason this was done is so
+that a single v will give you a list of filenames you can easily edit,
+something a normal tar won't do.  You should also realize that you can't
+set protection, comment, or datestamp on a root directory.  Tar can fail when
+setting protection, comment, and datestamp on a directory.  This will happen
+if someone is holding a lock on the directory.  Tar tries to be clever
+and cd up one level when setting stuff on the current directory, but this
+will fail if anyone else has a lock on the directory.  Tar complains loudly
+when this happens.  Tar works with CrossDOS, but setting the comment fails
+of course.
+
+Environment variables
+
+You will want to set a couple environment variables for tar.  You should set
+TZ, just like in UNIX.  For me the command line is "setenv TZ PST8PDT".
+If you don't set TZ, tar uses "CST6CDT" as the default.  The second
+environment variable is "TARFILE", which is the name of the default
+file to create.  You should do something like "setenv TARFILE ram:tarfile".
+If you don't set TARFILE, it defaults to "ram:tarfile".
+
+Why tar?
+
+There are a lot of reasons for using tar.  It preserves the directory
+structure, it's fast, it restores all the information that goes along
+with a file, and it's used on UNIX boxes.
+
+Bugs
+
+While I've tried to test this as much I can, I can't guarantee that there
+aren't any bugs.  So use this at your own risk.  
+
+For reasons I don't understand, tar cannot set the timestamp on files in
+the current directory when the files reside on the ASDG recoverable RAM
+DISK.  It works fine with everything else I've tried.  If you look at the
+code in utime.c, the ParentDir() call returns zero.  The files are still
+extracted ok, but the timestamps are not changed.
+
+Jonathan Hue
+hue@netcom.UUCP
