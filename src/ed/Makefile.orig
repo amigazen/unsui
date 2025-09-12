@@ -1,0 +1,24 @@
+.SUFFIXES:	.c .s
+
+CFLAGS = -F -T. -O
+
+SRCS =	append.c catsub.c ckglob.c deflt.c del.c docmd.c doglob.c\
+	doprnt.c doread.c dowrite.c ed.c egets.c find.c getfn.c getlst.c\
+	getnum.c getone.c getptr.c getrhs.c gettxt.c ins.c maksub.c move.c\
+	optpat.c set.c setbuf.c subst.c getpat.c matchs.c amatch.c\
+	unmkpat.c omatch.c makepat.c bitmap.c dodash.c esc.c system.c
+
+OBJS =	append.s catsub.s ckglob.s deflt.s del.s docmd.s doglob.s\
+	doprnt.s doread.s dowrite.s ed.s egets.s find.s getfn.s getlst.s\
+	getnum.s getone.s getptr.s getrhs.s gettxt.s ins.s maksub.s move.s\
+	optpat.s set.s setbuf.s subst.s getpat.s matchs.s amatch.s\
+	unmkpat.s omatch.s makepat.s bitmap.s dodash.s esc.s system.s
+
+ed:	$(OBJS)
+	asld -T. -i -o ed /usr/lib/crtso.s $(OBJS) /usr/lib/libc.a /usr/lib/end.s
+
+clean:
+	-rm -f $(OBJS) ed
+
+shar:
+	shar Makefile ed.h tools.h $(SRCS) >ed.shar

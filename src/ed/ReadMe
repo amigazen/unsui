@@ -1,0 +1,10 @@
+
+Software Tools ed.
+
+This editor is based in the editor described in the original
+Software Tools book.  The code for pattern matching/regular
+expressions is based on code printed in Dr. Dobbs Journal
+"running light with-out overbyte".
+
+This editor is very similar to the UNIX "ed" editor but not
+identical.
