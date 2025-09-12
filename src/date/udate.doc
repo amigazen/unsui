@@ -1,410 +1,377 @@
-
-    Program:  udate (can be renamed to 'date' if desired)
- Programmer:  George Kerber
-    Written:  06/28/89 - 01/14/90   
-    Version:  1.14c
-
-
-PURPOSE:
---------
-Output a date/time string to stdout similar to the AmigaDOS date command,
-will also emulate the UNIX date command by allowing almost total user
-allowing an almost total user determined formatting of the date and/or time.
-  
-Automatically adjusts the system clock for daylight savings time when
-in effect.
-
-Sets the computer date and time, completely replacing the AmigaDOS 
-date command.
-
-
-SYNTAX:
--------
-
-	udate 
-	udate hh:ss
-	udate mm/dd[/yy]
-	udate ["format string"]
-	udate [-s -d -n -m xx ] 
-	udate [?] (helpscreen)
-
-         ?  Help screen.
-	-s  Prompts the user through setting the date and time.
-     hh:mm  Set time with no prompts.
-mm/dd[/yy]  Set date, with no prompts.  Year is optional.
-        -d  Increments the system clock by 1 hour when daylight
-            savings time is in effect.
-        -n  Prevents a NEWLINE from being output after the date string
-            is displayed.  Works the same as the NOLINE option using
-            the AmigaDOS echo command.
-        -m  xx  Begins the date string at xx character position.
-
-
-DESCRIPTION:
-------------
-If no argument is given, the current date and time are displayed in 
-standard AmigaDOS format with the timezone name displayed if the TIMEZONE
-variable is set.  (explained later)  The 'default' date display can be
-changed by the user.  (explained later)
- 
-	dddddd dd-mmm-yy hh:ss tzn*
-            
-If a string argument exists, the output of udate is under control of user. 
-
-Sets the computer date and time, using prompts or command line options.
-
-Automatically adjusts the system clock for daylight savings time.
-
-
-All field descriptors must be 'escaped' by the current escape value.  The
-default escape value is a '*', following the escape value that the AmigaDOS
-AmigaDOS echo command uses.  If desired, the escape value can be changed to
-make it more 'normal'.  To change the escape value, use the AmigaDOS
-setenv command.
-    
-Example:  to set the escape value to a backslash.
-             
-	1> setenv ESCAPE=\ <enter>
-
-The udate helpscreen will always display the escape value.
-
-
-To print a literal character of the escape value you must 'escape' it.
-If the escape value was a '*', to print one you must enter a double *.
-See the examples below.  The * escape character was made the default to
-provide compatibility with the AmigaDOS echo command.  It uses a * as the
-escape character.  (Am I the only one that thinks this is silly)
-
-Note that the ARP version of 'echo', a version of 'echo' and 'fortune' that
-I wrote allow the escape value to be changed as described above.
-
-All other characters are copied to the output without change.  If the
-argument contains embedded blanks it must be quoted (see the EXAMPLE).
-
-
-INSTALLATION:
--------------
-Copy the udate & datehelp programs to the sys:c directory.
-
-It is recommended that you delete the AmigaDOS date program and replace it
-with the udate program renamed to date.  The date/udate and datehelp
-program should be copied to your "c" directory. 
-
-	1>  copy udate c:date
-	1>  copy datehelp c:
-
-This will copy the udate to your c: directory and overwrite and overwrite
-the original AmigaDOS date program.
-
-NOTE:  The datehelp program is not necessary to use udate, but including
-it in your sys:c directory will provide a very complete help screen.  The
-datehelp command is provided to reduce the program size of the udate
-command.  The datehelp program can't be executed directly, the udate
-command calls datehelp when udate is given a ? as an argument.
-
-
-FIELD DESCRIPTORS:
-------------------
-( must be preceded by the current escape value, which is a '*' by default ):
-
-	a  abbreviated weekday name
-	A  full weekday name
-	b  abbreviated month name
-	B  full month name
-	D  date as mm/dd/yy
-	d  day of month - 01 to 31
-	e  day of month -  1 to 31 (single digits preceded by a blank)
-	h  abbreviated month name (alias for 'b')
-	H  hour - 00 to 23
-	I  hour - 01 to 12
-	j  julian day of current year
-	m  month of year - 01 to 12
-	M  minute - 00 to 59
-	n  insert a new-line character
-	p  string containing "AM" or "PM" depending on current hour.
-	r  time as hh:mm:ss pp, where pp is "AM" or "PM", 
-	   hh is 01 to 12
-	R  time as hh:mm
-	S  second - 00 to 59
-	t  insert a tab character
-	T  time as hh:mmm:ss, hh is 00 to 23
-	w  day of week - Sunday = 0
-	y  year within century - 00 to 99
-	Y  year as ccyy (4 digits)
-	Z  timezone name*
-
-	Additions for AmigaDOS:
-
-	x  string containing day of month extension (th, st, rd, nd)
-	u  date/time as ddd mmm dd hh:mm:ss tzn* yyyy 
-	  (standard UNIX date format)
-	i  hour - 1 to 12
-	W  day of week - Sunday = 1
-	J  days remaining in current year.
-	q  print a literal quote.
-	o  output is: "Good Morning|Afternoon|Evening"
-	k  output is: 
-	   "Today is dddddd, mmmmmm dd, yyyy at hh:mm tzn"
-	g  Greeting message, same as "*o!   *k"
-	$  same as standard AmigaDOS date string, with timezone.
-	   (same as udate with no options)
-	0  blue pen color
-	1  white pen color
-	2  black pen color
-	3  orange pen color
-	4  default colors
-	5  boldface
-	6  underline
-	7  italics
-	)  blue background
-	!  white background
-	@  black background
-	#  orange background
-	C  ddd dd-mmm-yy hh:mm tzn*
-
-
-	Enter the 'escape' character twice with no space to print a
-	literal 'escape' character.
-    
-     *  Timezone will be displayed if set as described below. 
-        No errors are shown if the timezone variable is not set.    
-            
-     Z  if this descriptor is used, udate will TRY and locate an
-        environmental variable called TIMEZONE.  If TIMEZONE exists and is
-        defined correctly, the current timezone will be displayed.  See the
-        section below for instructions on how to set the TIMEZONE variable.
-                
-        If TIMEZONE is not set, nothing will be displayed and
-        no error will occur.
-
-     x  this descriptor will display a character string extension
-        corresponding to the current day of the month
-        (ex: st for 1, nd for 2, rd for 3 etc....).
-     u  the UNIX date command with no options displays a date/time string
-        with this format.  The timezone variable will be printed if set as
-        described below.
-     4  There is no need to use a %4 (default colors) after changing the
-        color, udate does this automatically on termination.
-
-
-EXAMPLES:
----------
-(assume the current date is July 4th, 1989 at 2:42:05pm)
-
-If the 'escape' value was changed using the setenv command, then
-replace all *'s with the new escape value.
-
-   1> udate <enter>
-   Tuesday 04-Jul-89 14:42:05 MDT
-   1>
-
-   1> udate *u <enter>
-   Tue Jul  4 14:42:05 MDT 1989
-   1>
-
-   1>udate "The TIME is *M:*S" <enter>  (argument must be quoted
-   The TIME is 14:42                     for embedded blanks)
-   1>
-
-   1> udate *v <enter>                   (v is not a valid option)
-
-   ERROR:  Bad Conversion. (%v)   
-
-   1> udate "DATE: *m/*d/*y*nTIME: *H:*M:*s" <enter>
-   DATE: 07/04/89
-   TIME: 14:42:05
-   1>
-  
-   1> udate "It is now *M minutes past the hour."
-   It is now 42 minutes past the hour"
-   1>
-
-Add this to your startup-sequence (The env: variable TIMEZONE must have
-been previously set as described below to get the MDT):
-
-   1> udate -m 6 "*3Today is:  *4*$"
-         Today is:  Monday 04-Jul-89 14:42:05 MDT
-   1>
-
-   1> udate "\n\t\o George,\n\k\n"
-
-           Good Afternoon George,
-
-           Today is Monday, July 4th, 1989 at 4:42 PM (MDT)
-
-   1>
-
-
-SETTING THE DATE & TIME:    
------------------------- 
-Execute 'udate' witht the '-s' option and you will be prompted through
-setting the date and/or time.  Or the date and/or time can be changed
-directly from the command line.
-
-If udate is executed with a string that resembles a date or time, then    
-udate will attempt to change the computer clock to the new date or time.    
-    
-Change Time:  udate hh:mm    
-   
-              The seconds are automatically set to 00 each time the time   
-              is changed.     
-    
-Change Date:  udate mm/dd[/yy]    
-      
-              The year is optional, if no year is entered, then the    
-              current year will be retained.     
-    
-NOTE:  The 'udate' program can be used as an 'echo' command if desired.    
-Because of how 'udate' determines if the user is trying to change the date
-or time, you can't simply 'echo' a constant date or time using udate.
-For example, if you enter:    
-    
-	udate 12/23/89    
-    
-udate will change the date to 12/23/89, rather than 'echo' 12/23/89 to the
-screen.  You could enter:    
-    
-	udate  "12/23/89 "   
-    
-to actually 'echo' 12/23/89 to the screen.  Notice the extra literal space
-at the end, this 'tricks' udate into thinking that you are not entering a
-valid date.   
-    
-
-CHANGING THE DEFAULT DATE DISPLAY
----------------------------------
-Normally the default date display for 'date' is:
-
-	dddddd dd-mmm-yy hh:ss tzn
-
-If desired, this can be changed to anything you want by setting an
-environmental variable named 'DEFAULT'.  Set DEFAULT to any valid formatted
-date string using the AmigaDOS setenv command.  Example:
-
-        setenv DEFAULT="\g  \S"
-
-Then whenever 'udate' is executed with no arguments, the default will be
-'\g   \S' instead of the default as shown above.  
-
-
-SETTING THE TIMEZONE VARIABLE:    
-------------------------------    
-Add the following line to your s:startup-sequence file:   (if desired) 
-    
-	setenv TIMEZONE=tzn[:dst]    
-    
-where 'tzn' = the current standard timezone for your area.    
-(EST, CST, MST, PST, etc)  All three characters must be used.    
-    
-where 'dst' = the optional timezone for your area when daylight savings time
-
-is in-effect.  (EDT, CDT, MDT, PDT, etc)  If your area does not observe
-daylight savings time, then only enter 'tzn' as described above.    
-If 'dst' is used, you must use all three characters and use an ':' as    
-a field separator.    
-    
-Examples:
-
-	1> setenv TIMEZONE=EST:EDT    
-	1> setenv TIMEZONE=MST:MDT    
-        1> setenv TIMEZONE=PST    
-  
-The TIMEZONE variable must be set exactly as shown or 'udate' will  
-completely ignore it.  Setting the TIMEZONE is optional, but the current 
-timezone will not be displayed if it isn't set. 
-
-    
-AUTOMATIC DAYLIGHT SAVINGS TIME ADJUSTMENT    
-------------------------------------------    
-udate will automatically keep your clock set for the correct time while    
-daylight savings time is in effect and while it's not.
-    
-    
-Example:  Add this line to your startup-sequence after any commands
-necessary to read your battery clock.    
-    
-	1> udate -d    
-    
-Set your battery clock to standard time in your area and add the    
-above line to your startup-sequence file.  If a command is necessary in the
-startup-sequence to read the battery clock, the 'udate -d' line must    
-follow the readclock command.    
-    
-The 'udate -d' command should only be executed once per login session. 
-If setup properly, you will NEVER have to do the twice yearly ritual of    
-resetting your computer clock for daylight savings time.    
-
-
-PURE/RESIDENT?
---------------
-If I understand 'pure' programs, they cannot contain any global variables.
-This version has no global variables and should be able to be made
-resident using the AmigaDOS 'resident' command.  I have tested this and
-have had no problems making udate resident with the pure bit set.
-    
-
-PROGRAMMING NOTES:
-------------------
-The AmigaDOS date command is very limited in the way it will output the
-date/time to the screen, you only get one way to do it.  Sometimes the user
-will want to only display part of the date/time in a particular way.
-The UNIX date command will allow this easily.  This new AmigaDOS udate
-command will totally emulate the UNIX date with many additions.
-
-This was written in "C" using Lattice 5.04.  Compared to UNIX "C", I had to
-do this the hard way.  UNIX "C" contains a function called "cftime"
-which will take the format descriptors directly, instead of having to use
-a long "switch" statement like I had to with Lattice.
-
-I have a version of udate for MS-DOS that works the same as this version.
-  
-I added a few descriptors beyond what UNIX offers.  Using the descriptors,
-the user can add color and date extensions to the day number.  If desired,
-this udate command could be used as an "echo" command.
-
-Most of the field descriptors emulate the UNIX descriptors.  This was done
-to avoid confusion with those that use UNIX too.  On the other hand, I 
-could see no reason to have to use a '+' before the descriptor string
-like UNIX needs.  To maintain compatibility with AmigaDOS, the
-'escape' value will default to a '*' like the AmigaDOS echo command.
-
-
-NOTE TO AMIGADOS 1.2 USERS:
----------------------------
-You can still use this udate command with v1.2, and get the timezone
-displayed.  Just add the following lines to your startup-sequence:
-
-	makedir ram:env
-        assign env: ram:env
-        echo > env:TIMEZONE "MST:MDT"  ; or whatever your timezone is
-
-
-STATUS:
--------
-'udate' is public domain and can be freely distributed.  But I insist on
-being kep at the author and that all documentation is left intact and
-distributed with the program.  Please leave the name of the program as
-'udate' when distributing the program, but feel free to rename it to
-date for your use.
- 
-
-                           George Kerber
-                           19756 E. Linvale Drive
-                           Aurora, Colorado  80013
-                           303-692-2890
-
-                           Compuserve 74010,2132
-
-
-10/07/89 v1.11:  Removed the need to begin each string argument with a '!'.
-                 This was an attempt to make udate work similar to the UNIX
-                 version of date.  Also made the escape value default to
-                 a '*', but changeable using the setenv command.  The 
-                 similarity between the UNIX date and udate is going away...
-12/29/89 v1.14:  Added the daylight savings time function to the udate code
-                 eliminating the need for a separate 'dst' program.  Udate
-                 now allows the date and time to be set via prompts or
-                 directly from command line strings.
-                 Removed all global variables.  Pure?
-                 For whatever it's worth.... udate will display the year
-                 correctly until 2079. 
+DATE(1)                     General Commands Manual                    DATE(1)
+
+NAME
+     date – display or set date and time
+
+SYNOPSIS
+     date [-d date_string] [-r filename] [-s date_string] [-u] [-h | -V] [+format]
+     date [FORMAT/K] [SET/S] [UTC/S] [REFERENCE/K] [DEBUG/S] [POSIX/K/F]
+     date ?
+
+DESCRIPTION
+     The date utility displays the current date and time, or sets the system
+     date and time.  This Amiga implementation provides hybrid POSIX/Amiga
+     argument parsing with native Amiga clock integration and full POSIX
+     compliance.
+
+     The utility automatically detects whether the user is using POSIX-style
+     arguments (starting with -) or Amiga-style arguments, and dispatches
+     to the appropriate parser accordingly.
+
+     When invoked without arguments, the date utility displays the current
+     date and time in a default format.  Otherwise, depending on the options
+     specified, date will set the date and time or print it in a user-defined
+     way.
+
+     The date utility displays the date and time read from the Amiga system
+     clock.  When used to set the date and time, the system clock is updated
+     using native Amiga clock functions.
+
+OPTIONS
+     The following options are available:
+
+     -d date_string
+             Display the time described by date_string, not 'now'.  The
+             date_string can be in various formats:
+                   YYYY-MM-DD HH:MM:SS
+                   MM/DD/YYYY HH:MM:SS
+                   YYYY-MM-DD
+                   MM/DD/YYYY
+                   HH:MM:SS (uses current date)
+
+     -r filename
+             Display the last modification time of filename.  Uses native
+             Amiga FileInfoBlock to get file timestamps.
+
+     -s date_string
+             Set the time described by date_string.  Supports the same
+             formats as -d.
+
+     -u      Display or set the date in UTC (Coordinated Universal Time).
+             By default date displays the time in local time.
+
+     -h, -V  Display help and version information.
+
+     --help-format
+             Show format specifier help (integrated from datehelp utility).
+             Displays a comprehensive list of all available format specifiers
+             with their descriptions.
+
+     --dst   Adjust for Daylight Saving Time (integrated from dst2 utility).
+             Automatically calculates and applies DST adjustment based on the
+             current system clock.  Always keep your BATTERY CLOCK set to
+             STANDARD time in your area.
+
+AMIGA SPECIFIC FEATURES
+     This implementation includes several Amiga-specific enhancements:
+
+     • Native Amiga clock integration using getclk() and chgclk() APIs
+     • Amiga FileInfoBlock integration for file timestamp access
+     • Amiga-specific format extensions and color codes
+     • Memory-safe resource management with proper cleanup
+     • Hybrid argument parsing supporting both POSIX and Amiga styles
+     • Daylight Saving Time (DST) automatic adjustment
+     • Interactive date/time setting with Amiga-style prompts
+
+     Amiga-style usage:
+           date ?
+                   Interactive template help
+           date FORMAT="%Y-%m-%d %H:%M:%S"
+                   Use custom format string
+           date SET
+                   Interactive date/time setting
+           date UTC
+                   Use UTC time
+           date REFERENCE=filename
+                   Show file modification time
+           date DEBUG
+                   Enable DST adjustment
+           date POSIX -d "2024-01-01" +"%Y-%m-%d"
+                   Force POSIX parsing with options
+
+FORMAT STRING
+     An operand with a leading plus ('+') sign signals a user-defined format
+     string which specifies the format in which to display the date and time.
+     The format string may contain any of the conversion specifications
+     described below, as well as any arbitrary text.
+
+CONVERSION SPECIFICATIONS
+     The following conversion specifications are supported:
+
+     %a      Abbreviated weekday name (e.g., Sun, Mon, Tue)
+     %A      Full weekday name (e.g., Sunday, Monday, Tuesday)
+     %b      Abbreviated month name (e.g., Jan, Feb, Mar)
+     %B      Full month name (e.g., January, February, March)
+     %c      Date and time representation (e.g., Thu Mar 3 23:05:25 2005)
+     %d      Day of month (01..31)
+     %D      Date as mm/dd/yy
+     %e      Day of month, space padded ( 1..31)
+     %F      Full date; same as %Y-%m-%d
+     %g      Last two digits of year of ISO week number
+     %G      Year of ISO week number
+     %h      Same as %b
+     %H      Hour (00..23)
+     %I      Hour (01..12)
+     %j      Day of year (001..366)
+     %k      Hour, space padded ( 0..23)
+     %l      Hour, space padded ( 1..12)
+     %m      Month (01..12)
+     %M      Minute (00..59)
+     %n      Newline character
+     %N      Nanoseconds (000000000..999999999) - shows 000000000 on Amiga
+     %p      AM/PM indicator
+     %P      Like %p, but lower case
+     %r      12-hour time (e.g., 11:11:04 PM)
+     %R      24-hour hour and minute; same as %H:%M
+     %s      Seconds since 1970-01-01 00:00:00 UTC
+     %S      Second (00..60)
+     %t      Tab character
+     %T      Time; same as %H:%M:%S
+     %u      Day of week (1..7); 1 is Monday
+     %U      Week number of year, with Sunday as first day of week (00..53)
+     %V      ISO week number, with Monday as first day of week (01..53)
+     %w      Day of week (0..6); 0 is Sunday
+     %W      Week number of year, with Monday as first day of week (00..53)
+     %x      Date representation (e.g., 12/31/99)
+     %X      Time representation (e.g., 23:13:48)
+     %y      Last two digits of year (00..99)
+     %Y      Year (e.g., 2024)
+     %z      Timezone offset (+hhmm) - shows +0000 on Amiga
+     %:z     Timezone offset (+hh:mm) - shows +00:00 on Amiga
+     %::z    Timezone offset (+hh:mm:ss) - shows +00:00:00 on Amiga
+     %:::z   Timezone offset with : to necessary precision - shows +00:00:00 on Amiga
+     %Z      Timezone name - shows timezone from TIMEZONE environment variable
+
+AMIGA EXTENSIONS
+     The following Amiga-specific format extensions are available:
+
+     %Q      Greeting and full date/time (e.g., "Good Morning! Today is Monday, January 1st, 2024 at 9:30 AM")
+     %K      Full date/time string (e.g., "Today is Monday, January 1st, 2024 at 9:30 AM")
+     %x      Date extension (st, nd, rd, th)
+     %q      Quote character (")
+
+AMIGA COLOR CODES
+     The following color codes are available for enhanced display:
+
+     %0      Blue pen color
+     %1      White pen color
+     %2      Black pen color
+     %3      Orange pen color
+     %4      Default colors
+     %5      Boldface
+     %6      Underline
+     %7      Italics
+     %)      Color 0 background
+     %!      Color 1 background
+     %@      Color 2 background
+     %#      Color 3 background
+
+ENVIRONMENT
+     The following environment variables affect the execution of date:
+
+     TIMEZONE
+             Timezone name for display (used with %Z format specifier).
+
+     DEFAULT
+             Default format string when no format is specified.
+
+EXIT STATUS
+     The date utility exits 0 on success, and >0 if an error occurs.
+
+EXAMPLES
+     Display current date and time:
+           $ date
+           Mon Dec  9 14:30:25 2024
+
+     Display date in custom format:
+           $ date "+%Y-%m-%d %H:%M:%S"
+           2024-12-09 14:30:25
+
+     Display time described by string:
+           $ date -d "2024-01-01 12:00:00"
+           Mon Jan  1 12:00:00 2024
+
+     Display file modification time:
+           $ date -r myfile.txt
+           Mon Dec  9 10:15:30 2024
+
+     Set system date and time:
+           $ date -s "2024-12-09 14:30:00"
+           [System clock updated]
+
+     Use Amiga-style format with color:
+           $ date FORMAT="%3Today is %5%B %d%x, %Y at %H:%M %4"
+           Today is December 9th, 2024 at 14:30
+
+     Use Amiga-style interactive help:
+           $ date ?
+           FORMAT/K,SET/S,UTC/S,REFERENCE/K,DEBUG/S,POSIX/K/F: -h
+           Usage (POSIX): date [OPTION]... [+FORMAT] or date [-u] [MMDDhhmm[[CC]YY][.ss]]
+           Usage (Amiga): date [FORMAT/K] [SET/S] [UTC/S] [REFERENCE/K] [DEBUG/S] [POSIX/K/F]
+
+     Force POSIX parsing with Amiga-style syntax:
+           $ date POSIX -d "2024-01-01" +"%Y-%m-%d"
+           2024-01-01
+
+     DST adjustment examples:
+           $ date --dst
+           Daylight Saving Time adjustment applied.
+
+           $ date --dst
+           No Daylight Saving Time adjustment needed.
+
+     DST startup-sequence setup:
+           ; Add after readclock command
+           date --dst
+
+INSTALLATION
+     Copy the integrated date program to the sys:c directory:
+
+           1> copy date c:
+
+     This single binary includes all functionality from the original separate
+     datehelp and dst2 utilities, providing a comprehensive date and time
+     management solution.
+
+DAYLIGHT SAVINGS TIME
+     The date utility provides comprehensive Daylight Saving Time (DST) functionality
+     through the --dst option, automatically adjusting the Amiga system clock for
+     DST transitions.
+
+     DST Functionality:
+     • Automatically calculates DST start and end dates for the current year
+     • Checks if daylight saving time is currently in effect
+     • Increments the system clock by 1 hour when DST begins
+     • Only affects the system clock, not the battery backup clock
+     • Remains valid across reboots since battery clock is unchanged
+
+     Usage:
+     • Manual DST adjustment: date --dst
+     • Automatic startup adjustment: Add to startup-sequence
+
+     Startup Sequence Setup:
+     Add this line to your startup-sequence after any commands necessary to
+     read your battery backup clock:
+
+           1> date --dst
+
+     Always keep your battery backup clock set for STANDARD time in your area.
+     If a command is necessary in the startup-sequence to read the battery clock,
+     the 'date --dst' line must follow the readclock command.
+
+     The 'date --dst' command should only be executed once per login session.
+     If setup properly, you will NEVER have to do the twice yearly ritual of
+     resetting your computer clock for daylight savings time.
+
+     DST Calculation:
+     The utility automatically calculates DST start and end dates based on the
+     standard US DST rules (second Sunday in March to first Sunday in November).
+     The calculation takes into account leap years and properly handles the
+     transition periods.
+
+     Integration Notes:
+     This DST functionality was originally provided by the separate dst2 utility
+     but is now fully integrated into the main date command for convenience and
+     consistency.
+
+TIMEZONE SETUP
+     Add the following line to your s:startup-sequence file: (if desired)
+
+           setenv TIMEZONE=tzn[:dst]
+
+     where 'tzn' = the current standard timezone for your area.
+     (EST, CST, MST, PST, etc)  All three characters must be used.
+
+     where 'dst' = the optional timezone for your area when daylight savings
+     time is in-effect.  (EDT, CDT, MDT, PDT, etc)  If your area does not
+     observe daylight savings time, then only enter 'tzn' as described above.
+     If 'dst' is used, you must use all three characters and use an ':' as
+     a field separator.
+
+     Examples:
+
+           1> setenv TIMEZONE=EST:EDT
+           1> setenv TIMEZONE=MST:MDT
+           1> setenv TIMEZONE=PST
+
+     The TIMEZONE variable must be set exactly as shown or 'date' will
+     completely ignore it.  Setting the TIMEZONE is optional, but the current
+     timezone will not be displayed if it isn't set.
+
+DEFAULT FORMAT
+     Normally the default date display for 'date' is:
+
+           dddddd dd-mmm-yy hh:ss tzn
+
+     If desired, this can be changed to anything you want by setting an
+     environmental variable named 'DEFAULT'.  Set DEFAULT to any valid
+     formatted date string using the AmigaDOS setenv command.  Example:
+
+           setenv DEFAULT="%Q  %S"
+
+     Then whenever 'date' is executed with no arguments, the default will be
+     '%Q  %S' instead of the default as shown above.
+
+SEE ALSO
+     time(1), strftime(3), getclk(3), chgclk(3), dos.library(3)
+
+     Related utilities:
+     • The --dst option provides the same functionality as the original dst2 utility
+     • The --help-format option provides the same functionality as the original datehelp utility
+     • Both utilities are now fully integrated into the main date command
+
+STANDARDS
+     The date utility conforms to IEEE Std 1003.1-2001 ("POSIX.1") with
+     Amiga-specific extensions for enhanced functionality and native
+     integration.
+
+HISTORY
+     Amiga date command released in unsui POSIX runtime by amigazen project.
+
+     Key improvements in version 2.0:
+     • Full POSIX compliance with all standard format specifiers
+     • Hybrid POSIX/Amiga argument parsing
+     • Native Amiga clock integration
+     • Amiga-specific format extensions and color codes
+     • Enhanced file timestamp support
+     • Interactive date/time setting
+     • Daylight Saving Time support (integrated from dst2 utility)
+     • Format help system (integrated from datehelp utility)
+     • Memory-safe resource management
+
+     Integration History:
+     • The DST functionality was originally provided by the separate dst2 utility
+       written by George Kerber in 1990
+     • The format help functionality was originally provided by the separate
+       datehelp utility written by George Kerber in 1989
+     • Both utilities have been fully integrated into the main date command
+       for version 2.0, providing a single comprehensive solution
+
+BUGS
+     The timezone support is limited on Amiga systems.  The %z, %:z, %::z,
+     and %:::z format specifiers will display +0000/+00:00/+00:00:00
+     respectively, as Amiga systems typically don't have full timezone
+     database support.
+
+     The %N (nanoseconds) format specifier displays 000000000 as Amiga
+     systems don't provide nanosecond precision.
+
+     Some advanced POSIX features like complex timezone handling and
+     leap second support are not available due to Amiga system limitations.
+
+     DST Adjustment:
+     The --dst option should only be executed once per login session.
+     Multiple executions may result in incorrect clock adjustments.
+
+     The DST utility does not provide visual feedback when adjusting the clock.
+     Check the system time after execution to verify the adjustment.
+
+     The DST calculation is based on US standard rules and may not be
+     appropriate for other regions with different DST schedules.
+
+AUTHOR
+     Part of unsui from amigazen project.
+     Based on the original udate implementation by George Kerber (1989-1990).
+     Refactored for POSIX compliance and Amiga integration by amigazen project.
+
+Amiga                         December 9, 2025                    DATE(1)

@@ -1,51 +1,102 @@
-      Program:  dst2
-   Programmer:  George Kerber
-      Written:  01/01/90
-      Purpose:  Automatically adjust the Amiga system clock for 
-                Daylight Savings Time
+DST2(1)                    General Commands Manual                   DST2(1)
 
+NAME
+     dst2 – automatically adjust the Amiga system clock for Daylight Saving Time
 
-    Directions:  1.  Copy 'dst2' to your c: directory.
-                 2.  Always keep your battery backup clock set for
-                     STANDARD time in your area.
-                 3.  Add 'dst2' to your startup-sequence after any command
-                     necessary to read your battery backup clock.
+SYNOPSIS
+     dst2
 
+DESCRIPTION
+     The dst2 utility automatically adjusts the Amiga system clock for
+     Daylight Saving Time (DST).  This is a standalone version of the DST
+     functionality that is also integrated into the main date command.
 
-                 
-    Then whenever you boot up your Amiga, DST2 will check if it's daylight
-    savings time for the current year.  If daylight savings time is in
-    effect, DST2 will increment your system clock by 1 hour.  Since this
-    will not change your battery backup clock, the test will be valid
-    every time you boot up.
+     The utility checks if daylight saving time is in effect for the current
+     year and automatically increments the system clock by 1 hour if
+     necessary.  Since this only affects the system clock and not the
+     battery backup clock, the test remains valid across reboots.
 
-    Only run DST2 once per login session, or the clock may get incremented
-    more than once.
+     The dst2 utility should only be executed once per login session to
+     prevent multiple clock adjustments.
 
+INSTALLATION
+     Copy the dst2 program to your c: directory:
 
+           1> copy dst2 c:
 
-    NOTE:  I released a version of DST a while ago that was much larger and
-           did more things.  All versions have the same functions, but this
-           version (2.0) will not automatically set the env variable 
-           TIMEZONE for use with the old udate program.  The TIMEZONE
-           env variable that was set with the old DST program is not
-           compatible with the newest udate program anyway.
+     Always keep your battery backup clock set for STANDARD time in your
+     area.  Add 'dst2' to your startup-sequence after any command necessary
+     to read your battery backup clock.
 
-           If you are using the latest version (1.15c) of 'udate' that I 
-           wrote the 'dst' functions are included in 'udate'.  So there is
-           no reason to use 'dst'.  I simply wrote a stand alone version
-           of 'dst' to accomodate the people who wanted the 'dst' functions
-           in a smaller package that the entire 'udate' program.
+USAGE
+     Simply execute dst2 without any arguments:
 
+           1> dst2
 
+     The utility will automatically check if DST is in effect and adjust
+     the system clock accordingly.
 
-     STATUS:  This program is public domain and can be freely distributed.
-              Please keep me as author and distribute both the documents
-              and program together.  I'm not responsible for anything....
-              (I hate responsibility)
+STARTUP SEQUENCE
+     Add this line to your startup-sequence after any commands necessary
+     to read your battery backup clock:
 
+           1> dst2
 
-               George Kerber
-               19756 E. Linvale Drive
-               Aurora, CO  80013
-               303-693-2890
+     Set your battery clock to standard time in your area and add the above
+     line to your startup-sequence file.  If a command is necessary in the
+     startup-sequence to read the battery clock, the 'dst2' line must
+     follow the readclock command.
+
+     The 'dst2' command should only be executed once per login session.
+     If setup properly, you will NEVER have to do the twice yearly ritual
+     of resetting your computer clock for daylight savings time.
+
+INTEGRATION WITH DATE COMMAND
+     The dst2 utility provides the same functionality as the -d option
+     in the main date command.  If you are using the enhanced date command
+     (version 2.0 or later), you can use either:
+
+     • Standalone: dst2
+     • Integrated: date -d
+
+     Both methods provide identical DST adjustment functionality.
+
+EXIT STATUS
+     The dst2 utility exits 0 on success, and >0 if an error occurs.
+
+EXAMPLES
+     Manual DST adjustment:
+           $ dst2
+           [System clock adjusted for DST if necessary]
+
+     Add to startup-sequence:
+           ; Add after readclock command
+           dst2
+
+SEE ALSO
+     date(1), getclk(3), chgclk(3)
+
+STANDARDS
+     This utility is Amiga-specific and does not conform to any POSIX
+     standard.  It provides Amiga-specific DST functionality.
+
+HISTORY
+     The dst2 utility was originally written by George Kerber as a
+     standalone version of the DST functionality integrated into the
+     udate command.  This version has been updated for compatibility
+     with the modern POSIX-compliant date command.
+
+BUGS
+     The dst2 utility should only be executed once per login session.
+     Multiple executions may result in incorrect clock adjustments.
+
+     The utility does not provide any visual feedback when adjusting
+     the clock.  Check the system time after execution to verify
+     the adjustment.
+
+AUTHOR
+     Part of unsui from amigazen project.
+     Based on the original dst2 implementation by George Kerber (1990).
+     Updated for compatibility with modern date command.
+
+Amiga                         September 12, 2025                    DST2(1)

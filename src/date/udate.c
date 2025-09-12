@@ -93,6 +93,8 @@ enum {
     ARG_REFERENCE,
     ARG_DEBUG,
     ARG_POSIX,
+    ARG_HELP_FORMAT,
+    ARG_DST,
     ARG_COUNT
 };
 
@@ -101,7 +103,10 @@ typedef struct {
     BOOL set_flag;              /* -s: set date/time */
     BOOL utc_flag;              /* -u: use UTC instead of local time */
     BOOL debug_flag;            /* -d: debug mode */
+    BOOL help_format_flag;      /* --help-format: show format help */
+    BOOL dst_flag;              /* --dst: adjust for DST */
     char *reference_file;       /* -r: reference file for -d */
+    char *date_string;          /* -d: date string to display */
     char *format_string;        /* format string for output */
     int exit_code;              /* Exit code */
 } DateOptions;
@@ -113,6 +118,9 @@ int run_date_logic(DateOptions *options, int file_count, char **files, const cha
 void parse_getopt_args(int argc, char **argv, DateOptions *options, int *file_start, const char *program);
 void init_options(DateOptions *options);
 void cleanup_options(DateOptions *options);
+int parse_date_string(const char *date_str, unsigned char *clock, const char *program);
+void show_format_help(void);
+void adjust_dst(void);
 
 /* Main function: dispatcher for parsing style */
 int main(int argc, char **argv)
@@ -123,7 +131,7 @@ int main(int argc, char **argv)
     char *program;
     
     /* ReadArgs Path Variables */
-    const char *template = "FORMAT/K,SET/S,UTC/S,REFERENCE/K,DEBUG/S,POSIX/K/F";
+    const char *template = "FORMAT/K,SET/S,UTC/S,REFERENCE/K,DEBUG/S,POSIX/K/F,HELPFORMAT/S,DST/S";
     LONG arg_array[ARG_COUNT] = {0};
     struct RDArgs *rdargs = NULL;
     char *cmd_string = NULL;
@@ -149,6 +157,18 @@ int main(int argc, char **argv)
         /* No arguments, show default date */
         init_options(&options);
         return run_date_logic(&options, 0, NULL, program);
+    }
+
+    /* Check for special commands first */
+    if (argc > 1) {
+        if (strcmp(argv[1], "--help-format") == 0) {
+            show_format_help();
+            return SUCCESS;
+        }
+        if (strcmp(argv[1], "--dst") == 0) {
+            adjust_dst();
+            return SUCCESS;
+        }
     }
 
     /* Initialize options */
@@ -302,9 +322,8 @@ void parse_getopt_args(int argc, char **argv, DateOptions *options, int *file_st
     while ((c = getopt(argc, argv, "d:r:suVh")) != -1) {
         switch (c) {
             case 'd':
-                options->debug_flag = TRUE;
-                options->reference_file = optarg;
-                break;
+                options->date_string = optarg;
+                    break;  
             case 'r':
                 options->reference_file = optarg;
                 break;
@@ -341,11 +360,11 @@ void parse_getopt_args(int argc, char **argv, DateOptions *options, int *file_st
  */
 int run_date_logic(DateOptions *options, int file_count, char **files, const char *program) {
     /* Variable declarations - all at the beginning of the block */
-    int i, j, length, nflag, dflag, counter;
+    int i, j, nflag, dflag, counter;
     char leadspacer[80], *odata, *timezone, node[33];
-    char format[80];
+char format[80];
     int escape_char, tznflag, y_fix;
-    unsigned char clock[8];
+unsigned char clock[8];
     int daymax[13];
     char day[7][4];
     char dayext[7][4];
@@ -359,8 +378,8 @@ int run_date_logic(DateOptions *options, int file_count, char **files, const cha
     escape_char = '%';  /* POSIX compliant escape character */
     tznflag = 0;
     y_fix = 80;
-    leadspacer[0] = '\0';
-    
+leadspacer[0] = '\0';
+
     /* Initialize arrays */
     daymax[0] = 0; daymax[1] = 31; daymax[2] = 28; daymax[3] = 31;
     daymax[4] = 30; daymax[5] = 31; daymax[6] = 30; daymax[7] = 31;
@@ -386,76 +405,126 @@ int run_date_logic(DateOptions *options, int file_count, char **files, const cha
     stcgfn(node, (char *)program);
 
     /* Handle setting date/time if requested */
-    if (options->set_flag && file_count > 0 && files[0]) {
-        length = strlen(files[0]);
-        if(length > 2 && length < 9 && 
-           !dateset((char *)program, files[0], length, daymax, month, monthext, node, clock)) 
-           return SUCCESS;
+    if (options->set_flag) {
+        if (file_count > 0 && files[0]) {
+            /* Parse date string and set clock */
+            if (!parse_date_string(files[0], clock, program)) {
+                return FAILURE;
+            }
+            /* Set the system clock */
+            if (chgclk(clock)) {
+                fprintf(stderr, "%s: cannot set system clock\n", program);
+                return FAILURE;
+            }
+            return SUCCESS;
+        } else {
+            /* Interactive date setting */
+            setdate(clock, daymax, month, monthext, node);
+            return SUCCESS;
+        }
     }
 
     /* Handle DST adjustment if requested */
     if (options->debug_flag) {
         if(isdst(clock)) {
-            clock[4]++;
+                    clock[4]++;
             if(chgclk(clock)) mistake("Can't Correct for DST", node);
+                    }
+                 getclk(clock);
+                 dflag++;
+    }
+
+
+    /* Handle date string if requested */
+    if (options->date_string) {
+        if (!parse_date_string(options->date_string, clock, program)) {
+            return FAILURE;
         }
-        getclk(clock);
-        dflag++;
+    } else if (options->reference_file) {
+        struct FileInfoBlock *fib;
+        struct DateStamp ds;
+        BPTR lock;
+        
+        fib = (struct FileInfoBlock *)AllocDosObject(DOS_FIB, NULL);
+        if (fib) {
+            lock = Lock((char *)options->reference_file, ACCESS_READ);
+            if (lock) {
+                if (Examine(lock, fib)) {
+                ds = fib->fib_Date;
+                /* Convert Amiga DateStamp to our clock format */
+                clock[0] = ds.ds_Days % 7;  /* day of week */
+                clock[1] = ds.ds_Days / 365;  /* year (simplified) */
+                clock[2] = (ds.ds_Days % 365) / 30;  /* month (simplified) */
+                clock[3] = (ds.ds_Days % 365) % 30;  /* day (simplified) */
+                clock[4] = ds.ds_Minute / 60;  /* hour */
+                clock[5] = ds.ds_Minute % 60;  /* minute */
+                clock[6] = ds.ds_Tick / 50;  /* second (50 ticks per second) */
+                } else {
+                    fprintf(stderr, "%s: cannot examine '%s'\n", program, options->reference_file);
+                    UnLock(lock);
+                    FreeDosObject(DOS_FIB, fib);
+                    return FAILURE;
+                }
+                UnLock(lock);
+            } else {
+                fprintf(stderr, "%s: cannot access '%s'\n", program, options->reference_file);
+                FreeDosObject(DOS_FIB, fib);
+                return FAILURE;
+            }
+            FreeDosObject(DOS_FIB, fib);
+        } else {
+            fprintf(stderr, "%s: out of memory for FileInfoBlock\n", program);
+            return FAILURE;
+        }
+    } else {
+        getclk(clock);   /*  gets current system clock settings  */
     }
-
-    /* Handle interactive date setting if requested */
-    if (options->set_flag && file_count == 0) {
-        setdate(clock, daymax, month, monthext, node);
-        return SUCCESS;
-    }
-
-    getclk(clock);   /*  gets current system clock settings  */
     if(clock[1] > 19) y_fix = -20;
 
-    /*---- SET TIMEZONE if set ------------------------------------------------*/
-    timezone = getenv("TIMEZONE");
+/*---- SET TIMEZONE if set ------------------------------------------------*/
+timezone = getenv("TIMEZONE");
     if (timezone) {
-        i = strlen(timezone);
-        if(i == 3 || i == 7) {
-            if(isdst(clock) && i == 7) {
-                timezone[0] = timezone[4]; 
-                timezone[1] = timezone[5]; 
-                timezone[2] = timezone[6]; 
-            }
-            timezone[3] = '\0'; tznflag++;
+i = strlen(timezone);
+if(i == 3 || i == 7) {
+   if(isdst(clock) && i == 7) {
+      timezone[0] = timezone[4]; 
+      timezone[1] = timezone[5]; 
+      timezone[2] = timezone[6]; 
+      }
+   timezone[3] = '\0'; tznflag++;
         } else {
-            timezone[0] = '\0';
+   timezone[0] = '\0';
         }
     } else {
         timezone = "";
-    }
-    /*------------------------------------------------------------------------*/
+   }
+/*------------------------------------------------------------------------*/
 
     printf("%s", leadspacer);
 
-    /*-----------------------------*/
+/*-----------------------------*/
     if (options->format_string) {
         strcpy(format, options->format_string);
     } else {
-        odata = getenv("DEFAULT");
+      odata = getenv("DEFAULT");
         if(odata && odata[0] != '\0') {
             strcpy(format, odata);
         } else {
             defaultdate(tznflag, timezone, day, dayext, month, clock, y_fix);
-            if(!nflag) printf("\n");
+         if(!nflag) printf("\n");
             return SUCCESS;
-        }
-    }
-    /*-----------------------------*/
+         }
+   }
+/*-----------------------------*/
 
     /* Format and output the date */
     while(format[++counter] != '\0') {
         if(format[counter] == escape_char) {
             if(format[++counter] == escape_char) {
                 printf("%c", escape_char);
-                continue;
-            }
-            switch(format[counter]) {
+        continue;
+        }
+      switch(format[counter]) {
                 /* POSIX compliant format specifiers */
                 case 'a':  printf("%s", day[clock[0]]); break;  /* abbreviated weekday name */
                 case 'A':  printf("%s%sday", day[clock[0]], dayext[clock[0]]); break;  /* full weekday name */
@@ -489,28 +558,117 @@ int run_date_logic(DateOptions *options, int file_count, char **files, const cha
                 case 'Y':  printf("%4d", clock[1] + 1980); break;  /* four digit year */
                 case 'Z':  if(tznflag) printf("%s", timezone); break;  /* timezone name */
                 
+                /* Additional POSIX format specifiers */
+                case 'g':  /* last two digits of year of ISO week number */
+                    printf("%02d", (clock[1] + 1980) % 100);
+                    break;
+                case 'G':  /* year of ISO week number */
+                    printf("%4d", clock[1] + 1980);
+                    break;
+                case 'h':  /* same as %b */
+                    printf("%s", month[clock[2]]);
+                    break;
+                case 'k':  /* hour, space padded (0..23) */
+                    printf("%2d", clock[4]);
+                    break;
+                case 'l':  /* hour, space padded (1..12) */
+                    printf("%2d", twelve(clock[4]));
+                    break;
+                case 'N':  /* nanoseconds (not available on Amiga, show 0) */
+                    printf("000000000");
+                    break;
+                case 'P':  /* like %p, but lower case */
+                    printf("%cm", ampm(clock[4]));
+                    break;
+                case 's':  /* seconds since 1970-01-01 00:00:00 UTC (simplified) */
+                    {
+                        long days_since_1970 = (clock[1] + 1980 - 1970) * 365 + 
+                                              ((clock[1] + 1980 - 1970) / 4);
+                        long seconds_since_1970 = days_since_1970 * 86400 + 
+                                                 clock[4] * 3600 + clock[5] * 60 + clock[6];
+                        printf("%ld", seconds_since_1970);
+                    }
+                    break;
+                case 'U':  /* week number of year, with Sunday as first day of week */
+                    {
+                        int day_of_year = 0;
+                        if((clock[1] + 1980) % 4 == 0) daymax[2] = 29;
+                        for(i = 1, day_of_year = 0; i != clock[2]; day_of_year += daymax[i++]);
+                        day_of_year += clock[3];
+                        printf("%02d", (day_of_year + 6 - clock[0]) / 7);
+                    }
+                    break;
+                case 'V':  /* ISO week number, with Monday as first day of week */
+                    {
+                        int day_of_year = 0;
+                        int wday;
+                        int week;
+                        
+                        if((clock[1] + 1980) % 4 == 0) daymax[2] = 29;
+                        for(i = 1, day_of_year = 0; i != clock[2]; day_of_year += daymax[i++]);
+                        day_of_year += clock[3];
+                        wday = (clock[0] == 0) ? 7 : clock[0];  /* Monday = 1 */
+                        week = (day_of_year - wday + 10) / 7;
+                        if (week < 1) week = 52;
+                        if (week > 52) week = 1;
+                        printf("%02d", week);
+                    }
+                    break;
+                case 'W':  /* week number of year, with Monday as first day of week */
+                    {
+                        int day_of_year = 0;
+                        int wday;
+                        
+                        if((clock[1] + 1980) % 4 == 0) daymax[2] = 29;
+                        for(i = 1, day_of_year = 0; i != clock[2]; day_of_year += daymax[i++]);
+                        day_of_year += clock[3];
+                        wday = (clock[0] == 0) ? 7 : clock[0];  /* Monday = 1 */
+                        printf("%02d", (day_of_year - wday + 6) / 7);
+                    }
+                    break;
+                case 'X':  /* locale's time representation */
+                    printf("%02d:%02d:%02d", clock[4], clock[5], clock[6]);
+                    break;
+                case 'z':  /* +hhmm numeric timezone (simplified) */
+                    printf("+0000");  /* Amiga doesn't have timezone info */
+                    break;
+                case ':':  /* timezone with colon - check next char */
+                    if (format[counter + 1] == 'z') {
+                        counter++;
+                        printf("+00:00");
+                    } else if (format[counter + 1] == ':' && format[counter + 2] == 'z') {
+                        counter += 2;
+                        printf("+00:00:00");
+                    } else if (format[counter + 1] == ':' && format[counter + 2] == ':' && format[counter + 3] == 'z') {
+                        counter += 3;
+                        printf("+00:00:00");
+                    } else {
+                        printf(":");
+                    }
+                    break;
+
                 /* Amiga-specific extensions (using % prefix for compatibility) */
-                case 'g':  /* greeting and date and time */
+                case 'Q':  /* greeting and date and time (Amiga extension) */
                     printf("Good "); 
                     if(clock[4] < 12) {
-                        printf("Morning");
+                       printf("Morning");
                     } else if(clock[4] < 17) {
-                        printf("Afternoon");
+                       printf("Afternoon");
                     } else {
-                        printf("Evening");
-                    }
+                       printf("Evening");
+                       }
                     printf("!    ");
-                    printf("Today is %s%sday, %s%s %d%s, %02d at %d:%02d %cM",
+                   printf("Today is %s%sday, %s%s %d%s, %02d at %d:%02d %cM",
                         day[clock[0]], dayext[clock[0]], month[clock[2]], monthext[clock[2]],
                         clock[3], ext(clock[3]), clock[1] + 1980, twelve(clock[4]), clock[5], ampm(clock[4]));
                     if(tznflag) printf(" (%s)", timezone);
                     break;
-                case 'k':  /* date/time string */
+                case 'K':  /* date/time string (Amiga extension) */
                     printf("Today is %s%sday, %s%s %d%s, %02d at %d:%02d %cM",
                         day[clock[0]], dayext[clock[0]], month[clock[2]], monthext[clock[2]],
                         clock[3], ext(clock[3]), clock[1] + 1980, twelve(clock[4]), clock[5], ampm(clock[4]));
                     if(tznflag) printf(" (%s)", timezone);
-                    break;
+                    break;  
                 case 'x':  printf("%s", ext(clock[3])); break;  /* date extension (st, nd, rd, th) */
                 case 'q':  printf("\""); break;  /* quote character */
                 
@@ -533,12 +691,12 @@ int run_date_logic(DateOptions *options, int file_count, char **files, const cha
                          return FAILURE;
             }
         } else {
-            putchar(format[counter]);
-        }
-    }
+      putchar(format[counter]);
+      }
+   }
     
     printf("[0m");  /* Reset colors */
-    if(!nflag) printf("\n");
+if(!nflag) printf("\n");
     return SUCCESS;
 }
 
@@ -550,7 +708,10 @@ void init_options(DateOptions *options) {
     options->set_flag = FALSE;
     options->utc_flag = FALSE;
     options->debug_flag = FALSE;
+    options->help_format_flag = FALSE;
+    options->dst_flag = FALSE;
     options->reference_file = NULL;
+    options->date_string = NULL;
     options->format_string = NULL;
     options->exit_code = SUCCESS;
 }
@@ -577,7 +738,9 @@ void usage(const char *program) {
     printf("  -s, --set=STRING           set time described by STRING\n");
     printf("  -u, --utc, --universal     print or set Coordinated Universal Time\n");
     printf("  -h, --help                 display this help and exit\n");
-    printf("  -V, --version              output version information and exit\n\n");
+    printf("  -V, --version              output version information and exit\n");
+    printf("      --help-format          show format specifier help\n");
+    printf("      --dst                  adjust for Daylight Saving Time\n\n");
     printf("FORMAT controls the output.  Interpreted sequences are:\n");
     printf("  %%%%a     locale's abbreviated weekday name (e.g., Sun)\n");
     printf("  %%%%A     locale's full weekday name (e.g., Sunday)\n");
@@ -664,9 +827,9 @@ int dateset(char name[], char tempy[], int length, int daymax[13],
             unsigned char clock[8])
 {
     int h, i, j, k, slash, colon;
-    char date[80];
-    char *s1, *s2, temp[3][6];
-    static char delim[] = "/-:";
+char date[80];
+char *s1, *s2, temp[3][6];
+static char delim[] = "/-:";
     
     /* Initialize variables */
     h = 0;
@@ -741,7 +904,7 @@ void defaultdate(int tznflag, char *timezone, char day[7][4],
                  char dayext[7][4], char month[13][4], 
                  unsigned char clock[8], int year_fix)
 {
-    printf("%s%sday %02d-%s-%02d %02d:%02d:%02d",
+printf("%s%sday %02d-%s-%02d %02d:%02d:%02d",
             day[clock[0]],
             dayext[clock[0]],
             clock[3],
@@ -760,16 +923,16 @@ if(tznflag) printf(" %s",timezone);
 
 char *ext(int day)
 {
-    switch(day) {
-        case  1:
-        case 21:
-        case 31: return("st"); 
-        case  2:
-        case 22: return("nd");
-        case  3:
-        case 23: return("rd");
-        default: return("th");
-    }
+switch(day) {
+   case  1:
+   case 21:
+   case 31: return("st"); 
+   case  2:
+   case 22: return("nd");
+   case  3:
+   case 23: return("rd");
+   default: return("th");
+   }
 }
 
 /*-------------------------------------------------------------------------*/
@@ -782,13 +945,13 @@ char *ext(int day)
 int isdst(unsigned char clock[8])
 {
     int year, startyear, sday, eday, leapyear, dstflag;
-    
+
     /* Initialize variables */
     startyear = 1980;
     sday = 6;
     leapyear = 0;
     dstflag = 0;
-    year = clock[1];
+year = clock[1];
 
 for(  ; year > 0 ; year--) {
      leapyear = 0;
@@ -830,7 +993,7 @@ exit(5);
 
 /*  QUITCHECK FUNCTION  */
 
-void quitcheck(char xxx[])
+void quitcheck(char xxx[])  
 {
 if(xxx[0] == 'q' || xxx[0] == 'Q') {
    puts("[0m\n");
@@ -845,8 +1008,8 @@ if(xxx[0] == 'q' || xxx[0] == 'Q') {
 void setdate(unsigned char clock[8], int daymax[13], char month[13][4], 
              char monthext[13][7], char node[])
 {
-    char input[30];
-    int temp;
+char input[30];
+int temp;
     char current[13];
     char accept[30];
     char new[12];
@@ -1007,16 +1170,159 @@ exit(0);
 
 int twelve(int hour)
 {
-    if(hour > 13) {
-        return(hour - 12);
+if(hour > 13) {
+   return(hour - 12);
     } else {
-        if(!hour) {
-            return(12);
+   if(!hour) {
+      return(12);
         } else {
-            return(hour);
-        }
-    }
+      return(hour);
+      }
+   }
 } 
+
+/**
+ * @brief Parse a date string and set clock values
+ * @param date_str Date string to parse
+ * @param clock Clock array to populate
+ * @param program Program name for error messages
+ * @return 1 on success, 0 on failure
+ */
+int parse_date_string(const char *date_str, unsigned char *clock, const char *program) {
+    int year, month, day, hour, minute, second;
+    int parsed = 0;
+    
+    /* Try to parse various date formats */
+    /* Format: YYYY-MM-DD HH:MM:SS */
+    if (sscanf(date_str, "%d-%d-%d %d:%d:%d", &year, &month, &day, &hour, &minute, &second) == 6) {
+        parsed = 1;
+    }
+    /* Format: MM/DD/YYYY HH:MM:SS */
+    else if (sscanf(date_str, "%d/%d/%d %d:%d:%d", &month, &day, &year, &hour, &minute, &second) == 6) {
+        parsed = 1;
+    }
+    /* Format: YYYY-MM-DD */
+    else if (sscanf(date_str, "%d-%d-%d", &year, &month, &day) == 3) {
+        hour = minute = second = 0;
+        parsed = 1;
+    }
+    /* Format: MM/DD/YYYY */
+    else if (sscanf(date_str, "%d/%d/%d", &month, &day, &year) == 3) {
+        hour = minute = second = 0;
+        parsed = 1;
+    }
+    /* Format: HH:MM:SS */
+    else if (sscanf(date_str, "%d:%d:%d", &hour, &minute, &second) == 3) {
+        /* Use current date */
+        getclk(clock);
+        year = clock[1] + 1980;
+        month = clock[2];
+        day = clock[3];
+        parsed = 1;
+    }
+    
+    if (!parsed) {
+        fprintf(stderr, "%s: invalid date format '%s'\n", program, date_str);
+        return 0;
+    }
+    
+    /* Validate ranges */
+    if (year < 1980 || year > 2099) {
+        fprintf(stderr, "%s: year %d out of range (1980-2099)\n", program, year);
+        return 0;
+    }
+    if (month < 1 || month > 12) {
+        fprintf(stderr, "%s: month %d out of range (1-12)\n", program, month);
+        return 0;
+    }
+    if (day < 1 || day > 31) {
+        fprintf(stderr, "%s: day %d out of range (1-31)\n", program, day);
+        return 0;
+    }
+    if (hour < 0 || hour > 23) {
+        fprintf(stderr, "%s: hour %d out of range (0-23)\n", program, hour);
+        return 0;
+    }
+    if (minute < 0 || minute > 59) {
+        fprintf(stderr, "%s: minute %d out of range (0-59)\n", program, minute);
+        return 0;
+    }
+    if (second < 0 || second > 59) {
+        fprintf(stderr, "%s: second %d out of range (0-59)\n", program, second);
+        return 0;
+    }
+    
+    /* Convert to Amiga clock format */
+    clock[0] = 0;  /* day of week (will be calculated later) */
+    clock[1] = year - 1980;  /* year offset from 1980 */
+    clock[2] = month;  /* month */
+    clock[3] = day;  /* day */
+    clock[4] = hour;  /* hour */
+    clock[5] = minute;  /* minute */
+    clock[6] = second;  /* second */
+    
+    return 1;
+}
+
+/**
+ * @brief Show format help (integrated from datehelp.c)
+ */
+void show_format_help(void) {
+    printf(" [33ma[0m abbreviated weekday name        [33mA[0m full weekday name    [33mR[0m time - hh:mm\n");
+    printf(" [33mb[0m abbreviated month name          [33mB[0m full month name      [33mH[0m hour - 00 to 23\n");
+    printf(" [33md[0m day of month - 01 to 31         [33mD[0m date - mm/dd/yy      [33mZ[0m timezone name*\n");
+    printf(" [33mS[0m second - 00 to 59               [33mt[0m tab character        [33mi[0m hour - 1 to 12\n");
+    printf(" [33mx[0m day of month ext \\(st,nd,rd,th\\)  [33mn[0m newline character    [33mI[0m hour - 01 to 12\n");
+    printf(" [33me[0m day of month -  1 to 31         [33mY[0m four digit year      [33my[0m two digit year\n");
+    printf(" [33mm[0m month of year - 01 to 12        [33mM[0m minute - 00 to 59    [33mT[0m time - hh:mm:ss\n");
+    printf(" [33mq[0m print a literal quote           [33mj[0m julian day of year   [33mJ[0m days remaining\n");
+    printf(" [33mg[0m greeting + date/time (o + k)    [33mo[0m greeting (Good...)   [33mk[0m date/time string\n");
+    printf(" [33mu[0m ddd mmm dd hh:mm:ss tzn* yyyy   [33mr[0m time - hh:mm:ss pp   [33mp[0m string, AM or PM\n");
+    printf(" [33mw[0m day of week - Sunday = 0        [33mW[0m same as w, Sun = 1   [33m$[0m default date\n\n");
+    printf("\n  NOTE: Use --help-format to show this help from the date program.\n\n");
+}
+
+/**
+ * @brief Adjust for Daylight Saving Time (integrated from dst2.c)
+ */
+void adjust_dst(void) {
+    int i, startyear, sday, eday, leapyear;
+    unsigned char clock[8];
+    
+    /* Initialize variables */
+    startyear = 1980;
+    sday = 6;
+    leapyear = 0;
+
+    /* Get battery clock and calculate Daylight Savings Time start date */
+    getclk(clock); 
+
+    for( i = clock[1] ; i > 0 ; i--) {
+        leapyear = 0;
+        startyear++ ;
+        if((startyear % 4) == 0) leapyear = 1 ;
+        sday-- ;
+        if(!sday) sday = 7;
+        sday -= leapyear;
+        if(!sday && leapyear) sday = 7; 
+    }
+
+    /* Calculate Daylight Savings Time end date using start date */
+    if((sday + 20) < 25)  eday = sday + 27; else eday = sday + 20;
+
+    /* Determine if it's daylight savings time NOW */
+    if((clock[2] > 4 && clock[2] < 10) ||
+       (clock[2] == 4 && clock[3] >= sday && clock[4] >= 2) ||
+       (clock[2] == 10 && clock[3] <= eday && clock[4] < 2) ||
+       (clock[2] == 4 && clock[3] > sday) ||
+       (clock[2] == 10 && clock[3] < eday)) {
+        clock[4]++;
+        chgclk(clock);
+        printf("Daylight Saving Time adjustment applied.\n");
+    } else {
+        printf("No Daylight Saving Time adjustment needed.\n");
+    }
+}
 
 /*-------------------------------------------------------------------------*/
 

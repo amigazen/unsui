@@ -8,25 +8,15 @@ CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS
 LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib LIB lib:utility.lib NOICONS
 SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
 
-# Object files for date
+# Object files for date (integrated with datehelp and dst2 functionality)
 DATE_OBJS = sc:lib/cres.o udate.o /common/common.o /common/getopt.o
-DST2_OBJS = sc:lib/cres.o dst2.o /common/common.o /common/getopt.o
-DATEHELP_OBJS = sc:lib/cres.o datehelp.o /common/common.o /common/getopt.o
 
 # Main target
-all: date dst2 datehelp
+all: date
 
-# Build date command
+# Build date command (now includes datehelp and dst2 functionality)
 date: $(DATE_OBJS)
 	$(LD) $(LDFLAGS) FROM $(DATE_OBJS) TO date
-
-# Build dst2 utility
-dst2: $(DST2_OBJS)
-	$(LD) $(LDFLAGS) FROM $(DST2_OBJS) TO dst2
-
-# Build datehelp utility
-datehelp: $(DATEHELP_OBJS)
-	$(LD) $(LDFLAGS) FROM $(DATEHELP_OBJS) TO datehelp
 
 # Compile source files
 .c.o:
@@ -34,15 +24,11 @@ datehelp: $(DATEHELP_OBJS)
 
 # Header dependencies
 udate.o: udate.c /common/common.h /common/getopt.h
-dst2.o: dst2.c /common/common.h /common/getopt.h
-datehelp.o: datehelp.c /common/common.h /common/getopt.h
 
 # Clean target
 clean:
-	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) date dst2 datehelp
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) date
 
 # Install target
-install: date dst2 datehelp
+install: date
 	copy date //SDK/C/date
-	copy dst2 //SDK/C/dst2
-	copy datehelp //SDK/C/datehelp

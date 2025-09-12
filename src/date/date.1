@@ -1,0 +1,461 @@
+.TH DATE 1 "September 12, 2025" "unsui POSIX Runtime" "General Commands Manual"
+.SH NAME
+date \- display or set date and time
+.SH SYNOPSIS
+.B date
+[\-d \fIdate_string\fP] [\-r \fIfilename\fP] [\-s \fIdate_string\fP] [\-u] [\-h | \-V] [\fI+format\fP]
+.br
+.B date
+[FORMAT/K] [SET/S] [UTC/S] [REFERENCE/K] [DEBUG/S] [POSIX/K/F]
+.br
+.B date
+?
+.SH DESCRIPTION
+The
+.B date
+utility displays the current date and time, or sets the system date and time.
+This Amiga implementation provides hybrid POSIX/Amiga argument parsing with
+native Amiga clock integration and full POSIX compliance.
+
+The utility automatically detects whether the user is using POSIX-style
+arguments (starting with -) or Amiga-style arguments, and dispatches
+to the appropriate parser accordingly.
+
+When invoked without arguments, the
+.B date
+utility displays the current date and time in a default format.
+Otherwise, depending on the options specified,
+.B date
+will set the date and time or print it in a user-defined way.
+
+The
+.B date
+utility displays the date and time read from the Amiga system clock.
+When used to set the date and time, the system clock is updated using
+native Amiga clock functions.
+
+.SH OPTIONS
+The following options are available:
+.TP
+.BI \-d \ date_string
+Display the time described by
+.IR date_string ,
+not 'now'. The
+.I date_string
+can be in various formats:
+.RS
+.IP \(bu 3
+YYYY-MM-DD HH:MM:SS
+.IP \(bu 3
+MM/DD/YYYY HH:MM:SS
+.IP \(bu 3
+YYYY-MM-DD
+.IP \(bu 3
+MM/DD/YYYY
+.IP \(bu 3
+HH:MM:SS (uses current date)
+.RE
+.TP
+.BI \-r \ filename
+Display the last modification time of
+.IR filename .
+Uses native Amiga FileInfoBlock to get file timestamps.
+.TP
+.BI \-s \ date_string
+Set the time described by
+.IR date_string .
+Supports the same formats as
+.BR \-d .
+.TP
+.B \-u
+Display or set the date in UTC (Coordinated Universal Time).
+By default
+.B date
+displays the time in local time.
+.TP
+.B \-h, \-V
+Display help and version information.
+
+.SH AMIGA SPECIFIC FEATURES
+This implementation includes several Amiga-specific enhancements:
+.IP \(bu 3
+Native Amiga clock integration using getclk() and chgclk() APIs
+.IP \(bu 3
+Amiga FileInfoBlock integration for file timestamp access
+.IP \(bu 3
+Amiga-specific format extensions and color codes
+.IP \(bu 3
+Memory-safe resource management with proper cleanup
+.IP \(bu 3
+Hybrid argument parsing supporting both POSIX and Amiga styles
+.IP \(bu 3
+Daylight Saving Time (DST) automatic adjustment
+.IP \(bu 3
+Interactive date/time setting with Amiga-style prompts
+
+Amiga-style usage:
+.br
+.B date ?
+.RS
+Interactive template help
+.RE
+.br
+.B date
+FORMAT="%Y-%m-%d %H:%M:%S"
+.RS
+Use custom format string
+.RE
+.br
+.B date
+SET
+.RS
+Interactive date/time setting
+.RE
+.br
+.B date
+UTC
+.RS
+Use UTC time
+.RE
+.br
+.B date
+REFERENCE=filename
+.RS
+Show file modification time
+.RE
+.br
+.B date
+DEBUG
+.RS
+Enable DST adjustment
+.RE
+.br
+.B date
+POSIX -d "2024-01-01" +"%Y-%m-%d"
+.RS
+Force POSIX parsing with options
+.RE
+
+.SH FORMAT STRING
+An operand with a leading plus ('+') sign signals a user-defined format
+string which specifies the format in which to display the date and time.
+The format string may contain any of the conversion specifications
+described below, as well as any arbitrary text.
+
+.SH CONVERSION SPECIFICATIONS
+The following conversion specifications are supported:
+.TP
+.B %a
+Abbreviated weekday name (e.g., Sun, Mon, Tue)
+.TP
+.B %A
+Full weekday name (e.g., Sunday, Monday, Tuesday)
+.TP
+.B %b
+Abbreviated month name (e.g., Jan, Feb, Mar)
+.TP
+.B %B
+Full month name (e.g., January, February, March)
+.TP
+.B %c
+Date and time representation (e.g., Thu Mar 3 23:05:25 2005)
+.TP
+.B %d
+Day of month (01..31)
+.TP
+.B %D
+Date as mm/dd/yy
+.TP
+.B %e
+Day of month, space padded ( 1..31)
+.TP
+.B %F
+Full date; same as %Y-%m-%d
+.TP
+.B %g
+Last two digits of year of ISO week number
+.TP
+.B %G
+Year of ISO week number
+.TP
+.B %h
+Same as %b
+.TP
+.B %H
+Hour (00..23)
+.TP
+.B %I
+Hour (01..12)
+.TP
+.B %j
+Day of year (001..366)
+.TP
+.B %k
+Hour, space padded ( 0..23)
+.TP
+.B %l
+Hour, space padded ( 1..12)
+.TP
+.B %m
+Month (01..12)
+.TP
+.B %M
+Minute (00..59)
+.TP
+.B %n
+Newline character
+.TP
+.B %N
+Nanoseconds (000000000..999999999) - shows 000000000 on Amiga
+.TP
+.B %p
+AM/PM indicator
+.TP
+.B %P
+Like %p, but lower case
+.TP
+.B %r
+12-hour time (e.g., 11:11:04 PM)
+.TP
+.B %R
+24-hour hour and minute; same as %H:%M
+.TP
+.B %s
+Seconds since 1970-01-01 00:00:00 UTC
+.TP
+.B %S
+Second (00..60)
+.TP
+.B %t
+Tab character
+.TP
+.B %T
+Time; same as %H:%M:%S
+.TP
+.B %u
+Day of week (1..7); 1 is Monday
+.TP
+.B %U
+Week number of year, with Sunday as first day of week (00..53)
+.TP
+.B %V
+ISO week number, with Monday as first day of week (01..53)
+.TP
+.B %w
+Day of week (0..6); 0 is Sunday
+.TP
+.B %W
+Week number of year, with Monday as first day of week (00..53)
+.TP
+.B %x
+Date representation (e.g., 12/31/99)
+.TP
+.B %X
+Time representation (e.g., 23:13:48)
+.TP
+.B %y
+Last two digits of year (00..99)
+.TP
+.B %Y
+Year (e.g., 2024)
+.TP
+.B %z
+Timezone offset (+hhmm) - shows +0000 on Amiga
+.TP
+.B %:z
+Timezone offset (+hh:mm) - shows +00:00 on Amiga
+.TP
+.B %::z
+Timezone offset (+hh:mm:ss) - shows +00:00:00 on Amiga
+.TP
+.B %:::z
+Timezone offset with : to necessary precision - shows +00:00:00 on Amiga
+.TP
+.B %Z
+Timezone name - shows timezone from TIMEZONE environment variable
+
+.SH AMIGA EXTENSIONS
+The following Amiga-specific format extensions are available:
+.TP
+.B %Q
+Greeting and full date/time (e.g., "Good Morning! Today is Monday, January 1st, 2024 at 9:30 AM")
+.TP
+.B %K
+Full date/time string (e.g., "Today is Monday, January 1st, 2024 at 9:30 AM")
+.TP
+.B %x
+Date extension (st, nd, rd, th)
+.TP
+.B %q
+Quote character (")
+
+.SH AMIGA COLOR CODES
+The following color codes are available for enhanced display:
+.TP
+.B %0
+Blue pen color
+.TP
+.B %1
+White pen color
+.TP
+.B %2
+Black pen color
+.TP
+.B %3
+Orange pen color
+.TP
+.B %4
+Default colors
+.TP
+.B %5
+Boldface
+.TP
+.B %6
+Underline
+.TP
+.B %7
+Italics
+.TP
+.B %)
+Color 0 background
+.TP
+.B %!
+Color 1 background
+.TP
+.B %@
+Color 2 background
+.TP
+.B %#
+Color 3 background
+
+.SH ENVIRONMENT
+The following environment variables affect the execution of
+.B date:
+.TP
+.B TIMEZONE
+Timezone name for display (used with %Z format specifier).
+.TP
+.B DEFAULT
+Default format string when no format is specified.
+
+.SH EXIT STATUS
+The
+.B date
+utility exits 0 on success, and >0 if an error occurs.
+
+.SH EXAMPLES
+Display current date and time:
+.RS
+$ date
+.br
+Mon Dec  9 14:30:25 2024
+.RE
+
+Display date in custom format:
+.RS
+$ date "+%Y-%m-%d %H:%M:%S"
+.br
+2024-12-09 14:30:25
+.RE
+
+Display time described by string:
+.RS
+$ date -d "2024-01-01 12:00:00"
+.br
+Mon Jan  1 12:00:00 2024
+.RE
+
+Display file modification time:
+.RS
+$ date -r myfile.txt
+.br
+Mon Dec  9 10:15:30 2024
+.RE
+
+Set system date and time:
+.RS
+$ date -s "2024-12-09 14:30:00"
+.br
+[System clock updated]
+.RE
+
+Use Amiga-style format with color:
+.RS
+$ date FORMAT="%3Today is %5%B %d%x, %Y at %H:%M %4"
+.br
+Today is December 9th, 2024 at 14:30
+.RE
+
+Use Amiga-style interactive help:
+.RS
+$ date ?
+.br
+FORMAT/K,SET/S,UTC/S,REFERENCE/K,DEBUG/S,POSIX/K/F: -h
+.br
+Usage (POSIX): date [OPTION]... [+FORMAT] or date [-u] [MMDDhhmm[[CC]YY][.ss]]
+.br
+Usage (Amiga): date [FORMAT/K] [SET/S] [UTC/S] [REFERENCE/K] [DEBUG/S] [POSIX/K/F]
+.RE
+
+Force POSIX parsing with Amiga-style syntax:
+.RS
+$ date POSIX -d "2024-01-01" +"%Y-%m-%d"
+.br
+2024-01-01
+.RE
+
+.SH SEE ALSO
+.BR time (1),
+.BR strftime (3),
+.BR getclk (3),
+.BR chgclk (3),
+.BR dos.library (3)
+
+.SH STANDARDS
+The
+.B date
+utility conforms to IEEE Std 1003.1-2001 ("POSIX.1") with
+Amiga-specific extensions for enhanced functionality and native
+integration.
+
+.SH HISTORY
+Amiga
+.B date
+command released in unsui POSIX runtime by amigazen project.
+
+Key improvements in this version:
+.IP \(bu 3
+Full POSIX compliance with all standard format specifiers
+.IP \(bu 3
+Hybrid POSIX/Amiga argument parsing
+.IP \(bu 3
+Native Amiga clock integration
+.IP \(bu 3
+Amiga-specific format extensions and color codes
+.IP \(bu 3
+Enhanced file timestamp support
+.IP \(bu 3
+Interactive date/time setting
+.IP \(bu 3
+Daylight Saving Time support
+.IP \(bu 3
+Memory-safe resource management
+
+.SH BUGS
+The timezone support is limited on Amiga systems. The %z, %:z, %::z,
+and %:::z format specifiers will display +0000/+00:00/+00:00:00
+respectively, as Amiga systems typically don't have full timezone
+database support.
+
+The %N (nanoseconds) format specifier displays 000000000 as Amiga
+systems don't provide nanosecond precision.
+
+Some advanced POSIX features like complex timezone handling and
+leap second support are not available due to Amiga system limitations.
+
+.SH AUTHOR
+Part of unsui from amigazen project.
+.br
+Based on the original udate implementation by George Kerber (1989-1990).
+.br
+Refactored for POSIX compliance and Amiga integration by amigazen project.
