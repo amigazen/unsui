@@ -6,18 +6,23 @@
 /*-------------------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <dos.h>
 #define WRITTEN "01/04/90"
 #define VERSION "v2.0"
 
+/* Function prototypes */
+void helpscreen(void);
 
-void helpscreen();
-
-main(int argc, char *argv[])
-
+int main(int argc, char *argv[])
 {
-int i , startyear = 1980 , sday = 6 , eday , leapyear = 0;
-unsigned char clock[8];
+    int i, startyear, sday, eday, leapyear;
+    unsigned char clock[8];
+    
+    /* Initialize variables */
+    startyear = 1980;
+    sday = 6;
+    leapyear = 0;
 
 if(argc > 1) helpscreen();
 
@@ -50,13 +55,14 @@ if((clock[2] > 4 && clock[2] < 10) ||
     clock[4]++;
     chgclk(clock);
     }
+    return 0;
 }
 
 /*-------------------------------------------------------------------------*/
 
 /*  HELPSCREEN FUNCTION  */
 
-void helpscreen()
+void helpscreen(void)
 {
 printf("\n\n  [33m[1mDST2[0m      George Kerber     %s     %s\n\n",VERSION,WRITTEN);
 printf("  Add to startup-sequence for automatic Daylight Savings Time Adjustment.\n\n");

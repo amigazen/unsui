@@ -7,39 +7,91 @@
 /*-------------------------------------------------------------------------*/
 
 #include <stdio.h>
-#include <dos.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+#include <unistd.h>
+#include <dos.h>
+
 #define WRITTEN "06/27/89 - 01/14/90"
 #define VERSION "v1.15c"
 #define AUTHOR "George Kerber"
+#define TRUE 1
 
-int  ampm();                   /*  declare functions  */
-int  dateset();
-void defaultdate();
-char *ext();
-void helpscreen();
-void main();
-void mistake();
-void quitcheck();
-void setdate();
-int  twelve();
+/* Function prototypes */
+int ampm(int hour);
+int dateset(char name[], char tempy[], int length, int daymax[13], 
+            char month[13][4], char monthext[13][7], char node[], 
+            unsigned char clock[8]);
+void defaultdate(int tznflag, char *timezone, char day[7][4], 
+                 char dayext[7][4], char month[13][4], 
+                 unsigned char clock[8], int year_fix);
+char *ext(int day);
+void helpscreen(int escape_char, char node[]);
+void mistake(char description[], char node[]);
+void quitcheck(char xxx[]);
+void setdate(unsigned char clock[8], int daymax[13], char month[13][4], 
+             char monthext[13][7], char node[]);
+int twelve(int hour);
+int isdst(unsigned char clock[8]);
 
-void main(int argc, char *argv[])
+/* AmigaDOS function prototypes - these are declared in system headers */
+/* extern int stcgfn(char *node, char *argv0); - declared in string.h */
+/* extern int getclk(unsigned char clock[8]); - declared in dos.h */
+/* extern int chgclk(unsigned char clock[8]); - declared in dos.h */
+/* Simple argument parsing function to replace argopt */
+static char *parse_args(int argc, char **argv, char *opts, int *next, char *option);
+/* toupper and isdigit are declared in ctype.h */
+/* access is declared in unistd.h */
+/* gets, puts are declared in stdio.h */
+/* getenv is declared in stdlib.h */
+
+int main(int argc, char *argv[])
 { 
-int i, j, length, nflag = 0, dflag = 0 , next = 1 , counter = -1 ;
-char option , leadspacer[80] , *odata , *timezone, node[33], opts[] = "m" ;
-char format[80];
-int escape_char = '*', tznflag = 0, y_fix = 80;
-unsigned char clock[8];
-int daymax[13] = {0,31,28,31,30,31,30,31,31,30,31,30,31};
-char day[7][4] = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
-char dayext[7][4] = {"","","s","nes","rs","","ur"};
-char month[13][4] = {"","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug",
-                     "Sep","Oct","Nov","Dec"};
-char monthext[13][7] = {"","uary","ruary","ch","il","","e","y","ust",
-                        "tember","ober","ember","ember"};
-leadspacer[0] = '\0';
+    /* Variable declarations - all at the beginning of the block */
+    int i, j, length, nflag, dflag, next, counter;
+    char option, leadspacer[80], *odata, *timezone, node[33], opts[2];
+    char format[80];
+    int escape_char, tznflag, y_fix;
+    unsigned char clock[8];
+    int daymax[13];
+    char day[7][4];
+    char dayext[7][4];
+    char month[13][4];
+    char monthext[13][7];
+    
+    /* Initialize variables */
+    nflag = 0;
+    dflag = 0;
+    next = 1;
+    counter = -1;
+    escape_char = '*';
+    tznflag = 0;
+    y_fix = 80;
+    leadspacer[0] = '\0';
+    opts[0] = 'm';
+    opts[1] = '\0';
+    
+    /* Initialize arrays */
+    daymax[0] = 0; daymax[1] = 31; daymax[2] = 28; daymax[3] = 31;
+    daymax[4] = 30; daymax[5] = 31; daymax[6] = 30; daymax[7] = 31;
+    daymax[8] = 31; daymax[9] = 30; daymax[10] = 31; daymax[11] = 30; daymax[12] = 31;
+    
+    strcpy(day[0], "Sun"); strcpy(day[1], "Mon"); strcpy(day[2], "Tue");
+    strcpy(day[3], "Wed"); strcpy(day[4], "Thu"); strcpy(day[5], "Fri"); strcpy(day[6], "Sat");
+    
+    strcpy(dayext[0], ""); strcpy(dayext[1], ""); strcpy(dayext[2], "s");
+    strcpy(dayext[3], "nes"); strcpy(dayext[4], "rs"); strcpy(dayext[5], ""); strcpy(dayext[6], "ur");
+    
+    strcpy(month[0], ""); strcpy(month[1], "Jan"); strcpy(month[2], "Feb");
+    strcpy(month[3], "Mar"); strcpy(month[4], "Apr"); strcpy(month[5], "May");
+    strcpy(month[6], "Jun"); strcpy(month[7], "Jul"); strcpy(month[8], "Aug");
+    strcpy(month[9], "Sep"); strcpy(month[10], "Oct"); strcpy(month[11], "Nov"); strcpy(month[12], "Dec");
+    
+    strcpy(monthext[0], ""); strcpy(monthext[1], "uary"); strcpy(monthext[2], "ruary");
+    strcpy(monthext[3], "ch"); strcpy(monthext[4], "il"); strcpy(monthext[5], "");
+    strcpy(monthext[6], "e"); strcpy(monthext[7], "y"); strcpy(monthext[8], "ust");
+    strcpy(monthext[9], "tember"); strcpy(monthext[10], "ober"); strcpy(monthext[11], "ember"); strcpy(monthext[12], "ember");
 
 /*----- Sets escape value ----- temporary use of *timezone ----------------*/
 
@@ -64,7 +116,7 @@ if(length > 2 && length < 9 &&
 
 /*---------------------------------------*/
 
-for( ; (odata = argopt(argc,argv,opts,&next,&option)) != NULL ; ) {
+for( ; (odata = parse_args(argc,argv,opts,&next,&option)) != NULL ; ) {
    switch(toupper(option)) {
       case 'C':  printf("\x0c"); break;
       case 'N':  nflag = 1; break ;
@@ -123,7 +175,7 @@ if(argc == next ) {
    }
 /*-----------------------------*/
 
-while(format[++counter] != (char *)NULL) {
+while(format[++counter] != '\0') {
    if(format[counter] == escape_char ) {
       if(format[++counter] == escape_char ) {
         printf("%c",escape_char);
@@ -322,19 +374,31 @@ exit(0);    /*  exit for good date formatting   */
 
 int ampm(int hour)
 {
-if(hour < 12) return('A'); else return('P');
+    if(hour < 12) {
+        return('A');
+    } else {
+        return('P');
+    }
 }
 
 /*-------------------------------------------------------------------------*/
 
 /*  DATESET FUNCTION  !!!! */
 
-int dateset(char name[],char tempy[],int length,int daymax[13],char month[13][4],char monthext[13][7],char node[],unsigned char clock[8])
+int dateset(char name[], char tempy[], int length, int daymax[13], 
+            char month[13][4], char monthext[13][7], char node[], 
+            unsigned char clock[8])
 {
-int h = 0, i, j, k = 0, slash = 0, colon = 0;
-char date[80];
-char *s1, *s2, temp[3][6];
-static char delim[] = "/-:";
+    int h, i, j, k, slash, colon;
+    char date[80];
+    char *s1, *s2, temp[3][6];
+    static char delim[] = "/-:";
+    
+    /* Initialize variables */
+    h = 0;
+    k = 0;
+    slash = 0;
+    colon = 0;
 
 strcpy(date,tempy);                  /* this is necessary for some reason */
 for( i = 0 ; i != length ; i++ ) {   /* or else argv[1] gets changed      */
@@ -399,10 +463,11 @@ else if(colon) {    /*  if a 'time' was entered  */
 
 /*  DEFAULTDATE FUNCTION  */
 
-void defaultdate(int tznflag, char *timezone,char day[7][4],char dayext[7][4],char month[13][4],unsigned char clock[8],int year_fix)
+void defaultdate(int tznflag, char *timezone, char day[7][4], 
+                 char dayext[7][4], char month[13][4], 
+                 unsigned char clock[8], int year_fix)
 {
-
-printf("%s%sday %02d-%s-%02d %02d:%02d:%02d",
+    printf("%s%sday %02d-%s-%02d %02d:%02d:%02d",
             day[clock[0]],
             dayext[clock[0]],
             clock[3],
@@ -421,23 +486,23 @@ if(tznflag) printf(" %s",timezone);
 
 char *ext(int day)
 {
-switch(day) {
-   case  1:
-   case 21:
-   case 31: return("st"); 
-   case  2:
-   case 22: return("nd");
-   case  3:
-   case 23: return("rd");
-   default: return("th");
-   }
+    switch(day) {
+        case  1:
+        case 21:
+        case 31: return("st"); 
+        case  2:
+        case 22: return("nd");
+        case  3:
+        case 23: return("rd");
+        default: return("th");
+    }
 }
 
 /*-------------------------------------------------------------------------*/
 
 /* HELPSCREEN FUNCTION  */
 
-void helpscreen(int escape_char,char node[])
+void helpscreen(int escape_char, char node[])
 {
 int dhelp;
 if(!access("c:datehelp",0)) {
@@ -466,9 +531,14 @@ exit(0);
 
 int isdst(unsigned char clock[8])
 {
-int year, startyear = 1980 , sday = 6 , eday , leapyear = 0, dstflag = 0;
-
-year = clock[1];
+    int year, startyear, sday, eday, leapyear, dstflag;
+    
+    /* Initialize variables */
+    startyear = 1980;
+    sday = 6;
+    leapyear = 0;
+    dstflag = 0;
+    year = clock[1];
 
 for(  ; year > 0 ; year--) {
      leapyear = 0;
@@ -500,7 +570,7 @@ return(dstflag);
 
 /*  MISTAKE FUNCTION  */
 
-void mistake(char description[],char node[])
+void mistake(char description[], char node[])
 {
 printf("\n\07[0m  ERROR: %s  --> [33m%s.[0m\n\n",node,description);
 exit(5);
@@ -510,7 +580,7 @@ exit(5);
 
 /*  QUITCHECK FUNCTION  */
 
-void quitcheck(char xxx[])  
+void quitcheck(char xxx[])
 {
 if(xxx[0] == 'q' || xxx[0] == 'Q') {
    puts("[0m\n");
@@ -522,13 +592,19 @@ if(xxx[0] == 'q' || xxx[0] == 'Q') {
 
 /*  SETDATE FUNCTION  */
 
-void setdate(unsigned char clock[8],int daymax[13],char month[13][4],char monthext[13][7],char node[])
+void setdate(unsigned char clock[8], int daymax[13], char month[13][4], 
+             char monthext[13][7], char node[])
 {
-char input[30];
-int temp;
-char current[] = "The current ";
-char accept[] = " or <return> to accept [q]: [33m";
-char new[] = " enter new ";
+    char input[30];
+    int temp;
+    char current[13];
+    char accept[30];
+    char new[12];
+    
+    /* Initialize strings */
+    strcpy(current, "The current ");
+    strcpy(accept, " or <return> to accept [q]: [33m");
+    strcpy(new, " enter new ");
 
 while(TRUE) {
       printf("\x0c\n\n\n  Set [33mDATE/TIME[0m Utility.                 by %s\n\n",AUTHOR);
@@ -681,18 +757,53 @@ exit(0);
 
 int twelve(int hour)
 {
-if(hour > 13) {
-   return(hour - 12);
-   }
-   else {
-   if(!hour) {
-      return(12);
-      }
-      else {
-      return(hour);
-      }
-   }
+    if(hour > 13) {
+        return(hour - 12);
+    } else {
+        if(!hour) {
+            return(12);
+        } else {
+            return(hour);
+        }
+    }
 } 
+
+/*-------------------------------------------------------------------------*/
+
+/* Simple argument parsing function to replace AmigaDOS argopt */
+static char *parse_args(int argc, char **argv, char *opts, int *next, char *option)
+{
+    static int optind = 1;
+    char *optarg = NULL;
+    int i;
+    
+    if (optind >= argc) {
+        return NULL;
+    }
+    
+    if (argv[optind][0] != '-') {
+        return NULL;
+    }
+    
+    *option = argv[optind][1];
+    *next = optind + 1;
+    
+    /* Check if option takes an argument */
+    for (i = 0; opts[i] != '\0'; i++) {
+        if (opts[i] == *option) {
+            if (optind + 1 < argc) {
+                optarg = argv[optind + 1];
+                optind += 2;
+            } else {
+                optind++;
+            }
+            return optarg;
+        }
+    }
+    
+    optind++;
+    return "";
+}
 
 /*-------------------------------------------------------------------------*/
 
