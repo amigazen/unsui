@@ -1,22 +1,73 @@
-/*-------------------------------------------------------------------------*/
-/*      program: date                                                      */
-/*      Purpose: display a formatted date/time or set system date/time.    */
-/*   Programmer: George Kerber                                             */
-/*      Written: 06/27/89                                                  */
-/*     Compiler: Lattice 5.04                                              */
-/*-------------------------------------------------------------------------*/
+/*
+ * date - unsui POSIX runtime for Amiga
+ * 
+ * Copyright (c) 2025 amigazen project. All rights reserved.
+ * 
+ * This version integrates AmigaDOS ReadArgs and standard POSIX getopt
+ * for command-line parsing, providing both POSIX compatibility and
+ * Amiga native functionality using dos.library clock functions.
+ * 
+ * SPDX-License-Identifier: BSD-2-Clause
+ * See LICENSE.md for full license text.
+ * 
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <unistd.h>
-#include <dos.h>
+#include <stdarg.h>
+#include <exec/types.h>
+#include <dos/dos.h>
+#include <dos/dosasl.h>
+#include <dos/rdargs.h>
+#include <workbench/workbench.h>
+#include <exec/memory.h>
+#include <dos/dosextens.h>
 
-#define WRITTEN "06/27/89 - 01/14/90"
-#define VERSION "v1.15c"
-#define AUTHOR "George Kerber"
-#define TRUE 1
+#include <proto/dos.h>
+#include <proto/exec.h>
+#include <proto/icon.h>
+#include <proto/utility.h>
+
+#include "common.h"
+#include "getopt.h"
+
+/* Version tag for Amiga */
+static const char *verstag = "$VER: date 2.0 (12/09/25)\n";
+static const char *stack_cookie = "$STACK: 4096";
+
+/* Magic numbers suggested or required by Posix specification */
+#define SUCCESS 0               /* exit code in case of success */
+#define FAILURE 1               /* or failure */
+
+/* External function declarations from common library */
+extern char *my_basename(char *path);
+extern int is_getopt_style(int argc, char **argv);
+extern char *build_command_string(int argc, char **argv, const char *exclude);
+extern int tokenize_string(char *str, char **argv, int max_args);
+extern void reset_getopt(void);
+extern int getopt(int argc, char * const argv[], const char *optstring);
+extern char *optarg;
+extern int optind;
+extern char **wildexpand(char *w);
+extern void wildfree(char **freelist);
+extern int amigaizepath(char *to);
+
+extern struct DosLibrary *DOSBase;
+
+/* Define snprintf if not available */
+#ifndef snprintf
+int snprintf(char *str, size_t size, const char *format, ...) {
+    va_list args;
+    int result;
+    va_start(args, format);
+    result = VSNPrintf(str, size, format, args);
+    va_end(args);
+    return result;
+}
+#endif
 
 /* Function prototypes */
 int ampm(int hour);
@@ -27,7 +78,6 @@ void defaultdate(int tznflag, char *timezone, char day[7][4],
                  char dayext[7][4], char month[13][4], 
                  unsigned char clock[8], int year_fix);
 char *ext(int day);
-void helpscreen(int escape_char, char node[]);
 void mistake(char description[], char node[]);
 void quitcheck(char xxx[]);
 void setdate(unsigned char clock[8], int daymax[13], char month[13][4], 
@@ -35,22 +85,264 @@ void setdate(unsigned char clock[8], int daymax[13], char month[13][4],
 int twelve(int hour);
 int isdst(unsigned char clock[8]);
 
-/* AmigaDOS function prototypes - these are declared in system headers */
-/* extern int stcgfn(char *node, char *argv0); - declared in string.h */
-/* extern int getclk(unsigned char clock[8]); - declared in dos.h */
-/* extern int chgclk(unsigned char clock[8]); - declared in dos.h */
-/* Simple argument parsing function to replace argopt */
-static char *parse_args(int argc, char **argv, char *opts, int *next, char *option);
-/* toupper and isdigit are declared in ctype.h */
-/* access is declared in unistd.h */
-/* gets, puts are declared in stdio.h */
-/* getenv is declared in stdlib.h */
+/* For ReadArgs template */
+enum {
+    ARG_FORMAT,
+    ARG_SET,
+    ARG_UTC,
+    ARG_REFERENCE,
+    ARG_DEBUG,
+    ARG_POSIX,
+    ARG_COUNT
+};
 
-int main(int argc, char *argv[])
-{ 
+/* Global options structure */
+typedef struct {
+    BOOL set_flag;              /* -s: set date/time */
+    BOOL utc_flag;              /* -u: use UTC instead of local time */
+    BOOL debug_flag;            /* -d: debug mode */
+    char *reference_file;       /* -r: reference file for -d */
+    char *format_string;        /* format string for output */
+    int exit_code;              /* Exit code */
+} DateOptions;
+
+/* Function declarations for forward references */
+void usage(const char *program);
+void print_version(const char *program);
+int run_date_logic(DateOptions *options, int file_count, char **files, const char *program);
+void parse_getopt_args(int argc, char **argv, DateOptions *options, int *file_start, const char *program);
+void init_options(DateOptions *options);
+void cleanup_options(DateOptions *options);
+
+/* Main function: dispatcher for parsing style */
+int main(int argc, char **argv)
+{
+    DateOptions options;
+    int file_start = 1;
+    char **files = NULL;
+    char *program;
+    
+    /* ReadArgs Path Variables */
+    const char *template = "FORMAT/K,SET/S,UTC/S,REFERENCE/K,DEBUG/S,POSIX/K/F";
+    LONG arg_array[ARG_COUNT] = {0};
+    struct RDArgs *rdargs = NULL;
+    char *cmd_string = NULL;
+    int ret_code = SUCCESS;
+    BOOL interactive_help = FALSE;
+    
+    /* POSIX/F Path Variables */
+    char *posix_str;
+    int new_argc;
+    char *new_argv[MAX_TEMPLATE_ITEMS];
+    int i;
+    int file_count;
+    char initial_args_str[256];
+    char user_input_buf[256];
+
+    if (argc < 1) {
+        exit(FAILURE);
+    }
+    
+    program = my_basename(argv[0]);
+
+    if (argc == 1) {
+        /* No arguments, show default date */
+        init_options(&options);
+        return run_date_logic(&options, 0, NULL, program);
+    }
+
+    /* Initialize options */
+    init_options(&options);
+
+    /* --- Logic to decide which parser to use --- */
+    if (is_getopt_style(argc, argv)) {
+        /* --- GETOPTS PATH --- */
+        parse_getopt_args(argc, argv, &options, &file_start, program);
+        files = &argv[file_start];
+        file_count = argc - file_start;
+        
+        return run_date_logic(&options, file_count, files, program);
+        
+    } else {
+        /* --- READARGS PATH --- */
+        for (i = 1; i < argc; i++) {
+            if (strcmp(argv[i], "?") == 0) {
+                interactive_help = TRUE;
+                break;
+            }
+        }
+
+        rdargs = AllocDosObject(DOS_RDARGS, NULL);
+        if (!rdargs) {
+            fprintf(stderr, "%s: out of memory for RDArgs\n", program);
+            cleanup_options(&options);
+            return FAILURE;
+        }
+
+        if (interactive_help) {
+            /* Interactive help mode - output ReadArgs template */
+            printf("%s: ", template);
+            
+            if (fgets(user_input_buf, sizeof(user_input_buf), stdin)) {
+                /* Remove newline */
+                user_input_buf[strcspn(user_input_buf, "\n")] = '\0';
+                
+                if (strlen(user_input_buf) > 0) {
+                    /* Process POSIX arguments */
+                    posix_str = user_input_buf;
+                    
+                    /* Build initial arguments string */
+                    snprintf(initial_args_str, sizeof(initial_args_str), "%s %s", program, posix_str);
+                    
+                    /* Tokenize the string */
+                    new_argc = tokenize_string(initial_args_str, new_argv, MAX_TEMPLATE_ITEMS);
+                    
+                    if (new_argc > 1) {
+                        /* Parse as POSIX arguments */
+                        parse_getopt_args(new_argc, new_argv, &options, &file_start, program);
+                        files = &new_argv[file_start];
+                        file_count = new_argc - file_start;
+                        
+                        ret_code = run_date_logic(&options, file_count, files, program);
+                    } else {
+                        usage(program);
+                        ret_code = FAILURE;
+                    }
+                } else {
+                    /* Use Amiga ReadArgs style */
+                    cmd_string = build_command_string(argc, argv, "?");
+                    if (!cmd_string) {
+                        fprintf(stderr, "%s: out of memory\n", program);
+                        cleanup_options(&options);
+                        FreeDosObject(DOS_RDARGS, rdargs);
+                        return FAILURE;
+                    }
+                    
+                    rdargs->RDA_Source.CS_Buffer = cmd_string;
+                    rdargs->RDA_Source.CS_Length = strlen(cmd_string);
+                    
+                    if (ReadArgs(template, arg_array, rdargs)) {
+                        /* Process ReadArgs results */
+                        if (arg_array[ARG_SET]) options.set_flag = TRUE;
+                        if (arg_array[ARG_UTC]) options.utc_flag = TRUE;
+                        if (arg_array[ARG_DEBUG]) options.debug_flag = TRUE;
+                        if (arg_array[ARG_REFERENCE]) options.reference_file = (char *)arg_array[ARG_REFERENCE];
+                        if (arg_array[ARG_FORMAT]) options.format_string = (char *)arg_array[ARG_FORMAT];
+                        
+                        files = NULL;
+                        file_count = 0;
+                        
+                        ret_code = run_date_logic(&options, file_count, files, program);
+                    } else {
+                        fprintf(stderr, "%s: invalid arguments\n", program);
+                        usage(program);
+                        ret_code = FAILURE;
+                    }
+                }
+            } else {
+                usage(program);
+                ret_code = FAILURE;
+            }
+        } else {
+            /* Standard ReadArgs processing */
+            cmd_string = build_command_string(argc, argv, NULL);
+            if (!cmd_string) {
+                fprintf(stderr, "%s: out of memory\n", program);
+                cleanup_options(&options);
+                FreeDosObject(DOS_RDARGS, rdargs);
+                return FAILURE;
+            }
+            
+            rdargs->RDA_Source.CS_Buffer = cmd_string;
+            rdargs->RDA_Source.CS_Length = strlen(cmd_string);
+            
+            if (ReadArgs(template, arg_array, rdargs)) {
+                /* Process ReadArgs results */
+                if (arg_array[ARG_SET]) options.set_flag = TRUE;
+                if (arg_array[ARG_UTC]) options.utc_flag = TRUE;
+                if (arg_array[ARG_DEBUG]) options.debug_flag = TRUE;
+                if (arg_array[ARG_REFERENCE]) options.reference_file = (char *)arg_array[ARG_REFERENCE];
+                if (arg_array[ARG_FORMAT]) options.format_string = (char *)arg_array[ARG_FORMAT];
+                
+                files = NULL;
+                file_count = 0;
+                
+                ret_code = run_date_logic(&options, file_count, files, program);
+            } else {
+                fprintf(stderr, "%s: invalid arguments\n", program);
+                usage(program);
+                ret_code = FAILURE;
+            }
+        }
+
+        /* Clean up */
+        FreeDosObject(DOS_RDARGS, rdargs);
+        free(cmd_string);
+    }
+
+    cleanup_options(&options);
+    return ret_code;
+}
+
+/*-------------------------------------------------------------------------*/
+
+/**
+ * @brief Parse arguments using getopt (POSIX style)
+ * @param argc Argument count
+ * @param argv Argument vector
+ * @param options Options structure to populate
+ * @param file_start Index where files start in argv
+ * @param program Program name for error messages
+ */
+void parse_getopt_args(int argc, char **argv, DateOptions *options, int *file_start, const char *program) {
+    int c;
+    
+    reset_getopt();
+    
+    while ((c = getopt(argc, argv, "d:r:suVh")) != -1) {
+        switch (c) {
+            case 'd':
+                options->debug_flag = TRUE;
+                options->reference_file = optarg;
+                break;
+            case 'r':
+                options->reference_file = optarg;
+                break;
+            case 's':
+                options->set_flag = TRUE;
+                break;
+            case 'u':
+                options->utc_flag = TRUE;
+                break;
+            case 'V':
+                print_version(program);
+                exit(SUCCESS);
+                break;
+            case 'h':
+                usage(program);
+                exit(SUCCESS);
+                break;
+            case '?':
+                exit(FAILURE);
+                break;
+        }
+    }
+    
+    *file_start = optind;
+}
+
+/**
+ * @brief Core date logic separated from argument parsing
+ * @param options Options structure
+ * @param file_count Number of files to process
+ * @param files Array of file names
+ * @param program Program name for error messages
+ * @return Exit code
+ */
+int run_date_logic(DateOptions *options, int file_count, char **files, const char *program) {
     /* Variable declarations - all at the beginning of the block */
-    int i, j, length, nflag, dflag, next, counter;
-    char option, leadspacer[80], *odata, *timezone, node[33], opts[2];
+    int i, j, length, nflag, dflag, counter;
+    char leadspacer[80], *odata, *timezone, node[33];
     char format[80];
     int escape_char, tznflag, y_fix;
     unsigned char clock[8];
@@ -63,14 +355,11 @@ int main(int argc, char *argv[])
     /* Initialize variables */
     nflag = 0;
     dflag = 0;
-    next = 1;
     counter = -1;
-    escape_char = '*';
+    escape_char = '%';  /* POSIX compliant escape character */
     tznflag = 0;
     y_fix = 80;
     leadspacer[0] = '\0';
-    opts[0] = 'm';
-    opts[1] = '\0';
     
     /* Initialize arrays */
     daymax[0] = 0; daymax[1] = 31; daymax[2] = 28; daymax[3] = 31;
@@ -93,279 +382,264 @@ int main(int argc, char *argv[])
     strcpy(monthext[6], "e"); strcpy(monthext[7], "y"); strcpy(monthext[8], "ust");
     strcpy(monthext[9], "tember"); strcpy(monthext[10], "ober"); strcpy(monthext[11], "ember"); strcpy(monthext[12], "ember");
 
-/*----- Sets escape value ----- temporary use of *timezone ----------------*/
+    /* Get program name */
+    stcgfn(node, (char *)program);
 
-timezone = getenv("ESCAPE");
-if(timezone != NULL) escape_char = *timezone;
+    /* Handle setting date/time if requested */
+    if (options->set_flag && file_count > 0 && files[0]) {
+        length = strlen(files[0]);
+        if(length > 2 && length < 9 && 
+           !dateset((char *)program, files[0], length, daymax, month, monthext, node, clock)) 
+           return SUCCESS;
+    }
 
-/*----- Help Screen -------------------------------------------------------*/
-
-stcgfn(node,argv[0]);
-if(argc == 2 && argv[1][0] == '?') helpscreen(escape_char,node);
-
-getclk(clock);   /*  gets current system clock settings  */
-if(clock[1] > 19) y_fix = -20;
-
-/*------------------------------------------------------*/
-
-/*  Is this a date or time change request ???  */
-length = strlen(argv[1]);
-if(length > 2 && length < 9 && 
-   !dateset(argv[0],argv[1],length,daymax,month,monthext,node,clock)) 
-   exit(0);
-
-/*---------------------------------------*/
-
-for( ; (odata = parse_args(argc,argv,opts,&next,&option)) != NULL ; ) {
-   switch(toupper(option)) {
-      case 'C':  printf("\x0c"); break;
-      case 'N':  nflag = 1; break ;
-      case 'D':  if(isdst(clock)) {
-                    clock[4]++;
-                    if(chgclk(clock)) mistake("Can't Correct for DST",node);
-                    }
-                 getclk(clock);
-                 dflag++;
-                 break;
-      case 'S':  setdate(clock,daymax,month,monthext,node); break ;
-      case 'M':  i = atoi(odata);
-                 if(!i || i > 69) mistake("Entry must be 1 - 69",node);
-                 for( ; i > 0 ; strcat(leadspacer," "), i--) ;
-                 break;
-       default:  mistake("Invalid Option",node); break;
-      }
-   }
-
-if(argc > (next + 1)) mistake("Extra option or Unquoted format string",node);
-
-/*---- SET TIMEZONE if set ------------------------------------------------*/
-timezone = getenv("TIMEZONE");
-i = strlen(timezone);
-if(i == 3 || i == 7) {
-   if(isdst(clock) && i == 7) {
-      timezone[0] = timezone[4]; 
-      timezone[1] = timezone[5]; 
-      timezone[2] = timezone[6]; 
-      }
-   timezone[3] = '\0'; tznflag++;
-   }
-   else {
-   timezone[0] = '\0';
-   }
-/*------------------------------------------------------------------------*/
-
-printf("%s",leadspacer);
-
-/*-----------------------------*/
-if(argc == next ) {
-   if(!dflag) {
-      odata = getenv("DEFAULT");
-      if(odata[0] != NULL) {
-         strcpy(format,odata);
-         }
-         else {
-         defaultdate(tznflag,timezone,day,dayext,month,clock,y_fix);
-         if(!nflag) printf("\n");
-         exit(0);
-         }
-      }           
-   }
-   else {
-   strcpy(format,argv[next]);
-   }
-/*-----------------------------*/
-
-while(format[++counter] != '\0') {
-   if(format[counter] == escape_char ) {
-      if(format[++counter] == escape_char ) {
-        printf("%c",escape_char);
-        continue;
+    /* Handle DST adjustment if requested */
+    if (options->debug_flag) {
+        if(isdst(clock)) {
+            clock[4]++;
+            if(chgclk(clock)) mistake("Can't Correct for DST", node);
         }
-      switch(format[counter]) {
-                    /*  abbreviated weekday name  */
-         case 'a':  printf("%s",day[clock[0]]); break ;
+        getclk(clock);
+        dflag++;
+    }
 
-                    /*  full weekday name  */
-         case 'A':  printf("%s%sday",day[clock[0]],dayext[clock[0]]); break ;
+    /* Handle interactive date setting if requested */
+    if (options->set_flag && file_count == 0) {
+        setdate(clock, daymax, month, monthext, node);
+        return SUCCESS;
+    }
 
-         case 'h':  /*  abbreviated month name  */
-         case 'b':  printf("%s",month[clock[2]]); break ;
+    getclk(clock);   /*  gets current system clock settings  */
+    if(clock[1] > 19) y_fix = -20;
 
-                    /*  full month name  */
-         case 'B':  printf("%s%s",month[clock[2]],monthext[clock[2]]); 
+    /*---- SET TIMEZONE if set ------------------------------------------------*/
+    timezone = getenv("TIMEZONE");
+    if (timezone) {
+        i = strlen(timezone);
+        if(i == 3 || i == 7) {
+            if(isdst(clock) && i == 7) {
+                timezone[0] = timezone[4]; 
+                timezone[1] = timezone[5]; 
+                timezone[2] = timezone[6]; 
+            }
+            timezone[3] = '\0'; tznflag++;
+        } else {
+            timezone[0] = '\0';
+        }
+    } else {
+        timezone = "";
+    }
+    /*------------------------------------------------------------------------*/
+
+    printf("%s", leadspacer);
+
+    /*-----------------------------*/
+    if (options->format_string) {
+        strcpy(format, options->format_string);
+    } else {
+        odata = getenv("DEFAULT");
+        if(odata && odata[0] != '\0') {
+            strcpy(format, odata);
+        } else {
+            defaultdate(tznflag, timezone, day, dayext, month, clock, y_fix);
+            if(!nflag) printf("\n");
+            return SUCCESS;
+        }
+    }
+    /*-----------------------------*/
+
+    /* Format and output the date */
+    while(format[++counter] != '\0') {
+        if(format[counter] == escape_char) {
+            if(format[++counter] == escape_char) {
+                printf("%c", escape_char);
+                continue;
+            }
+            switch(format[counter]) {
+                /* POSIX compliant format specifiers */
+                case 'a':  printf("%s", day[clock[0]]); break;  /* abbreviated weekday name */
+                case 'A':  printf("%s%sday", day[clock[0]], dayext[clock[0]]); break;  /* full weekday name */
+                case 'b':  printf("%s", month[clock[2]]); break;  /* abbreviated month name */
+                case 'B':  printf("%s%s", month[clock[2]], monthext[clock[2]]); break;  /* full month name */
+                case 'c':  printf("%s %02d-%s-%02d %02d:%02d", day[clock[0]], clock[3], month[clock[2]], clock[1] + y_fix, clock[4], clock[5]); break;  /* date and time */
+                case 'd':  printf("%02d", clock[3]); break;  /* day of month 01 to 31 */
+                case 'D':  printf("%02d/%02d/%02d", clock[2], clock[3], clock[1] + y_fix); break;  /* date as mm/dd/yy */
+                case 'e':  printf("%2d", clock[3]); break;  /* day of month 1 to 31 */
+                case 'F':  printf("%04d-%02d-%02d", clock[1] + 1980, clock[2], clock[3]); break;  /* full date */
+                case 'H':  printf("%02d", clock[4]); break;  /* hour 00 to 23 */
+                case 'I':  printf("%02d", twelve(clock[4])); break;  /* hour 01 to 12 */
+                case 'j':  /* julian date */
+                    if((clock[1] + 1980) % 4 == 0) daymax[2] = 29;
+                    for(i = 1, j = 0; i != clock[2]; j += daymax[i++]);
+                    j += clock[3];
+                    printf("%d", j);
                     break;
-
-                    /*  day of month 01 to 31   */
-         case 'd':  printf("%02d",clock[3]); break ;
-
-                    /*  prints date as mm/dd/yy  */
-         case 'D':  printf("%02d/%02d/%02d",
-                            clock[2],
-                            clock[3],
-                            clock[1] + y_fix);
-                    break;
-
-         case 'E':  /* day of month 1 to 31 */
-         case 'e':  printf("%2d",clock[3]); break ;
-
-         case 'o':
-         case 'k':  /* greeting and date and time  */
-         case 'g':  if(format[counter] == 'g' ||
-                       format[counter] == 'o') {; 
+                case 'm':  printf("%02d", clock[2]); break;  /* month of year 01-12 */
+                case 'M':  printf("%02d", clock[5]); break;  /* minute 00-59 */
+                case 'n':  printf("\n"); break;  /* newline */
+                case 'p':  printf("%cM", ampm(clock[4])); break;  /* AM/PM */
+                case 'r':  printf("%02d:%02d:%02d %cM", twelve(clock[4]), clock[5], clock[6], ampm(clock[4])); break;  /* 12-hour time */
+                case 'R':  printf("%02d:%02d", clock[4], clock[5]); break;  /* 24-hour time */
+                case 'S':  printf("%02d", clock[6]); break;  /* seconds 00-59 */
+                case 't':  printf("\t"); break;  /* tab */
+                case 'T':  printf("%02d:%02d:%02d", clock[4], clock[5], clock[6]); break;  /* time */
+                case 'u':  printf("%d", (clock[0] == 0) ? 7 : clock[0]); break;  /* day of week 1-7, Monday=1 */
+                case 'w':  printf("%d", clock[0]); break;  /* day of week 0-6, Sunday=0 */
+                case 'y':  printf("%d", clock[1] + y_fix); break;  /* two digit year */
+                case 'Y':  printf("%4d", clock[1] + 1980); break;  /* four digit year */
+                case 'Z':  if(tznflag) printf("%s", timezone); break;  /* timezone name */
+                
+                /* Amiga-specific extensions (using % prefix for compatibility) */
+                case 'g':  /* greeting and date and time */
                     printf("Good "); 
                     if(clock[4] < 12) {
-                       printf("Morning");
-                       }
-                    else if(clock[4] < 17) {
-                       printf("Afternoon");
-                       }
-                    else {
-                       printf("Evening");
-                       }
+                        printf("Morning");
+                    } else if(clock[4] < 17) {
+                        printf("Afternoon");
+                    } else {
+                        printf("Evening");
                     }
-
-                    if(format[counter] == 'g') printf("!    "); 
-                    if(format[counter] == 'k' ||
-                       format[counter] == 'g') {
-                   printf("Today is %s%sday, %s%s %d%s, %02d at %d:%02d %cM",
-                       day[clock[0]],
-                       dayext[clock[0]],
-                       month[clock[2]],
-                       monthext[clock[2]],
-                       clock[3],
-                       ext(clock[3]),
-                       clock[1] + 1980,
-                       twelve(clock[4]),
-                       clock[5],
-                       ampm(clock[4]));
-                    if(tznflag) printf(" (%s)",timezone);
-                    }
+                    printf("!    ");
+                    printf("Today is %s%sday, %s%s %d%s, %02d at %d:%02d %cM",
+                        day[clock[0]], dayext[clock[0]], month[clock[2]], monthext[clock[2]],
+                        clock[3], ext(clock[3]), clock[1] + 1980, twelve(clock[4]), clock[5], ampm(clock[4]));
+                    if(tznflag) printf(" (%s)", timezone);
                     break;
-
-                    /*  hour 00 to 23  */
-         case 'H':  printf("%02d",clock[4]); break ;
-
-                     /*  hour 01 to 12  */
-         case 'i':  printf("%d",twelve(clock[4])); break;
-
-                    /*  hour 01 to 12  */
-         case 'I':  printf("%02d",twelve(clock[4])); break;
-                    
-         case 'J':  /*  julian date and days remaining in year  */
-         case 'j':  if((clock[1] + 1980) % 4 == 0) daymax[2] = 29 ;
-                    for(i = 1, j = 0 ; i != clock[2] ; j += daymax[i++] );
-                    j += clock[3];
-                    if(format[counter] == 'j') { printf("%d",j); break; }
-                    if(daymax[2] == 28) i = 365; else i = 366;
-                    printf("%d",i - j);
-                    break;  
-
-                    /*  month of year 01-12  */
-         case 'm':  printf("%02d",clock[2]); break ;
-
-         case 'N':  /*  creates newline  */
-         case 'n':  printf("\n"); break ;
-
-                    /*  time as hh:mm:ss pp, pp is "am" or "pm" */
-         case 'r':  printf("%02d:%02d:%02d ",
-                           twelve(clock[4]),
-                           clock[5],
-                           clock[6]);
-                    /*  no break since am/pm is next  */
-
-                    /*  string containing "am" or "pm"  */
-         case 'p':  printf("%cM",ampm(clock[4]));
+                case 'k':  /* date/time string */
+                    printf("Today is %s%sday, %s%s %d%s, %02d at %d:%02d %cM",
+                        day[clock[0]], dayext[clock[0]], month[clock[2]], monthext[clock[2]],
+                        clock[3], ext(clock[3]), clock[1] + 1980, twelve(clock[4]), clock[5], ampm(clock[4]));
+                    if(tznflag) printf(" (%s)", timezone);
                     break;
+                case 'x':  printf("%s", ext(clock[3])); break;  /* date extension (st, nd, rd, th) */
+                case 'q':  printf("\""); break;  /* quote character */
+                
+                /* Amiga color codes (using % prefix) */
+                case '0':  printf("[30m"); break;  /* Blue pen color */
+                case '1':  printf("[31m"); break;  /* White pen color */
+                case '2':  printf("[32m"); break;  /* Black pen color */
+                case '3':  printf("[33m"); break;  /* Orange pen color */
+                case '4':  printf("[0m"); break;   /* Default colors */
+                case '5':  printf("[1m"); break;   /* Boldface */
+                case '6':  printf("[4m"); break;   /* Underline */
+                case '7':  printf("[3m"); break;   /* Italics */
+                case ')':  printf("[40m"); break;  /* color 0 bkgnd */
+                case '!':  printf("[41m"); break;  /* color 1 bkgnd */
+                case '@':  printf("[42m"); break;  /* color 2 bkgnd */
+                case '#':  printf("[43m"); break;  /* color 3 bkgnd */
 
-                    /* time as hh:mm  */
-         case 'R':  printf("%02d:",clock[4]);
-                    /*  no break since minute is next  */
+                default:  printf("\n\07  ERROR: %s  [33mBad Format Character.[0m \\(%c%c\\)\n\n",
+                            node, format[--counter], format[++counter]);
+                         return FAILURE;
+            }
+        } else {
+            putchar(format[counter]);
+        }
+    }
+    
+    printf("[0m");  /* Reset colors */
+    if(!nflag) printf("\n");
+    return SUCCESS;
+}
 
-         case 'M':  printf("%02d",clock[5]); break ;
+/**
+ * @brief Initialize options structure
+ * @param options Options structure to initialize
+ */
+void init_options(DateOptions *options) {
+    options->set_flag = FALSE;
+    options->utc_flag = FALSE;
+    options->debug_flag = FALSE;
+    options->reference_file = NULL;
+    options->format_string = NULL;
+    options->exit_code = SUCCESS;
+}
 
-                    /*  insert a tab character */
-         case 't':  printf("\t"); break ;
+/**
+ * @brief Clean up options structure
+ * @param options Options structure to clean up
+ */
+void cleanup_options(DateOptions *options) {
+    /* Nothing to clean up for this structure */
+    (void)options;
+}
 
-                    /*  prints time as hh:mm:ss  */
-         case 'T':  printf("%02d:%02d:",clock[4],clock[5]);
-                    /*  no break since seconds is next  */
+/**
+ * @brief Print usage information
+ * @param program Program name
+ */
+void usage(const char *program) {
+    printf("Usage (POSIX): %s [OPTION]... [+FORMAT] or %s [-u|--utc|--universal] [MMDDhhmm[[CC]YY][.ss]]\n", program, program);
+    printf("Usage (Amiga): %s [FORMAT/K] [SET/S] [UTC/S] [REFERENCE/K] [DEBUG/S] [POSIX/K/F]\n", program);
+    printf("Display the current time in the given FORMAT, or set the system date.\n\n");
+    printf("  -d, --date=STRING          display time described by STRING, not 'now'\n");
+    printf("  -r, --reference=FILE       display the last modification time of FILE\n");
+    printf("  -s, --set=STRING           set time described by STRING\n");
+    printf("  -u, --utc, --universal     print or set Coordinated Universal Time\n");
+    printf("  -h, --help                 display this help and exit\n");
+    printf("  -V, --version              output version information and exit\n\n");
+    printf("FORMAT controls the output.  Interpreted sequences are:\n");
+    printf("  %%%%a     locale's abbreviated weekday name (e.g., Sun)\n");
+    printf("  %%%%A     locale's full weekday name (e.g., Sunday)\n");
+    printf("  %%%%b     locale's abbreviated month name (e.g., Jan)\n");
+    printf("  %%%%B     locale's full month name (e.g., January)\n");
+    printf("  %%%%c     locale's date and time (e.g., Thu Mar  3 23:05:25 2005)\n");
+    printf("  %%%%d     day of month (01..31)\n");
+    printf("  %%%%e     day of month, space padded ( 1..31)\n");
+    printf("  %%%%F     full date; same as %%%%Y-%%%%m-%%%%d\n");
+    printf("  %%%%g     last two digits of year of ISO week number (see %%%%G)\n");
+    printf("  %%%%G     year of ISO week number (see %%%%V); normally useful only with %%%%V\n");
+    printf("  %%%%h     same as %%%%b\n");
+    printf("  %%%%H     hour (00..23)\n");
+    printf("  %%%%I     hour (01..12)\n");
+    printf("  %%%%j     day of year (001..366)\n");
+    printf("  %%%%k     hour, space padded ( 0..23); same as %%%%H\n");
+    printf("  %%%%l     hour, space padded ( 1..12); same as %%%%I\n");
+    printf("  %%%%m     month (01..12)\n");
+    printf("  %%%%M     minute (00..59)\n");
+    printf("  %%%%n     a newline\n");
+    printf("  %%%%N     nanoseconds (000000000..999999999)\n");
+    printf("  %%%%p     locale's equivalent of either AM or PM; blank if not known\n");
+    printf("  %%%%P     like %%%%p, but lower case\n");
+    printf("  %%%%r     locale's 12-hour clock time (e.g., 11:11:04 PM)\n");
+    printf("  %%%%R     24-hour hour and minute; same as %%%%H:%%%%M\n");
+    printf("  %%%%s     seconds since 1970-01-01 00:00:00 UTC\n");
+    printf("  %%%%S     second (00..60)\n");
+    printf("  %%%%t     a tab\n");
+    printf("  %%%%T     time; same as %%%%H:%%%%M:%%%%S\n");
+    printf("  %%%%u     day of week (1..7); 1 is Monday\n");
+    printf("  %%%%U     week number of year, with Sunday as first day of week (00..53)\n");
+    printf("  %%%%V     ISO week number, with Monday as first day of week (01..53)\n");
+    printf("  %%%%w     day of week (0..6); 0 is Sunday\n");
+    printf("  %%%%W     week number of year, with Monday as first day of week (00..53)\n");
+    printf("  %%%%x     locale's date representation (e.g., 12/31/99)\n");
+    printf("  %%%%X     locale's time representation (e.g., 23:13:48)\n");
+    printf("  %%%%y     last two digits of year (00..99)\n");
+    printf("  %%%%Y     year\n");
+    printf("  %%%%z     +hhmm numeric timezone (e.g., -0400)\n");
+    printf("  %%%%:z    +hh:mm numeric timezone (e.g., -04:00)\n");
+    printf("  %%%%::z   +hh:mm:ss numeric timezone (e.g., -04:00:00)\n");
+    printf("  %%%%:::z  numeric timezone with : to necessary precision (e.g., -04, +05:30)\n");
+    printf("  %%%%Z     alphabetic timezone abbreviation (e.g., EDT)\n\n");
+    printf("By default, date pads numeric fields with zeroes.\n");
+    printf("The following optional flags can follow '%%%%':\n");
+    printf("  -      (hyphen) do not pad the field\n");
+    printf("  _      (underscore) pad with spaces\n");
+    printf("  0      (zero) pad with zeros\n");
+    printf("  ^      use upper case if possible\n");
+    printf("  #      use opposite case if possible\n\n");
+    printf("After any flags comes an optional field width, as a decimal number;\n");
+    printf("then an optional modifier, which is either E to use the locale's\n");
+    printf("alternate representation if available, or O to use the locale's\n");
+    printf("alternate numeric symbols if available.\n");
+}
 
-                    /*  seconds 00 - 59  */
-         case 'S':  printf("%02d",clock[6]); break ;
-
-                    /*  prints day of week integer, Sunday = 0  */
-         case 'w':  printf("%d",clock[0]); break ;
-
-                    /*  prints day of week integer, Sunday = 1  */
-         case 'W':  printf("%d",clock[0] + 1); break ;
-
-                    /*  prints two character year  */
-         case 'y':  printf("%d",clock[1] + y_fix); break ;
-   
-         case 'q':  printf("\""); break;
-
-         case 'c':
-         case 'C':  printf("%s %02d-%s-%02d %02d:%02d",
-                       day[clock[0]],
-                       clock[3],
-                       month[clock[2]],
-                       clock[1] + y_fix,
-                       clock[4],
-                       clock[5]);
-                    if(tznflag) printf(" %s",timezone); 
-                    break;
-
-         case 'z':  /*  timezone name  */
-         case 'Z':  if(tznflag) printf("%s",timezone); break;
-                   
-                    /* displays default date string via descriptor  */ 
-         case '$':  defaultdate(tznflag,timezone,day,dayext,month,clock,y_fix);
-                    break;
-
-         case 'U':  /* UNIX type date  */
-         case 'u':  printf("%s %s %2d %02d:%02d:%02d ",
-                       day[clock[0]], 
-                       month[clock[2]],
-                       clock[3],
-                       clock[4],
-                       clock[5],
-                       clock[6]);
-                    if(tznflag) printf("%s ",timezone);
-                    /*  no break since year is next  */
-
-                    /*  prints year as ccyy  */
-         case 'Y':  printf("%4d",clock[1] + 1980); break ;
-
-         case 'X':  /*  prints date extension ex: th, nd, rd  */     
-         case 'x':  printf("%s",ext(clock[3])); break;
-
-         case '0':  printf("[30m"); break ;  /* Blue pen color         */
-         case '1':  printf("[31m"); break ;  /* White pen color        */
-         case '2':  printf("[32m"); break ;  /* Black pen color        */
-         case '3':  printf("[33m"); break ;  /* Orange pen color       */
-         case '4':  printf("[0m");  break ;  /* Default colors         */
-         case '5':  printf("[1m");  break ;  /* Boldface               */
-         case '6':  printf("[4m");  break ;  /* Underline              */
-         case '7':  printf("[3m");  break ;  /* Italics                */
-         case ')':  printf("[40m"); break;   /* color 0 bkgnd          */
-         case '!':  printf("[41m"); break;   /* color 1 bkgnd          */
-         case '@':  printf("[42m"); break;   /* color 2 bkgnd          */
-         case '#':  printf("[43m"); break;   /* color 3 bkgnd    [0m */
-
-          default:  printf("\n\07  ERROR: %s  [33mBad Format Character.[0m \(%c%c\)\n\n",
-                       node,format[--counter],
-                       format[++counter]);
-                    exit(5);
-         }
-      }
-      else {
-      putchar(format[counter]);
-      }
-   continue;
-   }
-printf("[0m");
-if(!nflag) printf("\n");
-exit(0);    /*  exit for good date formatting   */
+/**
+ * @brief Print version information
+ * @param program Program name
+ */
+void print_version(const char *program) {
+    printf("%s", verstag);
 }
 
 /*-------------------------------------------------------------------------*/
@@ -500,30 +774,6 @@ char *ext(int day)
 
 /*-------------------------------------------------------------------------*/
 
-/* HELPSCREEN FUNCTION  */
-
-void helpscreen(int escape_char, char node[])
-{
-int dhelp;
-if(!access("c:datehelp",0)) {
-   dhelp = 1 ;
-   printf("\x0c");
-   }
-   else {
-   dhelp = 0;
-   }
-printf("\n   [33m[1m%s[0m      %s %10s %25s[0m\n",node,AUTHOR,VERSION,WRITTEN);
-printf("   SYNTAX:  %s [-s] [hh:mm] [mm/dd[/yy]] [-d -n -m xx] [\"format string\"]\n",node);
-printf("            -s     Prompts user to set date/time.\n");
-printf("         hh:mm     Set time.\n");
-printf("    mm/dd[/yy]     Set date, year is optional.            Escape = \"[33m[1m%c[0m\"\n",
-   escape_char);
-printf("            -d     Automatic Daylight Savings Time adjustment.\n");
-printf("            -n     Supress NEWLINE.\n");
-printf("            -m xx  Begins date string at xx character position.\n\n");
-if(dhelp) system("c:datehelp x");
-exit(0);
-}
 
 /*-------------------------------------------------------------------------*/
 
@@ -607,7 +857,7 @@ void setdate(unsigned char clock[8], int daymax[13], char month[13][4],
     strcpy(new, " enter new ");
 
 while(TRUE) {
-      printf("\x0c\n\n\n  Set [33mDATE/TIME[0m Utility.                 by %s\n\n",AUTHOR);
+      printf("\x0c\n\n\n  Set [33mDATE/TIME[0m Utility.                 by George Kerber\n\n");
       while(TRUE) {
          printf("\n  [0m%syear is [33m[1m%2d[0m,  %syear%s",
             current,
@@ -770,52 +1020,4 @@ int twelve(int hour)
 
 /*-------------------------------------------------------------------------*/
 
-/* Simple argument parsing function to replace AmigaDOS argopt */
-static char *parse_args(int argc, char **argv, char *opts, int *next, char *option)
-{
-    static int optind = 1;
-    char *optarg = NULL;
-    int i;
-    
-    if (optind >= argc) {
-        return NULL;
-    }
-    
-    if (argv[optind][0] != '-') {
-        return NULL;
-    }
-    
-    *option = argv[optind][1];
-    *next = optind + 1;
-    
-    /* Check if option takes an argument */
-    for (i = 0; opts[i] != '\0'; i++) {
-        if (opts[i] == *option) {
-            if (optind + 1 < argc) {
-                optarg = argv[optind + 1];
-                optind += 2;
-            } else {
-                optind++;
-            }
-            return optarg;
-        }
-    }
-    
-    optind++;
-    return "";
-}
 
-/*-------------------------------------------------------------------------*/
-
-/*-------------------------------------------------------------------------*\
-
-10/04/89 v1.10:  Removed the requirement for strings to begin with a !
-10/29/89         Re-compiled with variable assignments changed.
-11/01/89 v1.11b: Re-compiled with Lattice 5.04
-12/30/89 v1.14:  Added daylight savings time functions.
-                 Added command line date and time set options.
-                 Removed all global variables.
-01/11/90 v1.15b: Re-compiled with Lattice 5.04a, fix for getenv
-01/14/90 v1.15c: Add env DEFAULT to change the default date string.
-
-\*-------------------------------------------------------------------------*/
