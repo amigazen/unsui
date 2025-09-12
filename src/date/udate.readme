@@ -1,0 +1,25 @@
+George Kerber                                             December 30th 1989
+19756 East Linvale Drive
+Aurora, Colorado  80013
+
+Compuserve:  74010,2132
+
+
+README notes for udate.
+
+
+The udate program has evolved since I first wrote the original version
+back in July of this year.  If you have an old version of udate or dst,
+I suggest that you read the documentation carefully, since there are
+some differences in the way the daylight savings time adjustment and
+the TIMEZONE variable are set.  This new version of udate actually
+combines the old udate and dst program into one program.
+
+The old dst command would set the TIMEZONE variable for you with the
+current timezone name and then the udate command would read it.  The
+new version of udate requires that the TIMEZONE variable be set by the
+user, see the documentation.  The new way seems much better and more UNIX
+like.
+
+
+                               George

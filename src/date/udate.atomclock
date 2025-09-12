@@ -1,0 +1,33 @@
+; Use this in a script that is automatically executed everytime
+; you boot.  This will cause Atomclock to be executed once a month during
+; your boot sequence.
+
+; set variable currentmonth with the current month
+date > env:currentmonth *m
+
+; read file which contains the previous month that atomclock was run and
+; place number in variable atommonth
+if not exists sys:s/atommonth
+   echo > sys:s/atommonth "00"
+   endif
+type > env:atommonth sys:s/atommonth
+
+; compare the 2 variables, if different, proceed.....
+if not $atommonth eq $currentmonth
+
+; set current month to file containing last execution of atomclock
+   date > sys:s/atommonth !%m
+
+   stack 10000
+   atomclock z/MST ;sets mountain standard time (MST)
+   rtclock -w      ;writes new correct time to battery clock
+   udate -d        ;adjusts clock if daylight savings time
+
+; optional: keep a record of the number of times atomclock has been
+; total will be in a file called atomclock-cnt.
+   if not exists sys:s/atomclock-cnt
+      echo > sys:s/atomclock-cnt "0"
+      endif
+   type > env:count sys:s/atomclock-cnt
+   eval <env:count > nil: to sys:s/atomclock-cnt value2 1 op + ?
+   endif

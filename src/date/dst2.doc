@@ -1,0 +1,51 @@
+      Program:  dst2
+   Programmer:  George Kerber
+      Written:  01/01/90
+      Purpose:  Automatically adjust the Amiga system clock for 
+                Daylight Savings Time
+
+
+    Directions:  1.  Copy 'dst2' to your c: directory.
+                 2.  Always keep your battery backup clock set for
+                     STANDARD time in your area.
+                 3.  Add 'dst2' to your startup-sequence after any command
+                     necessary to read your battery backup clock.
+
+
+                 
+    Then whenever you boot up your Amiga, DST2 will check if it's daylight
+    savings time for the current year.  If daylight savings time is in
+    effect, DST2 will increment your system clock by 1 hour.  Since this
+    will not change your battery backup clock, the test will be valid
+    every time you boot up.
+
+    Only run DST2 once per login session, or the clock may get incremented
+    more than once.
+
+
+
+    NOTE:  I released a version of DST a while ago that was much larger and
+           did more things.  All versions have the same functions, but this
+           version (2.0) will not automatically set the env variable 
+           TIMEZONE for use with the old udate program.  The TIMEZONE
+           env variable that was set with the old DST program is not
+           compatible with the newest udate program anyway.
+
+           If you are using the latest version (1.15c) of 'udate' that I 
+           wrote the 'dst' functions are included in 'udate'.  So there is
+           no reason to use 'dst'.  I simply wrote a stand alone version
+           of 'dst' to accomodate the people who wanted the 'dst' functions
+           in a smaller package that the entire 'udate' program.
+
+
+
+     STATUS:  This program is public domain and can be freely distributed.
+              Please keep me as author and distribute both the documents
+              and program together.  I'm not responsible for anything....
+              (I hate responsibility)
+
+
+               George Kerber
+               19756 E. Linvale Drive
+               Aurora, CO  80013
+               303-693-2890
