@@ -303,7 +303,6 @@ int main(int argc, char **argv)
         case 'v':
             /* Version - simplified for this implementation */
             printf("md5sum (POSIX implementation) 1.0\n");
-            printf("Copyright (C) 1990, RSA Data Security, Inc.\n");
             return 0;
         case 'w':
             warn_mode = 1;

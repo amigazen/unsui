@@ -1,0 +1,205 @@
+MD5(1)                      General Commands Manual                     MD5(1)
+
+NAME
+     md5, md5sum – calculate a message-digest fingerprint (checksum) for a file
+
+SYNOPSIS
+     md5 [-pqr] [-c string] [-s string] [file ...]
+     md5 -t
+     md5 -x
+
+     md5sum [-bctvwz] [--binary] [--check] [--help] [--ignore-missing]
+            [--quiet] [--status] [--strict] [--tag] [--text] [--version]
+            [--warn] [--zero] [file ...]
+
+DESCRIPTION
+     The md5 and md5sum utilities take as input a message of arbitrary length
+     and produce as output a "fingerprint" or "message digest" of the input.
+
+     The md5 utility provides a BSD-style interface with options similar to
+     the macOS version, while md5sum provides a GNU-style interface compatible
+     with GNU coreutils.
+
+     In all cases, each file listed on the command line is processed
+     separately.  If no files are listed on the command line, or a file name
+     is given as -, input is taken from stdin instead.
+
+     It is conjectured that it is computationally infeasible to produce two
+     messages having the same message digest, or to produce any message having
+     a given prespecified target message digest.
+
+     The MD5 algorithm has been proven to be vulnerable to practical collision
+     attacks and should not be relied upon to produce unique outputs, nor
+     should it be used as part of a cryptographic signature scheme. As of
+     2017-03-02, there is no publicly known method to reverse either algorithm,
+     i.e., to find an input that produces a specific output.
+
+     It is recommended that all new applications use SHA-512 instead of MD5.
+
+BSD OPTIONS (md5)
+     The following options are available for the md5 command:
+
+     -c string, --check=string
+             Compare the digest of the file against this string.  If combined
+             with the -q or --quiet option, the calculated digest is printed
+             in addition to the exit status being set.  (Note that this option
+             is not yet useful if multiple files are specified.)
+
+     -p, --passthrough
+             Echo stdin to stdout and append the checksum to stdout.  In this
+             mode, any files specified on the command line are silently
+             ignored.
+
+     -q, --quiet
+             Quiet mode — only the checksum is printed out.  Overrides the -r
+             or --reverse option.
+
+     -r, --reverse
+             Reverses the format of the output.  This helps with visual diffs.
+
+     -s string, --string=string
+             Print a checksum of the given string.  In this mode, any files
+             specified on the command line are silently ignored.
+
+     -t, --time-trial
+             Run a built-in time trial.  For compatibility with coreutils.
+
+     -x, --self-test
+             Run a built-in test script.
+
+GNU OPTIONS (md5sum)
+     The following options are available for the md5sum command:
+
+     -b, --binary
+             Read files in binary mode.
+
+     -c, --check
+             The file passed as arguments must contain digest lines generated
+             by the same digest algorithm in either classical BSD format or in
+             GNU coreutils format.  A line with the file name followed by a
+             colon ":" and either OK or FAILED is written for each well-formed
+             line in the digest file.  If applicable, the number of failed
+             comparisons and the number of lines that were skipped since they
+             were not well-formed are printed at the end.  The --quiet option
+             can be used to quiesce the output unless there are mismatched
+             entries in the digest.
+
+     --help  Print a usage message and exit.
+
+     --ignore-missing
+             When verifying checksums, ignore files for which checksums are
+             given but which aren't found on disk.
+
+     --quiet
+             When verifying checksums, do not print anything unless the
+             verification fails.
+
+     --status
+             When verifying checksums, do not print anything at all.  The exit
+             code will reflect whether verification succeeded.
+
+     --strict
+             When verifying checksums, fail if the input is malformed.
+
+     --tag   Produce BSD-style output.
+
+     -t, --text
+             Read files in text mode.  This is the default.  Note that this
+             implementation does not differentiate between binary and text
+             mode.
+
+     --version
+             Print version information and exit.
+
+     -w, --warn
+             When verifying checksums, warn about malformed input.
+
+     -z, --zero
+             Terminate output lines with NUL rather than with newline.
+
+EXIT STATUS
+     The md5 utility exits 0 on success, 1 if at least one of the input files
+     could not be read, and 2 if at least one file does not have the same hash
+     as the -c option.
+
+     The md5sum utility exits 0 on success and 1 if at least one of the input
+     files could not be read or, when verifying checksums, does not have the
+     expected checksum.
+
+EXAMPLES
+     Calculate the MD5 checksum of the string "Hello".
+
+           $ md5 -s Hello
+           MD5 ("Hello") = 8b1a9953c4611296a827abf8c47804d7
+
+     Same as above, but note the absence of the newline character in the input
+     string:
+
+           $ echo -n Hello | md5
+           8b1a9953c4611296a827abf8c47804d7
+
+     Calculate the checksum of multiple files reversing the output:
+
+           $ md5 -r /boot/loader.conf /etc/rc.conf
+           ada5f60f23af88ff95b8091d6d67bef6 /boot/loader.conf
+           d80bf36c332dc0fdc479366ec3fa44cd /etc/rc.conf
+
+     This is almost but not quite identical to the output from GNU mode:
+
+           $ md5sum /boot/loader.conf /etc/rc.conf
+           ada5f60f23af88ff95b8091d6d67bef6  /boot/loader.conf
+           d80bf36c332dc0fdc479366ec3fa44cd  /etc/rc.conf
+
+     Note the two spaces between hash and file name.  If binary mode is
+     requested, they are instead separated by a space and an asterisk:
+
+           $ md5sum -b /boot/loader.conf /etc/rc.conf
+           ada5f60f23af88ff95b8091d6d67bef6 */boot/loader.conf
+           ada5f60f23af88ff95b8091d6d67bef6 */etc/rc.conf
+
+     Write the digest for /boot/loader.conf in a file named digest.  Then
+     calculate the checksum again and validate it against the checksum string
+     extracted from the digest file:
+
+           $ md5 /boot/loader.conf > digest && md5 -c $(cut -f2 -d= digest) /boot/loader.conf
+           MD5 (/boot/loader.conf) = ada5f60f23af88ff95b8091d6d67bef6
+
+     Same as above but comparing the digest against an invalid string
+     ("randomstring"), which results in a failure.
+
+           $ md5 -c randomstring /boot/loader.conf
+           MD5 (/boot/loader.conf) = ada5f60f23af88ff95b8091d6d67bef6 [ Failed ]
+
+     In GNU mode, the -c option does not compare against a hash string passed
+     as parameter.  Instead, it expects a digest file, as created under the
+     name digest for /boot/loader.conf in the example above.
+
+           $ md5sum -c digest /boot/loader.conf
+           /boot/loader.conf: OK
+
+     The digest file may contain any number of lines in the format generated
+     in either BSD or GNU mode.  If a hash value does not match the file,
+     "FAILED" is printed instead of "OK".
+
+     Run the built-in self-test:
+
+           $ md5 -x
+           MD5 self-test:
+           Test 1: d41d8cd98f00b204e9800998ecf8427e "" - PASSED
+           Test 2: 0cc175b9c0f1b6a831c399e269772661 "a" - PASSED
+           ...
+
+SEE ALSO
+     cksum(1), sha1(1), sha256(1), sha512(1)
+
+     R. Rivest, The MD5 Message-Digest Algorithm, RFC1321.
+
+ACKNOWLEDGMENTS
+     This utility was originally derived from a program which was placed in
+     the public domain for free general use by RSA Data Security.
+
+     The BSD-style interface is based on the macOS md5 command.
+
+     The GNU-style interface is compatible with GNU coreutils md5sum.
+
+POSIX Implementation                    February 2025                    MD5(1)
