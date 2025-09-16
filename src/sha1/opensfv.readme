@@ -1,0 +1,41 @@
+Short:        Checksum generator/validator
+Author:       Shane Lahey, Fredrik Wikstrom (OS4 port)
+Uploader:     Fredrik Wikstrom <fredrik@a500.org>
+Type:         util/misc
+Version:      1.0b4
+Architecture: ppc-amigaos
+
+Port changes:
+
+(10-Apr-2008)
+ - Fixed -d option by linking with -lunix
+
+(9-Apr-2008)
+ - First released version
+
+http://opensfv.sourceforge.net/
+
+OpenSFV 1.0b4 -- Copyright (c) 2005-2006, Shane Lahey <s.lahey@gmail.com>
+Usage: opensfv <file1> [file2] [file3]...
+
+Generates SFV(crc32) checksums for the given file(s)
+and outputs the results to stdout, or optinally validates
+the SFV file <sfvfile> (see below for details)
+
+[SFV validation options]
+   -c <sfvfile>     - validate <sfvfile>
+   -d <path>        - files in <sfvfile> are located in folder <path>
+
+[SFV generation options]
+   -i               - include file info in the header of sfv files
+   -d <path>        - create SFV's for all files in <path>
+   -r               - create SFV's for all subdirs in <path> (used with -d
+                      only)
+
+[Miscellaneous options]
+   -v               - display version info and exit.
+   -h               - display this help and exit.
+
+[Hash options]
+   -m               - generate/validate MD5 instead of SFV
+   -s               - generate/validate SHA1 instead of SFV
