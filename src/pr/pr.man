@@ -1,0 +1,55 @@
+PR(1)                       **** Reference Manual ****                     PR(1)
+
+
+NAME
+     pr      - prints files to the printer
+
+
+USAGE
+
+     pr [options] file1 [file2 ...]
+
+
+DESCRIPTION
+
+     Pr produces a printed listing of one or more files.  It separates the 
+     output into pages headed by the name of the file, the page number, and 
+     the date.  Options apply to all following files.  The program will accept 
+     Un*x style wildcards:
+     
+                        *  matches any substring
+                        ?  matches any single character
+
+
+OPTIONS
+
+          -?    - displays this page
+          -c    - confirms wild cards
+                  <CR>, y, or Y - print this file
+                  n or N - don't print this file
+                  ! - print this and all remaining files
+          -f    - specifies wide carriage
+          -h    - removes headers
+          -l#   - specifies the # of lines per page
+          -m#   - specifies the # of copies
+          -n    - displays line numbers
+          -s    - diverts output to the standard output
+          -w    - wraps lines
+
+
+BUGS
+
+     Probably some.
+     
+     
+NOTES
+
+     This code may be freely distributed provided this notice is retained.
+
+
+COPYRIGHT
+
+     Copyright 1987 by Samuel Paolucci
+
+
+                                                                Printed 10/12/87
