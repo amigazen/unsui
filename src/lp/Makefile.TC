@@ -1,0 +1,82 @@
+
+# LP/TI/CHARS Makefile for Turbo C Version 1.0, MS-DOS
+# (c)Copyright 1992-93 by Tobias Ferber,  All Rights Reserved
+
+TC_PATH= c:\devel\tc
+TC_BIN_PATH= $(TC_PATH)\bin
+TC_LIB_PATH= $(TC_PATH)\libs
+TC_INCLUDE_PATH= $(TC_PATH)\include
+
+CC= $(TC_BIN_PATH)\tcc.exe
+LN= $(TC_BIN_PATH)\tlink.exe
+
+DEFINES= -DMACHINE=MS-DOS
+
+CFLAGS=\
+	-I$(TC_INCLUDE_PATH)\
+	-L$(TC_LIB_PATH)\
+	$(DEFINES)\
+	-N -O -G -Z -f- -A -mm -a -y -k -w-pia
+
+LFLAGS=	/x/l/d
+
+OBJS=\
+	$(TC_LIB_PATH)\c0m.obj
+
+LIBS=\
+	$(TC_LIB_PATH)\cm.lib
+
+
+# *** / ALL / ***
+
+all: lp ti chars
+	del *.o
+
+# *** / LP / ***
+
+lp: lp.exe
+
+LP_OBJS= opts.o args.o jobparm.o print.o
+
+lp.exe: lp.o $(LP_OBJS)
+	$(LN) $(LFLAGS) lp.o $(LP_OBJS) $(OBJS) $(LIBS)
+
+lp.o: lp.c lp.h
+	$(CC) $(CFLAGS) -c -olp.o lp.c
+
+opts.o: opts.c lp.h
+	$(CC) $(CFLAGS) -c -oopts.o opts.c
+
+args.o: args.c lp.h
+	$(CC) $(CFLAGS) -c -oargs.o args.c
+
+jobparm.o: jobparm.c lp.h
+	$(CC) $(CFLAGS) -c -ojobparm.o jobparm.c
+
+print.o: print.c lp.h
+	$(CC) $(CFLAGS) -c -oprint.o print.c
+
+
+# *** / TI / ***
+
+ti: ti.exe
+
+ti.exe: ti.o
+	$(LN) $(LFLAGS) ti.o $(OBJS) $(LIBS)
+
+ti.o: ti.c
+	$(CC) $(CFLAGS) -c -oti.o ti.c
+
+
+# *** / CHARS / ***
+
+chars: chars.exe
+
+chars.exe: chars.o
+	$(LN) $(LFLAGS) chars.o $(OBJS) $(LIBS)
+
+chars.o: chars.c
+	$(CC) $(CFLAGS) -c -ochars.o chars.c
+
+
+

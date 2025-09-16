@@ -1,0 +1,55 @@
+# LP/TI MakeFile for the GNU C/C++ Compiler under MS-DOS (DJGPP)
+# (c)Copyright 1991-93 by Tobias Ferber,  All Rights Reserved.
+
+CC=gcc
+CFLAGS=-O -DMACHINE=MS-DOS
+
+STUB=c:\devel\djgpp\bin\stub.exe
+LPOBJS= opts.o args.o jobparm.o print.o
+
+all: lp ti
+
+# *** / LP / ***
+
+lp: lp.exe
+
+lp.exe: lp.out
+	copy /b $(STUB) + $< $@ > nul:
+	del lp.out
+
+lp.out: lp.c $(LPOBJS)
+	$(CC) $(CFLAGS) -o $@ $?
+
+opts.o: opts.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+args.o: args.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+jobparm.o: jobparm.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+print.o: print.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+# *** / TI / ***
+
+ti: ti.exe
+
+ti.exe: ti.out
+	copy /b $(STUB) + $< $@ > nul:
+	del $<
+
+ti.out: ti.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+# *** / CHARS / ***
+
+chars: chars.exe
+
+chars.exe: chars.out
+	copy /b $(STUB) + $< $@ > nul:
+	del $<
+
+chars.out: chars.c
+	$(CC) $(CFLAGS) -o $@ $<
