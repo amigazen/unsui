@@ -1,0 +1,34 @@
+# LP command SMakefile for Unsui POSIX runtime
+
+# Tools
+CC = sc
+LD = slink
+RM = delete
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS
+LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib LIB NOICONS
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
+
+# Object files for lp
+OBJS = sc:lib/cres.o lp.o /common/common.o /common/getopt.o
+
+# Main target
+all: lp
+
+# Build lp command
+lp: $(OBJS)
+	$(LD) $(LDFLAGS) FROM $(OBJS) TO lp
+
+# Compile source files
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+lp.o: lp.c /common/common.h /common/getopt.h lp.h spool.h
+
+# Clean target
+clean:
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) lp
+
+# Install target
+install: lp
+	copy lp //SDK/C/lp
