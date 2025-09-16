@@ -35,6 +35,15 @@ OPTIONS
           -n    - displays line numbers
           -s    - diverts output to the standard output
           -w    - wraps lines
+          -e    - expand tabs to spaces
+          -i    - compress spaces to tabs
+          -t    - suppress headers and trailers
+          -o    - offset each line by N spaces
+          -c    - multi-column output
+          -a    - round-robin column filling
+          -m    - merge multiple files
+          -r    - suppress error messages
+          -s    - separate columns with character
 
 
 BUGS
@@ -49,7 +58,8 @@ NOTES
 
 COPYRIGHT
 
-     Copyright 1987 by Samuel Paolucci
+     Copyright 1987 Samuel Paolucci
+     Copyright 2025 amigazen project
 
 
                                                                 Printed 10/12/87

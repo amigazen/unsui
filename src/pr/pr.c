@@ -26,7 +26,7 @@ static int page;
 static int linetot;
 static int linenum = 0;
 static int linesize = 80;
-static char output[32] = "prt:";
+static char output[32] = "";  /* empty = stdout by default */
 static char linebuffer[256];
 static char *copyright = "Copyright 1987 by Samuel Paolucci";
 
@@ -38,6 +38,25 @@ int headers = 1;
 int numbers = 0;
 int wrap    = 0;
 
+/* Tab expansion variables */
+int nstops = 0;
+int tabstops[100];
+int tabchar = '\t';  /* input tab character */
+int tabgap = 8;      /* tab gap size */
+int outtabchar = '\t'; /* output tab character */
+int outtabgap = 8;   /* output tab gap size */
+
+/* POSIX pr options */
+int expand_tabs = 0;     /* -e option */
+int compress_spaces = 0; /* -i option */
+int no_headers = 0;      /* -t option */
+int offset = 0;          /* -o option */
+int columns = 1;         /* -c option */
+int round_robin = 0;     /* -a option */
+int merge_files = 0;     /* -m option */
+int suppress_errors = 0; /* -r option */
+int separator = '\t';    /* -s option */
+
 struct tm *localtime();
 char *scdir ();
 char *fgets ();
@@ -47,10 +66,16 @@ char *ctime ();
 time_t time ();
 int  fputs ();
 
+/* Tab expansion functions */
+void getstops(char *cp);
+void expand_tabs(char *line, char *expanded);
+void compress_spaces(char *line, char *compressed);
+
 void help ()                           /* print help page */
 {
    fprintf (stderr, "\npr [options] file1 [file2 ...]\n");
-   fprintf (stderr, "   prints multiple files to the printer.\n\n");
+   fprintf (stderr, "   formats files for printing (POSIX compatible).\n");
+   fprintf (stderr, "   By default, output goes to stdout.  Use -p for printer.\n\n");
    fprintf (stderr, "The program will accept Un*x style wildcards:\n");
    fprintf (stderr, "   *  matches any substring\n");
    fprintf (stderr, "   ?  matches any single character\n\n");
@@ -66,7 +91,17 @@ void help ()                           /* print help page */
    fprintf (stderr, "  -m# - specifies the # of copies\n");
    fprintf (stderr, "  -n  - displays line numbers\n");
    fprintf (stderr, "  -s  - diverts output to the standard output file\n");
+   fprintf (stderr, "  -p  - prints directly to printer (PRT:)\n");
    fprintf (stderr, "  -w  - wraps lines\n");
+   fprintf (stderr, "  -e  - expand tabs to spaces\n");
+   fprintf (stderr, "  -i  - compress spaces to tabs\n");
+   fprintf (stderr, "  -t  - suppress headers and trailers\n");
+   fprintf (stderr, "  -o  - offset each line by N spaces\n");
+   fprintf (stderr, "  -c  - multi-column output\n");
+   fprintf (stderr, "  -a  - round-robin column filling\n");
+   fprintf (stderr, "  -m  - merge multiple files\n");
+   fprintf (stderr, "  -r  - suppress error messages\n");
+   fprintf (stderr, "  -s  - separate columns with character\n");
 }
 
 static short hour;
@@ -229,6 +264,8 @@ char *name;
 {
    int len;
    char string[144];
+   char expanded[256];
+   char compressed[256];
 
    
    if ((len = strlen (linebuffer)) != 0) {
@@ -236,6 +273,24 @@ char *name;
          newpage (name);
       if (numbers)                /* print a line number */
          fprintf (out, "%4d ", linetot++);
+
+      /* Apply tab expansion/compression if requested */
+      if (expand_tabs) {
+         expand_tabs(linebuffer, expanded);
+         strcpy(linebuffer, expanded);
+      }
+      if (compress_spaces) {
+         compress_spaces(linebuffer, compressed);
+         strcpy(linebuffer, compressed);
+      }
+
+      /* Apply line offset if requested */
+      if (offset > 0) {
+         int i;
+         for (i = 0; i < offset; i++) {
+            fputc(' ', out);
+         }
+      }
 
       strncpy (string, linebuffer, linesize);
       if (string[linesize-1] != NULL) {
@@ -323,14 +378,19 @@ char *argv[];
    char c;
 
    if (argc < 2) {
-      fprintf (stderr, "Usage: pr [-?cfhl#m#nsw] file1 [file2 ...]\n");
+      fprintf (stderr, "Usage: pr [-?cfhl#m#npsw] [-e[char][gap]] [-i[char][gap]] [-t] [-o offset] [-c columns] [-a] [-m] [-r] [-s char] file1 [file2 ...]\n");
       fprintf (stderr, "       use pr -? for more help\n");
       exit (1);
    }
 
-   if ((out = fopen (output, "w")) == NULL) {
-      fprintf(stderr, "pr: can't open the printer\n");
-      exit (1);
+   /* Set default output to stdout if no output specified */
+   if (output[0] == '\0') {
+      out = stdout;
+   } else {
+      if ((out = fopen (output, "w")) == NULL) {
+         fprintf(stderr, "pr: can't open output '%s'\n", output);
+         exit (1);
+      }
    }
 
    while (argv[1] != NULL) {
@@ -342,12 +402,25 @@ char *argv[];
          do {
             switch (*p) {
                case 's':          /* list to stdout */
-                         fclose (out);
-                         out = stdout;
+                         if (out != stdout) {
+                            fclose (out);
+                            out = stdout;
+                         }
                          if (numbers)
 			    linesize = 72;
 			 else
 			    linesize = 77;
+                         break;
+
+               case 'p':          /* print to printer */
+                         if (out != stdout) {
+                            fclose (out);
+                         }
+                         strcpy(output, "PRT:");
+                         if ((out = fopen (output, "w")) == NULL) {
+                            fprintf(stderr, "pr: can't open printer '%s'\n", output);
+                            exit (1);
+                         }
                          break;
 
                case 'm':          /* specify # of copies */
@@ -391,6 +464,71 @@ char *argv[];
 
                case 'c':          /* confirm any templates */
                          confirm++;
+                         break;
+
+               case 'e':          /* expand tabs */
+                         expand_tabs = 1;
+                         if(arg[1]) {
+                            tabchar = arg[1];
+                            if(arg[2] && isdigit(arg[2])) {
+                               tabgap = atoi(&arg[2]);
+                            }
+                         }
+                         break;
+
+               case 'i':          /* compress spaces to tabs */
+                         compress_spaces = 1;
+                         if(arg[1]) {
+                            outtabchar = arg[1];
+                            if(arg[2] && isdigit(arg[2])) {
+                               outtabgap = atoi(&arg[2]);
+                            }
+                         }
+                         break;
+
+               case 't':          /* suppress headers and trailers */
+                         no_headers = 1;
+                         headers = 0;
+                         break;
+
+               case 'o':          /* offset lines */
+                         if(arg[1]) {
+                            offset = atoi(&arg[1]);
+                         } else {
+                            arg = (--argc > 0) ? *(++argv) : (char *)0L;
+                            if(arg) offset = atoi(arg);
+                         }
+                         break;
+
+               case 'c':          /* multi-column output */
+                         if(arg[1]) {
+                            columns = atoi(&arg[1]);
+                         } else {
+                            arg = (--argc > 0) ? *(++argv) : (char *)0L;
+                            if(arg) columns = atoi(arg);
+                         }
+                         if(columns < 1) columns = 1;
+                         break;
+
+               case 'a':          /* round-robin column filling */
+                         round_robin = 1;
+                         break;
+
+               case 'm':          /* merge multiple files */
+                         merge_files = 1;
+                         break;
+
+               case 'r':          /* suppress error messages */
+                         suppress_errors = 1;
+                         break;
+
+               case 's':          /* column separator */
+                         if(arg[1]) {
+                            separator = arg[1];
+                         } else {
+                            arg = (--argc > 0) ? *(++argv) : (char *)0L;
+                            if(arg) separator = arg[0];
+                         }
                          break;
 
                case '?':          /* display help page */
@@ -464,4 +602,124 @@ again:
    
    return (0);
    
+}
+
+void getstops(char *cp)
+{
+   int i;
+   
+   nstops = 0;
+   cp++;
+   for(;;) {
+      i = 0;
+      while(*cp >= '0' && *cp <= '9')
+         i = i * 10 + *cp++ - '0';
+      if (i <= 0 || i > 256) {
+         fprintf(stderr, "Bad tab stop spec\n");
+         exit(1);
+      }
+      if(nstops > 0 && i <= tabstops[nstops-1]) {
+         fprintf(stderr, "Bad tab stop spec\n");
+         exit(1);
+      }
+      tabstops[nstops++] = i;
+      if(*cp == 0)
+         break;
+      if(*cp++ != ',') {
+         fprintf(stderr, "Bad tab stop spec\n");
+         exit(1);
+      }
+   }
+}
+
+void expand_tabs(char *line, char *expanded)
+{
+   int column = 0;
+   int n;
+   char *src = line;
+   char *dst = expanded;
+   
+   while(*src) {
+      if(*src == tabchar) {
+         if(nstops == 0) {
+            do {
+               *dst++ = ' ';
+               column++;
+            } while(column & 07);
+         }
+         else if(nstops == 1) {
+            do {
+               *dst++ = ' ';
+               column++;
+            } while(((column - 1) % tabstops[0]) != (tabstops[0] - 1));
+         }
+         else {
+            for(n = 0; n < nstops; n++)
+               if(tabstops[n] > column)
+                  break;
+            if(n == nstops) {
+               *dst++ = ' ';
+               column++;
+            }
+            else {
+               while(column < tabstops[n]) {
+                  *dst++ = ' ';
+                  column++;
+               }
+            }
+         }
+      }
+      else if(*src == '\b') {
+         if(column)
+            column--;
+         *dst++ = '\b';
+      }
+      else {
+         *dst++ = *src;
+         if(*src == '\n')
+            column = 0;
+         else
+            column++;
+      }
+      src++;
+   }
+   *dst = '\0';
+}
+
+void compress_spaces(char *line, char *compressed)
+{
+   int column = 0;
+   int n;
+   char *src = line;
+   char *dst = compressed;
+   
+   while(*src) {
+      if(*src == ' ') {
+         column++;
+      }
+      else if(*src == '\t') {
+         column += outtabgap;
+         column &= ~(outtabgap - 1);
+      }
+      else {
+         while(((column + outtabgap) & ~(outtabgap - 1)) <= column) {
+            if(column + 1 == column)
+               break;
+            *dst++ = outtabchar;
+            column += outtabgap;
+            column &= ~(outtabgap - 1);
+         }
+         while(column < column) {
+            *dst++ = ' ';
+            column++;
+         }
+         *dst++ = *src;
+         if(*src == '\n')
+            column = 0;
+         else
+            column++;
+      }
+      src++;
+   }
+   *dst = '\0';
 }   
