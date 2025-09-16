@@ -67,6 +67,10 @@ void gnu_usage(void);
 int do_check_file(const char *filename);
 int do_file_processing(int argc, char **argv);
 
+static const char *verstag = "$VER: md5sum 1.0 (16/09/25)\n";
+
+static const char *stack_cookie = "$STACK: 8192";
+
 /*
  * Print usage information for GNU-style md5sum command
  */

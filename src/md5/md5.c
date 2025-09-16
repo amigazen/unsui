@@ -91,6 +91,10 @@ int do_string_check(const char *str);
 int do_passthrough(void);
 int do_file_processing(int argc, char **argv);
 
+static const char *verstag = "$VER: md5 1.0 (16/09/25)\n";
+
+static const char *stack_cookie = "$STACK: 8192";
+
 /*
  * Print usage information for BSD-style md5 command
  */
