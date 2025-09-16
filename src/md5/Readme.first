@@ -1,0 +1,67 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+
+
+To check the validity of this distribution, please call:
+
+        md5sum -cv readme.first
+
+
+If you have PGP installed, please call additionally:
+
+        PGP -kaa readme.first
+        PGP readme.first
+
+
+    bye, Peter
+
+ ---------------------------------------------------------------------------
+  Peter Simons  | Usenet: simons@peti.GUN.de       | PGP  v2.x  public  key
+  Europaring 20 | CBMNet: simons@peti.adsp.sub.org | available  on  request
+  53123 Bonn    |  Phone: +49 228 746061           | or via GET from almost
+  Germany       |    CBM: ETG207                   | any keyserver. Use it!
+ ---------------------------------------------------------------------------
+
+
+34d0ee57bd7fa4ab699c1c3c0a522eb7 *md5sum
+ca8583a7799e01e38e5e2d5e22df5919  md5sum.doc
+28d4fb6323854fa78c32df67382d177e  md5sum.guide
+d2a85841d925356840138c309f2011b3  md5sum.texinfo
+107788ec46ef6ab9dbb190215f5b6f1a  source/getopt.c
+0aea4302dbd0b781f3965f26adb4a83a  source/getopt.h
+3e51da0ccff62cf16cf60df6d3afdeb3  source/md5.c
+77b0683c3487e35d887959cf19f811f5  source/md5.h
+4a6dafa2f6282430e65d4728a1303a53  source/md5sum.c
+16cfdbb8551b5bff7f4639987fd9bfb5  source/smakefile
+
+
+
+-----BEGIN PGP SIGNATURE-----
+Version: 2.3a
+
+iQBVAgUBLJtrfrO8v8mHeqZhAQFuwgH9H2eVvuKU6l3OgmbzsKMUXRQDkZ7thJGQ
+l36yzbmxhDVCiVpmyJADPwuwVcm2h3pzV5eS3pMrBObHvZSXIQyYbQ==
+=a9FS
+-----END PGP SIGNATURE-----
+
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: 2.3a
+
+mQBNAiuEC4sAAAECAMrOjRCPGSTGV/j/toYaURFBnY8UX0kNNDGlwkxcryHSuq3L
+ov8YqylmpLakZOOuq3EGAGzikI5xs7y/yYd6pmEABRG0IVBldGVyIFNpbW9ucyA8
+c2ltb25zQHBldGkuR1VOLmRlPokAVQIFECyTS5OBiGF1IXo6uQEBfw0CAJQzA3NT
+8Xm3cOyexEp3aA+h7gLIiGLxDyRfEA2jNQwN3Elwy15iOS8OE133DlfqFnBMZXVR
+uvNLDEmU57fcqKiJAJUCBRAr3g/f3ic1/dqHwMcBAa8aA/9iUeTpjE6OhfFC3LFY
+m/DLXeJQ8RYEMRNTdbyZww+jZ09WKL0jn2lW6bN3mWn9ApBbb+Pstrm1AqijGf+0
+UzrUd3MIpvFf7I9FyU7w83L+GDwhu/ZwFKjwmD1nxF9vL72i2aFonFlhC5Spsn6K
+K9DnEmRKDyoP6pgqZGBBPT+avIkAVQIFECuip1nqmGPhIFVVVwEBukoB/3vlVOtU
+Z6y8kjJpssXjKTDPviqHBJQkkke/FhIxlU6MmoreH4clVQ6Tslj5WnsVFEtyb7MK
+kIm3dLhnhQJwmFeJAJUCBRArmdgirUw4AN3NE8EBARPIA/9n5o1hEhh2vR6Ajbe+
+XDKLJrEjf6O/7yJlXerOyUQUhhHZlp/BfSWQt8vpGKPZWGDf8gOij15bGGNA4q9E
+rUHqVPy+TIVdvbq4kB2dmOx9XQimU3eCoW07u88k8IcaG7E65yRiab0JjVKzgGHm
+OleCdXSKe66CZLEyHKVpB1LS/okAlQIFECuKDKGg2vOdsRGkQQEBJdQEAJ1eS9DJ
+41qA41v7Dy3nPZQlDGS4VAjC5UBeGHH0wb4EOfbJbndAeUMsv2tMwg8Esb4ytaFV
+IdjLLscPwB0r1TdU+PHP6eI16Q9VnoL8mAwfet1qa1qhjSjfi5jaYoWsAdhHwOa1
+kZA9VrId/XcIg6E6PnTU3yFgBzjTXVzOpBam
+=FjZ1
+-----END PGP PUBLIC KEY BLOCK-----
