@@ -1,0 +1,61 @@
+# smakefile for MD5 commands
+# Builds both BSD-style md5 and GNU-style md5sum commands
+CFLAGS  = PARAMETERS=REGISTERS \
+          NOSTACKCHECK OPTIMIZE OPTIMIZERSIZE NOOPTIMIZERINLINE \
+          OPTIMIZERCOMPLEXITY=5 OPTIMIZERDEPTH=5 OPTIMIZERRECURDEPTH=5
+LFLAGS  = LIB sc:lib/sc.lib LIB sc:lib/scm.lib LIB lib:small.lib FROM sc:lib/cres.o
+
+CC      = sc
+LD      = slink
+RM      = delete
+
+# Target definitions
+TARGETS = md5 md5sum
+
+# Source files
+MD5_SRCS = md5.c md5lib.c md5alg.c getopt.c
+MD5SUM_SRCS = md5sum.c md5lib.c md5alg.c getopt.c
+
+# Object files
+MD5_OBJS = md5.o md5lib.o md5alg.o getopt.o
+MD5SUM_OBJS = md5sum.o md5lib.o md5alg.o getopt.o
+
+# Default target
+all: $(TARGETS)
+
+# Build md5 command
+md5: $(MD5_OBJS)
+	$(LD) $(LFLAGS) FROM $(MD5_OBJS) TO $@
+
+# Build md5sum command  
+md5sum: $(MD5SUM_OBJS)
+	$(LD) $(LFLAGS) FROM $(MD5SUM_OBJS) TO $@
+
+# Compile source files
+md5.o: md5.c md5.h md5lib.h getopt.h
+	$(CC) $(CFLAGS) md5.c
+
+md5sum.o: md5sum.c md5.h md5lib.h getopt.h
+	$(CC) $(CFLAGS) md5sum.c
+
+md5lib.o: md5lib.c md5lib.h md5.h
+	$(CC) $(CFLAGS) md5lib.c
+
+md5alg.o: md5alg.c md5.h
+	$(CC) $(CFLAGS) md5alg.c
+
+getopt.o: getopt.c getopt.h
+	$(CC) $(CFLAGS) getopt.c	
+
+# Clean up
+clean:
+	delete all $(TARGETS) $(MD5_OBJS) $(MD5SUM_OBJS)
+
+# Install targets
+install: all
+	copy md5 //SDK/C/md5 CLONE
+	copy md5sum //SDK/C/md5sum CLONE
+
+# Dependencies
+md5: md5.o md5lib.o md5alg.o getopt.o
+md5sum: md5sum.o md5lib.o md5alg.o getopt.o
