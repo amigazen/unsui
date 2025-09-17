@@ -1,0 +1,34 @@
+# expr command SMakefile for Unsui POSIX runtime
+
+# Tools
+CC = sc
+LD = slink
+RM = delete
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH NOICONS
+LDFLAGS = LIB sc:lib/sc.lib LIB lib:small.lib NOICONS
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
+
+# Object files for expr
+OBJS = sc:lib/cres.o expr.o /common/common.o /common/getopt.o
+
+# Main target
+all: expr
+
+# Build expr command
+expr: $(OBJS)
+	$(LD) $(LDFLAGS) FROM $(OBJS) TO expr
+
+# Compile source files
+.c.o:
+	$(CC) $(SCOPTIONS) $< TO $@
+
+# Header dependencies
+expr.o: expr.c expr.h /common/common.h /common/getopt.h
+
+# Clean target
+clean:
+	-$(RM) \#?.(lib|o|do|nbo|dnbo|gst|lst|map) expr
+
+# Install target
+install: expr
+	copy expr //SDK/C/expr CLONE
