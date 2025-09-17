@@ -95,23 +95,59 @@ _unsui_ tries to strike a balance between Amiga _kanso_ and Unix kitchen-sink st
 
 ### What Open Source license applies to the components of _unsui_?
 
-_unsui_ like all amigazen projects is Free and Open Source Software. In most cases this means it is licensed under a BSD 2-clause license, except where the original component is licensed on different terms such as GPL. Therefore all components of _unsui_ carry their own specific license agreement and you should check the LICENSE.md file in each component's src directory.
+_unsui_ like all amigazen projects is Free and Open Source Software. In most cases this means it is licensed under a BSD 2-clause license, except where the original component is licensed on different terms such as GPL. Therefore all components of _unsui_ carry their own specific license agreement and you should check the LICENSE.md file in each component's src directory. Most components fall under a BSD license, and where more than one option was available typically BSD licensed versions have been chosen over GPL versions.
 
 Components integrated from other older projects are checked for compatible licensing terms before incorporation, in some cases (such as _curses_) even tracking down the original author to seek clarification where the licensing is ambiguous, as a lot of Amiga software was written before the modern understanding of FOSS and well known licenses such as BSD, MIT and GPL.
 
+### Where did all these _koan_ POSIX commands come from?
+
+Amiga has an enormous and rich archive of free and open source projects, including Aminet, the world's largest (and best)) software archive. Most of the POSIX commands included here started life in the 1980s and '90s, often as ports of common BSD utils, and later GNU utils, that 'just worked' in the ANSI C compilers of the day. 
+
+At that time Amiga and its C libraries offered a largely BSD compatible standard C API, and developers such as Fred Fish himself (a significant GNU contributor in the early days), Matt Dillon (of CSh, fifo, DICE and later DragonflyBSD fame), David Gay (developer of emacs for Amiga and creator of unix.lib) and others, traded public domain source code for tools openly on usenet and floppy disk as the 'standard stack' for modern computing matured.
+
+Trawling Aminet and most especially the Fish Disk collection, which contains a huge variety of hidden gems from the early years of Amiga when development was contemporaneous to the crystallisation of Unix standards, as well as more modern repositories such as Github, has turned up an enormous trove of POSIX-like software already ported to Amiga, but largely lost to time. Yet it represents almost the entire set of mandated POSIX commands, and many more besides such as _less_, _vim_ (which started life on Amiga, as did _ne_) _bzip2_ and many more that are commonly found in other distributions. _unsui_ is bringing them all together for the first time in one single, integrated distribution, and filling the remaining gaps as well.
+
+In some cases, open source tools for Amiga have been completely rewritten and renamed, with the objective that every _unsui_ _koan_ is Amiga native on the inside but POSIX compliant on the outside. For example Eval has become a full version of 'bc', it's original inspiration.
+
+A complete inventory of the origin of each of these tools, including the license terms, will be available in the file POSIX.md when the collection is completed.
+
+Just a handful of the POSIX commands here are brand new original creations of amigazen project, where no previous example existed, or the example was not even written in C in the first place!
+
+### What work has been done to update the _koan_ POSIX commands?
+
+The typical process each command has undergone entails:
+
+- Commit the original source code to the _unsui_ git repository so that all subsequent changes can be tracked
+- Check if the source code can be built with SAS/C, or else another ToolKit-supported compiler
+- Update the source code to ANSI C (many older tools might follow older coding styles such as K&R)
+- Fix any other incompatibilities and build errors preventing 
+- Separate out the header file content from the C file contents where necessary
+- Update Amiga specific includes to the appropriate NDK version, usually <proto/....h>, and remove any hardcoded definitions from the original source to avoid clashes
+- Provide a complete makefile for at least one ToolKit-supported compiler
+- Add Amiga $VER: version tag and $STACK: stack cookie
+- Integrate the _unsui_ hybrid getopts/ReadArgs command line technology to allow command like arguments to be provided both in POSIX and AmigaDOS styles
+- Alter command line options and add new features necessary to make the command fully POSIX compliant
+- Update the documentation including the open source license, man page, and text documentation
+
+Once the first functionally complete release is ready, over time new features are added:
+- To take advantage of any newer Amiga features such as memory pools, utility.library functions, locale etc.
+- Replace older unsafe functions like C89 string functions with memory safe versions
+- Retrofit standard debug build features
+- Refine build configuration for making fully optimised release binaries
+
 ### What does the name _unsui_ really mean? Is it meant to be UNix SUIte?
 
-It is left to the imagination of the reader to determine if there is greater meaning in the name _unsui_. Could it mean UNified Standard Unix-specification Implementation? Or UNix SUbsystem Interface? Perhaps _unsui_ is Not a Supported Unix Instance? Is it Unix-like System Userland Idiom? What do you think it means? Similarly, is _zafu_ a Zen Amiga Foundation for Unix? What else could that mean?
+It is left to the imagination of the reader to determine if there is greater meaning in the name _unsui_. Could it mean UNified Standard Unix-specification Implementation? Or UNix SUbsystem Inspiration? Perhaps _unsui_ is Not a Supported Unix Instance? Is it the Unix-like Native Shell & Userland Interface? What do you think it means? Similarly, is _zafu_ a Zen Amiga Foundation for Unix? What else could that mean?
 
 ### Where is the UniLib3 and the other parts of _unsui_?
 
-You can find the work in progress new version of unix.lib on github in its own repository. _unsui_ is still work in progress with new _koans_ being added every week.
+You can find the work in progress new version of unix.lib on github in its own repository. _unsui_ is also still work in progress with new _koans_ being added every week.
 
-### Will _unsui_ changes be contributed back to the original project mainlines, or updated to the latest ?
+### Will _unsui_ changes be contributed back to the original project mainlines?
 
 Generally no, the code here should be considered forked from the original projects, since the forks often date back 10, 20 or even 30 or more years, and few if any of the upstream maintainers will accept Amiga specific patches nor would such patches easily fit into the modern cross-platform auto configuration system, even for GeekGadgets or OS4 versions. Keeping the forks forked is in the best interest of the project and allows _unsui_ to focus on optimisation for Amiga native features, and this approach is really no different from what macOS does. This is by no means a bad thing - many of the POSIX commands have barely changed in core functionality in that time, with additional code written to support more modern platforms, to support unicode, or 64-bit, or network and server features. Exactly the kind of code-bloat Amiga users eschew and which would conflict with the balance _unsui_ is designed to strike with regard to Amiga _kanso_ versus Unix complexity.
 
-New features that offer real value to Amiga users may be cherry picked from more recent versions from time to time. Forking in this way allows implementations to deviate from retaining cross platform compatibility and use Amiga native mechanisms internally wherever possible, to being back some of that Amiga _kanso_.
+New features that offer real value to Amiga users may be cherry picked from more recent versions from time to time. Forking in this way allows implementations to deviate from retaining cross platform compatibility and use Amiga native mechanisms internally wherever possible, to bring back some of that Amiga _kanso_.
 
 ### Will _unsui_ be released on Aminet?
 
