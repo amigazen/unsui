@@ -19,10 +19,7 @@
 int	truncflg = 1;	/* truncate long line flag */
 int	eightbit = 1;	/* save eight bit */
 int	nonascii, nullchar, truncated;
-egets(str,size,stream)
-char	*str;
-int	size;
-FILE	*stream;
+int egets(char *str, int size, FILE *stream)
 {
 	int	c, count;
 	char	*cp;

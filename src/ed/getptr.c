@@ -16,9 +16,7 @@
 #include "tools.h"
 #include "ed.h"
 
-LINE	*
-getptr(num)
-int	num;
+LINE *getptr(int num)
 {
 	LINE	*ptr;
 	int	j;

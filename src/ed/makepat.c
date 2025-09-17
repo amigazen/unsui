@@ -18,15 +18,10 @@
  * (the one pointed to by 'tail) is made to point at the previous node.
  * When we are finished, tail->next is set to 0.
  */
-TOKEN *
-makepat(arg, delim)
-char	*arg;
-int	delim;
+TOKEN *makepat(char *arg, char delim)
 {
 	 TOKEN	*head, *tail, *ntok;
-	 char	buf[CLS_SIZE];
 	 int	error;
-	 extern char *malloc ();
 
 	/*
 	 * Check for characters that aren't legal at the beginning of

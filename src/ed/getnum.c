@@ -18,7 +18,7 @@
 
 TOKEN	*srchpat;
 char	lstsrch;
-getnum()
+int getnum(void)
 {
 	int	num;
 	char	c;

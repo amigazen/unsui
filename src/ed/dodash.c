@@ -20,7 +20,7 @@ int	delim;
 char	*src, *map;
 {
 
-	register int	first,	last;
+	int	first,	last;
 	char		*start;
 
 	start = src;

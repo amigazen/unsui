@@ -16,8 +16,7 @@
 #include "tools.h"
 #include "ed.h"
 
-doprnt(from, to)
-int	from, to;
+int doprnt(int from, int to)
 {
 	int	i;
 
@@ -34,9 +33,7 @@ int	from, to;
 	return(0);
 }
 
-prntln(str, vflg, lin)
-char	*str;
-int	vflg, lin;
+int prntln(char *str, int vflg, int lin)
 {
 	if(lin)
 		fprintf(stdout,"%7d ",lin);
@@ -69,12 +66,12 @@ int	vflg, lin;
 	if(vflg)
 		putc('$',stdout);
 	putc('\n', stdout);
+	return 0;
 }
 
-putcntl(c, stream)
-char	c;
-FILE	*stream;
+int putcntl(char c, FILE *stream)
 {
 	putc('^', stream);
 	putc((c&31)|'@', stream);
+	return 0;
 }

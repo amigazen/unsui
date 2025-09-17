@@ -16,8 +16,7 @@
 #include "tools.h"
 #include "ed.h"
 
-deflt(def1, def2)
-int	def1, def2;
+int deflt(int def1, int def2)
 {
 	if(nlines == 0)
 	{

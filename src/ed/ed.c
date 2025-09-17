@@ -13,9 +13,13 @@
  *
  */
 #include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
+#include <setjmp.h>
 #include "tools.h"
 #include "ed.h"
-#include <setjmp.h>
+
 jmp_buf	env;
 
 LINE	line0;
@@ -28,19 +32,17 @@ int	line1, line2, nlines;
 extern char	fname[];
 int	version = 1;
 
-intr()
+void intr(int sig)
 {
 	printf("Interrupt:\n");
 	longjmp(env, 1);
 }
 
-main(argc,argv)
-int	argc;
-char	**argv;
+int main(int argc, char **argv)
 {
 	int	stat, i, j, prmpt;
 
-	setbuf();
+	ed_setbuf();
 	prmpt = isatty(0);		/* if interactive */
 	if(argc > 1)
 	{
@@ -102,4 +104,5 @@ char	**argv;
 		}
 		fputs("\007",stderr);
 	}
+	return 0;
 }

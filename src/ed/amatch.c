@@ -14,12 +14,9 @@
  *			character at the beginning of the line.
  */
 char	*
-amatch(lin, pat, boln)
-char	*lin;
-TOKEN	*pat;
-char	*boln;
+amatch(char *lin, TOKEN *pat, char *boln)
 {
-	register char	*bocl, *rval, *strstart;
+	char	*bocl, *rval, *strstart;
 
 	if(pat == 0)
 		return 0;

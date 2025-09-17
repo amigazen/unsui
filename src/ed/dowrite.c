@@ -16,10 +16,7 @@
 #include "tools.h"
 #include "ed.h"
 
-dowrite(from, to, fname, apflg)
-int	from, to;
-char	*fname;
-int	apflg;
+int dowrite(int from, int to, char *fname, int apflg)
 {
 	extern FILE	*fopen();
 	FILE	*fp;

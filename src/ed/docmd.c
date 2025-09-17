@@ -19,8 +19,7 @@
 char	fname[MAXFNAME];
 int	fchanged;
 
-docmd(glob)
-int	glob;
+int docmd(int glob)
 {
 	static char	rhs[MAXPAT];
 	static TOKEN	*subpat;

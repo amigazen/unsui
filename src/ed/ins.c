@@ -16,8 +16,7 @@
 #include "tools.h"
 #include "ed.h"
  
-ins(str)
-char	*str;
+int ins(char *str)
 {
 	char	buf[MAXLINE], *cp;
 	LINE	*new, *cur, *nxt;

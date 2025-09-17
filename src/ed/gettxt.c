@@ -16,9 +16,7 @@
 #include "tools.h"
 #include "ed.h"
 
-char	*
-gettxt(num)
-int	num;
+char *gettxt(int num)
 {
 	LINE	*lin;
 	static char	txtbuf[MAXLINE];

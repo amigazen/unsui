@@ -12,10 +12,9 @@
 #endif
  
 #include "tools.h"
- 
 
-BITMAP	*makebitmap( size )
-unsigned size;
+
+BITMAP	*makebitmap(unsigned size)
 {
 	/*	Make a bit map with "size" bits.  The first entry in
 	 *	the map is an "unsigned int" representing the maximum
@@ -25,7 +24,6 @@ unsigned size;
 	 */
 
 	unsigned *map, numbytes;
-	extern char *malloc ();
 
 	numbytes = (size >> 3) + ((size & 0x07) ? 1 : 0 );
 
@@ -33,15 +31,14 @@ unsigned size;
 	printf("Making a %d bit map (%d bytes required)\n", size, numbytes);
 #endif
 
-	if( map = (unsigned *) malloc( numbytes + sizeof(unsigned) ))
+	map = (unsigned *) malloc( numbytes + sizeof(unsigned) );
+	if( map != NULL)
 		*map = size;
 
 	return ((BITMAP *)map);
 }
 
-setbit( c, map, val )
-unsigned	c, val;
-char		*map;
+int setbit(unsigned c, char *map, unsigned val)
 {
 	/*	Set bit c in the map to val.
 	 *	If c > map-size, 0 is returned, else 1 is returned.
@@ -60,9 +57,7 @@ char		*map;
 	return( 1 );
 }
 
-testbit( c, map )
-unsigned	c;
-char		*map;
+int testbit(unsigned c, char *map)
 {
 	/*	Return 1 if the bit corresponding to c in map is set.
 	 *	0 if it is not.

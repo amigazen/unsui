@@ -16,9 +16,7 @@
 #include "tools.h"
 #include "ed.h"
 
-find(pat, dir)
-TOKEN	*pat;
-int	dir;
+int find(TOKEN *pat, int dir)
 {
 	int	num;
 	char	*lin;

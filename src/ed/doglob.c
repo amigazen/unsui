@@ -16,7 +16,7 @@
 #include "tools.h"
 #include "ed.h"
 
-doglob()
+int doglob(void)
 {
 	int	cursav, lin, stat, count;
 	char	*cmd;

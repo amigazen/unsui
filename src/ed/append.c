@@ -16,8 +16,7 @@
 #include "tools.h"
 #include "ed.h"
 
-append(line, glob)
-int	line, glob;
+int append(int line, int glob)
 {
 	int	stat;
 	char	lin[MAXLINE];

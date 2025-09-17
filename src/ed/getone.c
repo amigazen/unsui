@@ -16,7 +16,7 @@
 #include "tools.h"
 #include "ed.h"
 
-getone()
+int getone(void)
 {
 	int	c, i, num;
 

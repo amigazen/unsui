@@ -17,8 +17,7 @@
 #include "ed.h"
 
 char	*
-catsub(from, to, sub, new, newend)
-char	*from, *to, *sub, *new, *newend;
+catsub(char *from, char *to, char *sub, char *new, char *newend)
 {
 	char	*cp, *cp2;
 

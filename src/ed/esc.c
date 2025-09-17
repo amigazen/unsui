@@ -6,10 +6,9 @@
  * is untouched and *s is returned, otherwise **s is advanced to point
  * at the escaped character and the translated character is returned.
  */
-esc(s)
-char	**s;
+int esc(char **s)
 {
-	register int	rval;
+	int	rval;
 
 	
 	if (**s != ESCAPE)

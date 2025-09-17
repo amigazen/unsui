@@ -16,8 +16,7 @@
 #include "tools.h"
 #include "ed.h"
 
-getrhs(sub)
-char	*sub;
+int getrhs(char *sub)
 {
 	if(inptr[0] == NL || inptr[1] == NL)	/* check for eol */
 		return( ERR );

@@ -16,9 +16,7 @@
 #include "tools.h"
 #include "ed.h"
 
-TOKEN	*
-optpat(oldpat)
-TOKEN	*oldpat;
+TOKEN *optpat(TOKEN *oldpat)
 {
 	char	delim, str[MAXPAT], *cp;
 

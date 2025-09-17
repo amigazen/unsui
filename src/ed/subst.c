@@ -15,10 +15,7 @@
 #include <stdio.h>
 #include "tools.h"
 #include "ed.h"
-subst(pat, sub, gflg, pflag)
-TOKEN	*pat;
-char	*sub;
-int	gflg, pflag;
+int subst(TOKEN *pat, char *sub, int gflg, int pflag)
 {
 	int	lin, chngd, nchngd;
 	char	*txtptr, *txt;

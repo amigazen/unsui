@@ -16,7 +16,7 @@
 #include "tools.h"
 #include "ed.h"
 
-getlst()
+int getlst(void)
 {
 	int	num;
 

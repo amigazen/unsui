@@ -16,8 +16,7 @@
 #include "tools.h"
 #include "ed.h"
 
-move(num)
-int	num;
+int move(int num)
 {
 	LINE	*k0, *k1, *k2, *k3;
 

@@ -1,3 +1,11 @@
+#ifndef TOOLS_H
+#define TOOLS_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
 static char	tools_h[] =
 "$Header: tools.h,v 2.1 85/11/14 11:30:00 beattie Exp $";
 /*
@@ -92,24 +100,28 @@ typedef struct token {
 
 #define MAXSTR	132	/* Maximum numbers of characters in a line */
 
-
-extern	char	*matchs();
-extern	char	*amatch();
-extern	char	*in_string();
-extern	TOKEN	*getpat();
-extern	int	esc();
-extern	char	*dodash();
-extern	TOKEN	*makepat();
-extern	int	unmakepat();
-extern	int	insert();
-extern	int	delete();
-extern	int	isalphanum();
-extern	char	*stoupper();
-extern	int	pr_tok();
-extern	int	pr_line();
-extern	BITMAP	*makebitmap();
+/* Function prototypes */
+char	*matchs(char *str, TOKEN *pat, int ret_end);
+char	*amatch(char *lin, TOKEN *pat, char *boln);
+char	*in_string(char *str, char *pat);
+TOKEN	*getpat(char *str);
+int	esc(char **s);
+char	*dodash(int delim, char *src, char *map);
+int	omatch(char **linp, TOKEN *pat, char *boln);
+TOKEN	*makepat(char *str, char delim);
+void	unmakepat(TOKEN *pat);
+int	insert(char *str);
+int	delete(char *str);
+int	isalphanum(char c);
+char	*stoupper(char *str);
+int	pr_tok(TOKEN *tok);
+int	pr_line(char *str);
+BITMAP	*makebitmap(unsigned size);
+int	setbit(unsigned c, char *map, unsigned val);
+int	testbit(unsigned c, char *map);
 
 /* macros */
 #define max(a,b)	((a>b)?a:b)
 #define min(a,b)	((a<b)?a:b)
-#define toupper(c)	(c>='a'&&c<='z'?c-32:c)
+
+#endif /* TOOLS_H */

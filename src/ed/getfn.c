@@ -17,8 +17,8 @@
 #include "ed.h"
 
 extern char	fname[MAXFNAME];
-char	*
-getfn()
+
+char *getfn(void)
 {
 	static char	file[256];
 	char	*cp;

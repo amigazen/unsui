@@ -30,7 +30,7 @@ struct tbl {
 	0
 };
 
-set()
+int set(void)
 {
 	char	word[16];
 	int	i;
@@ -62,7 +62,7 @@ set()
 	}
 }
 
-show()
+int show(char *arg)
 {
 	extern int	version;
 

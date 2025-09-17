@@ -16,8 +16,7 @@
 #include "tools.h"
 #include "ed.h"
 
-del(from, to)
-int	from, to;
+int del(int from, int to)
 {
 	LINE	*first, *last, *next, *tmp;
 
@@ -35,4 +34,5 @@ int	from, to;
 	relink(first, last, first, last);
 	lastln -= (to - from)+1;
 	curln = prevln(from);
+	return 0;
 }

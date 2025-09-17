@@ -16,7 +16,7 @@
 #include "tools.h"
 #include "ed.h"
 
-ckglob()
+int ckglob(void)
 {
 	static TOKEN	*glbpat;
 	char	c, delim, *lin;

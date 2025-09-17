@@ -16,9 +16,7 @@
 #include "tools.h"
 #include "ed.h"
 
-doread(lin, fname)
-int	lin;
-char	*fname;
+int doread(int lin, char *fname)
 {
 	extern FILE	*fopen();
 	FILE	*fp;

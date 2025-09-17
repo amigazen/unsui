@@ -21,11 +21,7 @@
  *	matchs ("1234567890", getpat("4[0-9]*7), 1);
  * will return a pointer to the '7'.
  */
-char	*
-matchs(line, pat, ret_endp)
-char	*line;
-TOKEN	*pat;
-int	ret_endp;
+char *matchs(char *line, TOKEN *pat, int ret_endp)
 {
 
 	char	*rval, *bptr;

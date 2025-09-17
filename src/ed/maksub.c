@@ -16,10 +16,7 @@
 #include "tools.h"
 #include "ed.h"
 
-char	*
-maksub(sub, subsz)
-char	*sub;
-int	subsz;
+char *maksub(char *sub, int subsz)
 {
 	int	size;
 	char	delim, *cp;
@@ -39,10 +36,12 @@ int	subsz;
 			{
 				inptr++;
 				if(*inptr < '0' || *inptr > '7')
-					switch(toupper(*++inptr))
+				{
+					inptr++;
+					switch(toupper(*inptr))
 					{
 					case NL:
-						*cp++ == ESCAPE;
+						*cp++ = ESCAPE;
 						break;
 					case 'S':
 						*cp++ = SP;
@@ -69,7 +68,7 @@ int	subsz;
 						inptr++;
 						break;
 					}
-				else {
+				} else {
 					*cp = 0;
 					while(*inptr >= '0' && *inptr <= '7')
 					{
