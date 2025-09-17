@@ -40,7 +40,7 @@ int snprintf(char *str, size_t size, const char *format, ...) {
 
 
 /* Version tag for Amiga */
-static const char *verstag = "$VER: cp 2.0 (30/08/25)\n"
+static const char *verstag = "$VER: cp 2.1 (17/09/25)\n"
 ;
 
 /* Global variables for getopt - these are defined in getopt.c */
@@ -49,8 +49,83 @@ extern int optind;
 extern int opterr;
 extern int optopt;
 
-/* External references */
+/* External reference to SysBase */
 extern struct ExecBase *SysBase;
+
+/* SendPacket function for Amiga console communication */
+static long SendPacket(struct MsgPort *pid, long action, long *args, long nargs) {
+    struct MsgPort *replyport;
+    struct StandardPacket *packet;
+    long count, *pargs, res1;
+    
+    replyport = (struct MsgPort *)CreatePort(NULL, 0L);
+    if (!replyport)
+        return 0;
+    
+    /* Allocate space for a packet, make it public and clear it */
+    packet = (struct StandardPacket *)AllocMem(sizeof(struct StandardPacket), MEMF_PUBLIC | MEMF_CLEAR);
+    
+    if (!packet) {
+        DeletePort(replyport);
+        return 0;
+    }
+    
+    packet->sp_Msg.mn_Node.ln_Name = (char *)&(packet->sp_Pkt);
+    packet->sp_Pkt.dp_Link = &(packet->sp_Msg);
+    packet->sp_Pkt.dp_Port = replyport;
+    packet->sp_Pkt.dp_Type = action;
+    
+    /* copy the args into the packet */
+    pargs = &(packet->sp_Pkt.dp_Arg1);
+    for (count = 0; count < nargs; count++)
+        pargs[count] = args[count];
+    
+    PutMsg(pid, &packet->sp_Msg);
+    WaitPort(replyport);
+    GetMsg(replyport);
+    
+    res1 = packet->sp_Pkt.dp_Res1;
+    
+    FreeMem(packet, sizeof(struct StandardPacket));
+    DeletePort(replyport);
+    
+    return res1;
+}
+
+/* Amiga native getkey function for better interactive input */
+static int amiga_getkey(void) {
+    int key = 0;
+    BPTR con;
+    
+    /* Use Open() here -- not Input() -- because it may be redirected */
+    con = Open("*", MODE_OLDFILE);
+    
+    if (BADDR(con) && IsInteractive(con)) {
+        struct MsgPort *mp;
+        long arg[1], res;
+        
+        mp = ((struct FileHandle *)(BADDR(con)))->fh_Type;
+        arg[0] = -1L;   /* make it RAW */
+        res = SendPacket(mp, ACTION_SCREEN_MODE, arg, 1);
+        
+        if (res) {
+            char buffer[4];
+            long actualLength;
+            
+            actualLength = Read(con, buffer, (long)sizeof(buffer) - 1);
+            if (actualLength > 0)
+                key = (int)buffer[0];
+            
+            arg[0] = 0L;  /* make it COOKED */
+            (void)SendPacket(mp, ACTION_SCREEN_MODE, arg, 1);
+        }
+        Close(con);
+    }
+    
+    if (!key)
+        key = getchar();
+    return key;
+}
 
 /* Function declarations for forward references */
 int copy(const char *filename, const char *destination, int buffersize);
@@ -69,7 +144,7 @@ int main(int argc, char **argv)
     char *program;
     
     /* ReadArgs Path Variables */
-    const char *template = "SOURCE/M,DESTINATION/M,INTERACTIVE/S,FORCE/S,RECURSIVE/S,VERBOSE/S,PRESERVE/S,POSIX/K/F";
+    const char *template = "SOURCE/M,DESTINATION/M,INTERACTIVE/S,FORCE/S,ALL=RECURSIVE/S,VERBOSE/S,CLONE=PRESERVE/S,POSIX/K/F";
     LONG arg_array[ARG_COUNT] = {0};
     struct RDArgs *rdargs = NULL;
     char *cmd_string = NULL;
@@ -115,7 +190,7 @@ int main(int argc, char **argv)
         for (i = 1; i < argc; i++) {
             if (strcmp(argv[i], "?") == 0) {
                 interactive_help = TRUE;
-                break;
+              break;
             }
         }
 
@@ -280,16 +355,16 @@ void parse_getopt_args(int argc, char **argv, int *interactive, int *force, int 
                 break;
             case 'p':
                 *preserve = TRUE;
-                break;
+              break;
             case 'h':
             case 'V':
                 usage(program);
-                break;
+              break;
             case '?':
                 exit(FAILURE);
-                break;
-        }
-    }
+              break;
+   }
+  }
     
     *file_start = optind;
 }
@@ -328,17 +403,20 @@ int run_cp_logic(int argc, char **argv, int interactive, int force, int recursiv
             
             if (is_directory(argv[i])) {
                 if (recursive) {
-                    if (copy_directory(argv[i], destination, recursive, force, verbose) != SUCCESS) {
+                    if (copy_directory(argv[i], destination, recursive, &force, verbose) != SUCCESS) {
                         ret_code = FAILURE;
                     }
                 } else {
                     fprintf(stderr, "%s: -r not specified; omitting directory '%s'\n", program, argv[i]);
                     ret_code = FAILURE;
                 }
-            } else {
-                if (copy_file(argv[i], destination, DEFAULT_BUFFER_SIZE, force, verbose) != SUCCESS) {
+            } else if (is_regular_file(argv[i])) {
+                if (copy_file(argv[i], destination, DEFAULT_BUFFER_SIZE, &force, verbose) != SUCCESS) {
                     ret_code = FAILURE;
                 }
+            } else {
+                fprintf(stderr, "%s: '%s' is not a regular file or directory\n", program, argv[i]);
+                ret_code = FAILURE;
             }
         }
     } else {
@@ -354,17 +432,20 @@ int run_cp_logic(int argc, char **argv, int interactive, int force, int recursiv
         
         if (is_directory(argv[0])) {
             if (recursive) {
-                if (copy_directory(argv[0], destination, recursive, force, verbose) != SUCCESS) {
+                if (copy_directory(argv[0], destination, recursive, &force, verbose) != SUCCESS) {
                     ret_code = FAILURE;
                 }
             } else {
                 fprintf(stderr, "%s: -r not specified; omitting directory '%s'\n", program, argv[0]);
                 ret_code = FAILURE;
             }
-        } else {
-            if (copy_file(argv[0], destination, DEFAULT_BUFFER_SIZE, force, verbose) != SUCCESS) {
+        } else if (is_regular_file(argv[0])) {
+            if (copy_file(argv[0], destination, DEFAULT_BUFFER_SIZE, &force, verbose) != SUCCESS) {
                 ret_code = FAILURE;
             }
+        } else {
+            fprintf(stderr, "%s: '%s' is not a regular file or directory\n", program, argv[0]);
+            ret_code = FAILURE;
         }
     }
     
@@ -380,9 +461,8 @@ int run_cp_logic(int argc, char **argv, int interactive, int force, int recursiv
  * @param verbose Verbose output
  * @return Exit code
  */
-int copy_file(const char *source, const char *dest, int buffer_size, int force, int verbose) {
+int copy_file(const char *source, const char *dest, int buffer_size, int *force, int verbose) {
     char dest_path[512];
-    char response[10];
     struct stat source_stat, dest_stat;
     
     /* Get source file info */
@@ -415,15 +495,43 @@ int copy_file(const char *source, const char *dest, int buffer_size, int force, 
     
     /* Check if destination exists and handle force flag */
     if (stat(dest_path, &dest_stat) == 0) {
-        if (!force) {
-            fprintf(stderr, "cp: overwrite '%s'? ", dest_path);
-            if (fgets(response, sizeof(response), stdin)) {
-                if (response[0] != 'y' && response[0] != 'Y') {
-                    if (verbose) {
-                        printf("skipped '%s'\n", dest_path);
-                    }
-                    return SUCCESS;
+        if (!*force) {
+            int key;
+            int dothis = 1;  /* 1=copy/replace, 0=skip, -1=invalid choice */
+            
+            fprintf(stderr, "cp: overwrite '%s'? (y/n/a/q) ", dest_path);
+            fflush(stderr);
+            
+            do {
+                /* Use Amiga native getkey for better input handling */
+                key = amiga_getkey();
+                
+                switch (key) {
+                    case 'y': case 'Y':
+                        dothis = 1;
+                        break;
+                    case 'n': case 'N':
+                        dothis = 0;
+                        break;
+                    case 'a': case 'A':
+                        /* Set force flag for all remaining files */
+                        *force = TRUE;
+                        dothis = 1;
+                        break;
+                    case 'q': case 'Q':
+                        dothis = 0;
+                        return FAILURE;  /* Quit immediately */
+                    default:
+                        dothis = -1;  /* Invalid choice, ask again */
+                        break;
                 }
+            } while (dothis < 0);
+            
+            if (dothis == 0) {
+                if (verbose) {
+                    printf("skipped '%s'\n", dest_path);
+                }
+                return SUCCESS;
             }
         }
     }
@@ -441,11 +549,13 @@ int copy_file(const char *source, const char *dest, int buffer_size, int force, 
  * @param verbose Verbose output
  * @return Exit code
  */
-int copy_directory(const char *source, const char *dest, int recursive, int force, int verbose) {
+int copy_directory(const char *source, const char *dest, int recursive, int *force, int verbose) {
     struct DPTR *dp;
     int status;
     char *filename;
     char dest_path[1024];
+    char source_path[1024];
+    int ret_code = SUCCESS;
     
     if (verbose) {
         printf("cp: copying directory '%s' to '%s'\n", source, dest);
@@ -466,22 +576,41 @@ int copy_directory(const char *source, const char *dest, int recursive, int forc
     
     /* Copy all files in the directory */
     while ((filename = scdir(source)) != NULL) {
+        /* Skip . and .. entries */
+        if (strcmp(filename, ".") == 0 || strcmp(filename, "..") == 0) {
+            continue;
+        }
+        
+        /* Build full source path */
+        snprintf(source_path, sizeof(source_path), "%s/%s", source, filename);
         snprintf(dest_path, sizeof(dest_path), "%s/%s", dest, filename);
         
         if (verbose) {
-            printf("cp: copying '%s' to '%s'\n", filename, dest_path);
+            printf("cp: copying '%s' to '%s'\n", source_path, dest_path);
         }
         
-        /* Copy the file */
-        if (!do_copy(filename, dest_path, DEFAULT_BUFFER_SIZE)) {
-            fprintf(stderr, "cp: failed to copy '%s'\n", filename);
-            dclose(dp);
-            return FAILURE;
+        /* Check if source is a directory */
+        if (is_directory(source_path)) {
+            if (recursive) {
+                /* Recursively copy subdirectory */
+                if (copy_directory(source_path, dest_path, recursive, force, verbose) != SUCCESS) {
+                    ret_code = FAILURE;
+                }
+            } else {
+                fprintf(stderr, "cp: '%s' is a directory (not copied)\n", source_path);
+                ret_code = FAILURE;
+            }
+        } else {
+            /* Copy regular file */
+            if (!do_copy(source_path, dest_path, DEFAULT_BUFFER_SIZE)) {
+                fprintf(stderr, "cp: failed to copy '%s'\n", source_path);
+                ret_code = FAILURE;
+            }
         }
     }
     
     dclose(dp);
-    return SUCCESS;
+    return ret_code;
 }
 
 /**
@@ -517,19 +646,23 @@ void usage(const char *program)
 {
     fprintf(stderr, "Version: %s\n", &verstag[6]);
     fprintf(stderr, "Usage (POSIX): %s [OPTIONS] SOURCE... DEST\n", program);
-    fprintf(stderr, "Usage (Amiga): %s SOURCE/M DESTINATION/M [INTERACTIVE/S] [FORCE/S] [RECURSIVE/S] [VERBOSE/S] [PRESERVE/S]\n", program);
+    fprintf(stderr, "Usage (Amiga): %s SOURCE/M DESTINATION/M [INTERACTIVE/S] [FORCE/S] [ALL=RECURSIVE/S] [VERBOSE/S] [CLONE=PRESERVE/S]\n", program);
     fprintf(stderr, "               %s ? for template\n", program);
     fprintf(stderr, "OPTIONS:\n");
     fprintf(stderr, "  -f, --force          if an existing destination file cannot be\n");
     fprintf(stderr, "                        opened, remove it and try again\n");
-    fprintf(stderr, "  -i, --interactive    prompt before overwrite\n");
+    fprintf(stderr, "  -i, --interactive    prompt before overwrite (y/n/a/q)\n");
     fprintf(stderr, "  -R, -r, --recursive  copy directories recursively\n");
     fprintf(stderr, "  -v, --verbose        explain what is being done\n");
     fprintf(stderr, "  -p, --preserve       preserve the specified attributes\n");
     fprintf(stderr, "  -h, -V               display this help and version\n");
     fprintf(stderr, "DESCRIPTION:\n");
     fprintf(stderr, "  Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n");
-    fprintf(stderr, "  With no FILE, or when FILE is -, read standard input.\n");
+    fprintf(stderr, "  Interactive mode options:\n");
+    fprintf(stderr, "    y/Y - yes, overwrite this file\n");
+    fprintf(stderr, "    n/N - no, skip this file\n");
+    fprintf(stderr, "    a/A - all, overwrite all remaining files without prompting\n");
+    fprintf(stderr, "    q/Q - quit, stop copying immediately\n");
     exit(FAILURE);
 }
 
@@ -545,21 +678,32 @@ dopen(const char *name, int *stat)
 {
    struct DPTR *dp;
    int namelen, endslash = 0;
+   char *work_name;
 
    namelen = strlen(name);
-   if (namelen && name[namelen - 1] == '/') {
-      name[namelen - 1] = '\0';
+   work_name = malloc(namelen + 1);
+   if (!work_name) {
+       *stat = 1;
+       return NULL;
+   }
+   strcpy(work_name, name);
+   
+   if (namelen && work_name[namelen - 1] == '/') {
+      work_name[namelen - 1] = '\0';
       endslash = 1;
    }
    *stat = 0;
-   if (*name == '\0')
-     return(NULL);
+   if (*work_name == '\0') {
+       free(work_name);
+       return(NULL);
+   }
    else {
     dp = (struct DPTR *)malloc(sizeof(struct DPTR));
-    dp->lock = Lock (name, ACCESS_READ);
+    dp->lock = Lock (work_name, ACCESS_READ);
    }
   if (endslash)
-      name[namelen - 1] = '/';
+      work_name[namelen - 1] = '/';
+  free(work_name);
    if (dp->lock == NULL) {
       free (dp);
       return (NULL);
@@ -641,9 +785,16 @@ int dclose(struct DPTR *dp)
    if (status == 1) {  /* destination is directory */
      if ((destination[dlen - 1] != ':') && (destination[dlen-1] != '/'))
       strcat(to_name,"/");
-     s = filename + strlen(filename) - 1;
-     while ( (*s != '/') && (*s != ':') && (s != filename) ) s--;
-     strcat(to_name,s);
+     {
+       char *work_filename = malloc(strlen(filename) + 1);
+       if (work_filename) {
+         strcpy(work_filename, filename);
+         s = work_filename + strlen(work_filename) - 1;
+         while ( (*s != '/') && (*s != ':') && (s != work_filename) ) s--;
+         strcat(to_name,s);
+         free(work_filename);
+       }
+     }
    }
 
   /* Ok, now we have a target file in "to_name" */
@@ -734,7 +885,7 @@ void scdir_abort(void) {
     if (oldwild) {
         free(oldwild);
         oldwild = NULL;
-        if (!failure && SysBase->lib_Version >= 36L)
+        if (!failure && ((struct Library *)SysBase)->lib_Version >= 36L)
             MatchEnd(&AnPath);
         failure = -1;
     }
@@ -754,7 +905,7 @@ static char *scdir_result(const char *wild, const char *name) {
             strcpy(my_basename(result), name);
             return result;
         }
-        if (SysBase->lib_Version >= 36L)
+        if (((struct Library *)SysBase)->lib_Version >= 36L)
             MatchEnd(&AnPath);
     }
     return NULL;
@@ -768,7 +919,7 @@ char *scdir(const char *wild) {
         if (!diff && failure) return scdir_result(wild, NULL);
     }
     
-    if (SysBase->lib_Version < 36L) {
+    if (((struct Library *)SysBase)->lib_Version < 36L) {
         BPTR lock;
         lock = Lock(wild, MODE_OLDFILE);
         if (lock) UnLock(lock);
@@ -802,4 +953,4 @@ char *scdir(const char *wild) {
     /* failure - cleanup */
     MatchEnd(&AnPath);
     return scdir_result(wild, NULL);
-}
+ }

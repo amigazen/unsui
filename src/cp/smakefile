@@ -1,0 +1,19 @@
+.c.o:
+	sc $(CFLAGS) $(SCOPTIONS) $(*).c
+
+CFLAGS = STRIPDEBUG NODEBUG LIB sc:lib/sc.lib LIB lib:small.lib BATCH 
+LDFLAGS = NOICONS LIB sc:lib/sc.lib LIB lib:small.lib 
+SCOPTIONS = DATA=NEAR CODE=NEAR NOSTACKCHECK NOICONS COMMENTNEST STRUCTUREEQUIVALENCE OPTIMIZE MAP NOVERSION UTILITYLIBRARY INCLUDEDIR=include: INCLUDEDIR=/common
+
+OBJS= cp.o /common/common.o /common/getopt.o
+
+cp: $(OBJS)
+	slink $(LDFLAGS) from sc:lib/cres.o $(OBJS) to cp
+
+# Clean target
+clean:
+	-delete \#?.(lib|o|do|nbo|dnbo|gst|lst|map) cp
+
+# Install target
+install: cp
+	copy cp //SDK/C/cp CLONE

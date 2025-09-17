@@ -1,0 +1,210 @@
+.TH CP 1 "September 17, 2025" "unsui POSIX" "General Commands Manual"
+.SH NAME
+cp \- copy files and directories
+.SH SYNOPSIS
+.B cp
+[\fB\-i\fR] [\fB\-f\fR] [\fB\-R\fR|\fB\-r\fR] [\fB\-v\fR] [\fB\-p\fR] \fIsource\fR... \fIdest\fR
+.PP
+.B cp
+\fIsource\fR/M \fIdest\fR/M [\fBINTERACTIVE\fR/S] [\fBFORCE\fR/S] [\fBALL=RECURSIVE\fR/S] [\fBVERBOSE\fR/S] [\fBCLONE=PRESERVE\fR/S]
+.SH DESCRIPTION
+The
+.B cp
+utility copies files and directories. It supports both POSIX-style command line options and Amiga ReadArgs-style arguments, providing a hybrid interface for maximum compatibility.
+.PP
+In the first synopsis form, the
+.B cp
+utility copies the contents of the
+.I source
+file to the
+.I dest
+file. In the second synopsis form, the contents of each named
+.I source
+file is copied to the destination
+.I dest
+directory.
+.PP
+The names of the files themselves are not changed. If
+.B cp
+detects an attempt to copy a file to itself, the copy will fail.
+.SH OPTIONS
+.TP
+.B \-i, \-\-interactive
+Cause
+.B cp
+to write a prompt to the standard error output before copying a file that would overwrite an existing file. If the response from the standard input begins with the character 'y' or 'Y', the file copy is attempted.
+.RS
+.PP
+Interactive mode supports the following responses:
+.TP
+.B y, Y
+Yes, overwrite this file
+.TP
+.B n, N
+No, skip this file
+.TP
+.B a, A
+All, overwrite all remaining files without prompting
+.TP
+.B q, Q
+Quit, stop copying immediately
+.RE
+.TP
+.B \-f, \-\-force
+For each existing destination pathname, remove it and create a new file, without prompting for confirmation regardless of its permissions. (The
+.B \-f
+option overrides any previous
+.B \-i
+options.)
+.TP
+.B \-R, \-r, \-\-recursive
+If
+.I source
+designates a directory,
+.B cp
+copies the directory and the entire subtree connected at that point. If the
+.I source
+ends in a
+.BR / ,
+the contents of the directory are copied rather than the directory itself.
+.PP
+In
+.B \-R
+mode,
+.B cp
+will continue copying even if errors are detected.
+.TP
+.B \-v, \-\-verbose
+Cause
+.B cp
+to be verbose, showing files as they are copied.
+.TP
+.B \-p, \-\-preserve
+Cause
+.B cp
+to preserve the following attributes of each source file in the copy: modification time, access time, file mode, user ID, and group ID, as allowed by permissions.
+.PP
+If the user ID and group ID cannot be preserved, no error message is displayed and the exit value is not altered.
+.SH AMIGA READARGS OPTIONS
+When using the Amiga ReadArgs interface, the following options are available:
+.TP
+.B SOURCE/M
+Source file or directory (required)
+.TP
+.B DESTINATION/M
+Destination file or directory (required)
+.TP
+.B INTERACTIVE/S
+Enable interactive mode (same as \fB\-i\fR)
+.TP
+.B FORCE/S
+Force overwrite (same as \fB\-f\fR)
+.TP
+.B ALL=RECURSIVE/S
+Recursive copy (same as \fB\-R\fR)
+.TP
+.B VERBOSE/S
+Verbose output (same as \fB\-v\fR)
+.TP
+.B CLONE=PRESERVE/S
+Preserve attributes (same as \fB\-p\fR)
+.TP
+.B POSIX/K/F
+Escape hatch to POSIX mode with additional arguments
+.SH BEHAVIOR
+For each destination file that already exists, its contents are overwritten if permissions allow. Its mode, user ID, and group ID are unchanged unless the
+.B \-p
+option was specified.
+.PP
+If the destination file does not exist, the mode of the source file is used as modified by the file mode creation mask (umask). If the source file has its set-user-ID bit on, that bit is removed unless both the source file and the destination file are owned by the same user. If the source file has its set-group-ID bit on, that bit is removed unless both the source file and the destination file are in the same group and the user is a member of that group.
+.PP
+Appropriate permissions are required for file creation or overwriting.
+.PP
+If
+.B cp
+encounters an I/O error during the copy, then
+.B cp
+may leave a partially copied target file in place.
+.B cp
+specifically avoids cleaning up the output file in error cases to avoid further data loss in cases where the source may not be recoverable.
+.SH AMIGA-SPECIFIC FEATURES
+This implementation includes several Amiga-specific enhancements:
+.TP
+.B Native Console Input
+Uses Amiga console communication for responsive, non-buffered keyboard input in interactive mode.
+.TP
+.B Wildcard Expansion
+Supports Amiga wildcard patterns using the native scdir() function.
+.TP
+.B Hybrid Interface
+Automatically detects whether command-line arguments are in POSIX getopt style or Amiga ReadArgs style.
+.TP
+.B Interactive Help
+Use '?' as an argument to get interactive template help with ReadArgs.
+.SH EXAMPLES
+Make a copy of file
+.I foo
+named
+.IR bar :
+.RS
+.PP
+$ cp foo bar
+.RE
+.PP
+Copy a group of files to the
+.I /tmp
+directory:
+.RS
+.PP
+$ cp *.txt /tmp
+.RE
+.PP
+Copy the directory
+.I junk
+and all of its contents (including any subdirectories) to the
+.I /tmp
+directory:
+.RS
+.PP
+$ cp -R junk /tmp
+.RE
+.PP
+Interactive copy with confirmation prompts:
+.RS
+.PP
+$ cp -i *.txt backup/
+.RE
+.PP
+Amiga ReadArgs style usage:
+.RS
+.PP
+$ cp source.txt destination.txt INTERACTIVE VERBOSE
+.RE
+.PP
+Escape to POSIX mode from ReadArgs:
+.RS
+.PP
+$ cp source.txt destination.txt POSIX="-i -v"
+.RE
+.SH EXIT STATUS
+The
+.B cp
+utility exits 0 on success, and >0 if an error occurs.
+.SH COMPATIBILITY
+This implementation is designed to be IEEE Std 1003.2 ("POSIX.2") compatible while providing enhanced Amiga-specific features. The hybrid command-line interface allows seamless operation in both POSIX and Amiga environments.
+.SH SEE ALSO
+.BR mv (1),
+.BR rm (1),
+.BR umask (2)
+.SH HISTORY
+A
+.B cp
+command appeared in Version 1 AT&T UNIX. This implementation extends the original with Amiga-specific enhancements while maintaining POSIX compliance.
+.SH AUTHORS
+Based on ACP by Fred Cassirer, placed in Public Domain. Enhanced by the amigazen project for POSIX compliance and Amiga integration.
+.SH BUGS
+Report bugs to the amigazen project.
+.SH COPYRIGHT
+Copyright (c) 2025 amigazen project. All rights reserved.
+.br
+SPDX-License-Identifier: BSD-2-Clause
