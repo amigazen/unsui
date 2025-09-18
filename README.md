@@ -36,13 +36,13 @@ This project aims to provide a comprehensive set of POSIX utilities and librarie
 
 ### UniLib3 - The _zafu_ (座蒲)
 
-**Standard C Library**: UniLib3 is a (WIP) near complete POSIX and C99 standard C library implementation for Amiga and the SAS/C (and soon DICE) compiler. It provides many more functions and new versions of functions to extend the SAS/C standard C library, similar to VBCC's PosixLib. It does not replace the original SAS/C startup code or sc.lib except where the function prototype has changed since the days of ANSI/C89, in which case UniLib3 provides a new modern version of the same function. You could almost says it's an 'unClib'.
+**Standard C Library**: UniLib3 is a (WIP) near complete POSIX and C99 standard C library implementation for Amiga and the SAS/C (and soon DICE) compiler. It provides many more functions and new versions of functions to extend the SAS/C standard C library, similar to VBCC's PosixLib. It does not replace the original SAS/C startup code or sc.lib except where the function prototype has changed since the days of ANSI/C89, in which case UniLib3 provides a new modern version of the same function.
 
-Using UniLib3 it should be possible to port more modern functions as well as taking advantage of C99 improvements such as the memory-safe string functions. 
+Using UniLib3 it should be possible to port more modern Unix command line software as well as taking advantage of C99 improvements such as the memory-safe string functions. 
 
-UniLib3 is a new version of original emacs-for-Amiga developer David Gay's BSD compatible unix.lib including the extensions added by Amiga xfig developer Enrico Forestieri, as well as code added in from Irmen de Jong's Amiga Python, and all-new code from amigazen project. 
+UniLib3 is a new version of original emacs-for-Amiga developer David Gay's BSD compatible unix.lib including the extensions added by Amiga GhostScript and xfig developer Enrico Forestieri, as well as code added in from Irmen de Jong's Amiga Python, other similar projects and finished off with all-new code from amigazen project. 
 
-Furthermore UniLib3 includes some modern resource tracking and cleanup features to make Amiga software developed with it more stable, and unlike earlier versions makes full use of the latest operating system features. Apart from unix.lib, additional popular libraries found on Unix-like systems are also planned for inclusion, collectively forming the _zafu_ for _unsui_.
+Furthermore UniLib3 includes some modern resource tracking and cleanup features to make Amiga software developed with it more stable, and unlike earlier versions of unix.lib makes full use of the latest operating system features. Apart from unix.lib, additional popular libraries found on Unix-like systems are also planned for inclusion, collectively forming the _zafu_ for _unsui_.
 
 In zen buddhism, the _zafu_ (座蒲) is the meditation cushion that provides the foundation for proper posture and balance. Just as the zafu supports the practitioner's meditation, UniLib3 serves as a stable base for all software in the runtime environment.
 
@@ -67,9 +67,15 @@ Each _koan_ is designed to be:
 
 ## Frequently Asked Questions
 
+### Are these Amiga command line tools or POSIX?
+
+Both! _unsui_ implements POSIX standard commands in a hybrid way - they are hybrid both in that they are Amiga native on the inside, and offer POSIX standard features and output on the outside, whilst also supporting both Unix-style 'getopts' arguments (letters preceded by a '-' and words preceded by '--') and Amiga ReadArgs parameters, automatically recognising whichever mode you use.
+
+As a convention, all _unsui_ command binaries are named in lowercase - this gives the user an at-a-glance way of knowing if the command they are about to run is a normal Amiga native command. Especially useful for commands with same/similar names (such as Ed and ed or Eval and eval).
+
 ### How does amigazen project decide what software to include in the _unsui_ runtime?
 
-The _unsui_ selects items for inclusion based on a combination what would be useful and what's already available as Open Source that can be updated and integrated. The goal is to offer a full complement of POSIX-compliant command line tools, excepting those which make no sense in Amiga's single user context or simply cannot be made to work on Amiga architecture, as well as additional useful tools commonly found in Unix/Linux based distributions.
+Items for inclusion are selected based on a combination of what would be useful and what's already available as Open Source that can be updated and integrated. The goal is to offer a full complement of POSIX-compliant command line tools, excepting those which make no sense in Amiga's single user context or simply cannot be made to work on Amiga architecture, as well as additional useful tools commonly found in Unix/Linux based distributions.
 
 ### Is _unsui_ intended to be a certified POSIX compatible environment?
 
@@ -101,7 +107,7 @@ Components integrated from other older projects are checked for compatible licen
 
 ### Where did all these _koan_ POSIX commands come from?
 
-Amiga has an enormous and rich archive of free and open source projects, including Aminet, the world's largest (and best)) software archive. Most of the POSIX commands included here started life in the 1980s and '90s, often as ports of common BSD utils, and later GNU utils, that 'just worked' in the ANSI C compilers of the day. 
+Amiga has an enormous and rich archive of free and open source projects, including Aminet, the world's largest (and best) software archive. Most of the POSIX commands included here started life in the 1980s and '90s, often as ports of common BSD utils, and later GNU utils, that 'just worked' in the ANSI C compilers of the day. 
 
 At that time Amiga and its C libraries offered a largely BSD compatible standard C API, and developers such as Fred Fish himself (a significant GNU contributor in the early days), Matt Dillon (of CSh, fifo, DICE and later DragonflyBSD fame), David Gay (developer of emacs for Amiga and creator of unix.lib) and others, traded public domain source code for tools openly on usenet and floppy disk as the 'standard stack' for modern computing matured.
 
@@ -170,3 +176,5 @@ To learn more about amigazen project and its aims, see AMIGAZEN.md or the Amiga-
 The POSIX commands and libraries included here are based on various open source implementations and standards. Each individual _koan_ maintains its own licensing and attribution as documented in their respective src directories.
 
 The _unsui_ platform concept and implementation is a product of the **amigazen project**
+
+This product includes software developed by the University of California, Berkeley and its contributors.
