@@ -1,50 +1,21 @@
-/*-
- * Copyright (c) 1991, 1993
- *	The Regents of the University of California.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. All advertising materials mentioning features or use of this software
- *    must display the following acknowledgement:
- *	This product includes software developed by the University of
- *	California, Berkeley and its contributors.
- * 4. Neither the name of the University nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
+/*
+ * SPDX-License-Identifier: BSD-4-Clause-UC
+ * See LICENSE.md for full license text.
  */
 
 #ifndef lint
 static char sccsid[] = "@(#)str.c	8.1 (Berkeley) 6/6/93";
 #endif /* not lint */
 
-#ifndef AZTEC_C
-#include <sys/cdefs.h>
 #include <sys/types.h>
-#endif
+
 
 #include <errno.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "extern.h"
 
@@ -58,8 +29,7 @@ static void	genseq (STR *);
 
 
 int
-next(s)
-	register STR *s;
+next(register STR *s)
 {
 	register int ch;
 
@@ -114,8 +84,7 @@ next(s)
 }
 
 static int
-bracket(s)
-	register STR *s;
+bracket(register STR *s)
 {
 	register char *p;
 
@@ -137,7 +106,7 @@ bracket(s)
 	default:				/* "[\###*n]" or "[#*n]" */
 		if ((p = strpbrk(s->str + 2, "*]")) == NULL)
 			return (0);
-		if (p[0] != '*' || index(p, ']') == NULL)
+		if (p[0] != '*' || strchr(p, ']') == NULL)
 			return (0);
 		s->str += 1;
 		genseq(s);
@@ -146,20 +115,7 @@ bracket(s)
 	/* NOTREACHED */
 }
 
-int isalnum (int),
-    isalpha (int),
-#ifndef AZTEC_C
-    isblank (int),
-#endif
-    iscntrl (int),
-    isdigit (int),
-    isgraph (int),
-    islower (int),
-    isprint (int),
-    ispunct (int),
-    isspace (int),
-    isupper (int),
-    isxdigit (int);
+/* ctype functions are provided by ctype.h */
 
 typedef struct {
 	char *name;
@@ -170,9 +126,7 @@ typedef struct {
 static CLASS classes[] = {
 	{ "alnum",  isalnum,  },
 	{ "alpha",  isalpha,  },
-#ifndef AZTEC_C
-	{ "blank",  isblank,  },
-#endif
+	{ "blank",  isspace,  },  /* blank is space characters */
 	{ "cntrl",  iscntrl,  },
 	{ "digit",  isdigit,  },
 	{ "graph",  isgraph,  },
@@ -185,8 +139,7 @@ static CLASS classes[] = {
 };
 
 static void
-genclass(s)
-	STR *s;
+genclass(STR *s)
 {
 	register int cnt, (*func) (int);
 	CLASS *cp, tmp;
@@ -199,7 +152,7 @@ genclass(s)
 
 	if ((cp->set = p = malloc((NCHARS + 1) * sizeof(int))) == NULL)
 		err("%s", strerror(errno));
-	bzero(p, (NCHARS + 1) * sizeof(int));
+	memset(p, 0, (NCHARS + 1) * sizeof(int));
 	for (cnt = 0, func = cp->func; cnt < NCHARS; ++cnt)
 		if ((func)(cnt))
 			*p++ = cnt;
@@ -211,8 +164,7 @@ genclass(s)
 }
 
 static int
-c_class(a, b)
-	const void *a, *b;
+c_class(const void *a, const void *b)
 {
 	return (strcmp(((CLASS *)a)->name, ((CLASS *)b)->name));
 }
@@ -222,8 +174,7 @@ c_class(a, b)
  * we just syntax check and grab the character.
  */
 static void
-genequiv(s)
-	STR *s;
+genequiv(STR *s)
 {
 	if (*s->str == '\\') {
 		s->equiv[0] = backslash(s);
@@ -241,8 +192,7 @@ genequiv(s)
 }
 
 static int
-genrange(s)
-	STR *s;
+genrange(STR *s)
 {
 	int stopval;
 	char *savestart;
@@ -260,8 +210,7 @@ genrange(s)
 }
 
 static void
-genseq(s)
-	STR *s;
+genseq(STR *s)
 {
 	char *ep;
 
@@ -299,21 +248,19 @@ genseq(s)
 }
 
 /* Use the #defines isXXX() here, DON'T use them above. */
-#include <ctype.h>
 
 /*
  * Translate \??? into a character.  Up to 3 octal digits, if no digits either
  * an escape code or a literal character.
  */
 static int
-backslash(s)
-	register STR *s;
+backslash(register STR *s)
 {
 	register int ch, cnt, val;
 
 	for (cnt = val = 0;;) {
 		ch = *++s->str;
-		if (!isascii(ch) || !isdigit(ch))
+		if (ch < 0 || ch > 127 || !isdigit(ch))
 			break;
 		val = val * 8 + ch - '0';
 		if (++cnt == 3) {

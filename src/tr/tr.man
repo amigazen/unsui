@@ -1,195 +1,385 @@
-
-======================= BEGIN MAN PAGE ==========================
-
-NAME
-       tr - translate or delete characters
-
-SYNOPSIS
-       tr   [-cst]  [--complement]  [--squeeze-repeats]  [--trun-
-       cate-set1] string1 string2
-       tr {-s,--squeeze-repeats} [-c] [--complement] string1
-       tr {-d,--delete} [-c] string1
-       tr {-d,--delete}  {-s,--squeeze-repeats}  [-c]  [--comple-
-       ment] string1 string2
-
-       GNU tr also accepts the --help and --version options.
-
-DESCRIPTION
-       This  manual  page  documents  the  GNU version of tr.  tr
-       copies the standard input to the standard output, perform-
-       ing one of the following operations:
-
-              o  translate, and optionally squeeze repeated char-
-              acters in the result
-              o squeeze repeated characters
-              o delete characters
-              o delete characters, then squeeze repeated  charac-
-              ters from the result.
-
-       The  string1  and  (if  given)  string2  arguments  define
-       ordered sets of characters, referred to below as set1  and
-       set2.   These sets are the characters of the input that tr
-       operates on.  The --complement (-c) option  replaces  set1
-       with its complement (all of the characters that are not in
-       set1).
-
-   SPECIFYING SETS OF CHARACTERS
-       The format of the string1 and string2 arguments  resembles
-       the  format  of regular expressions; however, they are not
-       regular expressions, only lists of characters.  Most char-
-       acters  simply  represent themselves in these strings, but
-       the strings can contain the shorthands listed  below,  for
-       convenience.   Some of them can be used only in string1 or
-       string2, as noted below.
-
-       Backslash escapes.  A backslash followed  by  a  character
-       not listed below causes an error message.
-
-       \a     Control-G.
-       \b     Control-H.
-       \f     Control-L.
-       \n     Control-J.
-       \r     Control-M.
-       \t     Control-I.
-       \v     Control-K.
-       \ooo   The character with the value given by ooo, which is
-              1 to 3 octal digits.
-       \\     A backslash.
-
-       Ranges.  The notation `m-n' expands to all of the  charac-
-       ters  from m through n, in ascending order.  m should col-
-       late before n; if it doesn't, an  error  results.   As  an
-       example,  `0-9' is the same as `0123456789'.  Although GNU
-       tr does not support the System V syntax that  uses  square
-       brackets to enclose ranges, translations specified in that
-       format will still work as long as the brackets in  string1
-       correspond to identical brackets in string2.
-
-       Repeated  characters.   The  notation  `[c*n]'  in string2
-       expands to n copies of character c.  Thus, `[y*6]' is  the
-       same  as `yyyyyy'.  The notation `[c*]' in string2 expands
-       to as many copies of c as are needed to make set2 as  long
-       as  set1.   If  n  begins  with  a 0, it is interpreted in
-       octal, otherwise in decimal.
-
-       Character classes.  The notation `[:class-name:]'  expands
-       to  all  of the characters in the (predefined) class named
-       class-name.  The characters expand in no particular order,
-       except  for  the `upper' and `lower' classes, which expand
-       in  ascending  order.   When   the   --delete   (-d)   and
-       --squeeze-repeats (-s) options are both given, any charac-
-       ter class can be used in  string2.   Otherwise,  only  the
-       character  classes  `lower'  and  `upper'  are accepted in
-       string2, and then  only  if  the  corresponding  character
-       class  (`upper' and `lower', respectively) is specified in
-       the same relative position in string1.  Doing this  speci-
-       fies case conversion.  The class names are given below; an
-       error results when an invalid class name is given.
-
-       alnum  Letters and digits.
-       alpha  Letters.
-       blank  Horizontal whitespace.
-       cntrl  Control characters.
-       digit  Digits.
-       graph  Printable characters, not including space.
-       lower  Lowercase letters.
-       print  Printable characters, including space.
-       punct  Punctuation characters.
-       space  Horizontal or vertical whitespace.
-       upper  Uppercase letters.
-       xdigit Hexadecimal digits.
-
-       Equivalence classes.  The syntax `[=c=]' expands to all of
-       the  characters that are equivalent to c, in no particular
-       order.   Equivalence  classes  are  a   recent   invention
-       intended  to  support  non-English  alphabets.   But there
-       seems to be no standard way to define  them  or  determine
-       their contents.  Therefore, they are not fully implemented
-       in GNU tr; each  character's  equivalence  class  consists
-       only  of  that  character, which makes this a useless con-
-       struction currently.
-
-   TRANSLATING
-       tr performs translation when string1 and string2 are  both
-       given  and  the  --delete  (-d)  option  is not given.  tr
-       translates each character of its input that is in set1  to
-       the  corresponding  character  in set2.  Characters not in
-       set1 are  passed  through  unchanged.   When  a  character
-       appears more than once in set1 and the corresponding char-
-       acters in set2 are not all the same, only the final one is
-       used.  For example, these two commands are equivalent:
-              tr aaa xyz
-              tr a z
-
-       A  common  use of tr is to convert lowercase characters to
-       uppercase.  This can be done in many ways.  Here are three
-       of them:
-              tr abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ
-              tr a-z A-Z
-              tr '[:lower:]' '[:upper:]'
-
-       When  tr  is  performing translation, set1 and set2 should
-       normally have the same length.  If set1  is  shorter  than
-       set2, the extra characters at the end of set2 are ignored.
-
-       On the other hand, making set1 longer  than  set2  is  not
-       portable;  POSIX.2  says that the result is undefined.  In
-       this situation, the BSD tr pads set2 to the length of set1
-       by  repeating  the last character of set2 as many times as
-       necessary.  The System V tr truncates set1 to  the  length
-       of set2.
-
-       By default, GNU tr handles this case like the BSD tr does.
-       When the --truncate-set1 (-t) option is given, GNU tr han-
-       dles  this case like the System V tr instead.  This option
-       is ignored for operations other than translation.
-
-       Acting like the System  V  tr  in  this  case  breaks  the
-       relatively common BSD idiom:
-              tr -cs A-Za-z0-9 '\012'
-       because  it converts only zero bytes (the first element in
-       the  complement   of   set1),   rather   than   all   non-
-       alphanumerics, to newlines.
-
-   SQUEEZING REPEATS AND DELETING
-       When  given  just the --delete (-d) option, tr removes any
-       input characters that are in set1.
-
-       When given just  the  --squeeze-repeats  (-s)  option,  tr
-       replaces  each input sequence of a repeated character that
-       is in set1 with a single occurrence of that character.
-
-       When given both the  --delete  and  the  --squeeze-repeats
-       options,  tr first performs any deletions using set1, then
-       squeezes repeats from any remaining characters using set2.
-
-       The  --squeeze-repeats option may also be used when trans-
-       lating, in which case tr first performs translation,  then
-       squeezes repeats from any remaining characters using set2.
-
-       Here are some examples to illustrate various  combinations
-       of options:
-
-       Remove all zero bytes:
-              tr -d '\000'
-
-       Put  all  words on lines by themselves.  This converts all
-       non-alphanumeric characters  to  newlines,  then  squeezes
-       each string of repeated newlines into a single newline:
-              tr -cs '[a-zA-Z0-9]' '[\n*]'
-
-       Convert  each  sequence  of  repeated newlines to a single
-       newline:
-              tr -s '\n'
-
-       GNU tr also accepts the following options in any  combina-
-       tion with the others.
-
-       --help Print a usage message and exit with a non-zero sta-
-              tus.
-
-       --version
-              Print version information on standard  output  then
-              exit.
-
-       =================== END OF MAN PAGE ======================
+.TH TR 1 "September 18, 2025" "AmigaZen POSIX" "General Commands Manual"
+.SH NAME
+tr \- translate or delete characters
+.SH SYNOPSIS
+.B tr
+[\-Ccsu]
+.I string1
+[
+.I string2
+]
+.br
+.B tr
+[\-Ccu]
+.B \-d
+.I string1
+.br
+.B tr
+[\-Ccu]
+.B \-s
+.I string1
+.br
+.B tr
+[\-Ccu]
+.B \-ds
+.I string1
+.I string2
+.br
+.PP
+.B Amiga Usage:
+.br
+.B tr
+STRING1/M [STRING2/K] [COMPLEMENT/S] [DELETE/S] [SQUEEZE/S] [UNBUFFERED/S]
+.br
+.B tr
+? for template
+.SH DESCRIPTION
+This manual page documents the hybrid Amiga/POSIX version of tr.  tr
+copies the standard input to the standard output, performing
+one of the following operations:
+.RS
+.IP \(bu 3
+translate, and optionally squeeze repeated characters in the result
+.IP \(bu 3
+squeeze repeated characters
+.IP \(bu 3
+delete characters
+.IP \(bu 3
+delete characters, then squeeze repeated characters from the result.
+.RE
+.PP
+The string1 and (if given) string2 arguments define
+ordered sets of characters, referred to below as set1 and
+set2.  These sets are the characters of the input that tr
+operates on.
+.SH OPTIONS
+.TP
+.B \-c, \-C
+Complement the set of characters in string1, that is "\-c ab"
+includes every character except for 'a' and 'b'.
+.TP
+.B \-d
+Delete characters in string1 from the input.
+.TP
+.B \-s
+Squeeze multiple occurrences of the characters listed in the last
+operand (either string1 or string2) in the input into a single
+instance of the character.  This occurs after all deletion and
+translation is completed.
+.TP
+.B \-u
+Guarantee that any output is unbuffered.
+.SH AMIGA OPTIONS
+.TP
+.B STRING1/M
+Required string1 argument for character translation/deletion.
+.TP
+.B STRING2/K
+Optional string2 argument for character translation.
+.TP
+.B COMPLEMENT/S
+Complement the set of characters in string1.
+.TP
+.B DELETE/S
+Delete characters in string1 from the input.
+.TP
+.B SQUEEZE/S
+Squeeze repeated characters.
+.TP
+.B UNBUFFERED/S
+Unbuffered output.
+.TP
+.B POSIX/K/F
+Use POSIX-style parsing for the rest of the command line.
+.SH SPECIFYING SETS OF CHARACTERS
+The format of the string1 and string2 arguments resembles
+the format of regular expressions; however, they are not
+regular expressions, only lists of characters.  Most char-
+acters simply represent themselves in these strings, but
+the strings can contain the shorthands listed below, for
+convenience.  Some of them can be used only in string1 or
+string2, as noted below.
+.PP
+.B Backslash escapes.
+A backslash followed by a character
+not listed below causes an error message.
+.TP
+.B \ea
+Control-G.
+.TP
+.B \eb
+Control-H.
+.TP
+.B \ef
+Control-L.
+.TP
+.B \en
+Control-J.
+.TP
+.B \er
+Control-M.
+.TP
+.B \et
+Control-I.
+.TP
+.B \ev
+Control-K.
+.TP
+.B \eooo
+The character with the value given by ooo, which is
+1 to 3 octal digits.
+.TP
+.B \e\e
+A backslash.
+.PP
+.B Ranges.
+The notation `m-n' expands to all of the characters
+from m through n, in ascending order.  m should col-
+late before n; if it doesn't, an error results.  As an
+example, `0-9' is the same as `0123456789'.  Although GNU
+tr does not support the System V syntax that uses square
+brackets to enclose ranges, translations specified in that
+format will still work as long as the brackets in string1
+correspond to identical brackets in string2.
+.PP
+.B Repeated characters.
+The notation `[c*n]' in string2
+expands to n copies of character c.  Thus, `[y*6]' is the
+same as `yyyyyy'.  The notation `[c*]' in string2 expands
+to as many copies of c as are needed to make set2 as long
+as set1.  If n begins with a 0, it is interpreted in
+octal, otherwise in decimal.
+.PP
+.B Character classes.
+The notation `[:class-name:]' expands
+to all of the characters in the (predefined) class named
+class-name.  The characters expand in no particular order,
+except for the `upper' and `lower' classes, which expand
+in ascending order.  When the -d and
+-s options are both given, any character class can be used in
+string2.  Otherwise, only the
+character classes `lower' and `upper' are accepted in
+string2, and then only if the corresponding character
+class (`upper' and `lower', respectively) is specified in
+the same relative position in string1.  Doing this speci-
+fies case conversion.  The class names are given below; an
+error results when an invalid class name is given.
+.TP
+.B alnum
+Letters and digits.
+.TP
+.B alpha
+Letters.
+.TP
+.B blank
+Horizontal whitespace (space and tab).
+.TP
+.B cntrl
+Control characters.
+.TP
+.B digit
+Digits.
+.TP
+.B graph
+Printable characters, not including space.
+.TP
+.B lower
+Lowercase letters.
+.TP
+.B print
+Printable characters, including space.
+.TP
+.B punct
+Punctuation characters.
+.TP
+.B space
+Horizontal or vertical whitespace.
+.TP
+.B upper
+Uppercase letters.
+.TP
+.B xdigit
+Hexadecimal digits.
+.PP
+.B Equivalence classes.
+The syntax `[=c=]' expands to all of
+the characters that are equivalent to c, in no particular
+order.  Equivalence classes are a recent invention
+intended to support non-English alphabets.  But there
+seems to be no standard way to define them or determine
+their contents.  Therefore, they are not fully implemented
+in GNU tr; each character's equivalence class consists
+only of that character, which makes this a useless con-
+struction currently.
+.SH TRANSLATING
+tr performs translation when string1 and string2 are both
+given and the -d option is not given.  tr
+translates each character of its input that is in set1 to
+the corresponding character in set2.  Characters not in
+set1 are passed through unchanged.  When a character
+appears more than once in string1 and the corresponding char-
+acters in string2 are not all the same, only the final one is
+used.  For example, these two commands are equivalent:
+.RS
+.PP
+tr aaa xyz
+.br
+tr a z
+.RE
+.PP
+A common use of tr is to convert lowercase characters to
+uppercase.  This can be done in many ways.  Here are three
+of them:
+.RS
+.PP
+tr abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ
+.br
+tr a-z A-Z
+.br
+tr '[:lower:]' '[:upper:]'
+.RE
+.PP
+When tr is performing translation, set1 and set2 should
+normally have the same length.  If set1 is shorter than
+set2, the extra characters at the end of set2 are ignored.
+.PP
+On the other hand, making set1 longer than set2 is not
+portable; POSIX.2 says that the result is undefined.  In
+this situation, the BSD tr pads set2 to the length of set1
+by repeating the last character of set2 as many times as
+necessary.  The System V tr truncates set1 to the length
+of set2.
+.PP
+By default, GNU tr handles this case like the BSD tr does.
+When the --truncate-set1 (-t) option is given, GNU tr han-
+dles this case like the System V tr instead.  This option
+is ignored for operations other than translation.
+.PP
+Acting like the System V tr in this case breaks the
+relatively common BSD idiom:
+.RS
+.PP
+tr -cs A-Za-z0-9 '\e012'
+.RE
+because it converts only zero bytes (the first element in
+the complement of set1), rather than all non-
+alphanumerics, to newlines.
+.SH SQUEEZING REPEATS AND DELETING
+When given just the -d option, tr removes any
+input characters that are in set1.
+.PP
+When given just the -s option, tr
+replaces each input sequence of a repeated character that
+is in set1 with a single occurrence of that character.
+.PP
+When given both the -d and the -s
+options, tr first performs any deletions using set1, then
+squeezes repeats from any remaining characters using set2.
+.PP
+The -s option may also be used when trans-
+lating, in which case tr first performs translation, then
+squeezes repeats from any remaining characters using set2.
+.PP
+Here are some examples to illustrate various combinations
+of options:
+.PP
+Remove all zero bytes:
+.RS
+.PP
+tr -d '\e000'
+.RE
+.PP
+Put all words on lines by themselves.  This converts all
+non-alphanumeric characters to newlines, then squeezes
+each string of repeated newlines into a single newline:
+.RS
+.PP
+tr -cs '[a-zA-Z0-9]' '[\en*]'
+.RE
+.PP
+Convert each sequence of repeated newlines to a single
+newline:
+.RS
+.PP
+tr -s '\en'
+.RE
+.SH HYBRID PARSING
+This version of tr supports both POSIX-style and Amiga-style
+command line parsing. The program automatically detects which
+style is being used based on the command line arguments.
+.PP
+POSIX Style:
+.RS
+.PP
+tr -c "a-z" "A-Z" < input.txt
+.br
+tr -d "[:space:]" < input.txt
+.br
+tr -s "[:space:]" < input.txt
+.RE
+.PP
+Amiga Style:
+.RS
+.PP
+tr STRING1/M "a-z" COMPLEMENT/S
+.br
+tr STRING1/M "[:space:]" DELETE/S
+.br
+tr STRING1/M "[:space:]" SQUEEZE/S
+.RE
+.PP
+Hybrid Style (using POSIX within ReadArgs):
+.RS
+.PP
+tr POSIX/K "-c a-z A-Z" < input.txt
+.RE
+.SH EXAMPLES
+Convert lowercase to uppercase (POSIX):
+.RS
+.PP
+tr "a-z" "A-Z" < input.txt
+.br
+tr "[:lower:]" "[:upper:]" < input.txt
+.RE
+.PP
+Convert lowercase to uppercase (Amiga):
+.RS
+.PP
+tr STRING1/M "a-z" STRING2/K "A-Z"
+.RE
+.PP
+Delete all spaces (POSIX):
+.RS
+.PP
+tr -d " " < input.txt
+.RE
+.PP
+Delete all spaces (Amiga):
+.RS
+.PP
+tr STRING1/M " " DELETE/S
+.RE
+.PP
+Squeeze repeated spaces (POSIX):
+.RS
+.PP
+tr -s " " < input.txt
+.RE
+.PP
+Squeeze repeated spaces (Amiga):
+.RS
+.PP
+tr STRING1/M " " SQUEEZE/S
+.RE
+.PP
+Interactive help:
+.RS
+.PP
+tr ?
+.RE
+.SH VERSION
+This is version 2.0 of the hybrid Amiga/POSIX tr utility.
+.SH SEE ALSO
+.BR wc (1),
+.BR sed (1),
+.BR awk (1)
