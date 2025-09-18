@@ -3,6 +3,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
+
+#include <proto/exec.h>
+#include <proto/dos.h>
+
 #define NARGS		/* get it to shut up about my mkdir */
 #include <stdio.h>
 #include "tar.h"

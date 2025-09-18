@@ -7,11 +7,16 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>		/* Needed for typedefs in tar.h */
 
-extern char 	*malloc();
-extern char 	*getenv();
-extern char	*strncpy();
+/* Default blocking factor if not defined by compiler */
+#ifndef DEFBLOCKING
+#define DEFBLOCKING 20
+#endif
+
+/* Standard library functions now properly included */
 extern char	*optarg;	/* Pointer to argument */
 extern int	optind;		/* Global argv index from getopt */
 
@@ -28,11 +33,15 @@ extern int	optind;		/* Global argv index from getopt */
  */
 #define intconv	atoi
 extern int	getoldopt();
+extern int	wildmat();
 extern void	read_and();
 extern void	list_archive();
 extern void	extract_archive();
 extern void	diff_archive();
 extern void	create_archive();
+extern void	extr_init();
+extern void	diff_init();
+extern void	tzset();
 
 static FILE	*namef;		/* File to read names from */
 static char	**n_argv;	/* Argv used by name routines */
@@ -48,6 +57,7 @@ extern char *_TZ;		/* timezone stuff */
 /*
  * Main routine for tar.
  */
+int
 main(argc, argv)
 	int	argc;
 	char	**argv;
@@ -244,6 +254,7 @@ options(argc, argv)
 	}
 
 	blocksize = blocking * RECORDSIZE;
+	return 0;
 }
 
 
@@ -294,6 +305,7 @@ tar: valid options:\n\
  *
  * They can either come from stdin or from argv.
  */
+int
 name_init(argc, argv)
 	int	argc;
 	char	**argv;
@@ -319,6 +331,7 @@ name_init(argc, argv)
 		n_argc = argc;
 		n_argv = argv;
 	}
+	return 0;
 }
 
 /*
@@ -355,10 +368,12 @@ name_next()
 /*
  * Close the name file, if any.
  */
+int
 name_close()
 {
 
 	if (namef != NULL && namef != stdin) fclose(namef);
+	return 0;
 }
 
 
@@ -373,6 +388,7 @@ name_close()
  * This option lets users of small machines extract an arbitrary
  * number of files by doing "tar t" and editing down the list of files.
  */
+int
 name_gather()
 {
 	register char *p;
@@ -394,18 +410,20 @@ name_gather()
 			namelist = namebuf;
 			namelast = namelist;
 		}
-		return;
+		return 0;
 	}
 
 	/* Non sorted names -- read them all in */
 	while (NULL != (p = name_next())) {
 		addname(p);
 	}
+	return 0;
 }
 
 /*
  * Add a name to the namelist.
  */
+int
 addname(name)
 	char	*name;			/* pointer to name */
 {
@@ -427,7 +445,7 @@ addname(name)
 	p->found = 0;
 	p->regexp = 0;		/* Assume not a regular expression */
 	p->firstch = 1;		/* Assume first char is literal */
-	if (index(name, '*') || index(name, '[') || index(name, '?')) {
+	if (strchr(name, '*') || strchr(name, '[') || strchr(name, '?')) {
 		p->regexp = 1;	/* No, it's a regexp */
 		if (name[0] == '*' || name[0] == '[' || name[0] == '?')
 			p->firstch = 0;		/* Not even 1st char literal */
@@ -436,12 +454,14 @@ addname(name)
 	if (namelast) namelast->next = p;
 	namelast = p;
 	if (!namelist) namelist = p;
+	return 0;
 }
 
 
 /*
  * Match a name from an archive, p, with a name from the namelist.
  */
+int
 name_match(p)
 	register char *p;
 {
@@ -495,6 +515,7 @@ again:
 /*
  * Print the names of things in the namelist that were not matched.
  */
+int
 names_notfound()
 {
 	register struct name	*nlp;
@@ -523,4 +544,5 @@ names_notfound()
 		while (0 != (p = name_next()))
 			fprintf(stderr, "tar: %s not found in archive\n", p);
 	}
+	return 0;
 }

@@ -1,5 +1,0 @@
-FROM LIB:c.o+"tar.o"+"buffer.o"+"create.o"+"diffarch.o"+"extract.o"+"getoldopt.
-"+"getopt.o"+"list.o"+"port.o"+"wildmat.o"+
-"utime.o"+"/dirlib/dir.o"+"amiga.o"
-TO "tar"
-LIB LIB:lc.lib LIB:amiga.lib

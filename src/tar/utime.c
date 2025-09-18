@@ -15,12 +15,22 @@
 /* Permission to use in any way granted, as long as     */
 /* the copyright notice stays intact                    */
 
-#include "exec/types.h"
-#include "exec/ports.h"
-#include "exec/io.h"
-#include "exec/memory.h"
-#include "libraries/dos.h"
-#include "libraries/dosextens.h"
+#include <exec/types.h>
+#include <exec/ports.h>
+#include <exec/io.h>
+#include <exec/memory.h>
+
+#include <proto/exec.h>
+#include <proto/dos.h>
+#include <clib/alib_protos.h>
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
+
+#include <libraries/dos.h>
+#include <libraries/dosextens.h>
 #include <sys/types.h>
 #include <errno.h>
 
