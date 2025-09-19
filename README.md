@@ -54,7 +54,7 @@ The name _shami_ (沙弥) means "Novice Monk" - a dedicated practitioner at the 
 
 ### Shell commands - The _koans_ (公案)
 
-**The Tools of Insight**: A complete set of the most common commands found on Unix-like systems, that are Amiga native on the inside and POSIX compatible on the outside, all _koan_ commands simultaneously support both getopts and ReadArgs style command arguments, and running from both the AmigaShell or _shami_ sh shell.
+**The Tools of Enlightenment**: A complete set of the most common commands found on Unix-like systems, that are Amiga native on the inside and POSIX compatible on the outside, all _koan_ commands simultaneously support both getopts and ReadArgs style command arguments, and running from both the AmigaShell or _shami_ sh shell.
 
 In zen buddhism, a _koan_ (公案) is a riddle used to break through conventional thinking. Mastering the cryptic but powerful POSIX commands is a similar journey. Each tool is a practical puzzle that, once solved, grants deeper understanding and control over the system. In many cases simply creating an Amiga port is a _koan_ in itself.
 
@@ -64,6 +64,79 @@ Each _koan_ is designed to be:
 - Amiga native in its use of system APIs
 - Refactored to become consistent with the other parts of _unsui_ 
 - Utilize the _zafu_ for a consistent approach to supporting both Unix-like and Amiga conventions
+
+#### POSIX.1-2017 Command Utilities
+
+This section lists all POSIX mandated commands, according to the following key:
+- **bold** items are already included in the latest _unsui_ pre-release
+- *italic* items are in development here in the _unsui_ git repository
+- (builtin) items are planned as shell builtins in the _shami_ shell not standalone commands 
+- ~~strikethrough~~ items are not going to be included in _unsui_ because they are irrelevant in 2025 and irrelevant to Amiga users
+- no markup items are for future consideration
+
+##### Standard-mandated Utilities
+
+(alias)	*ar*	~~asa~~	*at*	**awk**
+**basename**	batch*	**bc**	(bg)	*cal*
+**cat**	*cd*	**chgrp**	**chmod**	*chown*
+*cksum*	**cmp**	*comm*	(command)	**compress**
+**cp**	*crontab*	*csplit*	*cut*	**date**
+**dd**	**df**	*diff*	**dirname**	**du**
+**echo**	**ed**	**env**	*expand*	**expr**
+**false**	(fc)	(fg)	**file**	*find*
+*fold*	fuser	getconf	(getopts)	**grep**
+*hash*	**head**	*iconv*	*id*	*ipcrm*
+*ipcs*	(jobs)	*join*	*kill*	**link**
+**ln**	locale	localedef	logger	logname
+*lp*	**ls**	**man**	mailx   ~~mesg~~
+**mkdir**	*mkfifo*	**mv**	newgrp	**nice**
+*nl*	(nohup)	**od**	*paste*	pathchk
+pax	**pr**	*printf*	*ps*	**pwd**
+(read)	renice	**rm**	**rmdir**	**sed**
+(set)	**sh**	*sleep*	**sort**	*split*
+(stty)	*tabs*	**tail**	talk	**tee**
+test*	**time**	**touch**	tput	**tr**
+**true**	tsort	(tty)	(type)	(ulimit)
+(umask)	(unalias)	*uname*	*uncompress*	*unexpand*
+**uniq**	unlink	(unset)	*uudecode*	*uuencode*
+(wait)	**wc**	who	~~write~~	*xargs*
+
+##### Optional Utilities
+
+###### User Portability Utilities Option (UPU) 🖥️
+*ex*	*more*	**vi**
+
+###### Development Utilities Option (DEV) 🧑‍💻
+~~admin~~	*c99*	*cflow*	*ctags*	*cxref*
+~~delta~~	~~get~~	*lex*	**m4**	*make*
+*nm*	*patch*	~~prs~~	~~rmdel~~	sact
+~~sccs~~	**strings**	**strip**	~~unget~~	~~val~~
+~~what~~	*yacc*
+
+###### Network Utilities
+
+*finger*	*ftp*	*netstat*	*rsync*	*ssh*
+*svn*	*telnet*
+
+###### Other Common Unix Utilities
+
+*arc*	*banner*	**base64**	*bash*	**bison**
+*bzip2*	*cflow*	*cforth*	*clzip*	*cpp*
+**cron**	*crc32*	**d**	**dir**	*emacs*
+*eval*	*f2c*	*f77*	*fcmp*	*foreach*
+**fmt**	**flex**	**gawk**	*groff*	*ispell*
+**less**	*lua*	*lzip*	*makemake*	**md5**
+**md5sum**	*memacs*	*mime64*	*nano*	*ne*
+*nuweb*	*nroff*	**pexec**	**pipe**	*pcre*
+*perl3*	*perl4*	**pg**	*push*	*ranlib*
+*regex*	**roff**	**shar**	*seq*	*sha1*
+*smalltalk*	**stat**	*strcmp*	**strip**	*tar*
+*tasks*	*tcl*	*tcsh*	*termcap*	*tex*
+**top**	*troff*	**unshar**	*unzip*	**uptime**
+**v**	**vdir**	*view*	**vim**	**whereis**
+*width*	*xlisp*	*z*	*zip*	*zoo*
+**xvi**
+
 
 ## Frequently Asked Questions
 
@@ -75,7 +148,7 @@ As a convention, all _unsui_ command binaries are named in lowercase - this give
 
 ### How does amigazen project decide what software to include in the _unsui_ runtime?
 
-Items for inclusion are selected based on a combination of what would be useful and what's already available as Open Source that can be updated and integrated. The goal is to offer a full complement of POSIX-compliant command line tools, excepting those which make no sense in Amiga's single user context or simply cannot be made to work on Amiga architecture, as well as additional useful tools commonly found in Unix/Linux based distributions.
+Items for inclusion are selected based on a combination of what would be useful and what's already available as Open Source that can be updated and integrated, cross referenced against POSIX mandated commands and commands included in popular Unix-like distributions, from macOS to Ubuntu. The goal is to offer a full complement of POSIX-compliant command line tools, excepting those which make no sense in Amiga's single user context or simply cannot be made to work on Amiga architecture, as well as additional useful tools commonly found in Unix/Linux based distributions. As a rule of thumb, _unsui_ will prefer a BSD style command in preference to a GNU style command where there is a clear difference, much as macOS does.
 
 ### Is _unsui_ intended to be a certified POSIX compatible environment?
 
@@ -154,6 +227,16 @@ You can find the work in progress new version of unix.lib on github in its own r
 Generally no, the code here should be considered forked from the original projects, since the forks often date back 10, 20 or even 30 or more years, and few if any of the upstream maintainers will accept Amiga specific patches nor would such patches easily fit into the modern cross-platform auto configuration system, even for GeekGadgets or OS4 versions. Keeping the forks forked is in the best interest of the project and allows _unsui_ to focus on optimisation for Amiga native features, and this approach is really no different from what macOS does. This is by no means a bad thing - many of the POSIX commands have barely changed in core functionality in that time, with additional code written to support more modern platforms, to support unicode, or 64-bit, or network and server features. Exactly the kind of code-bloat Amiga users eschew and which would conflict with the balance _unsui_ is designed to strike with regard to Amiga _kanso_ versus Unix complexity.
 
 New features that offer real value to Amiga users may be cherry picked from more recent versions from time to time. Forking in this way allows implementations to deviate from retaining cross platform compatibility and use Amiga native mechanisms internally wherever possible, to bring back some of that Amiga _kanso_.
+
+### Don't some standard AmigaDOS command line tools clash
+
+Yes, commands such as alias, set and eval clash with with similar AmigaDOS command line tools found in the standard path C: directory.
+
+For _unsui_ some of these commands have been implemented as shell builtins, with the result that the POSIX version will be used if you are inside the _shami_ (sh) shell or another POSIX style shell in the _unsui_ collection, while the Amiga Shell will continue to use whichever has priority in it's path. 
+
+### Does _unsui_ support MultiUserFileSystem 
+
+Some individual commands may support multiuser-aware filesystems when built against the UniLib3 unix.lib since the appropriate functions there such as chown() and chmod() and stat() are designed to use direct filesystem access packet i/o to bypass dos.library limitations, but currently no specific support for MUFS is added in general to the _koans_
 
 ### Will _unsui_ be released on Aminet?
 
