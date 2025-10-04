@@ -1,0 +1,132 @@
+
+
+
+f77(1L)                                                   f77(1L)
+
+
+NNAAMMEE
+       f77 - Fortran compiler.
+
+SSYYNNOOPPSSIISS
+       ff7777 [options] file ...
+
+DDEESSCCRRIIPPTTIIOONN
+       ff7777 is an AmigaDOS frontend for the port of the AT&T Labo­
+       ratories and Bellcore ff22cc Fortran  to  C  translator  that
+       works  with  the  SAS AmigaDOS C compiler version 6.51. It
+       tries to give the impression of a  true  Fortran  compiler
+       for  AmigaDOS. The frontend accepts the following types of
+       file arguments:
+
+       Arguments that end with .f  are  compiled  as  Fortran  77
+       source  files.   If each source compiles successfully, its
+       corresponding object file is left in the current directory
+       in  a  file whose name is that of the source, with .o sub­
+       stituted for .f.
+
+       Arguments that end with .c are  assumed  to  be  C  source
+       files, and are compiled, producing .o files.
+
+       Arguments  that  end  with  .o are passed on to the linker
+       (see the SAS documentation for slink) to  be  linked  into
+       the final program.
+
+       Arguments that end with .lib are taken to be standard Ami­
+       gaDOS linker libraries of .o files to be searched  in  the
+       order they appear.
+
+       f77 accepts the following options:
+
+       +B     Treat  the  backslash  character as a C-like escape
+              character.
+
+       -C     Enable array subscript range checking.
+
+       -c     Suppress linking and produce an  object  (.o)  file
+              from each source file.
+
+       -g     Generate  information  needed  by  the symbolic SAS
+              CodeProbe debugger.
+
+       -I2    Make default size of integers  and  logicals  INTE­
+              GER*2 and LOGICAL*2.
+
+       -I4    Make  default  size  of integers and logicals INTE­
+              GER*4 and LOGICAL*4.
+
+       -l _n_a_m_e
+              Search the library lib:name.lib.  Libraries  speci­
+              fied  by  this  option  is  searched after the ones
+              given directly.
+
+
+
+AmigaDOS                 October 21, 1994                       1
+
+
+
+
+
+f77(1L)                                                   f77(1L)
+
+
+       -noext Do not accept any extensions to Fortran 77, like DO
+              - END DO.
+
+       -O     Enable the SAS C global optimizer.
+
+       -o _o_u_t_f_i_l_e
+              Name the output file resulting from linking _o_u_t_f_i_l_e
+              instead of the default file name a.out.
+
+       -onetrip
+              Execute any DO loop at least once.
+
+       -S     Translate the named Fortran source files and  leave
+              the  C language output in corresponding files whose
+              names are suffixed with .c (no .o  files  are  cre­
+              ated).
+
+       +U     Distinguish uppercase and lowercase (make case sig­
+              nificant).  Keywords must be lowercase.
+
+       -u     Force types of identifiers to be  implicitly  unde­
+              clared (same as specifying IMPLICIT NONE).
+
+       -v     Enable  the  verbose mode, producing a step-by-step
+              description of the compilation  process.  This  may
+              generate a lot of noise.
+
+       -w     Suppress all warning messages from ff22cc ..
+
+       -w66   Enable warnings about Fortran 66 features used.
+
+FFIILLEESS
+       f2c
+       sc
+       slink
+       include:f2c.h
+       lib:f2c.lib
+       lib:scmnb.lib
+       lib:scnb.lib
+       lib:c.o
+
+SSEEEE AALLSSOO
+       f2c(1)
+
+AAUUTTHHOORR
+       ff7777  is  freely redistributable and was written by Torsten
+       Poulin Nielsen (torsten@diku.dk) who also ported  ff22cc  and
+       welcomes suggestions and bug reports.
+
+
+
+
+
+
+
+
+
+AmigaDOS                 October 21, 1994                       2
+
+
