@@ -1,0 +1,59 @@
+This is a straight Amiga port of F2C (version of 15 June 1994), a
+Fortran to C/C++ translator (or is it a compiler?).
+
+This version of f2c is intended for use with SAS/C 6.51.
+
+It was ported by me, Torsten Poulin, using SAS/C 6.51.
+
+For convenience, the distribution has been split into two parts:
+
+   f2c3,2bin.lha - The binary and the linker library.
+   f2c3,2src.lha - The full source for the compiler and library.
+
+The binary distribution is all you will need for normal use.
+
+As f2c has no official version number - only a date, see above -
+I have made up my own to distinguish this port from previous ones
+done by myself. The major part of the number signifies that I have
+used a new release of the official source and the minor part should
+be considered a patchlevel. Thus, this is the second version (a bugfix)
+built from the third set of source files I have laid my hands on.
+
+In the readme file accompanying the previous distribution
+(f2c3,1[bin|src].lha) I said that the result, so far, had worked
+flawlessly for me. Well, it did. But I had made a serious goof in
+the code that handled temporary files. The resulting bug didn't manifest
+itself on my 68k with 24-bit addresses and thus went unnoticed. The
+situation was quite different on a true 32-bit machine with memory at
+high addresses. I would like to thank John Kot (jkot@rp.csiro.au) for
+reporting the problem enough times for me to start worrying :-) and
+in particular Richard Deken (Rad6938@tntech.edu) for saving me some
+work by not only pinpointing the source of the problem but also for
+suggesting a possible solution; I decided to do it differently, though.
+
+While I was at it, I recompiled everything with the global optimizer
+switched on, something I forgot the last time around.
+
+Installation is simple:
+   Unpack the binary archive.
+   Copy the linker library f2c.lib in the lib directory to LIB:
+   Copy f2c.h to INCLUDE:
+   Copy the f2c executable from the bin directory to
+     somewhere in your search path.
+
+Simple usage:
+   1> f2c test.f
+   1> sc link opt test.c lib:f2c.lib math=standard code=far data=far
+   1> test
+
+Drop me some mail if you have any comments, questions, or bug reports
+concerning the port.
+
+     EMAIL: torsten@diku.dk
+SNAIL-MAIL: Torsten Poulin
+            Frankrigsgade 50, 5, 508
+            DK-2300 Copenhagen S
+            Denmark
+
+Good luck
+- Torsten

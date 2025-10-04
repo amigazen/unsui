@@ -1,0 +1,66 @@
+
+.c.o:
+	sc $*.c
+	oml /lib/f2c.lib r $*.o
+
+OBJ =	backspace.o close.o dfe.o dolio.o due.o endfile.o err.o \
+	fmt.o fmtlib.o iio.o ilnw.o inquire.o lread.o lwrite.o open.o \
+	rdfmt.o rewind.o rsfe.o rsli.o rsne.o sfe.o sue.o typesize.o uio.o \
+	util.o wref.o wrtfmt.o wsfe.o wsle.o wsne.o xwsne.o
+
+/lib/f2c.lib:	$(OBJ)
+	@echo "/lib/f2c updated."
+
+backspace.o:	fio.h
+close.o:	fio.h
+dfe.o:		fio.h
+dfe.o:		fmt.h
+due.o:		fio.h
+endfile.o:	fio.h rawio.h
+err.o:		fio.h rawio.h
+fmt.o:		fio.h
+fmt.o:		fmt.h
+iio.o:		fio.h
+iio.o:		fmt.h
+ilnw.o:		fio.h
+ilnw.o:		lio.h
+inquire.o:	fio.h
+lread.o:	fio.h
+lread.o:	fmt.h
+lread.o:	lio.h
+lread.o:	fp.h
+lwrite.o:	fio.h
+lwrite.o:	fmt.h
+lwrite.o:	lio.h
+open.o:		fio.h rawio.h
+rdfmt.o:	fio.h
+rdfmt.o:	fmt.h
+rdfmt.o:	fp.h
+rewind.o:	fio.h
+rsfe.o:		fio.h
+rsfe.o:		fmt.h
+rsli.o:		fio.h
+rsli.o:		lio.h
+rsne.o:		fio.h
+rsne.o:		lio.h
+sfe.o:		fio.h
+sue.o:		fio.h
+uio.o:		fio.h
+util.o:		fio.h
+wref.o:		fio.h
+wref.o:		fmt.h
+wref.o:		fp.h
+wrtfmt.o:	fio.h
+wrtfmt.o:	fmt.h
+wsfe.o:		fio.h
+wsfe.o:		fmt.h
+wsle.o:		fio.h
+wsle.o:		fmt.h
+wsle.o:		lio.h
+wsne.o:		fio.h
+wsne.o:		lio.h
+xwsne.o:	fio.h
+xwsne.o:	lio.h
+xwsne.o:	fmt.h
+
+ 
