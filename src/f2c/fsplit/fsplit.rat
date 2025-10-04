@@ -1,0 +1,314 @@
+#  fsplit.rat - the program proper. This file is part of FSPLIT.
+#
+#    Copyright (C) 1994 Torsten Poulin
+#    Email: torsten@diku.dk
+#    Version of 25-JUL-94
+#
+#  Redistribution and use in source and binary forms, with or without
+#  modification, are permitted provided that the following conditions
+#  are met:
+#
+#  1. Redistributions of source code must retain the above copyright
+#     notice, this list of conditions and the following disclaimer.
+#  2. Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#  3. All advertising materials mentioning features or use of this software
+#     must display the following acknowledgement:
+#     This product includes software developed by Torsten Poulin.
+#  4. The name of Torsten Poulin may not be used to endorse or
+#     promote products derived from this software without specific prior
+#     written permission.
+#
+#  This software is provided by Torsten Poulin "as is" and any
+#  express or implied warranties, including, but not limited to, the
+#  implied warranties of merchantability and fitness for a particular
+#  purpose are disclaimed.  In no event shall Torsten Poulin be liable
+#  for any direct, indirect, incidental, special, exemplary, or
+#  consequential damages (including, but not limited to, procurement
+#  of substitute goods or services; loss of use, data, or profits; or
+#  business interruption) however caused and on any theory of
+#  liability, whether in contract, strict liability, or tort
+#  (including negligence or otherwise) arising in any way out of the
+#  use of this software, even if advised of the possibility of such
+#  damage.
+
+
+include io.h
+include fsplit.h
+
+program fsplit
+   character*LINELEN fname
+   integer what
+   integer openf, getlin
+
+   call banner
+   call putlin(STDOUT, 'Enter name of FORTRAN source file:', 34)
+   what = getlin(STDIN, fname, LINELEN)
+
+   if (what == OK & fname != ' ')
+   {
+      if (openf(FORTRAN, fname, MOLD) != OK)
+         call putlin(STDOUT, "Couldn't open file", 18)
+      else
+      {
+         call handle(FORTRAN)
+         call closef(FORTRAN)
+      }
+   }
+   else
+      call putlin(STDOUT, 'Aborted!', 8)
+end
+
+
+subroutine handle(funit)
+   integer funit, typ
+   character*LINELEN line, blknam, name
+   integer openf, lintyp, opnout
+   logical error, inblck, wrote
+
+   error = .false.; inblck = .false.; wrote = .false.
+
+   if (openf(SCRATCH, '', MSCRATCH) != OK) error = .true.
+
+   if (!error)
+   {
+      call putlin(STDOUT, 'Writing', 7)
+
+      repeat
+      {
+         typ = lintyp(funit, line, blknam)
+         if (typ != EOF)
+         {
+            call putlin(SCRATCH, line, LINELEN)
+            wrote = .true.
+         }
+
+         if (typ == BLOCK)
+         {
+            if (!inblck)
+            {
+               inblck = .true.
+               name = blknam
+            }
+         }
+         else if ((typ == ENDSTAT | typ == EOF) & wrote)
+         {
+            if (!inblck) name = PRGNAME
+            inblck = .false.
+            if (opnout(OUTPUT, name) == OK)
+            {
+               rewind SCRATCH
+               call copy(SCRATCH, OUTPUT)
+               call closef(OUTPUT)
+               call closef(SCRATCH)
+               if (openf(SCRATCH, '', MSCRATCH) != OK)
+               {
+                  error = .true.
+                  typ = EOF  # get us out of here...
+               }
+               wrote = .false.
+            }
+         }
+      } until (typ == EOF)
+
+      if (!error)
+      {
+         call closef(SCRATCH)
+         call putlin(STDOUT, 'Done.', 5)
+      }
+   }
+
+   if (error)
+      call putlin(STDOUT, "Couldn't open temporary file", 28)
+end
+
+
+integer function lintyp(funit, line, blknam)
+   integer funit
+   character*LINELEN line, blknam, l
+   integer where, res
+   integer getlin
+   logical getnam, iscmnt
+
+   res = getlin(funit, line, LINELEN)
+   if (res != OK) return (EOF) # EOF is ok for errors
+   
+   if (iscmnt(line)) return (OTHER)
+
+   call strip(line, l)
+
+   where = index(l, 'subroutine')
+   if (where > 0)
+   {
+      if (!getnam(l, where + 10, blknam)) blknam = SUBNAME
+      return (BLOCK)
+   }
+
+   where = index(l, 'function')
+   if (where > 0)
+   {
+      if (!getnam(l, where + 8, blknam)) blknam = FUNNAME
+      return (BLOCK)
+   }
+
+   where = index(l, 'program')
+   if (where > 0)
+   {
+      if (!getnam(l, where + 7, blknam)) blknam = PRGNAME
+      return (BLOCK)
+   }
+
+   where = index(l, 'blockdata')
+   if (where > 0)
+   {
+      if (!getnam(l, where + 9, blknam)) blknam = BLKNAME
+      return (BLOCK)
+   }
+
+   if (l == 'end') return (ENDSTAT)
+
+   return (OTHER)
+end
+
+
+# Is line a comment?
+
+logical function iscmnt(line)
+   character line*LINELEN, ch
+
+   ch = line(1:1)
+   return (ch == 'c' | ch == 'C' | ch == '*')
+end
+
+
+logical function getnam(line, offset, name)
+    character*LINELEN line, name
+    integer offset, i
+    character c
+    logical islow, isdig
+
+    name = ' '
+
+    i = 1
+    while (i <= 6 & offset <= LINELEN)
+    {
+       c = line(offset:offset)
+
+       if (!(islow(c) | isdig(c))) break
+       name(i:i) = c
+
+       i = i + 1; offset = offset + 1
+    }
+
+    return (i > 1)
+end
+
+
+# Remove all blanks and any initial digits (i.e., statement
+# labels) from 'line' and return the resulting string
+# in 'noblnk'.
+#
+# Comments introduced by an exclamation mark
+# are stripped. All letters are converted to lowercase.
+#
+# The resulting string, 'noblnk', is padded with blanks
+# at the end.
+
+subroutine strip(line, noblnk)
+   character*LINELEN line, noblnk
+   character c
+   integer i, j
+   character tolow
+   logical isdig
+
+   i = 1; j = 1
+
+   # Skip any initial blanks or digits
+
+   while (i <= LINELEN)
+   {
+      c = line(i:i)
+      if (c != ' ' & c != TAB & !isdig(c)) break
+      i = i + 1
+   }
+
+   # Process the rest of the line
+
+   noblnk = ' '
+   while (i <= LINELEN)
+   {
+      c = line(i:i)
+      if (c == '!') break  # Nothing interesting after a bang!
+      else if (c != ' ' & c != TAB)
+      {
+         noblnk(j:j) = tolow(c)
+         j = j + 1
+      }
+      i = i + 1
+   }
+end
+
+
+# Copy lines from file 'from' to file 'to'
+
+subroutine copy(from, to)
+   integer from, to
+   character*LINELEN line
+   integer getlin
+
+   while (getlin(from, line, LINELEN) == OK)
+      call putlin(to, line, LINELEN)
+end
+
+
+# Attempt to open the output file
+
+integer function opnout(funit, fname)
+   integer funit
+   character*LINELEN fname, name
+   integer i, num
+   integer openf
+
+   # Find the end of 'name'
+
+   name = fname
+   for (i = 1; i <= MAXNAME; i = i + 1)
+      if (name(i:i) == ' ' | name(i:i) == TAB)
+         break
+
+   # Append extension and attempt to open it
+
+   name(i:i+1) = '.f'
+   if (openf(funit, name, MNEW) == OK)
+   {
+      call putlin(STDOUT, name, LINELEN)
+      return (OK)
+   }
+
+   # Blast! Add a number and retry...
+
+   for (num = 1; num < 100; num = num + 1)
+   {
+      write (name(i:i+1), '(I2.2)') num
+      name(i+2:i+3) = '.f'
+      if (openf(funit, name, MNEW) == OK)
+      {
+         # Lo! and behold
+         call putlin(STDOUT, name, LINELEN)
+         return (OK)
+      }
+   }
+
+   call putlin(STDOUT, "Ran out of output file names", 28)
+   return (ERR)
+end
+
+
+# Print the banner
+
+subroutine banner
+   call putlin(STDOUT, 'This is FSPLIT, Version 1.0 [25-Jul-94].', 40)
+   call putlin(STDOUT,
+      'Copyright (C) 1994 Torsten Poulin. Email: <torsten@diku.dk>', 59)
+end

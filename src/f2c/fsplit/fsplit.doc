@@ -1,0 +1,37 @@
+-*- text -*-
+
+FSPLIT
+======
+
+FSPLIT is Copyright (c) 1994 Torsten Poulin.
+
+Programmet startes ved at skrive FSPLIT efter DOS-klarteksten. Det
+svarer så med
+
+    This is FSPLIT, Version 1.0 [25-Jul-94].
+    Copyright (C) 1994 Torsten Poulin. Email: <torsten@diku.dk>
+    Enter name of FORTRAN source file:
+
+Her indtastes navnet på den FORTRAN-kildetekstfil, der ønskes delt.
+Hvis der trykkes 'Enter' uden at der er skrevet et filnavn, afsluttes
+med teksten
+
+    Aborted!
+
+Anføres et filnavn, vil FSPLIT gemme hver programenhed i separate
+filer med navne på formen navn.f, hvor navn er navnet på
+programenheden (dvs. på program-, subroutine-, function- eller block
+data-blokken). Hvis det ikke er muligt for FSPLIT at bestemme navnet
+på enheden benyttes navnene 'progrm.f', 'subrou.f', 'functn.f', eller
+'blkdta.f'. Hvis der allerede eksisterer en fil med navnet navn.f, vil
+navnet navn##.f blive benyttet i stedet, hvor ## er et tal i
+intervallet 1 til 99 (fx blkdta01.f).
+
+FSPLIT kan i visse patologiske tilfælde klassificere en unavngiven
+enhed forkert og som resultat gemme den med et misvisende navn. Det
+kan ikke bestemme enhedens navn hvis det står på en
+fortsættelseslinje.
+
+Linjer længere end 80 tegn bliver trunkeret.
+
+Den oprindelige FORTRAN-fil bliver ikke ændret.

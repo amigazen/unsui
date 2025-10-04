@@ -1045,6 +1045,7 @@ void	wr_nv_ident_help Argdcl((FILEP, Addrp));
 void	wr_struct Argdcl((FILEP, chainp));
 void	wronginf Argdcl((Namep));
 void	yyerror Argdcl((char*));
+void	usage Argdcl((void));
 int	yylex(Void);
 int	yyparse(Void);
 

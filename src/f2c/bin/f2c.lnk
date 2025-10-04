@@ -1,0 +1,8 @@
+FROM LIB:c.o "cds.o"+"data.o"+"equiv.o"+"error.o"+"exec.o"+"expr.o"+"format.o"+"formatdata.o"+"gram.o"+"init.o"+"intr.o"+"io.o"+"lex.o"+"main.o"+"mem.o"+"misc.o"+"names.o"+"niceprintf.o"+"output.o"+"p1output.o"+"parse_args.o"+"pread.o"+"proc.o"+"put.o"+"putpcc.o"+"sysdep.o"+"vax.o"+"version.o"
+TO "/bin/f2c"
+LIB LIB:scmnb.lib
+    LIB:scnb.lib LIB:amiga.lib
+STRIPDEBUG
+QUIET
+NOICONS
+

@@ -98,7 +98,10 @@ int htype;	/* for wr_equiv_init under -h */
 #define f2c_entry(swit,count,type,store,size) \
 	p_entry ("-", swit, 0, count, type, store, size)
 
+static int helpflag = NO;
+
 static arg_info table[] = {
+    f2c_entry ("h", P_NO_ARGS, P_INT, &helpflag, YES),
     f2c_entry ("w66", P_NO_ARGS, P_INT, &ftn66flag, YES),
     f2c_entry ("w", P_NO_ARGS, P_INT, &nowarnflag, YES),
     f2c_entry ("66", P_NO_ARGS, P_INT, &no66flag, YES),
@@ -194,6 +197,84 @@ extern char *p1_bakfile;	/* "p1_file.BAK"	*/
 extern char *sortfname;		/* "init_file"		*/
 extern char *proto_fname;	/* "proto_file"		*/
 FILE *protofile;
+
+/* POSIX-compliant usage function */
+ void
+#ifdef KR_headers
+usage(Void)
+#else
+usage(void)
+#endif
+{
+	fprintf(stderr, "Usage: f2c [options] file ...\n");
+	fprintf(stderr, "Convert Fortran 77 source code to C or C++\n\n");
+	fprintf(stderr, "POSIX Standard Options:\n");
+	fprintf(stderr, "  -C          Enable array subscript range checking\n");
+	fprintf(stderr, "  -I2         Use INTEGER*2 and LOGICAL*2 as default\n");
+	fprintf(stderr, "  -I4         Use INTEGER*4 and LOGICAL*4 as default\n");
+	fprintf(stderr, "  -U          Honor case of variable and external names\n");
+	fprintf(stderr, "  -u          Make default type of variables undefined\n");
+	fprintf(stderr, "  -w          Suppress all warning messages\n");
+	fprintf(stderr, "  -w66        Suppress Fortran 66 compatibility warnings\n");
+	fprintf(stderr, "  -onetrip    Execute DO loops at least once\n");
+	fprintf(stderr, "  --help      Display this help and exit\n\n");
+	fprintf(stderr, "f2c-Specific Options:\n");
+	fprintf(stderr, "  -A          Produce ANSI C (default is old-style C)\n");
+	fprintf(stderr, "  -a          Make local variables automatic\n");
+	fprintf(stderr, "  -C++        Output C++ code\n");
+	fprintf(stderr, "  -c          Include original Fortran source as comments\n");
+	fprintf(stderr, "  -ddir       Write .c files in directory dir\n");
+	fprintf(stderr, "  -E          Declare uninitialized COMMON as extern\n");
+	fprintf(stderr, "  -ec         Place COMMON blocks in separate files\n");
+	fprintf(stderr, "  -e1c        Bundle separate COMMON files\n");
+	fprintf(stderr, "  -ext        Complain about f77 extensions\n");
+	fprintf(stderr, "  -f          Assume free-format input\n");
+	fprintf(stderr, "  -72         Treat text after column 72 as error\n");
+	fprintf(stderr, "  -g          Include original Fortran line numbers\n");
+	fprintf(stderr, "  -h          Align character strings on word boundaries\n");
+	fprintf(stderr, "  -hd         Align character strings on double-word boundaries\n");
+	fprintf(stderr, "  -i2         Use modified libF77/libI77 for short integers\n");
+	fprintf(stderr, "  -kr         Use K&R parenthesization rules\n");
+	fprintf(stderr, "  -krd        Use double precision temporaries\n");
+	fprintf(stderr, "  -P          Write ANSI/C++ prototypes to file.P\n");
+	fprintf(stderr, "  -Ps         Write prototypes and give exit status 4 if changed\n");
+	fprintf(stderr, "  -p          Supply preprocessor definitions for COMMON\n");
+	fprintf(stderr, "  -R          Do not promote REAL to DOUBLE PRECISION\n");
+	fprintf(stderr, "  -!R         Confirm default REAL to DOUBLE promotion\n");
+	fprintf(stderr, "  -r          Cast REAL functions to REAL\n");
+	fprintf(stderr, "  -r8         Promote REAL to DOUBLE PRECISION\n");
+	fprintf(stderr, "  -s          Preserve multidimensional subscripts\n");
+	fprintf(stderr, "  -Tdir       Put temporary files in directory dir\n");
+	fprintf(stderr, "  -w8         Suppress odd-word alignment warnings\n");
+	fprintf(stderr, "  -Wn         Assume n characters/word for initialization\n");
+	fprintf(stderr, "  -z          Do not recognize DOUBLE COMPLEX\n");
+	fprintf(stderr, "  -!bs        Do not recognize backslash escapes\n");
+	fprintf(stderr, "  -!c         Inhibit C output, produce -P output only\n");
+	fprintf(stderr, "  -!I         Reject include statements\n");
+	fprintf(stderr, "  -!i8        Disallow INTEGER*8\n");
+	fprintf(stderr, "  -!it        Don't infer types of EXTERNAL procedures\n");
+	fprintf(stderr, "  -!P         Do not infer ANSI/C++ prototypes\n");
+	fprintf(stderr, "  -Dnnn       Set debug level to nnn\n");
+	fprintf(stderr, "  -O[n]       Set maximum register variables (default 0)\n");
+	fprintf(stderr, "  -Nq[n]      Set maximum equivalence blocks\n");
+	fprintf(stderr, "  -Nx[n]      Set maximum external symbols\n");
+	fprintf(stderr, "  -Ns[n]      Set maximum statement labels\n");
+	fprintf(stderr, "  -Nc[n]      Set maximum control structures\n");
+	fprintf(stderr, "  -Nn[n]      Set maximum hash table entries\n");
+	fprintf(stderr, "  -NL[n]      Set maximum literals\n");
+	fprintf(stderr, "  -NC[n]      Set maximum continuation lines\n");
+	fprintf(stderr, "  -Nl[n]      Set maximum label list entries\n\n");
+	fprintf(stderr, "Files:\n");
+	fprintf(stderr, "  file.f      Input Fortran 77 source file\n");
+	fprintf(stderr, "  file.F      Input Fortran 77 source file (preprocessed)\n");
+	fprintf(stderr, "  file.p      Prototype file (produced by -P)\n");
+	fprintf(stderr, "  file.c      Output C source file\n");
+	fprintf(stderr, "  file.P      Output prototype file (with -P)\n\n");
+	fprintf(stderr, "If no input files are specified, f2c reads from standard input\n");
+	fprintf(stderr, "and writes to standard output.\n\n");
+	fprintf(stderr, "The resulting C code should be linked with -lF77 -lI77 -lm\n");
+	fprintf(stderr, "in that order.\n\n");
+}
 
  void
 set_externs(Void)
@@ -431,6 +512,13 @@ main(int argc, char **argv)
 
 	parse_args (argc, argv, table, sizeof(table)/sizeof(arg_info),
 		ftn_files, Max_ftn_files);
+	
+	/* Check for help flag and display usage if requested */
+	if (helpflag) {
+		usage();
+		exit(0);
+	}
+	
 	if (!can_include && ext1comm == 2)
 		ext1comm = 1;
 	if (ext1comm && !extcomm)

@@ -1,0 +1,79 @@
+#  machdep.rat - machine dependent stuff. This file is part of FSPLIT.
+#
+#    Copyright (C) 1994 Torsten Poulin
+#    Email: torsten@diku.dk
+#    Version of 25-JUL-94
+#
+#  Redistribution and use in source and binary forms, with or without
+#  modification, are permitted provided that the following conditions
+#  are met:
+#
+#  1. Redistributions of source code must retain the above copyright
+#     notice, this list of conditions and the following disclaimer.
+#  2. Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#  3. All advertising materials mentioning features or use of this software
+#     must display the following acknowledgement:
+#     This product includes software developed by Torsten Poulin.
+#  4. The name of Torsten Poulin may not be used to endorse or
+#     promote products derived from this software without specific prior
+#     written permission.
+#
+#  This software is provided by Torsten Poulin "as is" and any
+#  express or implied warranties, including, but not limited to, the
+#  implied warranties of merchantability and fitness for a particular
+#  purpose are disclaimed.  In no event shall Torsten Poulin be liable
+#  for any direct, indirect, incidental, special, exemplary, or
+#  consequential damages (including, but not limited to, procurement
+#  of substitute goods or services; loss of use, data, or profits; or
+#  business interruption) however caused and on any theory of
+#  liability, whether in contract, strict liability, or tort
+#  (including negligence or otherwise) arising in any way out of the
+#  use of this software, even if advised of the possibility of such
+#  damage.
+
+
+# Convert character to lowercase.
+# ASCII version.
+#
+# If 'if ... else ...' is replaced by
+#
+#   switch (c)
+#   {
+#      case 'A': return ('a')
+#      case 'B': return ('b')
+#         et cetera
+#      case 'Z': return ('z')
+#      default:  return (c)
+#   }
+#
+# we get a machine independent, but rather inefficient, version.
+#
+
+character function tolow(c)
+   character c
+
+   if (c >= 'A' & c <= 'Z')
+      return (char(ichar(c) + 32))
+   else
+      return (c)
+end
+
+
+# Is the character c a digit?
+
+logical function isdig(c)
+   character c
+
+   return (c >= '0' & c <= '9')
+end
+
+
+# Is the character c a lowercase letter?
+
+logical function islow(c)
+   character c
+
+   return (c >= 'a' & c <= 'z')
+end

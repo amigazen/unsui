@@ -1,0 +1,39 @@
+#
+# SMakefile for AmigaOS using f2c and SAS/C 6.51
+#
+
+CFLAGS= nostkchk math=standard code=far data=far ign=154,161 nover
+LFLAGS= math=standard code=far data=far nover
+
+OBJS= fsplit.o io.o machdep.o
+
+# Implicit rules
+
+.rat.f:
+	/bin/ratfor77 $*.rat
+
+.f.c:
+	/bin/f2c -A -ext $*.f
+
+.c.o:
+	sc $*.c $(CFLAGS)
+
+# Explicit rules
+
+fsplit: $(OBJS)
+	sc link $(OBJS) /lib/f2c.lib $(LFLAGS)
+
+fsplit.o: fsplit.c
+fsplit.c: fsplit.f
+fsplit.f: fsplit.rat fsplit.h io.h
+
+io.o: io.c
+io.c: io.f
+io.f: io.rat fsplit.h io.h
+
+machdep.o: machdep.c
+machdep.c: machdep.f
+machdep.f: machdep.rat
+
+clean:
+	-delete \#?.[fco] fsplit.lnk

@@ -1,0 +1,6 @@
+FROM LIB:c.o "fsplit.o"+"io.o"+"machdep.o"
+TO "fsplit"
+LIB /lib/f2c.lib LIB:scmnb.lib
+    LIB:scnb.lib LIB:amiga.lib
+QUIET
+

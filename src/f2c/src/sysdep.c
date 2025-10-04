@@ -109,9 +109,11 @@ set_tmp_names(Void)
 		 * switch indicator in the system("sort ...")
 		 * call in formatdata.c
 		 */
-		for(s = tmpdir, t = buf; *s; s++, t++)
-			if ((*t = *s) == '/')
+		for(s = tmpdir, t = buf; *s; s++, t++) {
+			*t = *s;
+			if (*t == '/')
 				*t = '\\';
+		}
 		if (t[-1] != '\\')
 			*t++ = '\\';
 		*t = 0;
@@ -161,9 +163,10 @@ c_name(char *s, int ft)
 	int c;
 
 	b = s0 = s;
-	while(c = *s++)
+	while((c = *s++) != '\0') {
 		if (c == '/')
 			b = s;
+	}
 	if (--s < s0 + 3 || s[-2] != '.'
 			 || ((c = *--s) != 'f' && c != 'F')) {
 		infname = s0;
@@ -261,13 +264,15 @@ dofork(Void)
 	int pid, status, w;
 	extern int retcode;
 
-	if (!(pid = fork()))
+	pid = fork();
+	if (pid == 0)
 		return 1;
 	if (pid == -1)
 		Fatal("bad fork");
-	while((w = wait(&status)) != pid)
+	while((w = wait(&status)) != pid) {
 		if (w == -1)
 			Fatal("bad wait code");
+	}
 	retcode |= status >> 8;
 #endif
 #endif
@@ -392,8 +397,9 @@ fmt_init(Void)
 		}
 	else
 		escapes['v'] = '\v';
-	for(s = "\b\t\n\f\r\v", i = 0; j = *(unsigned char *)s++;)
+	for(s = "\b\t\n\f\r\v", i = 0; (j = *(unsigned char *)s++) != '\0';) {
 		str_fmt[j] = chr_fmt[j] = str1fmt[i++];
+	}
 	/* '\v' = 11 for both EBCDIC and ASCII... */
 	chr_fmt[11] = Ansi ? "\\v" : "\\13";
 	}
@@ -534,8 +540,9 @@ dsort(char *from, char *to)
 	do {
 		mb1 = mb->next;
 		free((char *)mb);
+		mb = mb1;
 		}
-		while(mb = mb1);
+		while(mb != NULL);
 	return 0;
 	}
 #endif

@@ -1,0 +1,243 @@
+* -- Machine generated FORTRAN 77
+* -- code created by RATFOR-77.
+* -- Not intended for human consumption.
+      PROGRAMFSPLIT
+      CHARACTER*80FNAME
+      INTEGERWHAT
+      INTEGEROPENF,GETLIN
+      CALLBANNER
+      CALLPUTLIN(6,'Enter name of FORTRAN source file:',34)
+      WHAT=GETLIN(5,FNAME,80)
+      IF (WHAT.EQ.1.AND.FNAME.NE.' ') THEN
+      IF (OPENF(1,FNAME,0).NE.1) THEN
+      CALLPUTLIN(6,'Couldn''t open file',18)
+      ELSE
+      CALLHANDLE(1)
+      CALLCLOSEF(1)
+      END IF
+      ELSE
+      CALLPUTLIN(6,'Aborted!',8)
+      END IF
+      END
+      SUBROUTINEHANDLE(FUNIT)
+      INTEGERFUNIT,TYP
+      CHARACTER*80LINE,BLKNAM,NAME
+      INTEGEROPENF,LINTYP,OPNOUT
+      LOGICALERROR,INBLCK,WROTE
+      ERROR=.FALSE.
+      INBLCK=.FALSE.
+      WROTE=.FALSE.
+      IF (OPENF(2,'',2).NE.1) THEN
+      ERROR=.TRUE.
+      END IF
+      IF (.NOT.ERROR) THEN
+      CALLPUTLIN(6,'Writing',7)
+23000 CONTINUE
+      TYP=LINTYP(FUNIT,LINE,BLKNAM)
+      IF (TYP.NE.-1) THEN
+      CALLPUTLIN(2,LINE,80)
+      WROTE=.TRUE.
+      END IF
+      IF (TYP.EQ.1) THEN
+      IF (.NOT.INBLCK) THEN
+      INBLCK=.TRUE.
+      NAME=BLKNAM
+      END IF
+      ELSE
+      IF ((TYP.EQ.2.OR.TYP.EQ.-1).AND.WROTE) THEN
+      IF (.NOT.INBLCK) THEN
+      NAME='progrm'
+      END IF
+      INBLCK=.FALSE.
+      IF (OPNOUT(3,NAME).EQ.1) THEN
+      REWIND2
+      CALLCOPY(2,3)
+      CALLCLOSEF(3)
+      CALLCLOSEF(2)
+      IF (OPENF(2,'',2).NE.1) THEN
+      ERROR=.TRUE.
+      TYP=-1
+      END IF
+      WROTE=.FALSE.
+      END IF
+      END IF
+      END IF
+23001 IF (.NOT.(TYP.EQ.-1)) GO TO 23000
+23002 CONTINUE
+      IF (.NOT.ERROR) THEN
+      CALLCLOSEF(2)
+      CALLPUTLIN(6,'Done.',5)
+      END IF
+      END IF
+      IF (ERROR) THEN
+      CALLPUTLIN(6,'Couldn''t open temporary file',28)
+      END IF
+      END
+      INTEGERFUNCTIONLINTYP(FUNIT,LINE,BLKNAM)
+      INTEGERFUNIT
+      CHARACTER*80LINE,BLKNAM,L
+      INTEGERWHERE,RES
+      INTEGERGETLIN
+      LOGICALGETNAM,ISCMNT
+      RES=GETLIN(FUNIT,LINE,80)
+      IF (RES.NE.1) THEN
+      LINTYP=(-1)
+      RETURN
+      END IF
+      IF (ISCMNT(LINE)) THEN
+      LINTYP=(0)
+      RETURN
+      END IF
+      CALLSTRIP(LINE,L)
+      WHERE=INDEX(L,'subroutine')
+      IF (WHERE.GT.0) THEN
+      IF (.NOT.GETNAM(L,WHERE+10,BLKNAM)) THEN
+      BLKNAM='subrou'
+      END IF
+      LINTYP=(1)
+      RETURN
+      END IF
+      WHERE=INDEX(L,'function')
+      IF (WHERE.GT.0) THEN
+      IF (.NOT.GETNAM(L,WHERE+8,BLKNAM)) THEN
+      BLKNAM='functn'
+      END IF
+      LINTYP=(1)
+      RETURN
+      END IF
+      WHERE=INDEX(L,'program')
+      IF (WHERE.GT.0) THEN
+      IF (.NOT.GETNAM(L,WHERE+7,BLKNAM)) THEN
+      BLKNAM='progrm'
+      END IF
+      LINTYP=(1)
+      RETURN
+      END IF
+      WHERE=INDEX(L,'blockdata')
+      IF (WHERE.GT.0) THEN
+      IF (.NOT.GETNAM(L,WHERE+9,BLKNAM)) THEN
+      BLKNAM='blkdta'
+      END IF
+      LINTYP=(1)
+      RETURN
+      END IF
+      IF (L.EQ.'end') THEN
+      LINTYP=(2)
+      RETURN
+      END IF
+      LINTYP=(0)
+      RETURN
+      END
+      LOGICALFUNCTIONISCMNT(LINE)
+      CHARACTERLINE*80,CH
+      CH=LINE(1:1)
+      ISCMNT=(CH.EQ.'c'.OR.CH.EQ.'C'.OR.CH.EQ.'*')
+      RETURN
+      END
+      LOGICALFUNCTIONGETNAM(LINE,OFFSET,NAME)
+      CHARACTER*80LINE,NAME
+      INTEGEROFFSET,I
+      CHARACTERC
+      LOGICALISLOW,ISDIG
+      NAME=' '
+      I=1
+23003 IF (.NOT.(I.LE.6.AND.OFFSET.LE.80)) GO TO 23004
+      C=LINE(OFFSET:OFFSET)
+      IF (.NOT.(ISLOW(C).OR.ISDIG(C))) THEN
+      GO TO 23004
+      END IF
+      NAME(I:I)=C
+      I=I+1
+      OFFSET=OFFSET+1
+      GO TO 23003
+23004 CONTINUE
+      GETNAM=(I.GT.1)
+      RETURN
+      END
+      SUBROUTINESTRIP(LINE,NOBLNK)
+      CHARACTER*80LINE,NOBLNK
+      CHARACTERC
+      INTEGERI,J
+      CHARACTERTOLOW
+      LOGICALISDIG
+      I=1
+      J=1
+23005 IF (.NOT.(I.LE.80)) GO TO 23006
+      C=LINE(I:I)
+      IF (C.NE.' '.AND.C.NE.CHAR(9).AND..NOT.ISDIG(C)) THEN
+      GO TO 23006
+      END IF
+      I=I+1
+      GO TO 23005
+23006 CONTINUE
+      NOBLNK=' '
+23007 IF (.NOT.(I.LE.80)) GO TO 23008
+      C=LINE(I:I)
+      IF (C.EQ.'!') THEN
+      GO TO 23008
+      ELSE
+      IF (C.NE.' '.AND.C.NE.CHAR(9)) THEN
+      NOBLNK(J:J)=TOLOW(C)
+      J=J+1
+      END IF
+      END IF
+      I=I+1
+      GO TO 23007
+23008 CONTINUE
+      END
+      SUBROUTINECOPY(FROM,TO)
+      INTEGERFROM,TO
+      CHARACTER*80LINE
+      INTEGERGETLIN
+23009 IF (.NOT.(GETLIN(FROM,LINE,80).EQ.1)) GO TO 23010
+      CALLPUTLIN(TO,LINE,80)
+      GO TO 23009
+23010 CONTINUE
+      END
+      INTEGERFUNCTIONOPNOUT(FUNIT,FNAME)
+      INTEGERFUNIT
+      CHARACTER*80FNAME,NAME
+      INTEGERI,NUM
+      INTEGEROPENF
+      NAME=FNAME
+      I=1
+23011 IF (.NOT.(I.LE.6)) GO TO 23012
+      GO TO 23013
+23014 I=I+1
+      GO TO 23011
+23013 CONTINUE
+      IF (NAME(I:I).EQ.' '.OR.NAME(I:I).EQ.CHAR(9)) THEN
+      GO TO 23012
+      END IF
+      GO TO 23014
+23012 CONTINUE
+      NAME(I:I+1)='.f'
+      IF (OPENF(FUNIT,NAME,1).EQ.1) THEN
+      CALLPUTLIN(6,NAME,80)
+      OPNOUT=(1)
+      RETURN
+      END IF
+      NUM=1
+23015 IF (.NOT.(NUM.LT.100)) GO TO 23016
+      GO TO 23017
+23018 NUM=NUM+1
+      GO TO 23015
+23017 CONTINUE
+      WRITE(NAME(I:I+1),'(I2.2)')NUM
+      NAME(I+2:I+3)='.f'
+      IF (OPENF(FUNIT,NAME,1).EQ.1) THEN
+      CALLPUTLIN(6,NAME,80)
+      OPNOUT=(1)
+      RETURN
+      END IF
+      GO TO 23018
+23016 CONTINUE
+      CALLPUTLIN(6,'Ran out of output file names',28)
+      OPNOUT=(0)
+      RETURN
+      END
+      SUBROUTINEBANNER
+      CALLPUTLIN(6,'This is FSPLIT, Version 1.0 [25-Jul-94].',40)
+      CALLPUTLIN(6,'Copyright (C) 1994 Torsten Poulin. Email: <torsten@d
+     &iku.dk>',59)
+      END

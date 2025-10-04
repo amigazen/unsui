@@ -1,0 +1,31 @@
+#
+# MS-DOS Makefile for protected mode FSPLIT executable.
+#
+
+RATFOR    = ratfor77
+FC        = f77l3
+LINKER    = 386link
+PROGRAM   = fsplit.exe
+
+LIBS      =
+MAKEFILE  = Makefile
+OBJS      = fsplit.obj io.obj machdep.obj
+
+.rat.f:
+	$(RATFOR) $*.rat
+
+$(PROGRAM): $(OBJS) $(LIBS)
+	$(LINKER) $(OBJS) -EXE $@ -MAP nul -LIB $(LIBS) -sym
+
+fsplit.obj: fsplit.f
+
+fsplit.f: fsplit.rat fsplit.h io.h
+
+io.obj: io.f
+
+io.f: io.rat fsplit.h io.h
+
+machdep.obj: machdep.f
+
+machdep.f: machdep.rat
+

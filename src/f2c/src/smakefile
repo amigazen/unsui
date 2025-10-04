@@ -56,3 +56,6 @@ sysdep.o: sysdep.c defs.h usignal.h sysdep.h ftypes.h defines.h machdefs.h
 vax.o: vax.c defs.h pccdefs.h output.h sysdep.h ftypes.h \
 	defines.h machdefs.h niceprintf.h
 version.o: version.c
+
+install: 
+	copy /bin/f2c ///SDK/C/f2c CLONE
