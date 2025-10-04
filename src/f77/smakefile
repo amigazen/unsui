@@ -10,3 +10,6 @@ $(OBJS)
 <
 
 f77.o: f77.c
+
+install: 
+   copy f77 //SDK/C/f77 CLONE

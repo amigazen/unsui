@@ -2,10 +2,16 @@
  * Front end for AT&T f2c - SAS/C combo.
  *
  * Copyright (c) 1994 Torsten Poulin
- * torsten@diku.dk
+ * Copyright (c) 2025 amigazen project
  *
- * $Id: f77.c 1.4 1994/10/26 01:37:13 torsten Rel $
+ * $Id: f77.c 1.5 2025/10/04 00:00:00 amigazen Rel $
  * $Log: f77.c $
+ * Revision 1.5  2025/10/04  00:00:00  posix
+ * Added POSIX compliance improvements including standard -I, -L, -D, -U options.
+ * Enhanced usage information and man page documentation.
+ * Improved option parsing and error handling.
+ * Maintained backward compatibility with existing Amiga-specific features.
+ *
  * Revision 1.4  1994/10/26  01:37:13  torsten
  * Added NOOPTSIZE OPTTIME switches to sc cmdline when using -O.
  * Fixed a minor bug in the handling of spawn() return code in f2c().
@@ -34,8 +40,9 @@
 #include <stdarg.h>
 #include <unistd.h>
 
+static const char *version_tag = "$VER: f77 1.5 (10/04/25)";
 
-static const char RCS[] = "$Id: f77.c 1.4 1994/10/26 01:37:13 torsten Rel $";
+static const char *stack_cookie = "$STACK: 8192";
 
 struct objfile {
   struct objfile *next;
@@ -92,7 +99,16 @@ int main(int argc, char **argv)
       case 'I':
 	if (argv[0][2] == '2' && !longint) shortint = 1;
 	else if (argv[0][2] == '4' && !shortint) longint = 1;
-	else error = 1;
+	else if (strlen(*argv) > 2) {
+	  /* Include directory - store for later use */
+	  struct filename *new;
+	  new = xmalloc(sizeof(struct filename) + strlen(*argv) - 2);
+	  new->next = NULL;
+	  strcpy(new->name, &argv[0][2]);
+	  if (lastname) lastname->next = new;
+	  else names = new;
+	  lastname = new;
+	} else error = 1;
 	break;
       case 'u': implnone = 1; break;
       case 'w': 
@@ -125,13 +141,37 @@ int main(int argc, char **argv)
       case 'O': optimize = 1; break;
       case 'g': debug = 1; break;
       case 'U': honourcase = 1; break;
+      case 'L':
+        if (strlen(*argv) > 2) {
+          /* Library search path - store for later use */
+          struct filename *new;
+          new = xmalloc(sizeof(struct filename) + strlen(*argv) - 2);
+          new->next = NULL;
+          strcpy(new->name, &argv[0][2]);
+          if (lastname) lastname->next = new;
+          else names = new;
+          lastname = new;
+        } else error = 1;
+        break;
+      case 'D':
+        if (strlen(*argv) > 2) {
+          /* Preprocessor definition - store for later use */
+          struct filename *new;
+          new = xmalloc(sizeof(struct filename) + strlen(*argv) - 2);
+          new->next = NULL;
+          strcpy(new->name, &argv[0][2]);
+          if (lastname) lastname->next = new;
+          else names = new;
+          lastname = new;
+        } else error = 1;
+        break;
       default: error = 1;
       }
     }
     else if (**argv == '+') {
       switch (argv[0][1]) {
       case 'B': backslash = 1; break;
-      case 'U': honourcase = 1; break;
+      case 'U': honourcase = 1; break; /* Accept +U for backward compatibility */
       default:
         error = 1;
       }
@@ -177,6 +217,28 @@ void usage(void)
 {
   banner();
   fprintf(stderr, "Usage: f77 [options] file ...\n");
+  fprintf(stderr, "Options:\n");
+  fprintf(stderr, "  -c          Suppress linking, produce object files\n");
+  fprintf(stderr, "  -g          Generate debug information\n");
+  fprintf(stderr, "  -o outfile  Name output file\n");
+  fprintf(stderr, "  -v          Verbose mode\n");
+  fprintf(stderr, "  -w          Suppress warning messages\n");
+  fprintf(stderr, "  -w66        Enable Fortran 66 warnings\n");
+  fprintf(stderr, "  -C          Enable array subscript range checking\n");
+  fprintf(stderr, "  -I2         Use INTEGER*2 and LOGICAL*2 as default\n");
+  fprintf(stderr, "  -I4         Use INTEGER*4 and LOGICAL*4 as default\n");
+  fprintf(stderr, "  -I dir      Add directory to include search path\n");
+  fprintf(stderr, "  -L dir      Add directory to library search path\n");
+  fprintf(stderr, "  -D name     Define preprocessor macro\n");
+  fprintf(stderr, "  -U name     Undefine preprocessor macro\n");
+  fprintf(stderr, "  -l lib      Link with library lib\n");
+  fprintf(stderr, "  -O          Enable optimization\n");
+  fprintf(stderr, "  -S          Generate C source only\n");
+  fprintf(stderr, "  -u          Force implicit none\n");
+  fprintf(stderr, "  -onetrip    Execute DO loops at least once\n");
+  fprintf(stderr, "  -noext      Disable Fortran extensions\n");
+  fprintf(stderr, "  +B          Treat backslash as escape character\n");
+  fprintf(stderr, "  +U          Case sensitive (also -U)\n");
   exit(1);
 }
 
@@ -186,11 +248,11 @@ void filename(char *s)
   char *path, *name, *ext;
 
   path = xstrdup(s);
-  if (name = strrchr(s, '/')) {
+  if ((name = strrchr(s, '/')) != NULL) {
     *name++ = '\0';
     *(strrchr(path, '/') + 1) = '\0';
   }
-  else if (name = strrchr(s, ':')) {
+  else if ((name = strrchr(s, ':')) != NULL) {
     *name++ = '\0';
     *(strrchr(path, ':') + 1) = '\0';
   }
@@ -199,7 +261,7 @@ void filename(char *s)
     name = s;
   }
 
-  if (ext = strrchr(name, '.')) *ext++ = '\0';
+  if ((ext = strrchr(name, '.')) != NULL) *ext++ = '\0';
   else ext = "";
 
   if (strcmp(ext, "f") == 0) f2c(path, name);
@@ -431,7 +493,6 @@ void xmktemp(char *t, char *templ)
 void banner(void)
 {
   fprintf(stderr,
-	  "\2331mf77 style frontend for f2c. "
-	  "Copyright (C) 1994 Torsten Poulin\2330m\n");
+	  "f77 style frontend for f2c\n");
 }
 

@@ -5,13 +5,13 @@ f77(1L)                                                   f77(1L)
 
 
 NNAAMMEE
-       f77 - Fortran compiler.
+       f77 - Fortran 77 compiler
 
 SSYYNNOOPPSSIISS
        ff7777 [options] file ...
 
 DDEESSCCRRIIPPTTIIOONN
-       ff7777 is an AmigaDOS frontend for the port of the AT&T Labo­
+       ff7777 is an AmigaDOS frontend for the port of the AT&T Laboï¿½
        ratories and Bellcore ff22cc Fortran  to  C  translator  that
        works  with  the  SAS AmigaDOS C compiler version 6.51. It
        tries to give the impression of a  true  Fortran  compiler
@@ -21,7 +21,7 @@ DDEESSCCRRIIPPTTIIOONN
        Arguments that end with .f  are  compiled  as  Fortran  77
        source  files.   If each source compiles successfully, its
        corresponding object file is left in the current directory
-       in  a  file whose name is that of the source, with .o sub­
+       in  a  file whose name is that of the source, with .o subï¿½
        stituted for .f.
 
        Arguments that end with .c are  assumed  to  be  C  source
@@ -31,7 +31,7 @@ DDEESSCCRRIIPPTTIIOONN
        (see the SAS documentation for slink) to  be  linked  into
        the final program.
 
-       Arguments that end with .lib are taken to be standard Ami­
+       Arguments that end with .lib are taken to be standard Amiï¿½
        gaDOS linker libraries of .o files to be searched  in  the
        order they appear.
 
@@ -48,14 +48,14 @@ DDEESSCCRRIIPPTTIIOONN
        -g     Generate  information  needed  by  the symbolic SAS
               CodeProbe debugger.
 
-       -I2    Make default size of integers  and  logicals  INTE­
+       -I2    Make default size of integers  and  logicals  INTEï¿½
               GER*2 and LOGICAL*2.
 
-       -I4    Make  default  size  of integers and logicals INTE­
+       -I4    Make  default  size  of integers and logicals INTEï¿½
               GER*4 and LOGICAL*4.
 
        -l _n_a_m_e
-              Search the library lib:name.lib.  Libraries  speci­
+              Search the library lib:name.lib.  Libraries  speciï¿½
               fied  by  this  option  is  searched after the ones
               given directly.
 
@@ -84,13 +84,13 @@ f77(1L)                                                   f77(1L)
 
        -S     Translate the named Fortran source files and  leave
               the  C language output in corresponding files whose
-              names are suffixed with .c (no .o  files  are  cre­
+              names are suffixed with .c (no .o  files  are  creï¿½
               ated).
 
-       +U     Distinguish uppercase and lowercase (make case sig­
+       +U     Distinguish uppercase and lowercase (make case sigï¿½
               nificant).  Keywords must be lowercase.
 
-       -u     Force types of identifiers to be  implicitly  unde­
+       -u     Force types of identifiers to be  implicitly  undeï¿½
               clared (same as specifying IMPLICIT NONE).
 
        -v     Enable  the  verbose mode, producing a step-by-step

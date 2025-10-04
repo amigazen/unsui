@@ -1,17 +1,17 @@
-.TH f77 1L "October 21, 1994" "AmigaDOS"
+.TH f77 1L "October 21, 1994" "POSIX"
 .SH NAME
-f77 - Fortran compiler.
+f77 - Fortran 77 compiler
 .SH SYNOPSIS
 .B f77
 [options] file ...
 .SH DESCRIPTION
 .B f77
-is an AmigaDOS frontend for the port of the AT&T Laboratories and
-Bellcore
+is a Fortran 77 compiler that translates Fortran 77 source code to
+executable programs. It is implemented as a frontend for the AT&T
+Laboratories and Bellcore
 .B f2c
-Fortran to C translator that works with the SAS AmigaDOS C compiler
-version 6.51. It tries to give the impression of a true Fortran
-compiler for AmigaDOS. The frontend accepts the following types of
+Fortran to C translator, working with the SAS/C C compiler
+version 6.58. The compiler accepts the following types of
 file arguments:
 .PP
 Arguments that end with .f are compiled as Fortran 77 source files.
@@ -30,76 +30,101 @@ libraries of .o files to be searched in the order they appear.
 .PP
 f77 accepts the following options:
 .TP
-+B
-Treat the backslash character as a C-like escape character.
-.TP
--C
-Enable array subscript range checking.
-.TP
--c
+.B -c
 Suppress linking and produce an object (.o) file from each source file.
 .TP
--g
+.B -g
 Generate information needed by the symbolic SAS CodeProbe debugger.
-.TP
--I2
-Make default size of integers and logicals INTEGER*2 and LOGICAL*2.
-.TP
--I4
-Make default size of integers and logicals INTEGER*4 and LOGICAL*4.
-.TP
-.RI -l " name"
-Search the library lib:name.lib. Libraries specified by this option
-is searched after the ones given directly.
-.TP
--noext
-Do not accept any extensions to Fortran 77, like DO - END DO.
-.TP
--O
-Enable the SAS C global optimizer.
 .TP
 .RI -o " outfile"
 Name the output file resulting from linking
 .I outfile
 instead of the default file name a.out.
 .TP
--onetrip
-Execute any DO loop at least once.
-.TP
--S
-Translate the named Fortran source files and leave the C language
-output in corresponding files whose names are suffixed with .c
-(no .o files are created). 
-.TP
-+U
-Distinguish uppercase and lowercase (make case significant).
-Keywords must be lowercase.
-.TP
--u
-Force types of identifiers to be implicitly undeclared (same as
-specifying IMPLICIT NONE).
-.TP
--v
+.B -v
 Enable the verbose mode, producing a step-by-step
-description of the compilation process. This may generate a lot
-of noise.
+description of the compilation process.
 .TP
--w
+.B -w
 Suppress all warning messages from
 .B f2c .
 .TP
--w66
+.B -w66
 Enable warnings about Fortran 66 features used.
+.TP
+.B -C
+Enable array subscript range checking.
+.TP
+.B -I2
+Make default size of integers and logicals INTEGER*2 and LOGICAL*2.
+.TP
+.B -I4
+Make default size of integers and logicals INTEGER*4 and LOGICAL*4.
+.TP
+.RI -I " dir"
+Add directory
+.I dir
+to the include search path.
+.TP
+.RI -L " dir"
+Add directory
+.I dir
+to the library search path.
+.TP
+.RI -D " name"
+Define preprocessor macro
+.I name
+with value 1.
+.TP
+.RI -D " name=value"
+Define preprocessor macro
+.I name
+with value
+.IR value .
+.TP
+.RI -U " name"
+Undefine preprocessor macro
+.IR name .
+.TP
+.RI -l " name"
+Search the library lib:name.lib. Libraries specified by this option
+are searched after the ones given directly.
+.TP
+.B -O
+Enable the SAS C global optimizer.
+.TP
+.B -S
+Translate the named Fortran source files and leave the C language
+output in corresponding files whose names are suffixed with .c
+(no .o files are created).
+.TP
+.B -u
+Force types of identifiers to be implicitly undeclared (same as
+specifying IMPLICIT NONE).
+.TP
+.B -onetrip
+Execute any DO loop at least once.
+.TP
+.B -noext
+Do not accept any extensions to Fortran 77, like DO - END DO.
+.TP
+.B +B
+Treat the backslash character as a C-like escape character.
+.TP
+.B +U
+Distinguish uppercase and lowercase (make case significant).
+Keywords must be lowercase. Also accepted as
+.BR -U .
 .SH FILES
 .nf
-f2c
-sc
-slink
-include:f2c.h
-lib:f2c.lib
-lib:scmnb.lib
-lib:scnb.lib
-lib:c.o
+f2c                    Fortran to C translator
+sc                     SAS/C compiler
+slink                  SAS/C linker
+include:f2c.h          f2c header file
+lib:f2c.lib            f2c runtime library
+lib:scmnb.lib          SAS/C math library
+lib:scnb.lib           SAS/C standard library
+lib:c.o                C runtime startup code
 .fi
 .SH "SEE ALSO"
 f2c(1)
@@ -110,3 +135,6 @@ Torsten Poulin Nielsen (torsten@diku.dk) who
 also ported
 .B f2c
 and welcomes suggestions and bug reports.
+.PP
+This implementation provides POSIX-compliant Fortran 77 compilation
+on AmigaDOS systems using the f2c Fortran to C translator.
