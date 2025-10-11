@@ -1,0 +1,63 @@
+Mon Nov 25 12:36:42 1991  Simon J. Gerraty  (sjg at zen)
+
+	* stdh.h:  make sure FD_CLEXEC is defined if we support F_SETFD.
+	
+	* emacs.c: Attempt to make alloc() of x_tab acceptible to more
+	compilers.  Not 100% yet.
+	
+Sat Nov 23 14:31:44 1991  Simon J. Gerraty  (sjg at zen)
+
+	* Improved fd_clexec handling for systems that don't have
+	an F_SETFD fcntl().  The new arrangement will not blow up if an
+	attempt is made to fd_clexec a fd above MAXFD (64 by default).
+	main.c:main()  and io.c:savefd() now simply call
+	exec.c:fd_clexec(). 
+
+Fri Nov 22 11:24:57 1991  Simon J. Gerraty  (sjg at zen)
+
+	* Since many people had problems using the headers and libraries
+	in std/*, modified sh/* so that they can be compiled in the
+	absence of std/*.  This requires putting in some fixes that I had
+	left out from my 3.2 version.  Particularly, catering for systems
+	that do not have F_SETFD.
+
+	* exec.c:
+	Added fd_clexec array for tracking fd's to close in child after
+	fork().  This is avoid wasting fd's on systems that don't have
+	F_SETFD.
+
+	* jobs.c:
+	Allow Sun's and perhaps other BSD systems to define WAIT_T to be
+	union wait and thus use their native status handling for children.
+
+	* The file sh/MACHINES now tracks systems the shell has been
+	compiled on.
+
+
+Sun May  3 17:50:03 1992  Simon J. Gerraty  (sjg@zen)
+
+	* Updated MACHINES.
+	* Placed source under CVS.  This should help with processing fixes
+	from the field.
+
+Sat Apr 25 10:53:20 1992  Simon J. Gerraty  (sjg@zen)
+
+	* Getting ready for 4.3 release.  
+
+Fri Nov 22 22:24:29 1991  Simon J. Gerraty  (sjg at zen)
+
+	* Cleaned up the build process slightly.  Makefiles in ./std tree
+	now maintain objects within the libraries rather than simply
+	building the .o's and archiving them.  Of course the make(1) used
+	must know how to maintain libraries :-)
+
+	* Added bug.report as a template for bug reporting.
+
+	* Source in ./sh can be built independently of ./std tree if
+	desired.  See comments in ./sh/Makefile.
+
+	* As originally distributed some of libstdc.a was not used and
+	libposix.a was not used at all.  On Sun's this highlighted a bug
+	(incompatibility) in the times() call.  Now the ./std/libs are
+	used fully, and the supplied times() call functions as expected.
+
