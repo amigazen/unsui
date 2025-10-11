@@ -644,7 +644,6 @@ iosetup(iop)
 {
 	register int u = -1;
 	char *cp = iop->name;
-	extern long lseek();
 
 	if (iop->unit == 0 || iop->unit == 1 || iop->unit == 2)
 		e.interactive = 0;

@@ -5,10 +5,10 @@
 
 # This is for the sun386i your mileage may vary :-)
 #CC=scc -ansi -Dsun386 -Dsun -Di386
-CC=scc  -resident -O2
+CC=m68k-amigaos-gcc -resident -O2
 
 #CONFIG= -D_SYSV
-CONFIG= -D_BSD -DUSE_TRACE -DDEBUG_AFREE
+CONFIG= -D_BSD -Damigados -DUSE_TRACE -DDEBUG_AFREE
 
 STD=	../std
 

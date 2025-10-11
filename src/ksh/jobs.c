@@ -28,6 +28,9 @@ static char *RCSid = "$Id: jobs.c,v 1.4 1992/04/27 07:14:26 sjg Exp $";
 #include <sys/times.h>
 #include <sys/wait.h>
 #include "sh.h"
+#ifdef amigados
+#include <ix.h>
+#endif
 #ifdef JOBS
 #ifdef _BSD
 #include <sys/ioctl.h>
@@ -419,7 +422,7 @@ exchild(_t, _flags)
 		/* this re-relocates the data segment */
 	        ix_resident (4, get_a4(), dbsize(), __datadata_relocs);
 
-		ix_get_vars2 (7, &_ctype_, &sys_nerr, &SysBase, &DOSBase, &__sF, &environ, &environ);
+		ix_get_variables(0);
 
 		e.type = E_NONE;
 		ainit (APERM);
@@ -473,7 +476,7 @@ exchild(_t, _flags)
 
 		/* tell the parent it's ok to continue, just as if the child
 		   did an exec() or an _exit(). Switch to child's stack. */
-	        vfork_resume ();
+	        ix_vfork_resume();
 #else
 		e.oenv = NULL;
 #endif
