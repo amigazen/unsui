@@ -14,12 +14,8 @@ fork()
 int
 tty_read (int fd, char *buf, int len)
 {
-  int mask = 1<<fd;
-  
-  /* read by itself is not interruptible, select() is. Perhaps this will
-     change some time in the future.. */
-  while (select (fd+1, &mask, 0, 0, 0) <= 0) ;
-
+  /* On AmigaOS, just do a direct read for now */
+  /* TODO: Implement proper select() handling if needed */
   return read (fd, buf, len);
 }
 

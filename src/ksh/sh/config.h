@@ -1,7 +1,7 @@
 /*
  * Configuration file for the PD ksh
  *
- * RCSid: $Id: config.h,v 1.3 1992/05/03 08:28:59 sjg Exp $
+ * RCSid: $Id: config.h,v 1.7 93/05/05 21:16:20 sjg Exp $
  */
 
 #ifndef	_CONFIG_H
@@ -49,4 +49,19 @@
 /* #define	SILLY			/* Game of life in EMACS mode */
 /* #define	SWTCH			/* Handle SWTCH for shl(1) */
 
+
+/*
+ * ALTERNATIONS is csh not ksh, but it is such a nice feature...
+ */
+#define ALTERNATIONS			/* csh {a,b,c} arg expansion */
+
+/* #define COMPLEX_HISTORY			/* Peter Collinson's history */
+/*
+ * if you don't have mmap() you can't use Peter Collinson's history
+ * mechanism.  If that is the case, then define EASY_HISTORY
+ */
+#if !defined(COMPLEX_HISTORY) || defined(NO_MMAP)
+# define EASY_HISTORY			/* sjg's trivial history file */
+#endif
+  
 #endif	/* _CONFIG_H */

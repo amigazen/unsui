@@ -116,7 +116,7 @@ fopenshf(fd)
 #endif
 #else
 	if (fd <= 2)
-	  shf[fd] = (fd == 0) ? __sF[0] : (fd == 1 ? __sF[1] : __sF[2]);
+	  shf[fd] = (fd == 0) ? stdin : (fd == 1 ? stdout : stderr);
 	else
 #endif
 

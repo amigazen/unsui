@@ -132,7 +132,7 @@ vfprintf(f, fmt, va) register FILE *f; register char *fmt; register va_list va; 
 
 		  case 'c':		/* character */
 			u = (flags&FF_SHORT) ? va_arg(va, unsigned short)
-			  : (flags&&FF_LONG) ? va_arg(va, unsigned long)
+			  : (flags&FF_LONG) ? va_arg(va, unsigned long)
 			  : va_arg(va, unsigned int);
 			*--p = u;
 			flags |= FF_PUTS;
@@ -156,14 +156,14 @@ vfprintf(f, fmt, va) register FILE *f; register char *fmt; register va_list va; 
 		  case 'i': case 'd': case 'u': /* decimal */
 			if (c != 'u') {	/* signed */
 				n = (flags&FF_SHORT) ? va_arg(va, short)
-				  : (flags&&FF_LONG) ? va_arg(va, long)
+				  : (flags&FF_LONG) ? va_arg(va, long)
 				  : va_arg(va, int);
 				if (n < 0)
 					flags |= FF_NEG;
 				u = (n < 0) ? -n : n;
 			} else
 				u = (flags&FF_SHORT) ? va_arg(va, unsigned short)
-				  : (flags&&FF_LONG) ? va_arg(va, unsigned long)
+				  : (flags&FF_LONG) ? va_arg(va, unsigned long)
 				  : va_arg(va, unsigned int);
 			do {
 				*--p = '0' + u%10;
@@ -182,7 +182,7 @@ vfprintf(f, fmt, va) register FILE *f; register char *fmt; register va_list va; 
 
 		  case 'x': case 'X':	/* hex, Hex */
 			u = (flags&FF_SHORT) ? va_arg(va, unsigned short)
-			  : (flags&&FF_LONG) ? va_arg(va, unsigned long)
+			  : (flags&FF_LONG) ? va_arg(va, unsigned long)
 			  : va_arg(va, unsigned int);
 			do {
 				*--p = "0123456789ABCDEF"[u%16];
@@ -191,14 +191,14 @@ vfprintf(f, fmt, va) register FILE *f; register char *fmt; register va_list va; 
 			prec -= buf+BUF - p;
 			while (--prec >= 0)
 				*--p = '0';
-			if (flags&&FF_ALT)
+			if (flags&FF_ALT)
 				*--p = 'x', *--p = '0';
 			flags |= FF_PUTS;
 			break;
 
 		  case 'o':		/* octal */
 			u = (flags&FF_SHORT) ? va_arg(va, unsigned short)
-			  : (flags&&FF_LONG) ? va_arg(va, unsigned long)
+			  : (flags&FF_LONG) ? va_arg(va, unsigned long)
 			  : va_arg(va, unsigned int);
 			do {
 				*--p = '0' + u%8;
@@ -207,7 +207,7 @@ vfprintf(f, fmt, va) register FILE *f; register char *fmt; register va_list va; 
 			prec -= buf+BUF - p;
 			while (--prec >= 0)
 				*--p = '0';
-			if (flags&&FF_ALT && *p != '0')
+			if (flags&FF_ALT && *p != '0')
 				*--p = '0';
 			flags |= FF_PUTS;
 			break;
