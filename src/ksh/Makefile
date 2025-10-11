@@ -1,29 +1,54 @@
 # PD Bourne/Korn Shell
-# NOTE: the are no depencies of .c file on .h files yet.
+# $Id: Makefile,v 1.5 93/05/08 15:59:28 sjg Exp $
 
-#SHELL = /bin/sh
+#### Start of system configuration section. ####
 
-# This is for the sun386i your mileage may vary :-)
-#CC=scc -ansi -Dsun386 -Dsun -Di386
-CC=m68k-amigaos-gcc -resident -O2
+# Common prefix for machine-independent installed files.
+prefix = /usr/local
+# Common prefix for machine-dependent installed files.
+exec_prefix = $(prefix)
 
-#CONFIG= -D_SYSV
-CONFIG= -D_BSD -Damigados -DUSE_TRACE -DDEBUG_AFREE
+# Directory to install executables in.
+bindir = $(exec_prefix)/bin
+# Directory to install libraries in.
+libdir = $(exec_prefix)/lib
+# Directory to install the Info files in.
+infodir = $(prefix)/info
+# Directory to install the man page in.
+mandir = $(prefix)/man/man$(manext)
+# Number to put on the man page filename.
+manext = 1
 
-STD=	../std
+# Program to install executables.
+INSTALL_PROGRAM = install
+# Program to install data like man pages.
+INSTALL_DATA = install -m 644
+# Generic install program.
+INSTALL = install
 
-#CC = shcc
+#### End of system configuration section. ####
+
+SHELL =		/bin/sh
+MAKE =		make
+
+# AmigaOS specific configuration
+CC = m68k-amigaos-gcc -resident -O2
+CONFIG = -D_BSD -Damigados -DUSE_TRACE -DDEBUG_AFREE
+
+STD = ../std
+
 CCOPTS = $(DBG)
-#CFLAGS = $(CCOPTS) -I$(STD)/h $(CONFIG)
 CFLAGS = $(CCOPTS) $(CONFIG)
 
-#LDOPTS = -s
+LDOPTS = -s
 LDFLAGS = $(LDOPTS) -L$(STD)
 
-#COMPATLIBS =  -lstdc # -lposix
+#COMPATLIBS = -lstdc # -lposix
 #OTHERLIBS = -lc_s
 #OTHERLIBS = -ldirent
 LDLIBS = $(COMPATLIBS) $(OTHERLIBS)
+
+MANPAGES = ksh.1
 
 HDRS =	sh.h table.h expand.h lex.h tree.h tty.h trace.h
 SRCS1 =	version.c main.c misc.c trap.c alloc.c io.c \
@@ -40,14 +65,19 @@ OBJS =	version.o main.o misc.o \
 	do_ulimit.o getopts.o expr.o history.o \
 	var.o table.o alloc.o io.o eval.o mail.o sigact.o trace.o amiga.o
 
+all: ksh
+
 ksh: $(OBJS) 
 	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS)
+
+install: ksh
+	$(INSTALL_PROGRAM) -c ksh $(bindir)/ksh
+	$(INSTALL_DATA) -c $(srcdir)/ksh.1 $(mandir)/ksh.1
 
 clean:
 	rm -f *.o *.out core
 
 clobber: clean
 	rm -f ksh
-
 
 edit.o emacs.o:	edit.h

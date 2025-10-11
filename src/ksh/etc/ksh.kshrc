@@ -15,8 +15,10 @@
 # SEE ALSO:
 #	$HOME/.kshrc
 #
+
 # RCSid:
-#	$Id: ksh.kshrc,v 1.2 1992/04/27 07:09:28 sjg Exp $
+#	$Id: ksh.kshrc,v 1.6 93/09/29 08:57:50 sjg Exp $
+#
 #	@(#)Copyright (c) 1991 Simon J. Gerraty
 #
 #	This file is provided in the hope that it will
@@ -40,21 +42,34 @@ case "$-" in
 	tty=`tty`
 	tty=`basename $tty`
 
-	set -o ${FCEDIT:-$EDITOR}
+	set -o $EDITOR
 
+	alias ls='ls -CF'
+	alias h='fc -l | more'
 	# the PD ksh is not 100% compatible
 	case "$KSH_VERSION" in
 	*PD*)	# PD ksh
-	        bind ^?=delete-char-backward
-        	bind ^[^?=delete-word-backward
+		case "$TERM" in
+		xterm*)
+			# bind arrow keys
+			bind '^[['=prefix-2
+			bind '^XA'=up-history
+			bind '^XB'=down-history
+			bind '^XC'=forward-char
+			bind '^XD'=backward-char
+			;;
+		esac
 		;;
 	*)	# real ksh ?
 		;;
 	esac
 	case "$TERM" in
 	sun*)
+		# these are not as neat as their csh equivalents
 		if [ "$tty" != console ]; then
+			# ilabel
 			ILS='\033]L'; ILE='\033\\'
+			# window title bar
 			WLS='\033]l'; WLE='\033\\'
 		fi
 		;;
@@ -66,23 +81,41 @@ case "$-" in
 	esac
 	# do we want window decorations?
 	if [ "$ILS" ]; then
-		wftp () { ilabel "ftp $*"; "ftp" $*; ilabel "$USER@$HOSTNAME"; }
-		wcd () { "cd" $*; eval stripe; }
 		ilabel () { print -n "${ILS}$*${ILE}"; }
 		label () { print -n "${WLS}$*${WLE}"; }
-		alias stripe='label $USER @ $HOSTNAME \($tty\) - $PWD'
+
+		alias stripe='label "$USER@$HOST ($tty) - $PWD"'
+		alias istripe='ilabel "$USER@$HOST ($tty)"'
+
+		wftp () { ilabel "ftp $*"; "ftp" $*; eval istripe; }
+		wcd () { "cd" $*; eval stripe; }
+		wtelnet ()
+		{
+			"telnet" "$@"
+			eval istripe
+			eval stripe
+		}
+		wsu ()
+		{
+			"su" "$@"
+			eval istripe
+			eval stripe
+		}
+		alias su=wsu
 		alias cd=wcd
 		alias ftp=wftp
+		alias telnet=wtelnet
 		eval stripe
-		eval ilabel "$USER@$HOSTNAME"
+		eval istripe
 		PS1=$PROMPT
 	fi
-	alias ls='ls -CF'
-	alias h='fc -l | more'
 	alias quit=exit
 	alias cls=clear
 	alias logout=exit
 	alias bye=exit
+	alias p='ps -l'
+	alias j=jobs
+	alias o='fg %-'
 
 
 # add your favourite aliases here

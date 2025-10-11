@@ -1,0 +1,75 @@
+This is the first release of the AmigaOS port of pdksh, based on
+the official 4.5 release of pdksh.
+
+Don't currently expect too much support for this, it's mainly for people
+who want a true /bin/sh compatible shell, and don't primarily want a
+replacement for the CLI SYSTEM SHELL.
+
+
+Notes to the sources
+====================
+If you cross-check with MANIFEST you see that I didn't include the std/
+directory. This is simply because it's not needed with ixemul.library, and
+I didn't want to include something useless for AmigaOS. If you plan to
+compile pdksh under an environment that would need std/, best thing is you
+get the original distribution from a site archiving comp.sources.misc.
+
+DON'T FORGET TO SET THE PURE BIT ON KSH, archiving might have deleted it.
+
+
+Known problems
+==============
+o This really is a problem of ixemul.library v39.41: vfork() crashes when
+  under kickstart 1.3. I don't know exactly what happend that made vfork()
+  crash under 1.3, it once worked. However, I don't feel like investigating
+  this to extremes, I don't use 1.3 any longer. If someone really wants
+  it fixed, contact me, and we'll find a way.
+
+o don't stress ksh with ^C when in the commandline editor. Breaking usually
+  works to abort commands, don't use it when you already have the prompt.
+  This is probably a bug somewhere in select(), will need investigation.
+
+
+Debugging help
+==============
+If you set the TRACE_LEVEL environment variable, ksh tells you the address
+of its main() function. This is extremely useful to interprete enforcer-
+output, since in vfork()d processes, hunk-o-matic won't work and enforcer
+doesn't output any hunk-offsets, just PC values. If you subtract the
+address of main() from that PC, you get a relative value, instead of an
+absolute, process dependant PC, which you can then use to look at the
+code in your favorite disassembler.
+
+
+libs/ixemul.library
+===================
+This is the current version of the library, and it replaces the one
+distributed with gcc21-920420.lha. Don't use any old libraries, they are
+very buggy in those areas explored by ksh;-))
+
+
+ixpipe-handler/*
+================
+This is the first version of a bridge between ixemul.library and 
+programs reading/writing to DOS filehandles. I'd be happy for comments
+on this! Be sure to mount the handler before trying to use I/O
+redirection on non-ixemul programs in ksh! Don't try to use it IXPIPE:
+like PIPE:, they're totally different! IXPIPE: is used automatically
+if a non-ixemul program is execve()'d for each file descriptor 0, 1 or
+2 who's type is not that of a plain DOS file. A pipe would be an
+example of a non-dos type.
+
+
+Favorite usage
+==============
+Setup a directory, assign BIN: to it, and copy ksh into BIN:sh. That way,
+you can have the usual
+SHELL=/bin/sh
+in your Makefile ;-))
+
+
+Happy testing!
+
+-Markus Wild
+
+<wild@nessie.cs.id.ethz.ch>  and  <wild@amiga.physik.unizh.ch>

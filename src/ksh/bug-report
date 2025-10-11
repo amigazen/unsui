@@ -2,11 +2,11 @@ To: pdksh-bug@zen.void.oz.au
 Subject: [area]: [synopsis]   [replace with actual area and short description]
 
 VERSION:
-    PD KSH: 4.5 12-May-1992
+    PD KSH: 4.9 29-Sep-1993
     [Official patches will edit this line to indicate the patch level]
 
 MACHINE and OPERATING SYSTEM:
-    [e.g. Sparc/SunOS 4.1.1, DECstation 3100/Ultrix 4.2, ...]
+    [e.g. 386bsd-0.1+0.2.4, Sparc/SunOS 4.1.1, DECstation 3100/Ultrix 4.2, ...]
 
 COMPILER:
     [e.g. native cc, native ANSI cc, gcc 1.40, ...]

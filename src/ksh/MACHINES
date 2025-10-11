@@ -14,13 +14,14 @@ me know.
 
 System, OS			Notes	Compiler/Flags
 --------------------------	-----	--------------
+386bsd	386bsd-0.1 (pk0.2.3)	1,5	{cc,gcc} -D_BSD -D_POSIX_TERM
 sun386, SunOS 4.0.2		1,4	{cc,gcc} -D_BSD
 sun4c,	SunOS 4.1.1		1,4	{cc,gcc-2.1} -ansi -D_BSD -DHAVE_SYS_STDTYPES
 sun3,	SunOS 4.0.3		1,4	{cc,gcc} -D_BSD
 sun3,	SunOS 4.1.1		1,4	{cc,gcc} -ansi -D_BSD -DHAVE_SYS_STDTYPES
 Bull DPX/2, B.O.S. 2.00.45	1,5	{cc,gcc-2.1} -ansi -D_POSIX_SOURCE
 Bull XPS-100			1,6	cc -D_SYSV -DUSE_SIGNAL
-
+i386,	BSDI BSD/386		2
 
 NOTES:
 The table above sumarizes the config used.  {cc,gcc} indicates

@@ -1,0 +1,54 @@
+# PD Bourne/Korn Shell
+# $Id: Makefile,v 1.5 93/05/08 15:59:28 sjg Exp $
+
+#### Start of system configuration section. ####
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+# Common prefix for machine-independent installed files.
+prefix = @prefix@
+# Common prefix for machine-dependent installed files.
+exec_prefix = $(prefix)
+
+# Directory to install executables in.
+bindir = $(exec_prefix)/bin
+# Directory to install libraries in.
+libdir = $(exec_prefix)/lib
+# Directory to install the Info files in.
+infodir = $(prefix)/info
+# Directory to install the man page in.
+mandir = $(prefix)/man/man$(manext)
+# Number to put on the man page filename.
+manext = 1
+
+# Program to install executables.
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+# Program to install data like man pages.
+INSTALL_DATA = @INSTALL_DATA@
+# Generic install program.
+INSTALL = @INSTALL@
+
+#### End of system configuration section. ####
+
+SHELL =		/bin/sh
+MAKE =		make
+
+MANPAGES =	ksh.1
+
+all:		ksh
+
+ksh:		libs
+		@( cd sh ; $(MAKE) $@ )
+
+libs:
+#		@( cd std ; $(MAKE) $@ )
+
+install:
+		$(INSTALL_DATA) -c $(srcdir)/ksh.1 $(mandir)/ksh.1
+		@( cd sh ; $(MAKE) $@ )
+
+clean clobber:
+#		@( cd std ; $(MAKE) $@ )
+		@( cd sh ; $(MAKE) $@ )
+		-rm -f *.out

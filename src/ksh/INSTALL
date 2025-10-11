@@ -21,6 +21,9 @@ It is recommended that you try using the ./std tree first.  This
 avoids problems like BSD times() calls that do not return an
 indication of elapsed time and so on.
 
+For current *BSD (386bsd,NetBSD,FreeBSD and I assume BSD/386) it is
+best to build without the ./std tree.
+
 Using ./std:
 ------------
 

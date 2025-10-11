@@ -1,0 +1,31 @@
+.name
+pdksh
+.fullname
+Ksh compatible shell
+.type
+Shell
+.short
+A UNIX ksh compatible shell for AmigaOS
+.description
+A KSH-like shell that is compatible enough with the real UNIX ksh to
+be used with most scripts that the UNIX ksh can run.
+.version
+4.9
+.date
+.author
+Eric Gisin
+Charles Forsyth
+John R MacMillan
+Simon J. Gerraty
+Markus Wild
+.distribution
+Public Domain
+.requirements
+Amiga binary requires ixemul.library.
+.docs
+!README.AMIGA!
+README
+.described-by
+Fred Fish (fnf@amigalib.com)
+.submittal
+Downloaded via ftp from wuarchive.wustl.edu.
