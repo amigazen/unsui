@@ -5,8 +5,8 @@ CC = sc
 OPT=OPT
 CFLAGS=$(OPT) ErrRexx CODE=F DATA=F UCHAR NOSTKCHK NOSINT
 
-HDIR= /h
-SRCD = /src
+HDIR= /orig/h
+SRCD = /orig/src
 INCLUDE = IDIR=$(HDIR)
 
 HFILES=estruct.h $(HDIR)/edef.h $(HDIR)/efunc.h $(HDIR)/epath.h $(HDIR)/ebind.h $(HDIR)/eproto.h

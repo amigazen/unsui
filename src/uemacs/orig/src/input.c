@@ -207,6 +207,10 @@ char *prompt;		/* prompt to user on command line */
 	if (!FILENAMEREPLY(prompt, sp, NFILEN))
 		return NULL;
 #else
+#if	AMIGA
+	static char sp[NFILEN];
+	if (FileReq(prompt,sp,NFILEN)!=0) return NULL;
+#else
 	char *sp;	/* ptr to the returned string */
 
 	/* get a file name, default to current buffer's */
@@ -214,6 +218,7 @@ char *prompt;		/* prompt to user on command line */
 		sp = complete(prompt, curbp->b_fname, CMP_FILENAME, NFILEN);
 	else
 		sp = complete(prompt, NULL, CMP_FILENAME, NFILEN);
+#endif
 #endif
 #if	MSDOS | OS2
 	/* change forward slashes to back */

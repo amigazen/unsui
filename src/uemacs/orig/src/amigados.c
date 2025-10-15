@@ -4,30 +4,104 @@
 */
 
 #include        <stdio.h>
+#ifdef __SASC
+#include	<string.h>
+#else
+#define __aligned
+#endif
+
 #include	"estruct.h"
 #if	AMIGA
 #include	<exec/types.h>
 #include	<exec/io.h>
+#include	<exec/memory.h>
+#include	<exec/libraries.h>
+#include	<devices/inputevent.h>
+#include	<graphics/text.h>
+#include	<graphics/gfxbase.h>
+#include	<graphics/view.h>
+#include	<graphics/displayinfo.h>
 #include	<intuition/intuition.h>
+#include	<intuition/intuitionbase.h>
+#include	<intuition/screens.h>
+#include	<utility/tagitem.h>
+#include	<libraries/asl.h>
 #include	<devices/console.h>
+#include	<dos/dos.h>
+
+#ifdef __SASC
+#include <proto/dos.h>
+#include <clib/exec_protos.h>
+#include <clib/graphics_protos.h>
+#include <clib/intuition_protos.h>
+#include <clib/console_protos.h>
+#include <clib/asl_protos.h>
+#include <pragmas/exec_pragmas.h>
+#include <pragmas/graphics_pragmas.h>
+#include <pragmas/intuition_pragmas.h>
+#include <pragmas/console_pragmas.h>
+#include <pragmas/asl_pragmas.h>
+
+void in_init(void);
+int in_check(void);
+void in_put(int);
+int in_get(void);
+int mod(int);
+int sendcon(char *buf);
+int doevent(void);
+void dokey(struct InputEvent *);
+int stuffibuf(int, int, int );
+int spawncli(int , int );
+int spawn(int , int );
+int execprg(int , int );
+int pipecmd(int , int );
+void adoshello(void);
+char *MakePathname(char *, char *);
+int FileReq(char *, char *, unsigned);
+#endif
+
+#ifdef AZTEC_C
+#define memset(a,b,c) setmem(a,c,b)
+#endif
 #include	"eproto.h"
 #include        "edef.h"
 #include	"elang.h"
 
 #define INTUITION_REV	0L
 #define	NEW 		1006L
-#define	CRWIDTH		8
-#define	CRHEIGHT	8
 
-struct IntuitionBase *IntuitionBase;
+#ifdef FORCE_TOPAZ80 /* FORCE_TOPAZ80 is obsolete, now we're font sensitive */
+#define	CRWIDTH		8 /* constant values for TOPAZ80 */
+#define	CRHEIGHT	8
+#else
+#define	CRWIDTH		theFont->tf_XSize  /* now font sensitive, */
+#define	CRHEIGHT	theFont->tf_YSize  /* use variable values */
+#endif
+
+struct IntuitionBase *IntuitionBase = 0L;
+struct GfxBase *GfxBase = 0L;
+struct Library *ConsoleDevice = 0L;
+struct Library *AslBase = 0L;
+
+struct Screen *scr;
 struct Window *win;
 struct IOStdReq con;		/* ptr to console device driver handle */
+static struct TextFont *theFont;
+#ifdef FORCE_TOPAZ80 /* FORCE_TOPAZ80 is obsolete, now we're font sensitive */
+static struct TextAttr *theTextAttr;
+#endif
 
 /*	Intuition Function type declarations	*/
 
-struct IntuitionBase *OpenLibrary();
+#ifndef __SASC
+struct Library *OpenLibrary();
 struct Window *OpenWindow();
-struct IntuiMessage *GetMsg();
+struct Message *GetMsg();
+#endif
+
+#ifdef AMIGA
+extern NOSHARE TERM term;
+#endif
 
 typedef struct {
 	short rw_code;		/* normal keycode to generate */
@@ -165,13 +239,13 @@ unsigned char in_buf[IBUFSIZE];	/* input character buffer */
 int in_next = 0;		/* pos to retrieve next input character */
 int in_last = 0;		/* pos to place most recent input character */
 
-in_init()	/* initialize the input buffer */
+void in_init()	/* initialize the input buffer */
 
 {
 	in_next = in_last = 0;
 }
 
-in_check()	/* is the input buffer non-empty? */
+int in_check()	/* is the input buffer non-empty? */
 
 {
 	if (in_next == in_last)
@@ -180,7 +254,7 @@ in_check()	/* is the input buffer non-empty? */
 		return(TRUE);
 }
 
-in_put(event)
+void in_put(event)
 
 int event;	/* event to enter into the input buffer */
 
@@ -206,7 +280,13 @@ int in_get()	/* get an event from the input buffer */
  */
 ttopen()
 {
-	struct NewWindow new_win;
+	struct Screen *DefaultScr;
+	struct NewScreen *new_scr = 0L;
+	__aligned struct NewWindow new_win;
+#ifdef FORCE_TOPAZ80
+	__aligned static char fontname[] = "topaz.font";
+#endif
+
 	int i;
 #if	AZTEC
 	extern	Enable_Abort;	/* Turn off ctrl-C interrupt */
@@ -215,51 +295,164 @@ ttopen()
 #endif
 	strcpy(os, "AMIGADOS");
 
+	GfxBase = (struct GfxBase *)OpenLibrary("graphics.library", 33L);
+	if (GfxBase == NULL) {
+		printf("%%Can not open graphics.library\n");
+		exit(-1);
+	}
+
 	/* open the intuition library */
 	IntuitionBase = (struct IntuitionBase *)
 		OpenLibrary("intuition.library", INTUITION_REV);
 	if (IntuitionBase == NULL) {
+                if (GfxBase) CloseLibrary((struct Library *)GfxBase);
 		printf("%%Can not open Intuition\n");
 		exit(-1);
+	}
+	/* open the ASL library */
+	AslBase = (struct Library *)
+		OpenLibrary("asl.library", 38L);
+	if (AslBase == NULL) {
+                if (GfxBase) CloseLibrary((struct Library *)GfxBase);
+                if (IntuitionBase) CloseLibrary((struct Library *)IntuitionBase);
+		printf("%%Can not open asl.library\n");
+		exit(-1);
+	}
+
+#ifdef FORCE_TOPAZ80
+        theTextAttr = AllocMem(sizeof(struct TextAttr),MEMF_PUBLIC|MEMF_CLEAR);
+        if (theTextAttr == NULL) {
+		printf("%%Not enough memory\n");
+		exit(-2);
+        };
+        theTextAttr->ta_Name = fontname;
+        theTextAttr->ta_YSize = 8;
+        theTextAttr->ta_Style = FS_NORMAL;
+        theTextAttr->ta_Flags = FPF_ROMFONT;
+
+        theFont = OpenFont(theTextAttr);
+#else
+        theFont = GfxBase->DefaultFont;
+#endif
+
+        memset(&new_win,0,sizeof(struct NewWindow));
+
+#ifndef DEBUG_PRE_V39
+	if (IntuitionBase->LibNode.lib_Version >= 39) {
+          scr = OpenScreenTags(0L,SA_LikeWorkbench,TRUE,
+		SA_Title,(ULONG)((UBYTE*)"MicroEMACS 3.12g/Amiga"),
+		SA_Depth,1,
+		SA_SysFont,0,
+		SA_Type,CUSTOMSCREEN,
+		SA_BlockPen,1,SA_DetailPen,0);
+	}
+	else {
+#else
+        /* provide a matching bracket for pre V39 debugging */
+	{
+#endif
+	  new_scr = AllocMem((ULONG)sizeof(struct NewScreen),MEMF_PUBLIC|MEMF_CLEAR);
+          if (new_scr == 0L) {
+            if (GfxBase) CloseLibrary((struct Library *)GfxBase);
+	    if (IntuitionBase) CloseLibrary((struct Library *)IntuitionBase);
+	    if (AslBase) CloseLibrary((struct Library *)AslBase);
+		printf("%%Can not allocate NewScreen structure\n");
+		exit(-1);
+          }
+          DefaultScr = AllocMem(sizeof(struct Screen),MEMF_PUBLIC|MEMF_CLEAR);
+	  if (DefaultScr != 0L) { int success;
+	    success = GetScreenData(DefaultScr,sizeof(struct Screen), WBENCHSCREEN, NULL);
+	    if (success) {
+	      new_scr->Width = DefaultScr->Width;
+	      new_scr->Height= DefaultScr->Height;
+	      new_scr->ViewModes = DefaultScr->ViewPort.Modes;
+            }
+	    else {
+	      new_scr->Width = 640;
+	      new_scr->Height= 200;
+	      new_scr->ViewModes = HIRES;
+	    }
+            FreeMem(DefaultScr,sizeof(struct Screen));
+            DefaultScr = 0L;
+	  }
+	  else {
+	    new_scr->Width = 640;
+	    new_scr->Height= 200;
+	    new_scr->ViewModes = HIRES;
+	  }
+	  new_scr->LeftEdge = 0;
+	  new_scr->TopEdge = 0;
+	  new_scr->Depth = 1;
+	  new_scr->DetailPen = 0;
+	  new_scr->BlockPen = 1;
+
+	  new_scr->Type = CUSTOMSCREEN;
+#ifdef FORCE_TOPAZ80
+	  new_scr->Font = theTextAttr; /* force use of TOPAZ80 */
+#else
+	  new_scr->Font = 0L; /* Use system default font */
+#endif
+	  new_scr->DefaultTitle = (unsigned char *)"MicroEMACS 3.12g/Amiga";
+	  scr = OpenScreen(new_scr);
+	}
+
+	if (scr == NULL) {
+		printf("%%Can not open a screen\n");
+		exit(-2);
 	}
 
 	/* initialize the new windows attributes */
 	new_win.LeftEdge = 0;
 	new_win.TopEdge = 0;
 	new_win.Width = 640;
-	new_win.Height = 200;
+	new_win.Height = scr->Height - scr->BarHeight;
 	new_win.DetailPen = 0;
 	new_win.BlockPen = 1;
 	new_win.Title = (unsigned char *)"MicroEMACS 3.12g/Amiga";
+/*
 	new_win.Flags = WINDOWCLOSE | SMART_REFRESH | ACTIVATE |
 		WINDOWDRAG | WINDOWDEPTH | WINDOWSIZING | SIZEBRIGHT |
 		RMBTRAP | NOCAREREFRESH;
 	new_win.IDCMPFlags = CLOSEWINDOW | NEWSIZE | MOUSEBUTTONS |
 		RAWKEY;
-	new_win.Type = WBENCHSCREEN;
+*/
+	new_win.Flags = WINDOWCLOSE | SMART_REFRESH | ACTIVATE |
+		WINDOWDRAG | SIZEBRIGHT | BACKDROP | BORDERLESS |
+		RMBTRAP | NOCAREREFRESH;
+	new_win.IDCMPFlags = CLOSEWINDOW | MOUSEBUTTONS |
+		RAWKEY;
+	new_win.Type = CUSTOMSCREEN;
 	new_win.FirstGadget = NULL;
 	new_win.CheckMark = NULL;
-	new_win.Screen = NULL;
+	new_win.Screen = scr;
 	new_win.BitMap = NULL;
 	new_win.MinWidth = 100;
 	new_win.MinHeight = 25;
-	new_win.MaxWidth = 640;
-	new_win.MaxHeight = 200;
+	new_win.MaxWidth = scr->Width;
+	new_win.MaxHeight = scr->Height - scr->BarHeight;
 
 	/* open the window! */
 	win = (struct Window *)OpenWindow(&new_win);
 	if (win == NULL) {
+		if (scr) CloseScreen(scr);
+		if (new_scr) FreeMem(new_scr,(ULONG)sizeof(struct NewScreen));
 		printf("%%Can not open a window\n");
 		exit(-2);
 	}
+#ifdef FORCE_TOPAZ80
+        if (theFont != NULL) SetFont(win->RPort,theFont);
+#endif
+		
 
 	/* and open up the console for output */
 	con.io_Data = (APTR)win;
-	OpenDevice("console.device", 0, &con, 0);
+	OpenDevice("console.device", 0, (struct IORequest *)(&con), 0);
+        ConsoleDevice = (struct Library *)con.io_Device;
 
 	/* and init all the keyboard flags */
 	r_shiftflag = FALSE;
-	l_shiftflag = FALSE;	r_altflag = FALSE;
+	l_shiftflag = FALSE;
+	r_altflag = FALSE;
 	l_altflag = FALSE;
 	r_amiflag = FALSE;
 	l_amiflag = FALSE;
@@ -269,14 +462,19 @@ ttopen()
 	/* initialize our private event queue */
 	in_init();
 
+	/* font sensitive height and width calculation */
+	term.t_ncol = term.t_mcol = ((win->Width+1)/theFont->tf_XSize);
+        term.t_nrow = term.t_mrow = ((win->Height+1)/theFont->tf_YSize)-1;
 	/* set the current sizes */
-	newwidth(TRUE, 77);
-	newsize(TRUE, 23);
+	newwidth(TRUE, term.t_mcol);
+	newsize(TRUE, term.t_mrow);
 
 	/* on all screens we are not sure of the initial position
 	   of the cursor					*/
 	ttrow = 999;
 	ttcol = 999;
+
+	if (new_scr) FreeMem(new_scr,(ULONG)sizeof(struct NewScreen));
 }
 
 /*
@@ -291,9 +489,18 @@ ttclose()
 	ttflush();
 
 	/* and now close up shop */
-	CloseDevice(&con);
-	CloseWindow(win);
+	CloseDevice((struct IORequest *)(&con));
+        ConsoleDevice = 0L;
+	if (win) CloseWindow(win);
+        if (scr) CloseScreen(scr);
+#ifdef FORCE_TOPAZ80
+        if (theFont) CloseFont(theFont);
+        if (theTextAttr) FreeMem(theTextAttr,(ULONG)(sizeof(struct TextAttr)));
+#endif
 	OpenWorkBench();
+	if (AslBase) CloseLibrary(AslBase);
+        if (IntuitionBase) CloseLibrary((struct Library *)IntuitionBase);
+        if (GfxBase) CloseLibrary((struct Library *)GfxBase);
 }
 
 /*
@@ -377,6 +584,7 @@ doevent()
 {
 	register int eventX, eventY;	/* local copies of the event info */
 	struct IntuiMessage *event;	/* current event to repond to */
+        __aligned struct InputEvent ievent = {NULL,IECLASS_RAWKEY,0,0,0};
 	ULONG class;	/* class of event */
 	USHORT code;	/* data code */
 	SHORT x,y;	/* mouse x/y position at time of event */
@@ -386,15 +594,20 @@ doevent()
 	Wait(1 << win->UserPort->mp_SigBit);
 
 	/* get the event and parse it up */
-	while (event = GetMsg(win->UserPort)) {
+	while (event = (struct IntuiMessage *)GetMsg(win->UserPort)) {
 		class = event->Class;
 		code = event->Code;
 		eventX = event->MouseX;
 		eventY = event->MouseY;
-		ReplyMsg(event);
+		ievent.ie_Code=code;
+		ievent.ie_Qualifier=event->Qualifier;
+		ievent.ie_position.ie_addr = *((APTR*)event->IAddress);
+
+		ReplyMsg((struct Message *)event);
 
 		/* a normal keystroke? */
-		if (class == RAWKEY) {			dokey(code);
+		if (class == RAWKEY) {
+			dokey(&ievent);
 			continue;
 		}
 
@@ -406,16 +619,16 @@ doevent()
 
 		/* resolve the mouse address (border adjusted) */
 		if (class == NEWSIZE) {
-			x = (win->Width - 5) / CRWIDTH;
-			y = (win->Height - 10) / CRHEIGHT;
+			x = (win->Width) / CRWIDTH;
+			y = (win->Height-scr->BarHeight) / CRHEIGHT;
 		} else {
-			x = (eventX - 5) / CRWIDTH;
-			y = (eventY - 10) / CRHEIGHT;
+			x = (eventX) / CRWIDTH;
+			y = (eventY-scr->BarHeight) / CRHEIGHT;
 		}
-		if (x > 77)
-			x = 77;
-		if (y > 23)
-			y = 23;
+		if (x > term.t_mcol)
+			x = term.t_mcol;
+		if (y > term.t_mrow)
+			y = term.t_mrow;
 
 		/* are we resizing the window? */
 		if (class == NEWSIZE) {
@@ -462,21 +675,24 @@ char *buf;	/* buffer to write out */
 	con.io_Command = CMD_WRITE;
 
 	/* and perform the I/O */
-	SendIO(&con);
+	SendIO((struct IORequest *)(&con));
 }
 
 
 /* process an incomming keyboard code */
 
-dokey(code)
-
-int code;	/* raw keycode to convert */
-
+void dokey(IEvent)
+struct InputEvent *IEvent;
 {
 	register int ekey;	/* translate emacs key */
 	register int dir;	/* key direction (up/down) */
 	char buf[NSTRING];
+        char cvbuf[16];
+        int numchars;
+        int code = IEvent->ie_Code;
 
+#ifdef OLDSTYLE_KEYS
+/* this works for US keyboard only, totally useless for intl. keyboards */
 	/* decode the direction of the key */
 	dir = TRUE;
 	if (code > 127) {
@@ -516,6 +732,51 @@ int code;	/* raw keycode to convert */
 	/* now apply the ALTD modifier */
 	if (r_altflag || l_altflag)
 		ekey |= ALTD;
+#else
+/* For intl. keyboards use this here */
+	/* decode the direction of the key */
+	dir = TRUE;
+	if (code > 127) {
+		code = code & 127;
+		dir = FALSE; /* Key released */
+	}
+        numchars = RawKeyConvert(IEvent,cvbuf,16,0L);
+
+	if (numchars == 1) {
+          ekey = cvbuf[0];
+	  /* up keystrokes are ignored for the rest of these */
+	}
+	else {
+	  if (code >= 0x60) {
+		switch (code) {
+
+			case 0x60:	l_shiftflag = dir;	break;
+			case 0x61:	r_shiftflag = dir;	break;
+			case 0x62:	lockflag    = dir;	break;
+			case 0x63:	ctrlflag    = dir;	break;
+			case 0x64:	l_altflag   = dir;	break;
+			case 0x65:	r_altflag   = dir;	break;
+			case 0x66:	l_amiflag   = dir;	break;
+			case 0x67:	r_amiflag   = dir;	break;
+
+		}
+		return;
+	  }
+	  /* first apply the shift and control modifiers */
+	  if (ctrlflag)
+		ekey = keytrans[code].rw_ccode;
+	  else if (l_shiftflag || r_shiftflag || lockflag)
+		ekey = keytrans[code].rw_scode;
+	  else
+		ekey = keytrans[code].rw_code;
+        }
+	if (dir == FALSE) return;
+
+        if ((numchars!=1) || ((ekey != '@') && (ekey < 0x7F)))
+	  /* now apply the ALTD modifier */
+	  if (r_altflag || l_altflag)
+		ekey |= ALTD;
+#endif
 
 	/* apply the META prefix */
 	if (r_amiflag || l_amiflag) {
@@ -886,7 +1147,52 @@ int size;	/* # of bytes for newly allocated block */
 }
 
 #else
-adoshello()
+void adoshello(void)
 {
 }
 #endif
+
+char *MakePathname(Path, Filename)
+char *Path;
+char *Filename;
+{
+  static char namebuffer[256];
+
+  strcpy(namebuffer,Path);
+  if (*namebuffer != '\0') {
+    char ch=namebuffer[strlen(namebuffer)-1];
+    if ((ch != ':') && (ch != '/')) strcat(namebuffer,"/");
+  }
+  strcat(namebuffer,Filename);
+  return namebuffer;
+} /* MakePathname */
+
+int FileReq(rtitle, filename, maxlen)
+char *rtitle;
+char *filename;
+unsigned maxlen;
+{
+  struct FileRequester *frp;
+  static char DirStr[256];
+  static char FileStr[256];
+  int rc;
+
+  frp = AllocAslRequestTags(ASL_FileRequest,ASLFR_Screen,(ULONG)scr,
+	ASLFR_TitleText,(ULONG)rtitle,
+	ASLFR_DoPatterns,TRUE,
+	ASLFR_InitialPattern,(ULONG)((UBYTE *)"~(#?.info)"),
+	ASLFR_InitialHeight,(scr->Height*11L) >> 4,
+	TAG_DONE);
+  if (frp != 0L) {
+    if (RequestFile(frp) != 0) {
+      strncpy(DirStr,frp->fr_Drawer,256);
+      strncpy(FileStr,frp->fr_File,256);
+      strncpy(filename,MakePathname(DirStr,FileStr),maxlen);
+      rc = 0;
+    }
+    else rc = -1;
+    FreeFileRequest(frp);
+  }
+  else rc = -1;
+  return rc;
+} /* FileReq */
