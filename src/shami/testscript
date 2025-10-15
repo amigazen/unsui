@@ -1,0 +1,30 @@
+echo "give a number: " noline
+
+set x $<
+
+echo so, you gave $[x].
+
+if $x eq 10
+  echo "$x == 10"
+else
+  echo "$x != 10"
+endif
+if not $x eq 10
+  echo "$x != 10"
+else
+  echo "$x == 10"
+endif
+
+if $x gt 10
+  echo "$x > 10"
+else
+  echo "$x <= 10"
+endif
+
+if not $x ge 10
+  echo "$x < 10"
+else
+  echo "$x >= 10"
+endif
+
+echo test

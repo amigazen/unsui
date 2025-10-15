@@ -1,0 +1,29 @@
+stack 20000
+
+set lineedit 1
+set term vt100
+set F1 "^a^d^d^d^drm^e"
+set home AXsh:home/root/
+
+prompt "%N.%S> "
+prompt "%N. \\e[42;33m%d\\e[0m > "
+
+alias .. cd /
+alias dir ls -lg
+alias rm delete
+alias cp copy
+alias mv move
+alias mkdir makedir
+alias ps procs
+alias ctp c:changetaskpri
+
+alias enforce "run <>nil: \"segtracker ; enforcer FILE CON:0/320/600/80/Enforcer\""
+
+# path seems to have a bug in it: Lock()'s left when dir already
+# in path and we add more than one directory
+# e.g. if all of these three directories are already in path, command
+#    path AXsh:bin sc:c sys:oldsys/c
+# will leave locks to AXsh:bin and sc:c
+
+path Apps:Emulators/TheA64Package/A64Utilities
+path 64:C64gfx1_4/AmigaBin

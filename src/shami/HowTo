@@ -1,0 +1,24 @@
+Miten k‰yt‰t AXsh:ta (normaaliversio)
+How to use AXsh.
+
+1.AXsh-shellin asennus usershelliksi
+1.Add AXsh to the system resident list
+    resident AXsh system
+
+2.Uuden shellin k‰ynnistys
+2.Start a new AXsh shell
+    newaxsh
+
+3.Jos haluat k‰ytt‰‰ rivieditoria
+3.If you want to use the line editor (completions etc.)
+	set lineedit 1
+
+4.Jos haluat nopeampaa editointia
+4.If you want to use faster editing
+    set term vt100
+
+Kyseiset set-komennot voi laittaa s:AXsh-startup -tiedostoon.
+You can also put those commands to s:AXsh-startup, which is
+executed at the shell startup.
+
+-Pasi

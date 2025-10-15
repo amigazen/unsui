@@ -1,0 +1,429 @@
+
+			AXsh usershell	18.10.1994
+			~~~~~~~~~~~~~~
+
+- Command line editor (set lineedit 1)
+	o Filename and commandname completion (TAB)
+	o History completion (Shift-TAB or Shift-cursor_up)
+	o Filename and commandname listing (^D when at the end of line)
+	o Kill (^K) and Yank (^Y) and other Emacs-like editing commands
+	o DUMB/VT100/ANSI terminal support
+	o Supports function key macros, the close gadget and window resizing
+- Handles input and output redirection
+- Simulated pipes, pseudo-handle "IN:" for programs that want filenames
+- Variables expanded in command line, read from stdin ($<), \-escape-character
+- Command output replacement (`<command>`)
+- Autocd (append / if you have a command with the same name e.g. info/ )
+- Current directory is searched last (for future security)
+- Some internal commands (more to come)
+- run command, aliased also to trailing &. (e.g. '"wait 10;echo huuu!" &')
+
+
+Prompt
+======
+	%S	- Current directory
+	%D	- The last component of the current directory
+	%d	- The last two path components of the current directory
+	%N	- Process number
+
+	\e	- ESC
+	\n	- newline
+	\r	- carriage return
+	\t	- TAB
+	\a	- BEL
+
+	^*	- ctrl-character * (e.g. ^@ NUL, ^g BEL)
+
+	e.g.
+		prompt "%N. \\e[42;33m%d\\e[0m > "
+
+	Local shell variable "prompt" overrides the prompt definition.
+	Default prompt is "%N.%S> ", in case prompt-command has not been
+	used to define a prompt and the prompt-variable is not set.
+
+
+Variable expansion
+==================
+	$name, $[name], ${name} and $(name) will be expanded to the
+	value of the shell variable "name". If the variable is not set,
+	"$name" is appended instead. If the variable contains more
+	than one word, the expansion still makes them all part of
+	the same argument. The parenthesis/braces are optional if
+	the name does not contain spaces and the expression is
+	 surrounded by spaces.
+
+	$name[1], $[name][1], ${name}[1] and $(name)[1] inserts only
+	the second word from the shell variable "name". If there is
+	no such word, an empty string is appended instead.
+
+	To get a dollar-sign, either double it ($$) or preceed it
+	with a backslash (\$).
+
+	The special variable $< may be used to read data from the
+	console.
+
+
+Internal commands
+=================
+CD
+	Usage: cd [<directory>]
+
+	Change the working directory to the specified directory. The
+	directory needs to have execute-permissions. Root directories
+	are always available (they have no valid permission bits).
+
+	If no parameters are given, the shell variable 'HOME' is checked
+	and if it exists, the contents becomes the current directory.
+	This is equivalent to "cd $home". If the variable does not exist,
+	the current working directory is displayed.
+
+	The shell variable 'cwd' contains the name of the current
+	working directory.
+
+
+CHMOD
+	Usage: chmod [ugo][+-=][Shsparwed] [FILE] <files> [ALL] [QUIET] [DIRS] [FILES]
+
+	Change the permission bits of files and/or directories.
+		ugo	- group of bits to change (user, group, others)
+			  default is user
+		+-=	- set (+), unset (-) or toggle (=) bits
+		rwed	- Read, Write, Execute and Delete flags
+		Shspa	- SUID, Hidden, Script, Pure and Archive flags
+	These groups can be repeated any number of times to produce
+	the desired results.
+
+		e.g.	chmod +rwed-ago-rwed ** all quiet
+
+	Will set user RWED for all files in the current working directory
+	and its subdirectories, and simultaneously remove the Archive flag
+	and RWED bits for group and other users.
+
+	The resulting masks are applied to the original protection bits in
+	the order: toggle, set and clear. You can get some pretty confusing
+	results if you toggle, set and clear the same bit. You will notice
+	that the bit will always get cleared in this case, because the clear
+	mask is applied last. The cause for this is simple: it is only
+	necessary to calculate the three mask values once and they can be
+	applied to each file that comes along. If you want to be sure you
+	get what you mean, group the changes in the command line in the same
+	order (toggle, set, clear).
+
+	With DIRS and FILES options you can control whether only files
+	or directories are considered. The default is only files in
+	recursive mode and both files and directories otherwise.
+
+		e.g.	chmod ugo+re sys:** all dirs
+
+	Will set read and execute permissions for all users in every
+	directory in SYS:.
+
+	<files> can be any number and combination of files and wildcard
+	patters. If a filename is the same as any of the keywords, use
+	the keyword "FILE" to force a meaning.
+
+		e.g.	chmod -e file quiet
+
+	CHMOD will echo the file names and resulting file permissions
+	to the standard error channel, unless the QUIET option is used.
+
+
+CHOWN
+CHGRP
+	Usage: chown <uid> [FILE] <files> [ALL] [QUIET] [DIRS] [FILES]
+	Usage: chgrp <gid> [FILE] <files> [ALL] [QUIET] [DIRS] [FILES]
+
+	Change file owner or group. <uid> and <gid> are the numerical
+	user and group identification numbers [later also login names
+	are accepted].
+
+	Options behave identically to those in chmod, except that the
+	default is to always change the owner/group of both files
+	and directories.
+
+	<files> can be any number and combination of files and wildcard
+	patters.
+
+
+ECHO
+	Usage: echo [-n] [<words>] [NOLINE]
+
+	Writes all arguments to the standard output without commenting
+	whether they are correct or not. If the first parameter is "-n"
+	or the last one is "NOLINE", no newline is appended.
+	("-n" is case-sensitive, "NOLINE" is not)
+
+		e.g. echo "World if flat." "Earth orbits the sun!"
+
+
+ELSE
+	Usage: else
+
+	Toggles the execution-flag in IF-constructs.
+	Currently you could do constructs like:
+
+		IF warn
+		    echo "yep," NOLINE
+		else
+		    echo "no, this isn't fun"
+		else
+		    echo "this is fun"
+		endif
+
+
+ENDIF
+	Usage: endif
+
+	Ends an IF-construct.
+
+
+EXECUTE
+	Usage: execute [<filename>]
+
+	Redirects the command input from a file and returns to the
+	current stream when done (end of file reached, quit executed
+	or command return code exceeds error level). You can also
+	redirect the execute input instead of naming a script file.
+	This isn't very useful with non-interactive pipes, but it is
+	there..
+
+	e.g.	echo ls | execute
+
+
+EXIT
+	Usage: exit
+
+	Returns from all interactive and non-interactive input files,
+	and finally ends the shell process.
+
+
+FILENOTE
+	Usage: filenote <files> <filenote> [ALL] [QUIET] [DIRS] [FILES]
+
+	Change the comment field of files and/or directories.
+
+	Options behave identically to those in chmod.
+
+	<files> can be any number and combination of files and wildcard
+	patters.
+
+
+IF
+	Usage: if [not] [warn|error|fail|<expr>]
+
+	Where <expr> ::= <number> <op> <number>
+		<op> ::= 'eq' | 'gt' | 'ge'
+
+	If the total expression is not satisfied, will defer the execution
+	of the commands until a ELSE or ENDIF is reached. All lines are still
+	parsed.
+
+	Smaller than and smaller or equal can be derived from those.
+
+	e.g.
+		echo "Give a number: " noline
+		set x $<
+		
+		echo "You gave ${x}."
+		if $x eq 10
+		  echo "$x == 10"
+		else
+		  echo "$x != 10"
+		endif
+		if not $x eq 10
+		  echo "$x != 10"
+		else
+		  echo "$x == 10"
+		endif
+		
+		if $x gt 10
+		  echo "$x > 10"
+		else
+		  echo "$x <= 10"
+		endif
+		
+		if not $x ge 10
+		  echo "$x < 10"
+		else
+		  echo "$x >= 10"
+		endif
+
+	Bugs: currently nested if's are not supported.
+
+
+INTERNAL
+	Usage: internal
+
+	Lists all internal commands.
+
+
+QUIT
+	Usage: quit
+
+	Returns from the current interactive or non-interactive
+	command file.
+
+	e.g.	execute *	;#opens another 'script' in the same window
+		ls		;#executes ls in the other 'script'
+		quit		;#returns to the original 'script'
+
+
+REHASH
+	Usage: rehash
+
+	Will search the path and update the command-completion cache.
+
+	Rehash should be run after path changes so that the commandname
+	completion will work correctly. If rehash is not run on shell
+	startup, it is run automatically when the command-completion
+	(or command-completion listing) is first used. Path changes
+	do not automatically invalidate the cached data.
+
+
+RUN
+	Usage: run [<redirections>] [<command>]
+
+	Starts another shell and executes the command(s).
+
+	e.g.	run <>con://///CLOSE "execute s:AXsh-startup;execute *"
+
+	This creates a new shell, equivalent to one started with
+	NewAXsh (except that "sys:utilities/more" wants to open
+	it's own window, because it cleverly deduces that it has
+	been run'ed..).
+
+	e.g.	run <>con: "ctp -20 ; lha -Sxr a Temp:Texts2 Arc:Texts"
+
+	Will start a LhA packing operation in a low priority in its
+	own window.
+
+
+WHICH
+	Usage: which <commands>
+
+	Show which version of command is executed.
+
+	The output may list one or more of these:
+		Alias
+		AXsh Internal
+		AmigaShell Internal
+		Resident
+
+	After this the path is searched and the paths of the matching
+	commands are displayed.
+
+	<commands> can be any number of command names (wildcard
+	expressions are not currently handled).
+
+
+
+Scripts and Startup
+===================
+
+Missing features:
+	.key directives (and all other also) can not be used in AXsh
+	scripts. Also, IF/ELSE/ENDIF MAY seem to behave oddly.
+
+	Redirecting the script file output or input is not possible.
+	This restriction is caused by the way AmigaDOS shells normally
+	do script execution. I am currently trying to circumvent this
+	problem, but it may not be possible without breaking some
+	standard AmigaDOS programs that deal with script operations.
+
+Non-terminated lines:
+	If command line is not terminated with CR or LF, the line is
+	still executed, if the input is from a non-interactive source.
+
+
+Here is my s:AXsh-startup file:
+
+	stack 20000
+	
+	set lineedit 1
+	set term vt100
+	set F1 "^a^d^d^d^drm^e"
+	set home AXsh:home/root/
+	
+	prompt "%N. \\e[42;33m%d\\e[0m > "
+	
+	alias .. cd /
+	alias dir ls -lg
+	alias rm delete
+	alias cp copy
+	alias mv move
+	alias mkdir makedir
+	alias ps procs
+	alias sh execute
+
+	# path seems to have a bug in it: Lock()'s left when dir already
+	# in path and we add more than one directory at once
+	# e.g. if all of these three directories are already in path, command
+	#    path AXsh:bin sc:c sys:oldsys/c
+	# will leave locks to AXsh:bin and sc:c
+	path axsh:bin
+	path sc:c
+	path sys:oldsys/c
+	path src:c
+
+
+Command search order
+====================
+
+All commands with absolute or relative paths are found directly (or maybe
+not) and executed. If the path points to a directory, auto-cd-operation
+is performed. If no path is specified, the command is searched in the
+following order:
+
+	AXsh internal command (list with "internal")
+	Resident command (list with "resident" (shows usage count))
+	Shell-internal command (list with "resident" (shows INTERNAL))
+	Executable or script file in path (and last but not least, C:,
+	which is possibly a multiassigned directory)
+	Executable or script file in the current working directory
+	Directory in the current working directory
+
+
+Command Line Editing
+====================
+	The AXsh line editing is only used on interactive devices and
+	only if the "lineedit" shell variable is set. The dos.library
+	FGets() is used otherwise and its editing commands are then
+	available. The value of the "lineedit" variable does not matter.
+
+	The command line editor has two modes depending on the 'term'
+	environmental variable (vt100 or ANSI). In ANSI-mode it sends
+	more bytes, so vt100-mode is recommended. Just make sure that
+	your emulation matches the setting. It seems that most vt100-
+	terminals really don't like to work with the ansi-mode.
+
+	A 'dumb' mode is also available, but it really throws characters
+	at you and is dead slow on all important editing commands :-)
+
+	The editor knows about these commands:
+
+	left/right ^B/^F	Moves cursor left and right
+	up/down    ^P/^N	Recalls history events
+	Shift-left    ^A	Goto the start of line
+	Shift-right   ^E	Goto the end of line
+	Shift-up, Shift-TAB	History completion
+	Backspace		Delete previous character
+	Delete			Delete current (next) character
+	^D			Like Delete or display matching
+				files/commands if cursor is at EOL
+	^L, ^R			Refresh line
+	^K			Delete to the end of line
+	^U			Delete to the start of line
+	^W			Delete previous word
+	^X			Delete whole line
+	^Y			Yank previously killed text back
+
+	TAB (^I)		Command/filename completion
+	Return/Newline (^J/^M)	End editing :-)
+
+	HELP			String assigned in variable HELP
+	F1			String in variable F1
+	 :			 :
+	 :			 :
+	F20			String in variable F20
+
+

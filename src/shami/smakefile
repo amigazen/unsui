@@ -1,0 +1,52 @@
+#CFLAGS = data=near debug=symbol stringmerge verbose nostkchk
+CFLAGS = data=near debug=symbol stringmerge verbose nostkchk opt optsize
+
+OBJS=   cusershell.o axsh.o internal.o utility.o getline.o parsecommand.o
+
+all:	before axsh NewAXsh after
+
+clean:
+	delete AXsh *.o
+
+before:
+	@echo "Start make at " NOLINE
+	@date
+
+after:
+	@echo "Done make at " NOLINE
+	@date
+
+.c.o:
+	SC $(CFLAGS) objectname=$@ $<
+
+.asm.o:
+	a68k -o$@ $<
+
+
+axsh: $(OBJS)
+	slink $(OBJS) sc sd onedata stripdebug TO AXsh lib lib:sc.lib lib:amiga.lib
+	protect AXsh -e
+
+
+# Some dependecies of axsh.h are removed !!
+#
+NewAXsh: NewAXsh.o
+	slink lib:c.o NewAXsh.o sc sd onedata stripdebug TO NewAXsh lib lib:sc.lib lib:amiga.lib
+
+NewAXsh.o: NewAXsh.c
+axsh.o: axsh.c axsh.h axshlanguage.h
+	SC $(CFLAGS) objectname=$@ $<
+internal.o: internal.c axsh.h internal.h
+	SC $(CFLAGS) objectname=$@ $<
+utility.o: utility.c
+getline.o: getline.c
+parsecommand.o: parsecommand.c
+
+handlelogin.o: handlelogin.c /library/axsh_protos.h /library/users.h
+
+cusershell.o: cusershell.a
+	asm -u -ocusershell.o cusershell.a
+
+axshlanguage.h: axsh.cd
+	catcomp axsh.cd CFILE axshlanguage.h
+
