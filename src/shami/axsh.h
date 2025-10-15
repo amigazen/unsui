@@ -92,9 +92,9 @@ struct Segment
 
 long MyRunCommand(char *,char *,BPTR,BPTR,int residents);
 
-#include "AXshLanguage.h"
+#include "axshlanguage.h"
 
-#define COPYRIGHT 		"Copyright ©1991-93 Digital Design\n"
+#define COPYRIGHT 		"Copyright ï¿½1991-93 Digital Design\n"
 #define UPDATED			DATE
 
 #define CMDLINELEN	512

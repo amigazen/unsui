@@ -1,15 +1,15 @@
 #include <exec/types.h>
 #include <dos/dos.h>
 #include <dos/dosextens.h>
-#include <pragmas/dos_v39.h>
+#include <proto/dos.h>
+#include <proto/exec.h>
 #include <clib/exec_protos.h>
 #include <clib/dos_protos.h>
 #include <dos.h>
 #include <dos/var.h>
 
 #include "axsh.h"
-#include "/library/users.h"
-#include "/library/axsh_protos.h"
+#include "users.h"
 
 int handlelogin()
 {	struct DPUser *user;

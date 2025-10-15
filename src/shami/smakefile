@@ -1,5 +1,5 @@
 #CFLAGS = data=near debug=symbol stringmerge verbose nostkchk
-CFLAGS = data=near debug=symbol stringmerge verbose nostkchk opt optsize
+CFLAGS = data=near debug=symbol stringmerge verbose nostkchk opt optsize define=CATCOMP_STRINGS
 
 OBJS=   cusershell.o axsh.o internal.o utility.o getline.o parsecommand.o
 
@@ -20,7 +20,7 @@ after:
 	SC $(CFLAGS) objectname=$@ $<
 
 .asm.o:
-	a68k -o$@ $<
+	asm -u -o$@ $<
 
 
 axsh: $(OBJS)
@@ -42,7 +42,7 @@ utility.o: utility.c
 getline.o: getline.c
 parsecommand.o: parsecommand.c
 
-handlelogin.o: handlelogin.c /library/axsh_protos.h /library/users.h
+handlelogin.o: handlelogin.c axsh.h users.h
 
 cusershell.o: cusershell.a
 	asm -u -ocusershell.o cusershell.a

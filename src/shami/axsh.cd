@@ -1,0 +1,252 @@
+MSG_SHUTDOWN_FORCED (//)
+\aSystem going down - you are forced to log out\n\n
+;
+MSG_SHUTDOWN_MSG (//)
+\a*** Shutdown message for %s from %s\n\n
+;
+MSG_SHUTDOWN_PLEASE (//)
+\aSystem going down -- PLEASE logout\n\n
+;
+MSG_MEM_ALLOC_ERROR (//)
+\aMemory allocation error!\n
+;
+MSG_HOME_NOT_FOUND (//)
+Home %s not found!\nUsing demo's home directory...\n
+;
+MSG_NO_CONFIG (//)
+No configuration for %s - Let's try Normal...\n
+;
+MSG_NO_NORMAL_CONFIG (//)
+\aNo config for Normal either! C'mon root, do you work?\n
+;
+MSG_DIR_NOT_FOUND (//)
+Directory %s not found...\n
+;
+MSG_ILLEGAL_DISK_OR_ASSIGN (//)
+Illegal disk or assign : %s\n
+;
+MSG_NO_SUCH_DIR (//)
+No such directory : %s\n
+;
+MSG_OUT_OF_PATH_SPACE (//)
+Out of string space on pathname (%ld chars)\n
+;
+MSG_TOO_LONG_FILE_NAME (//)
+Too long file or directory name (40 chars max)\n
+;
+MSG_NEW_MAIL_ARRIVED (//)
+\a\nNew mail has arrived!\n
+;
+MSG_GURU_DUMPPED (//)
+\n\a*** guru dumped:\n----------------\n
+;
+MSG_GURU_4 (//)
+error:  illegal instruction\ntrap:   0x04\ncaused: illegal opcode
+;
+MSG_GURU_5 (//)
+error:  zero divide\ntrap:   0x05\ncaused: processor division by zero
+;
+MSG_GURU_6 (//)
+error:  CHK instruction\ntrap:   0x06\nregister bounds error trap by CHK
+;
+MSG_GURU_7 (//)
+error:  TRAPV instruction\ntrap:   0x07\noverflow error trap by TRAPV
+;
+MSG_GURU_8 (//)
+error:  privilege violation\ntrap:   0x08\nuser execution of supervisor opcode
+;
+MSG_GURU_9 (//)
+error:  trace\ntrap:   0x09\nstatus register TRACE bit map
+;
+MSG_GURU_A (//)
+error:  line 1010 emulator\ntrap:   0x0a\nexecution of opcode beginning with $A
+;
+MSG_GURU_B (//)
+error:  line 1111 emulator\ntrap:   0x0b\nexecution of opcode beginning with $F
+;
+MSG_GURU_DEF (//)
+error:  trap instruction\ntrap:   0x%02x\nTRAP 0x%02x instruction
+;
+MSG_SYS_CRASH (//)
+\n\n*** system crash - you are forced to log out\n\n
+;
+MSG_TOO_LONG_ARG (//)
+Too long argument (only %s chars allowed)!\n
+;
+MSG_TOO_MANY_ARGS (//)
+Too many arguments, use \"'s to make several args into one\n
+;
+MSG_COMMAND_NOT_FOUND (//)
+Command not found: %s\n
+;
+MSG_UNKNOWN_COMMAND (//)
+Unknown command: %s\n
+;
+MSG_CMD_ALLOWED_HOME (//)
+Command allowed only in home directory\n
+;
+MSG_NO_MULTIPLE_REDIRECTIONS (//)
+No multiple redirections allowed\n
+;
+MSG_ILLEGAL_REDIRECTION (//)
+Illegal redirection: %s\n
+;
+MSG_CANNOT_CREATE_REDIRECTION (//)
+Cannot create redirection file '%s'\n
+;
+MSG_CANNOT_OPEN (//)
+Can't open '%s'\n
+;
+MSG_NO_PATH_ALLOWED (//)
+No path parameters allowed\n
+;
+MSG_TOO_BIG_ARG_MESS (//)
+Too big argument mess (only %d chars allowed)!\n
+;
+MSG_WARN_ARGS_IGNORED (//)
+Warning! Arguments ignored\n
+;
+MSG_TOO_LONG_ARG_LINE (//)
+Too long argument line\n
+;
+MSG_RETURNCODE (//)
+Returncode %d in %s %s\n
+;
+MSG_QUOTA_EXCEEDED (//)
+\aQuota exceeded! - Please remove %dkB immediately!\n
+;
+MSG_CANNOT_MAKE_ALIAS (//)
+You can not make an alias for 'alias' or 'unalias'\n
+;
+MSG_NO_SUCH_ALIAS (//)
+No such alias\n
+;
+MSG_TOO_LONG_ALIAS (//)
+Too long alias name\n
+;
+MSG_CANNOT_REMOVE_ALIAS (//)
+Cannot remove! Alias not found.\n
+;
+MSG_FATAL_GURU_DUMPPED (//)
+\n\a\n\a\n\a*** fatal guru dumpped:\n-----------------------\n
+;
+MSG_GURU_0 (//)
+error:  reset\ntrap:   0x00\ncaused: stack pointer of the cold boot
+;
+MSG_GURU_1 (//)
+error:  reset\ntrap:   0x01\ncaused: cold boot starting address
+;
+MSG_GURU_2 (//)
+error:  bus error\ntrap:   0x02\ncaused: access of nonexistent memory
+;
+MSG_GURU_3 (//)
+error:  address error\ntrap:   0x03\ncaused: long/word access of odd address (68000)
+;
+MSG_FATAL_GURU_DEF (//)
+Unknown error: %s\n
+;
+MSG_FATAL_SYS_CRASH (//)
+\n\n*** fatal system crash - you are forced to log out\n
+;
+MSG_CLOSING_SYS (//)
+*** preparing to close system\n
+;
+MSG_TRAPCODE_RESUMED (//)
+*** old trapcode pointer resumed\n
+;
+MSG_REBOOTING (//)
+\a*** please hang up - rebooting in 20 seconds
+;
+MSG_NO_SUCH_FILE_OR_DIR (//)
+No such file or directory: %s\n
+;
+MSG_NO_SUCH_LABEL (//)
+No such label: %s\n
+;
+MSG_ENDIF_MISSING (//)
+Endif missing.\n
+;
+MSG_RECURSION_DEPTH_REACHED (//)
+Maximum recursion depth reached!\n
+;
+MSG_ERROR_IN_LINE (//)
+Error in line %d of %s\n
+;
+MSG_NOT_FOUND (//)
+%s not found!\n
+;
+MSG_EXECUTE_USAGE (//)
+Usage: execute filename\n
+;
+MSG_FINGER_USAGE (//)
+Usage: finger username\n
+;
+MSG_CANNOT_OPEN_DEST_FILE (//)
+Cannot open destination file: %s\n
+;
+MSG_NO_SUCH_FILE (//)
+No such file: %s\n
+;
+MSG_FTP_USAGE (//)
+Usage: ftp file1 [file2 [file3] [..] ]\n
+;
+MSG_USER_CANNOT_SET_VAR (//)
+Variable \"%s\" cannot be set by user\n
+;
+MSG_VAR_ALREADY_UNSET (//)
+\"%s\" is already unset\n
+;
+MSG_FILE_ALREADY_EXISTS (//)
+File already exists: %s\n
+;
+MSG_UPLOAD_USAGE (//)
+Usage: upload file1 [file2 [file3] [..] ]\n
+;
+MSG_WAIT_USAGE (//)
+Usage:  Wait <seconds>\n
+;
+MSG_COULD_NOT_ACCESS_TTY (//)
+Could not access tty.\n
+;
+MSG_USER_NOT_LOGGED_IN (//)
+User is not logged in.\n
+;
+MSG_WRITE_USAGE (//)
+Usage: write username [text] [..]\n
+;
+MSG_YOU_HAVE_MAIL (//)
+You have mail.\n
+;
+MSG_YOU_HAVE_NEW_MAIL (//)
+\aYou have new mail.\n
+;
+MSG_CONNECTION_CLOSED (//)
+Connection closed.\n
+;
+MSG_NEWS_FEED_EVENT (//)
+\n\aA news or mail feed event occured - please log out as soon as possible!\n
+;
+MSG_QUOTA_LIST (//)
+Home Directory      Files  Used(kB)  Limit(kB)\n%-20s%-5d  %-8d  %d\n
+;
+MSG_DISK_QUOTAS_FOR (//)
+Disk quotas for %s (%s)\n
+;
+MSG_ACCESS_DENIED (//)
+Access denied!\n
+;
+MSG_PROTECT_USAGE (//)
+Usage: protect [ugo][+-=][hsparwed] file [file2]\n
+;
+MSG_CANNOT_LOCK_OR_EXAMINE (//)
+Cannot lock or examine file %s\n
+;
+MSG_AXSH_ALIAS (//)
+AXsh ALIAS\n
+;
+MSG_AXSH_INTERNAL (//)
+AXsh INTERNAL\n
+;
+MSG_INTERNAL_LIST (//)
+AXsh's internal commands:\n
+;

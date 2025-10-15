@@ -16,7 +16,7 @@
 /*************************************************************************\
 *	AXsh - Amiga external shell											  *
 *																		  *
-*	Pasi 'Albert' Ojala	©1991-95			albert@cs.tut.fi			  *
+*	Pasi 'Albert' Ojala	ï¿½1991-95			albert@cs.tut.fi			  *
 *																		  *
 *	XShell by Michael B. Smith provided an example and a starting point   *
 *   for this shell.	However, most parts are rewritten and even more parts *
@@ -35,8 +35,7 @@
 
 #include "AXsh.h"
 
-#include "/library/users.h"
-#include "/library/axsh_protos.h"
+#include "users.h"
 
 extern struct ExecBase *SysBase;
 extern struct DosLibrary *DOSBase;
