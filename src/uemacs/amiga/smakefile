@@ -1,0 +1,81 @@
+#
+# Makefile for microEmacs 3.12 using SAS/C for AmigaDOS
+#
+CC = sc
+OPT=OPT
+CFLAGS=$(OPT) ErrRexx CODE=F DATA=F UCHAR NOSTKCHK NOSINT
+
+HDIR= /h
+SRCD = /src
+INCLUDE = IDIR=$(HDIR)
+
+HFILES=estruct.h $(HDIR)/edef.h $(HDIR)/efunc.h $(HDIR)/epath.h $(HDIR)/ebind.h $(HDIR)/eproto.h
+
+OFILES=amigados.o ansi.o basic.o bind.o buffer.o char.o crypt.o \
+	display.o eval.o exec.o file.o fileio.o input.o isearch.o dolock.o lock.o \
+	line.o main.o mouse.o random.o region.o search.o screen.o replace.o \
+	window.o word.o
+
+uemacs:	$(OFILES)
+	SC LINK PNAME=uemacs $(CFLAGS) $(OFILES)
+
+ansi.o: $(SRCD)/ansi.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=ansi.o $(SRCD)/ansi.c
+amiga.gst: gst.h
+	$(CC) $(CFLAGS) $(INCLUDE) MGST=amiga.gst gst.h
+amigados.o: $(SRCD)/amigados.c $(HFILES) amiga.gst
+	$(CC) $(CFLAGS) $(INCLUDE) GST=amiga.gst OBJNAME=amigados.o $(SRCD)/amigados.c
+basic.o: $(SRCD)/basic.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=basic.o $(SRCD)/basic.c
+bind.o: $(SRCD)/bind.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=bind.o $(SRCD)/bind.c
+buffer.o: $(SRCD)/buffer.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=buffer.o $(SRCD)/buffer.c
+char.o: $(SRCD)/char.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=char.o $(SRCD)/char.c
+crypt.o: $(SRCD)/crypt.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=crypt.o $(SRCD)/crypt.c
+cmdfix.o: $(SRCD)/cmdfix.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=cmdfix.o $(SRCD)/cmdfix.c
+display.o: $(SRCD)/display.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=display.o $(SRCD)/display.c
+dolock.o: $(SRCD)/dolock.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=dolock.o $(SRCD)/dolock.c
+eval.o: $(SRCD)/eval.c $(HFILES) $(HDIR)/evar.h
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=eval.o $(SRCD)/eval.c
+exec.o: $(SRCD)/exec.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=exec.o $(SRCD)/exec.c
+file.o: $(SRCD)/file.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=file.o $(SRCD)/file.c
+fileio.o: $(SRCD)/fileio.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=fileio.o $(SRCD)/fileio.c
+input.o: $(SRCD)/input.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=input.o $(SRCD)/input.c
+isearch.o: $(SRCD)/isearch.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=isearch.o $(SRCD)/isearch.c
+line.o: $(SRCD)/line.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=line.o $(SRCD)/line.c
+lock.o: $(SRCD)/lock.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=lock.o $(SRCD)/lock.c
+main.o: $(SRCD)/main.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=main.o $(SRCD)/main.c
+mouse.o: $(SRCD)/mouse.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=mouse.o $(SRCD)/mouse.c
+unix.o: $(SRCD)/unix.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=unix.o $(SRCD)/unix.c
+random.o: $(SRCD)/random.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=random.o $(SRCD)/random.c
+region.o: $(SRCD)/region.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=region.o $(SRCD)/region.c
+search.o: $(SRCD)/search.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=search.o $(SRCD)/search.c
+screen.o: $(SRCD)/screen.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=screen.o $(SRCD)/screen.c
+replace.o: $(SRCD)/replace.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=replace.o $(SRCD)/replace.c
+tags.o: $(SRCD)/tags.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=tags.o $(SRCD)/tags.c
+window.o: $(SRCD)/window.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=window.o $(SRCD)/window.c
+word.o: $(SRCD)/word.c $(HFILES)
+	$(CC) $(CFLAGS) $(INCLUDE) OBJNAME=word.o $(SRCD)/word.c
