@@ -1315,25 +1315,8 @@ parseagain:
 		have to be searched.
 	*/
 
-	abs_cmd = 0;
-	l = 0;
-	while(args[0][l])
-	{
-		if(args[0][l] == ':')
-			abs_cmd |=  1;
-		else if(args[0][l] == '/')
-			abs_cmd |=  2;
-		l++;
-	}
-
-	if(abs_cmd)
-	{
-		cmd_state = STATE_COMMAND;
-	}
-
-	/*	Start the actual command processing */
-
-	if((cmd_state == STATE_INIT) && !abs_cmd)
+	/*	First check if it's an internal command, especially single-character ones like ':' */
+	if(cmd_state == STATE_INIT)
 	{
 		/*	Search my internal list for the command. */
 
@@ -1364,6 +1347,26 @@ parseagain:
 					goto cleanup;		/*	return rslt; */
 				}
 			}
+		}
+	}
+
+	/*	If not an internal command, check for path characters */
+	if(cmd_state == STATE_INIT)
+	{
+		abs_cmd = 0;
+		l = 0;
+		while(args[0][l])
+		{
+			if(args[0][l] == ':')
+				abs_cmd |=  1;
+			else if(args[0][l] == '/')
+				abs_cmd |=  2;
+			l++;
+		}
+
+		if(abs_cmd)
+		{
+			cmd_state = STATE_COMMAND;
 		}
 	}
 
@@ -1736,5 +1739,39 @@ long getcommand(char *line, long size)
 			return -1;
 		}
 	}
+	
+	/* Perform history expansion if line contains ! */
+	if(strchr(line, '!'))
+	{
+		char expanded[ARGLEN];
+		int expand_result = history_expand(line, expanded, ARGLEN);
+		
+		if(expand_result == 1)
+		{
+			/* Expansion successful - replace line with expanded version */
+			strncpy(line, expanded, size-1);
+			line[size-1] = '\0';
+			
+			/* Show the expanded command */
+			if(flag) /* Only show if interactive */
+			{
+				PutStr(line);
+				PutStr("\n");
+			}
+		}
+		else if(expand_result == -1)
+		{
+			/* Expansion failed - show error */
+			if(flag) /* Only show if interactive */
+			{
+				PutStr("shami: ");
+				PutStr(line);
+				PutStr(": event not found\n");
+			}
+			/* Return empty line to skip processing */
+			line[0] = '\0';
+		}
+	}
+	
 	return 0;
 }

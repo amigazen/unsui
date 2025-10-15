@@ -161,6 +161,9 @@ long parsecommand(BPTR console,
 
 int  getline(BPTR input,char *prompt, UBYTE *str,int lenght, BOOL echo);
 void history_free(void);
+int  history_expand(char *line, char *expanded, int maxlen);
+extern char **histpoint;	/* history pointer array */
+extern int histn;			/* number of history entries */
 int  fcomp(char *);		/* file name completion */
 void fcomplist(char *, int Columns);		/* file name completion */
 int  ccomp(char *);		/* command name completion */

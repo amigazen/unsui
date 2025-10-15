@@ -44,20 +44,32 @@
 
 struct InternalNode Internals[]=
 {
+	{".",		&DOdot},
+	{":",		&DOcolon},
+	{"alias",	&DOalias},
 	{"cd",		&DOcd},
 	{"chgrp",	&DOchgrp},
 	{"chmod",	&DOchmod},
 	{"chown",	&DOchown},
 	{"echo",	&DOecho},
+	{"eval",	&DOeval},
 	{"exit",	NULL},			/* just a dummy-command for which */
+	{"export",	&DOexport},
 	{"filenote",&DOfilenote},
 	{"if",		&DOif},
 	{"internal",&DOinternal},
 	{"login",	NULL},			/* just a dummy-command for which */
+	{"pwd",		&DOpwd},
+	{"read",	&DOread},
 	{"run",		NULL},			/* just a dummy-command for which */
 	{"quit",	NULL},			/* just a dummy-command for which */
 	{"rehash",  &DOrehash},
+	{"set",		&DOset},
+	{"test",	&DOtest},
+	{"unalias",	&DOunalias},
+	{"unset",	&DOunset},
 	{"which",   &DOwhich},
+	{"history", &DOhistory},
 	{NULL,NULL}
 };
 
@@ -115,6 +127,750 @@ void generateflags(char *buffer, LONG prot, LONG type, char comment)
 }
 
 
+/* Stub function for C runtime compatibility */
+void __XCEXIT(void)
+{
+	/* This is a stub for the C runtime exit function */
+	/* In a real implementation, this would clean up and exit */
+	/* For now, just return to the shell */
+}
+
+/* History command - list command history */
+int DOhistory(int argc, char *argv[])
+{
+	char temp[ARGLEN];
+	int i, start = 0, count = histn;
+	
+	/* Parse arguments */
+	if (argc > 1)
+	{
+		if (strcmp(argv[1], "-c") == 0)
+		{
+			/* Clear history */
+			/* Note: This would require access to history_free() */
+			/* For now, just show current history */
+			FPuts(Output(), "History clear not implemented yet\n");
+			return RETURN_OK;
+		}
+		else
+		{
+			/* Show specific number of entries */
+			count = atoi(argv[1]);
+			if (count <= 0)
+				count = histn;
+			if (count > histn)
+				count = histn;
+			start = histn - count;
+		}
+	}
+	
+	/* Display history entries */
+	for (i = start; i < histn; i++)
+	{
+		sprintf(temp, "%4d  %s\n", i + 1, histpoint[i]);
+		PutStr(temp);
+	}
+	
+	return RETURN_OK;
+}
+
+int DOcolon(int argc, char *argv[])
+{
+	/* The colon command does nothing and always returns success */
+	/* It's used for comments in shell scripts and as a no-op command */
+	return RETURN_OK;
+}
+
+int DOpwd(int argc, char *argv[])
+{
+	char temp[ARGLEN];
+	BPTR current_lock;
+	struct CommandLineInterface *clip = Cli();
+	
+	/* Get current directory lock */
+	current_lock = CurrentDir((BPTR)NULL);
+	if (!current_lock)
+	{
+		FPuts(clip->cli_StandardOutput, "pwd: cannot get current directory\n");
+		return RETURN_ERROR;
+	}
+	
+	/* Get the path using the existing mygetpath function */
+	if (mygetpath(temp, ARGLEN, current_lock))
+	{
+		PutStr(temp);
+		PutStr("\n");
+		UnLock(current_lock);
+		return RETURN_OK;
+	}
+	else
+	{
+		FPuts(clip->cli_StandardOutput, "pwd: cannot determine current directory\n");
+		UnLock(current_lock);
+		return RETURN_ERROR;
+	}
+}
+
+int DOtest(int argc, char *argv[])
+{
+	struct FileInfoBlock *fib;
+	BPTR lock;
+	int result = 0;
+	
+	if (argc < 2)
+	{
+		/* No arguments - return false */
+		return RETURN_ERROR;
+	}
+	
+	/* Handle the case where the last argument is ']' (for [ test ] syntax) */
+	if (argc > 1 && !strcmp(argv[argc-1], "]"))
+	{
+		argc--; /* Remove the ']' from consideration */
+	}
+	
+	if (argc == 2)
+	{
+		/* Single argument - test if string is non-empty */
+		if (strlen(argv[1]) > 0)
+			return RETURN_OK;
+		else
+			return RETURN_ERROR;
+	}
+	
+	if (argc == 3)
+	{
+		char *op = argv[1];
+		char *arg1 = argv[2];
+		
+		if (!strcmp(op, "!"))
+		{
+			/* Negation - test if string is empty */
+			if (strlen(arg1) == 0)
+				return RETURN_OK;
+			else
+				return RETURN_ERROR;
+		}
+		else if (!strcmp(op, "-n"))
+		{
+			/* String is non-empty */
+			if (strlen(arg1) > 0)
+				return RETURN_OK;
+			else
+				return RETURN_ERROR;
+		}
+		else if (!strcmp(op, "-z"))
+		{
+			/* String is empty */
+			if (strlen(arg1) == 0)
+				return RETURN_OK;
+			else
+				return RETURN_ERROR;
+		}
+		else if (!strcmp(op, "-f"))
+		{
+			/* File exists and is regular file */
+			if (lock = Lock(arg1, ACCESS_READ))
+			{
+				if (fib = (struct FileInfoBlock *)AllocDosObject(DOS_FIB, NULL))
+				{
+					if (Examine(lock, fib) && fib->fib_DirEntryType == ST_FILE)
+						result = 1;
+					FreeDosObject(DOS_FIB, fib);
+				}
+				UnLock(lock);
+			}
+			return result ? RETURN_OK : RETURN_ERROR;
+		}
+		else if (!strcmp(op, "-d"))
+		{
+			/* Directory exists */
+			if (lock = Lock(arg1, ACCESS_READ))
+			{
+				if (fib = (struct FileInfoBlock *)AllocDosObject(DOS_FIB, NULL))
+				{
+					if (Examine(lock, fib) && fib->fib_DirEntryType >= 0)
+						result = 1;
+					FreeDosObject(DOS_FIB, fib);
+				}
+				UnLock(lock);
+			}
+			return result ? RETURN_OK : RETURN_ERROR;
+		}
+		else if (!strcmp(op, "-e"))
+		{
+			/* File or directory exists */
+			if (lock = Lock(arg1, ACCESS_READ))
+			{
+				result = 1;
+				UnLock(lock);
+			}
+			return result ? RETURN_OK : RETURN_ERROR;
+		}
+		else if (!strcmp(op, "-r"))
+		{
+			/* File is readable */
+			if (lock = Lock(arg1, ACCESS_READ))
+			{
+				if (fib = (struct FileInfoBlock *)AllocDosObject(DOS_FIB, NULL))
+				{
+					if (Examine(lock, fib))
+					{
+						ULONG prot = fib->fib_Protection ^ 0x0f;
+						if (prot & FIBF_READ)
+							result = 1;
+					}
+					FreeDosObject(DOS_FIB, fib);
+				}
+				UnLock(lock);
+			}
+			return result ? RETURN_OK : RETURN_ERROR;
+		}
+		else if (!strcmp(op, "-w"))
+		{
+			/* File is writable */
+			if (lock = Lock(arg1, ACCESS_READ))
+			{
+				if (fib = (struct FileInfoBlock *)AllocDosObject(DOS_FIB, NULL))
+				{
+					if (Examine(lock, fib))
+					{
+						ULONG prot = fib->fib_Protection ^ 0x0f;
+						if (prot & FIBF_WRITE)
+							result = 1;
+					}
+					FreeDosObject(DOS_FIB, fib);
+				}
+				UnLock(lock);
+			}
+			return result ? RETURN_OK : RETURN_ERROR;
+		}
+		else if (!strcmp(op, "-x"))
+		{
+			/* File is executable */
+			if (lock = Lock(arg1, ACCESS_READ))
+			{
+				if (fib = (struct FileInfoBlock *)AllocDosObject(DOS_FIB, NULL))
+				{
+					if (Examine(lock, fib))
+					{
+						ULONG prot = fib->fib_Protection ^ 0x0f;
+						if (prot & FIBF_EXECUTE)
+							result = 1;
+					}
+					FreeDosObject(DOS_FIB, fib);
+				}
+				UnLock(lock);
+			}
+			return result ? RETURN_OK : RETURN_ERROR;
+		}
+	}
+	
+	if (argc == 4)
+	{
+		char *arg1 = argv[1];
+		char *op = argv[2];
+		char *arg2 = argv[3];
+		
+		if (!strcmp(op, "=") || !strcmp(op, "=="))
+		{
+			/* String equality */
+			return !strcmp(arg1, arg2) ? RETURN_OK : RETURN_ERROR;
+		}
+		else if (!strcmp(op, "!="))
+		{
+			/* String inequality */
+			return strcmp(arg1, arg2) ? RETURN_OK : RETURN_ERROR;
+		}
+		else if (!strcmp(op, "-eq"))
+		{
+			/* Numeric equality */
+			return (atol(arg1) == atol(arg2)) ? RETURN_OK : RETURN_ERROR;
+		}
+		else if (!strcmp(op, "-ne"))
+		{
+			/* Numeric inequality */
+			return (atol(arg1) != atol(arg2)) ? RETURN_OK : RETURN_ERROR;
+		}
+		else if (!strcmp(op, "-lt"))
+		{
+			/* Less than */
+			return (atol(arg1) < atol(arg2)) ? RETURN_OK : RETURN_ERROR;
+		}
+		else if (!strcmp(op, "-le"))
+		{
+			/* Less than or equal */
+			return (atol(arg1) <= atol(arg2)) ? RETURN_OK : RETURN_ERROR;
+		}
+		else if (!strcmp(op, "-gt"))
+		{
+			/* Greater than */
+			return (atol(arg1) > atol(arg2)) ? RETURN_OK : RETURN_ERROR;
+		}
+		else if (!strcmp(op, "-ge"))
+		{
+			/* Greater than or equal */
+			return (atol(arg1) >= atol(arg2)) ? RETURN_OK : RETURN_ERROR;
+		}
+	}
+	
+	/* If we get here, the test expression was not recognized */
+	return RETURN_ERROR;
+}
+
+int DOread(int argc, char *argv[])
+{
+	char buffer[ARGLEN];
+	char *line;
+	int i, len;
+	struct CommandLineInterface *clip = Cli();
+	BPTR input_handle;
+	
+	/* Get standard input handle */
+	input_handle = Input();
+	if (!input_handle)
+	{
+		FPuts(clip->cli_StandardOutput, "read: cannot get input handle\n");
+		return RETURN_ERROR;
+	}
+	
+	if (argc < 2)
+	{
+		/* No variable names specified - read into REPLY variable */
+		if (FGets(input_handle, buffer, ARGLEN))
+		{
+			/* Remove trailing newline if present */
+			len = strlen(buffer);
+			if (len > 0 && buffer[len-1] == '\n')
+			{
+				buffer[len-1] = '\0';
+			}
+			SetVar("REPLY", buffer, strlen(buffer), GVF_LOCAL_ONLY);
+			return RETURN_OK;
+		}
+		else
+		{
+			return RETURN_ERROR;
+		}
+	}
+	
+	/* Read a line from standard input */
+	if (FGets(input_handle, buffer, ARGLEN))
+	{
+		line = buffer;
+		len = strlen(line);
+		
+		/* Remove trailing newline if present */
+		if (len > 0 && line[len-1] == '\n')
+		{
+			line[len-1] = '\0';
+			len--;
+		}
+		
+		/* Split the line into words and assign to variables */
+		for (i = 1; i < argc; i++)
+		{
+			char *word_start = line;
+			char *word_end;
+			char *var_name = argv[i];
+			
+			/* Skip leading whitespace */
+			while (*word_start && (*word_start == ' ' || *word_start == '\t'))
+				word_start++;
+			
+			if (*word_start == '\0')
+			{
+				/* No more words - set variable to empty string */
+				SetVar(var_name, "", 0, GVF_LOCAL_ONLY);
+			}
+			else
+			{
+				/* Find end of current word */
+				word_end = word_start;
+				while (*word_end && *word_end != ' ' && *word_end != '\t')
+					word_end++;
+				
+				/* Set the variable */
+				*word_end = '\0';
+				SetVar(var_name, word_start, strlen(word_start), GVF_LOCAL_ONLY);
+				
+				/* Move to next word */
+				line = word_end + 1;
+			}
+		}
+		
+		return RETURN_OK;
+	}
+	else
+	{
+		/* EOF or error reading input */
+		return RETURN_ERROR;
+	}
+}
+
+int DOunset(int argc, char *argv[])
+{
+	int i;
+	int error = 0;
+	struct CommandLineInterface *clip = Cli();
+	
+	if (argc < 2)
+	{
+		FPuts(clip->cli_StandardOutput, "unset: usage: unset variable_name [variable_name ...]\n");
+		return RETURN_WARN;
+	}
+	
+	/* Unset each variable specified */
+	for (i = 1; i < argc; i++)
+	{
+		if (DeleteVar(argv[i], GVF_LOCAL_ONLY))
+		{
+			/* Variable was successfully deleted */
+		}
+		else
+		{
+			/* Variable didn't exist or couldn't be deleted */
+			/* This is not necessarily an error in POSIX shells */
+		}
+	}
+	
+	return RETURN_OK;
+}
+
+int DOexport(int argc, char *argv[])
+{
+	int i;
+	char *var_name, *var_value, *equals;
+	struct CommandLineInterface *clip = Cli();
+	
+	if (argc < 2)
+	{
+		/* No arguments - list all exported variables */
+		/* This would require implementing a variable listing function */
+		FPuts(clip->cli_StandardOutput, "export: listing exported variables not yet implemented\n");
+		return RETURN_WARN;
+	}
+	
+	/* Export each variable specified */
+	for (i = 1; i < argc; i++)
+	{
+		var_name = argv[i];
+		
+		/* Check if variable assignment is included (e.g., "VAR=value") */
+		equals = strchr(var_name, '=');
+		if (equals)
+		{
+			/* Split variable name and value */
+			*equals = '\0';
+			var_value = equals + 1;
+			
+			/* Set the variable with the specified value */
+			SetVar(var_name, var_value, strlen(var_value), GVF_GLOBAL_ONLY);
+		}
+		else
+		{
+			/* Just export the variable name (assume it already has a value) */
+			/* Get the current value and re-set it as global */
+			char temp[ARGLEN];
+			if (GetVar(var_name, temp, ARGLEN, GVF_LOCAL_ONLY) != -1)
+			{
+				SetVar(var_name, temp, strlen(temp), GVF_GLOBAL_ONLY);
+			}
+			else
+			{
+				/* Variable doesn't exist locally, create it as global */
+				SetVar(var_name, "", 0, GVF_GLOBAL_ONLY);
+			}
+		}
+	}
+	
+	return RETURN_OK;
+}
+
+int DOdot(int argc, char *argv[])
+{
+	BPTR file_handle;
+	char line[ARGLEN];
+	struct CommandLineInterface *clip = Cli();
+	
+	if (argc < 2)
+	{
+		FPuts(clip->cli_StandardOutput, ".: usage: . filename\n");
+		return RETURN_WARN;
+	}
+	
+	/* Open the file for reading */
+	file_handle = Open(argv[1], MODE_OLDFILE);
+	if (!file_handle)
+	{
+		FPuts(clip->cli_StandardOutput, ".: cannot open file: ");
+		FPuts(clip->cli_StandardOutput, argv[1]);
+		FPuts(clip->cli_StandardOutput, "\n");
+		return RETURN_ERROR;
+	}
+	
+	/* Read and execute each line from the file */
+	while (FGets(file_handle, line, ARGLEN))
+	{
+		/* Remove trailing newline */
+		if (strlen(line) > 0 && line[strlen(line)-1] == '\n')
+		{
+			line[strlen(line)-1] = '\0';
+		}
+		
+		/* Skip empty lines and comments */
+		if (strlen(line) == 0 || line[0] == '#')
+		{
+			continue;
+		}
+		
+		/* Execute the line as a shell command */
+		/* This is a simplified implementation - in a real shell, this would
+		   need to properly parse and execute the command line */
+		
+		/* For now, just print the line (this is a placeholder implementation) */
+		FPuts(clip->cli_StandardOutput, "Executing: ");
+		FPuts(clip->cli_StandardOutput, line);
+		FPuts(clip->cli_StandardOutput, "\n");
+	}
+	
+	Close(file_handle);
+	return RETURN_OK;
+}
+
+int DOalias(int argc, char *argv[])
+{
+	int i;
+	char *alias_name, *alias_value, *equals;
+	char alias_var[ARGLEN];
+	struct CommandLineInterface *clip = Cli();
+	
+	if (argc < 2)
+	{
+		/* No arguments - list all aliases */
+		/* This would require implementing an alias listing function */
+		FPuts(clip->cli_StandardOutput, "alias: listing aliases not yet implemented\n");
+		return RETURN_WARN;
+	}
+	
+	/* Process each alias */
+	for (i = 1; i < argc; i++)
+	{
+		alias_name = argv[i];
+		
+		/* Check if alias assignment is included (e.g., "ls=ls -la") */
+		equals = strchr(alias_name, '=');
+		if (equals)
+		{
+			/* Split alias name and value */
+			*equals = '\0';
+			alias_value = equals + 1;
+			
+			/* Store the alias as a special variable */
+			sprintf(alias_var, "ALIAS_%s", alias_name);
+			SetVar(alias_var, alias_value, strlen(alias_value), GVF_LOCAL_ONLY);
+		}
+		else
+		{
+			/* Just show the alias value */
+			sprintf(alias_var, "ALIAS_%s", alias_name);
+			if (GetVar(alias_var, alias_var, ARGLEN, GVF_LOCAL_ONLY) != -1)
+			{
+				FPuts(clip->cli_StandardOutput, "alias ");
+				FPuts(clip->cli_StandardOutput, alias_name);
+				FPuts(clip->cli_StandardOutput, "='");
+				FPuts(clip->cli_StandardOutput, alias_var);
+				FPuts(clip->cli_StandardOutput, "'\n");
+			}
+			else
+			{
+				FPuts(clip->cli_StandardOutput, "alias: ");
+				FPuts(clip->cli_StandardOutput, alias_name);
+				FPuts(clip->cli_StandardOutput, " not found\n");
+			}
+		}
+	}
+	
+	return RETURN_OK;
+}
+
+int DOunalias(int argc, char *argv[])
+{
+	int i;
+	char alias_var[ARGLEN];
+	struct CommandLineInterface *clip = Cli();
+	
+	if (argc < 2)
+	{
+		FPuts(clip->cli_StandardOutput, "unalias: usage: unalias alias_name [alias_name ...]\n");
+		return RETURN_WARN;
+	}
+	
+	/* Remove each alias specified */
+	for (i = 1; i < argc; i++)
+	{
+		sprintf(alias_var, "ALIAS_%s", argv[i]);
+		DeleteVar(alias_var, GVF_LOCAL_ONLY);
+	}
+	
+	return RETURN_OK;
+}
+
+int DOset(int argc, char *argv[])
+{
+	int i;
+	struct CommandLineInterface *clip = Cli();
+	
+	if (argc == 1)
+	{
+		/* No arguments - show all variables and their values */
+		/* This would require implementing a variable listing function */
+		FPuts(clip->cli_StandardOutput, "set: listing variables not yet implemented\n");
+		return RETURN_WARN;
+	}
+	
+	/* Process each argument */
+	for (i = 1; i < argc; i++)
+	{
+		if (argv[i][0] == '-')
+		{
+			/* Shell option */
+			if (!strcmp(argv[i], "-e"))
+			{
+				/* Exit on error */
+				FPuts(clip->cli_StandardOutput, "set: -e option not yet implemented\n");
+			}
+			else if (!strcmp(argv[i], "-u"))
+			{
+				/* Exit on undefined variable */
+				FPuts(clip->cli_StandardOutput, "set: -u option not yet implemented\n");
+			}
+			else if (!strcmp(argv[i], "-x"))
+			{
+				/* Debug mode */
+				FPuts(clip->cli_StandardOutput, "set: -x option not yet implemented\n");
+			}
+			else if (!strcmp(argv[i], "-v"))
+			{
+				/* Verbose mode */
+				FPuts(clip->cli_StandardOutput, "set: -v option not yet implemented\n");
+			}
+			else if (!strcmp(argv[i], "-f"))
+			{
+				/* Disable pathname expansion */
+				FPuts(clip->cli_StandardOutput, "set: -f option not yet implemented\n");
+			}
+			else if (!strcmp(argv[i], "-h"))
+			{
+				/* Hash commands */
+				FPuts(clip->cli_StandardOutput, "set: -h option not yet implemented\n");
+			}
+			else if (!strcmp(argv[i], "-C"))
+			{
+				/* Prevent overwriting existing files */
+				FPuts(clip->cli_StandardOutput, "set: -C option not yet implemented\n");
+			}
+			else if (!strcmp(argv[i], "-a"))
+			{
+				/* Mark variables for export */
+				FPuts(clip->cli_StandardOutput, "set: -a option not yet implemented\n");
+			}
+			else if (!strcmp(argv[i], "-b"))
+			{
+				/* Notify of job termination */
+				FPuts(clip->cli_StandardOutput, "set: -b option not yet implemented\n");
+			}
+			else if (!strcmp(argv[i], "-m"))
+			{
+				/* Monitor mode */
+				FPuts(clip->cli_StandardOutput, "set: -m option not yet implemented\n");
+			}
+			else if (!strcmp(argv[i], "-n"))
+			{
+				/* Read commands but don't execute */
+				FPuts(clip->cli_StandardOutput, "set: -n option not yet implemented\n");
+			}
+			else if (!strcmp(argv[i], "-o"))
+			{
+				/* Set option by name */
+				if (i + 1 < argc)
+				{
+					i++;
+					FPuts(clip->cli_StandardOutput, "set: -o ");
+					FPuts(clip->cli_StandardOutput, argv[i]);
+					FPuts(clip->cli_StandardOutput, " not yet implemented\n");
+				}
+				else
+				{
+					FPuts(clip->cli_StandardOutput, "set: -o requires an option name\n");
+					return RETURN_WARN;
+				}
+			}
+			else if (!strcmp(argv[i], "--"))
+			{
+				/* End of options */
+				break;
+			}
+			else
+			{
+				FPuts(clip->cli_StandardOutput, "set: unknown option: ");
+				FPuts(clip->cli_StandardOutput, argv[i]);
+				FPuts(clip->cli_StandardOutput, "\n");
+				return RETURN_WARN;
+			}
+		}
+		else if (argv[i][0] == '+')
+		{
+			/* Disable shell option */
+			FPuts(clip->cli_StandardOutput, "set: disabling options not yet implemented\n");
+		}
+		else
+		{
+			/* Set positional parameter */
+			/* This would require implementing positional parameter management */
+			FPuts(clip->cli_StandardOutput, "set: positional parameters not yet implemented\n");
+		}
+	}
+	
+	return RETURN_OK;
+}
+
+int DOeval(int argc, char *argv[])
+{
+	char command[ARGLEN];
+	int i, len = 0;
+	struct CommandLineInterface *clip = Cli();
+	
+	if (argc < 2)
+	{
+		/* No arguments - return success */
+		return RETURN_OK;
+	}
+	
+	/* Concatenate all arguments into a single command string */
+	command[0] = '\0';
+	for (i = 1; i < argc; i++)
+	{
+		if (i > 1)
+		{
+			strcat(command, " ");
+		}
+		strcat(command, argv[i]);
+	}
+	
+	/* Execute the command using the existing command execution mechanism */
+	/* This is a simplified implementation - in a real shell, this would
+	   need to properly parse and execute the command string */
+	
+	/* For now, just print the command (this is a placeholder implementation) */
+	FPuts(clip->cli_StandardOutput, "eval: command execution not yet fully implemented\n");
+	FPuts(clip->cli_StandardOutput, "Command: ");
+	FPuts(clip->cli_StandardOutput, command);
+	FPuts(clip->cli_StandardOutput, "\n");
+	
+	return RETURN_OK;
+}
+
 int mygetpath(char *buffer, int bufmax, BPTR baselock)
 {
     char *loc = buffer+bufmax-1; /* Last usable location */
@@ -126,12 +882,17 @@ int mygetpath(char *buffer, int bufmax, BPTR baselock)
 	{
 	    *loc = '\0'; /* trailing NUL */
 	    lock = baselock;
+	    
+	    /* Build the path by traversing up the directory tree */
 	    while(lock)
 	    {
 			Examine(lock, fib);
 			newlock = ParentDir(lock);
+			
+			/* Don't unlock the original baselock - let the caller handle it */
 			if(lock != baselock)
 			    UnLock(lock);
+			
 			lock = newlock;
 			len = strlen(fib->fib_FileName);
 

@@ -13,8 +13,10 @@ int tolower(int);
 
 #include "AXsh.h"
 
-static char *histbuf = NULL, **histpoint = NULL, *histcur;
-static int histbufsz, histpointsz, histn=0;
+static char *histbuf = NULL, *histcur;
+static int histbufsz, histpointsz;
+char **histpoint = NULL;
+int histn = 0;
 
 
 void history_add(char *line)
@@ -127,6 +129,136 @@ void history_free()
 		FreeMem(histpoint, histpointsz*sizeof(char *));
 		FreeMem(histbuf, histbufsz);
 	}
+}
+
+/* History expansion function - handles ! commands */
+int history_expand(char *line, char *expanded, int maxlen)
+{
+	char *bang_pos;
+	int hist_num;
+	int i, j, k;
+	
+	/* Look for ! character */
+	bang_pos = strchr(line, '!');
+	if (!bang_pos)
+	{
+		strncpy(expanded, line, maxlen-1);
+		expanded[maxlen-1] = '\0';
+		return 0; /* No expansion needed */
+	}
+	
+	/* Handle !! - previous command */
+	if (bang_pos[1] == '!')
+	{
+		if (histn > 0)
+		{
+			strncpy(expanded, histpoint[histn-1], maxlen-1);
+			expanded[maxlen-1] = '\0';
+			return 1; /* Expansion performed */
+		}
+		else
+		{
+			strncpy(expanded, line, maxlen-1);
+			expanded[maxlen-1] = '\0';
+			return -1; /* No history available */
+		}
+	}
+	
+	/* Handle !n - history number */
+	if (bang_pos[1] >= '0' && bang_pos[1] <= '9')
+	{
+		hist_num = atoi(bang_pos + 1);
+		if (hist_num > 0 && hist_num <= histn)
+		{
+			/* Copy part before ! */
+			i = 0;
+			while (line + i < bang_pos && i < maxlen-1)
+			{
+				expanded[i] = line[i];
+				i++;
+			}
+			
+			/* Copy history entry */
+			j = 0;
+			while (histpoint[hist_num-1][j] && i + j < maxlen-1)
+			{
+				expanded[i + j] = histpoint[hist_num-1][j];
+				j++;
+			}
+			
+			/* Copy part after ! and number */
+			k = 1; /* Skip ! */
+			while (bang_pos[k] >= '0' && bang_pos[k] <= '9')
+				k++;
+			k++; /* Skip to after the number */
+			
+			while (bang_pos[k] && i + j < maxlen-1)
+			{
+				expanded[i + j] = bang_pos[k];
+				j++;
+				k++;
+			}
+			
+			expanded[i + j] = '\0';
+			return 1; /* Expansion performed */
+		}
+		else
+		{
+			strncpy(expanded, line, maxlen-1);
+			expanded[maxlen-1] = '\0';
+			return -1; /* Invalid history number */
+		}
+	}
+	
+	/* Handle !string - most recent command starting with string */
+	if (bang_pos[1] != '\0')
+	{
+		char *search_str = bang_pos + 1;
+		int search_len = strlen(search_str);
+		
+		/* Search backwards through history */
+		for (i = histn - 1; i >= 0; i--)
+		{
+			if (strncmp(histpoint[i], search_str, search_len) == 0)
+			{
+				/* Copy part before ! */
+				j = 0;
+				while (line + j < bang_pos && j < maxlen-1)
+				{
+					expanded[j] = line[j];
+					j++;
+				}
+				
+				/* Copy matching history entry */
+				k = 0;
+				while (histpoint[i][k] && j + k < maxlen-1)
+				{
+					expanded[j + k] = histpoint[i][k];
+					k++;
+				}
+				
+				/* Copy part after ! and search string */
+				k = 1; /* Skip ! */
+				while (bang_pos[k] && j + k < maxlen-1)
+				{
+					expanded[j + k] = bang_pos[k];
+					k++;
+				}
+				
+				expanded[j + k] = '\0';
+				return 1; /* Expansion performed */
+			}
+		}
+		
+		strncpy(expanded, line, maxlen-1);
+		expanded[maxlen-1] = '\0';
+		return -1; /* No matching command found */
+	}
+	
+	/* Just ! - invalid */
+	strncpy(expanded, line, maxlen-1);
+	expanded[maxlen-1] = '\0';
+	return -1; /* Invalid ! usage */
 }
 
 
