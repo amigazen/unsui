@@ -1,0 +1,1 @@
+vc aes.c aes256.c -o aes -lamiga
