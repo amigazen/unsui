@@ -1,11 +1,8 @@
 /*
- * wc - Unsui POSIX runtime for Amiga
+ * wc - unsui POSIX runtime for Amiga
  * 
  * Copyright (c) 2025 amigazen project. All rights reserved.
  * Based on wc by David Messer and Andy Tanenbaum.
- * 
- * This version integrates AmigaDOS ReadArgs and standard POSIX getopt
- * for command-line parsing.
  * 
  * SPDX-License-Identifier: BSD-2-Clause
  * See LICENSE.md for full license text.
@@ -23,11 +20,23 @@
 #include <dos/rdargs.h>
 
 #include "wc.h"
-#include "/common/common.h"
-#include "/common/getopt.h"
+#include "common.h"
+#include "getopt.h"
+#include "stat.h"
+
+/* Amiga-specific stat macros - S_ISREG not available in Amiga headers */
+#ifndef S_IFMT
+#define S_IFMT	0160000		/* Mask for 3 bits holding file type */
+#endif
+#ifndef S_IFREG
+#define S_IFREG	0100000		/* normal file */
+#endif
+#ifndef S_ISREG
+#define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+#endif
 
 /* Version tag for Amiga */
-static const char *verstag = "$VER: wc 2.0 (23/08/25)\n";
+static const char *verstag = "$VER: wc 2.1 POSIX (18/10/25)\n";
 
 /* Magic numbers suggested or required by Posix specification */
 #define SUCCESS 0               /* exit code in case of success */
@@ -44,7 +53,8 @@ enum {
 };
 
 /* Function declarations for forward references */
-void count(FILE *f);
+void count(FILE *f, int lflag, int wflag, int cflag);
+void count_buffered(FILE *f, int lflag, int wflag, int cflag);
 void usage(char *program);
 void reset_counters(void);
 int run_wc_logic(int lflag, int wflag, int cflag, int file_count, char **files, const char *program);
@@ -233,6 +243,13 @@ int main(int argc, char **argv)
 void parse_getopt_args(int argc, char **argv, int *lflag, int *wflag, int *cflag, int *file_start, const char *program) {
     int c;
     
+    /*
+     * OPTIMIZATION NOTE:
+     * getopt() could be replaced with a custom parser for better performance
+     * since we only have a few simple flags. This would eliminate the
+     * overhead of the general-purpose getopt implementation.
+     */
+    
     reset_getopt();
     
     while ((c = getopt(argc, argv, "lwchV")) != -1) {
@@ -248,7 +265,7 @@ void parse_getopt_args(int argc, char **argv, int *lflag, int *wflag, int *cflag
                 break;
             case 'h':
             case 'V':
-                usage(program);
+                usage((char *)program);
                 break;
             case '?':
                 exit(FAILURE);
@@ -284,9 +301,22 @@ int run_wc_logic(int lflag, int wflag, int cflag, int file_count, char **files, 
     long ctotal = 0;
     FILE *f;
     
+    /*
+     * OPTIMIZATION IDEAS (IMPLEMENTED):
+     * 1. FILE SIZE OPTIMIZATION: Use fstat() for -c only to avoid reading file contents ✓
+     * 2. BUFFERED I/O: Use fread() with 256-byte buffer for better performance ✓
+     * 3. CARRIAGE RETURN HANDLING: Explicit \r handling for cross-platform compatibility ✓
+     * 
+     * ADDITIONAL OPTIMIZATION IDEAS:
+     * 4. BATCH PROCESSING: Process multiple files in parallel if threading is available
+     * 5. FILE TYPE DETECTION: Skip word/line counting for binary files (check first few bytes)
+     * 6. MEMORY MAPPING: Use mmap() for very large files to avoid read() overhead
+     * 7. CACHING: Cache file stats to avoid re-opening files if they appear multiple times
+     */
+    
     /* Check to see if input comes from std input */
     if (file_count == 0) {
-        count(stdin);
+        count(stdin, lflag, wflag, cflag);
         if (lflag) printf(" %6ld", lcount);
         if (wflag) printf(" %6ld", wcount);
         if (cflag) printf(" %6ld", ccount);
@@ -303,7 +333,7 @@ int run_wc_logic(int lflag, int wflag, int cflag, int file_count, char **files, 
             fprintf(stderr, "%s: cannot open %s\n", program, files[i]);
         } else {
             reset_counters();
-            count(f);
+            count(f, lflag, wflag, cflag);
             if (lflag) printf(" %6ld", lcount);
             if (wflag) printf(" %6ld", wcount);
             if (cflag) printf(" %6ld", ccount);
@@ -335,36 +365,95 @@ long wcount = 0;        /* Count of words */
 long ccount = 0;        /* Count of characters */
 
 /*
+ * OPTIMIZATION IDEAS (IMPLEMENTED):
+ * 1. BUFFERED I/O: Use fread() with 256-byte buffer instead of getc() for better performance ✓
+ * 2. FILE SIZE OPTIMIZATION: Use fstat() for -c only to avoid reading file contents ✓
+ * 3. CARRIAGE RETURN HANDLING: Explicit \r handling for cross-platform compatibility ✓
+ * 
+ * ADDITIONAL OPTIMIZATION IDEAS:
+ * 4. REGISTER VARIABLES: Use 'register int c' and 'register int word' for frequently accessed variables
+ * 5. LOOP UNROLLING: Process multiple characters per iteration in the main counting loop
+ * 6. BRANCH PREDICTION: Reorder conditions to favor the most common case (non-whitespace characters)
+ * 7. MEMORY ACCESS: Use local variables instead of global counters during counting, then assign at end
+ */
+
+/*
  * Count lines, words, and characters in a file
  * Updates global counters
+ * 
+ * OPTIMIZATIONS IMPLEMENTED:
+ * 1. File size optimization for -c only using fstat()
+ * 2. Buffered I/O using fread() for better performance
+ * 3. Explicit carriage return handling for cross-platform compatibility
  */
-void count(FILE *f)
+void count(FILE *f, int lflag, int wflag, int cflag)
 {
+	struct stat sbuf;
+	int fd;
+	
+	reset_counters();
+	
+	/* OPTIMIZATION 1: File size optimization for -c only */
+	if (cflag && !lflag && !wflag) {
+		fd = fileno(f);
+		if (fstat(fd, &sbuf) == 0 && S_ISREG(sbuf.st_mode)) {
+			ccount = sbuf.st_size;
+			return;  /* Skip reading file contents for regular files */
+		}
+	}
+	
+	/* Use buffered I/O for better performance */
+	count_buffered(f, lflag, wflag, cflag);
+}
+
+/*
+ * Buffered counting implementation for better performance
+ */
+void count_buffered(FILE *f, int lflag, int wflag, int cflag)
+{
+	char buffer[256];
+	size_t len;
+	size_t i;
 	int c;
 	int word = FALSE;
-
-	reset_counters();
-
-	while ((c = getc(f)) != EOF) {
-		ccount++;
-
-		if (isspace(c)) {
-			if (word) {
-				wcount++;
+	
+	/* Reset file position to beginning */
+	rewind(f);
+	
+	while ((len = fread(buffer, 1, sizeof(buffer), f)) > 0) {
+		for (i = 0; i < len; i++) {
+			c = (unsigned char)buffer[i];
+			
+			if (cflag) {
+				ccount++;
 			}
-			word = FALSE;
-		} else {
-			word = TRUE;
-		}
-
-		if (c == '\n' || c == '\f') {
-			lcount++;
+			
+			if (lflag || wflag) {
+				if (isspace(c)) {
+					if (word && wflag) {
+						wcount++;
+					}
+					word = FALSE;
+				} else {
+					word = TRUE;
+				}
+				
+				/* OPTIMIZATION 3: Explicit carriage return handling */
+				if (lflag && (c == '\n' || c == '\r' || c == '\f')) {
+					lcount++;
+				}
+			}
 		}
 	}
 }
 
 /*
  * Reset per-file counters
+ * 
+ * OPTIMIZATION NOTE:
+ * This function could be inlined or eliminated by using local variables
+ * in count() and only assigning to globals at the end, reducing
+ * function call overhead for each file processed.
  */
 void reset_counters(void)
 {
