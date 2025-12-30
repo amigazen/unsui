@@ -1,0 +1,6 @@
+FROM LIB:c.o "xxd.o"
+TO "xxd"
+LIB LIB:sc.lib LIB:amiga.lib
+STRIPDEBUG
+NOICONS
+

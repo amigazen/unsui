@@ -544,12 +544,13 @@ print_colored_line(FILE *fp, char *l, char *colors)
   if (colors)
     {
       int c = 0;
+	  int i = 0;
       if (colors[0])
 	{
 	  COLOR_PROLOGUE(colors[0])
 	}
       l_colored[c++] = l[0];
-      int i;
+      
       for (i = 1; l[i]; i++)
 	{
 	  if (colors[i] != colors[i-1])
@@ -1072,6 +1073,7 @@ main(int argc, char *argv[])
 	{
 	  if (hextype & HEX_BITS)
 	    {
+		  int j=0;
 	      if (p == 0)
 		fputs_or_die("  ", fpo);
 	      else if (p % cols == 0)
@@ -1080,7 +1082,7 @@ main(int argc, char *argv[])
 		fputs_or_die(", ", fpo);
 
 	      FPRINTF_OR_DIE((fpo, "0b"));
-	      for (int j = 7; j >= 0; j--)
+	      for (j = 7; j >= 0; j--)
 		putc_or_die((c & (1 << j)) ? '1' : '0', fpo);
 	      p++;
 	    }
