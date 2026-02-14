@@ -1,0 +1,21 @@
+CC := vc +aos68k -c99
+RM := rm -f
+CP := cp -p
+CFLAGS := -O3 -size
+LIBS := -ldos64
+
+TARGET := mkfile
+VERSION := 1
+OBJS := mkfile.o newdosfuncs.o
+
+$(TARGET).os3: $(OBJS)
+	$(CC) -o $@ $^ $(LIBS)
+	protect $@ +e
+
+mkfile.o: $(TARGET)_rev.h
+
+clean:
+	$(RM) $(OBJS)
+
+revision:
+	bumprev $(VERSION) $(TARGET)

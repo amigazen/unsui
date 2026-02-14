@@ -1,0 +1,47 @@
+Short:        Create an empty file of desired size
+Author:       Fredrik Wikstrom
+Uploader:     Fredrik Wikstrom <fredrik@a500.org>
+Type:         util/cli
+Version:      1.1
+Architecture: m68k-amigaos; ppc-amigaos
+
+The program just allocates the space needed (it doesn't initialise it in any
+way) which means that it is extremely fast, and useful for creating large files
+like hardfiles or other disk image files for use in emulators (like E-UAE
+f.e.).
+
+Usage:
+
+mkfile FILE/A,SIZE/M,SIUNITS/S
+
+To create a 1 byte file called test:
+mkfile test 1
+
+To create an ADF file:
+mkfile empty.adf 880kb
+
+To create an 8 GB hardfile:
+mkfile empty.hdf 8gb
+
+To create a 1199571022 byte file:
+mkfile blah 1gb 120mb 78b
+
+To create a 1120000078 byte file:
+mkfile blah 1gb 120mb 78b siunits
+
+supported units (the 'b' can be optionally left out):
+b, kb, mb, gb, tb
+
+Changes:
+
+(29-Aug-2010)
+ - Added OS3.x version (uses Joerg Strohmayer's libdos64)
+
+1.1 (2-Nov-2009)
+ - Added version string
+ - Now supports entering numbers > 2147483647
+ - It's now possible to use more than one unit when specifying a file size
+ - Added SIUNITS switch (1KB = 1000 bytes instead of 1024 bytes)
+
+1.0 (24-Nov-2008)
+ - First released version
