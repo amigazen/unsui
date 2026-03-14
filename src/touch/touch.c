@@ -1,42 +1,41 @@
 /*
  * touch - Unsui POSIX runtime for Amiga
- * 
+ *
  * Copyright (c) 2025 amigazen project. All rights reserved.
  * Based on touch by Dave Schreiber.
- * 
- * This version integrates AmigaDOS ReadArgs and standard POSIX getopt
- * for command-line parsing.
- * 
+ *
  * SPDX-License-Identifier: BSD-2-Clause
  * See LICENSE.md for full license text.
- * 
+ *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
+#include <stdlib.h>
 #include <exec/types.h>
-#include <dos/dos.h>
 #include <exec/memory.h>
+#include <dos/dos.h>
+#include <dos/rdargs.h>
+#include <dos/exall.h>
 #include <proto/dos.h>
 #include <proto/exec.h>
-#include <dos/rdargs.h>
 
 #include "touch.h"
-#include "/common/common.h"
-#include "/common/getopt.h"
+#include "common.h"
+#include "getopt.h"
 
 extern struct DosLibrary *DOSBase;
 
 /* Version tag for Amiga */
-static const char *verstag = "$VER: touch 1.0 (23/08/25)\n";
+static const char *verstag = "$VER: touch 2.1 (14/03/26)\n";
 
 /* Magic numbers suggested or required by Posix specification */
 #define SUCCESS 0               /* exit code in case of success */
 #define FAILURE 1               /* or failure */
 
-/* For ReadArgs template */
+#define PATH_BUFFER_SIZE  1024
+#define PATTERN_SIZE      512
+#define EXALL_ENTRIES     20
+
 enum {
     ARG_FILE,
     ARG_ACCESS,
@@ -46,12 +45,12 @@ enum {
     ARG_COUNT
 };
 
-/* Function declarations for forward references */
+static void errmsg(BPTR out, const char *program, const char *msg);
 void usage(const char *program);
 int run_touch_logic(int access_flag, int modify_flag, int create_flag, int file_count, char **files, const char *program);
-void parse_getopt_args(int argc, char **argv, int *access_flag, int *modify_flag, int *create_flag, int *file_start, const char *program);
+int parse_getopt_args(int argc, char **argv, int *access_flag, int *modify_flag, int *create_flag, int *file_start, const char *program);
+void touch_file(char *filename, int access_flag, int modify_flag, int create_flag, BPTR out);
 
-/* Main function: dispatcher for parsing style */
 int main(int argc, char **argv)
 {
     int access_flag = FALSE;
@@ -60,8 +59,6 @@ int main(int argc, char **argv)
     int file_start = 1;
     char **files = NULL;
     char *program;
-    
-    /* ReadArgs Path Variables */
     const char *template = "FILE/M,ACCESS/S,MODIFY/S,CREATE/S,POSIX/K/F";
     LONG arg_array[ARG_COUNT] = {0};
     struct RDArgs *rdargs = NULL;
@@ -79,285 +76,384 @@ int main(int argc, char **argv)
     char user_input_buf[256];
     char *temp_str;
     size_t combined_len;
+    int parse_ret;
+
+    for (i = 0; i < ARG_COUNT; i++) {
+        arg_array[i] = 0;
+    }
 
     if (argc < 1) {
-        exit(FAILURE);
+        return FAILURE;
     }
-    
+
     program = my_basename(argv[0]);
 
     if (argc == 1) {
-        /* No arguments, show usage */
         usage(program);
+        return FAILURE;
     }
 
-    /* --- Logic to decide which parser to use --- */
     if (is_getopt_style(argc, argv)) {
-        /* --- GETOPTS PATH --- */
-        parse_getopt_args(argc, argv, &access_flag, &modify_flag, &create_flag, &file_start, program);
+        parse_ret = parse_getopt_args(argc, argv, &access_flag, &modify_flag, &create_flag, &file_start, program);
+        if (parse_ret == 1) {
+            return SUCCESS;
+        }
+        if (parse_ret == 2) {
+            return FAILURE;
+        }
         files = &argv[file_start];
         return run_touch_logic(access_flag, modify_flag, create_flag, argc - file_start, files, program);
-        
-    } else {
-        /* --- READARGS PATH --- */
-        for (i = 1; i < argc; i++) {
-            if (strcmp(argv[i], "?") == 0) {
-                interactive_help = TRUE;
-                break;
-            }
+    }
+
+    interactive_help = FALSE;
+    for (i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "?") == 0) {
+            interactive_help = TRUE;
+            break;
         }
+    }
 
-        rdargs = AllocDosObject(DOS_RDARGS, NULL);
-        if (!rdargs) {
-            fprintf(stderr, "%s: out of memory for RDArgs\n", program);
-            return FAILURE;
+    rdargs = AllocDosObject(DOS_RDARGS, NULL);
+    if (!rdargs) {
+        errmsg(Output(), program, "out of memory for RDArgs");
+        return FAILURE;
+    }
+
+    if (interactive_help) {
+        initial_args_str[0] = '\0';
+        user_input_buf[0] = '\0';
+        temp_str = build_command_string(argc, argv, "?");
+        if (temp_str) {
+            strncpy(initial_args_str, temp_str, 255);
+            initial_args_str[255] = '\0';
+            free(temp_str);
         }
-
-        if (interactive_help) {
-            /* Initialize buffers */
-            initial_args_str[0] = '\0';
-            user_input_buf[0] = '\0';
-
-            /* Build a string from any args that are NOT '?' */
-            temp_str = build_command_string(argc, argv, "?");
-            if (temp_str) {
-                strncpy(initial_args_str, temp_str, 255);
-                free(temp_str);
-            }
-
-            /* Print template and prompt for more input */
-            printf("%s: ", template);
-            fflush(stdout);
-            if (fgets(user_input_buf, sizeof(user_input_buf), stdin)) {
-                /* Combine initial args with the new user input */
-                combined_len = strlen(initial_args_str) + strlen(user_input_buf) + 2;
-                cmd_string = malloc(combined_len);
-                if (cmd_string) {
-                    strcpy(cmd_string, initial_args_str);
-                    if (initial_args_str[0] != '\0' && user_input_buf[0] != '\n') {
-                        strcat(cmd_string, " ");
-                    }
-                    strcat(cmd_string, user_input_buf);
+        FPuts(Output(), template);
+        FPuts(Output(), ": ");
+        if (FGets(Input(), user_input_buf, (long)sizeof(user_input_buf))) {
+            combined_len = strlen(initial_args_str) + strlen(user_input_buf) + 2;
+            cmd_string = (char *)AllocVec((ULONG)combined_len, 0);
+            if (cmd_string) {
+                strcpy(cmd_string, initial_args_str);
+                if (initial_args_str[0] != '\0' && user_input_buf[0] != '\n') {
+                    strcat(cmd_string, " ");
                 }
-            } else {
-                cmd_string = strdup(initial_args_str);
-                if (cmd_string) strcat(cmd_string, "\n");
+                strcat(cmd_string, user_input_buf);
             }
         } else {
-            /* Standard case: build command string from all args */
-            cmd_string = build_command_string(argc, argv, NULL);
+            cmd_string = (char *)AllocVec((ULONG)(strlen(initial_args_str) + 2), 0);
+            if (cmd_string) {
+                strcpy(cmd_string, initial_args_str);
+                strcat(cmd_string, "\n");
+            }
         }
+    } else {
+        cmd_string = build_command_string(argc, argv, NULL);
+    }
 
-        if (!cmd_string) {
-            fprintf(stderr, "%s: out of memory for command string\n", program);
+    if (!cmd_string) {
+        errmsg(Output(), program, "out of memory for command string");
+        FreeDosObject(DOS_RDARGS, rdargs);
+        return FAILURE;
+    }
+
+    rdargs->RDA_Source.CS_Buffer = cmd_string;
+    rdargs->RDA_Source.CS_Length = (long)strlen(cmd_string);
+    rdargs->RDA_Source.CS_CurChr = 0;
+    rdargs->RDA_Flags |= RDAF_NOPROMPT;
+
+    if (!ReadArgs(template, arg_array, rdargs)) {
+        PrintFault(IoErr(), program);
+        FreeDosObject(DOS_RDARGS, rdargs);
+        free(cmd_string);
+        return FAILURE;
+    }
+
+    if (arg_array[ARG_POSIX]) {
+        posix_str = (char *)arg_array[ARG_POSIX];
+        new_argv[0] = program;
+        new_argc = tokenize_string(posix_str, &new_argv[1], MAX_TEMPLATE_ITEMS - 1) + 1;
+        parse_ret = parse_getopt_args(new_argc, new_argv, &access_flag, &modify_flag, &create_flag, &file_start, program);
+        if (parse_ret == 1) {
             FreeDosObject(DOS_RDARGS, rdargs);
-            return FAILURE;
+            free(cmd_string);
+            return SUCCESS;
         }
-
-        /* Set up ReadArgs to parse from our string */
-        rdargs->RDA_Source.CS_Buffer = cmd_string;
-        rdargs->RDA_Source.CS_Length = strlen(cmd_string);
-        rdargs->RDA_Source.CS_CurChr = 0;
-        rdargs->RDA_Flags |= RDAF_NOPROMPT;
-
-        if (!ReadArgs(template, arg_array, rdargs)) {
-            PrintFault(IoErr(), program);
+        if (parse_ret == 2) {
             FreeDosObject(DOS_RDARGS, rdargs);
             free(cmd_string);
             return FAILURE;
         }
-
-        /* Check for POSIX/F override first */
-        if (arg_array[ARG_POSIX]) {
-            posix_str = (char *)arg_array[ARG_POSIX];
-
-            /* Tokenize the string and build a new argv for getopt */
-            new_argv[0] = program;
-            new_argc = tokenize_string(posix_str, &new_argv[1], MAX_TEMPLATE_ITEMS - 1) + 1;
-
-            parse_getopt_args(new_argc, new_argv, &access_flag, &modify_flag, &create_flag, &file_start, program);
-            files = &new_argv[file_start];
-            ret_code = run_touch_logic(access_flag, modify_flag, create_flag, new_argc - file_start, files, program);
-
-        } else {
-            /* Standard ReadArgs processing */
-            if (arg_array[ARG_ACCESS]) {
-                access_flag = TRUE;
-            }
-            if (arg_array[ARG_MODIFY]) {
-                modify_flag = TRUE;
-            }
-            if (arg_array[ARG_CREATE]) {
-                create_flag = TRUE;
-            }
-            
-            /* If no specific time flags, update both access and modification */
-            if (!access_flag && !modify_flag) {
-                access_flag = TRUE;
-                modify_flag = TRUE;
-            }
-            
-            if (arg_array[ARG_FILE]) {
-                /* Count files and allocate array */
-                file_count = 0;
-                while (((char **)arg_array[ARG_FILE])[file_count] != NULL) {
-                    file_count++;
-                }
-                
-                files = (char **)arg_array[ARG_FILE];
-                ret_code = run_touch_logic(access_flag, modify_flag, create_flag, file_count, files, program);
-            } else {
-                fprintf(stderr, "%s: FILE argument required\n", program);
-                ret_code = FAILURE;
-            }
+        files = &new_argv[file_start];
+        ret_code = run_touch_logic(access_flag, modify_flag, create_flag, new_argc - file_start, files, program);
+    } else {
+        if (arg_array[ARG_ACCESS]) {
+            access_flag = TRUE;
         }
-
-        /* Clean up */
-        FreeDosObject(DOS_RDARGS, rdargs);
-        free(cmd_string);
-        
-        return ret_code;
+        if (arg_array[ARG_MODIFY]) {
+            modify_flag = TRUE;
+        }
+        if (arg_array[ARG_CREATE]) {
+            create_flag = TRUE;
+        }
+        if (!access_flag && !modify_flag) {
+            access_flag = TRUE;
+            modify_flag = TRUE;
+        }
+        if (arg_array[ARG_FILE]) {
+            file_count = 0;
+            while (((char **)arg_array[ARG_FILE])[file_count] != NULL) {
+                file_count++;
+            }
+            files = (char **)arg_array[ARG_FILE];
+            ret_code = run_touch_logic(access_flag, modify_flag, create_flag, file_count, files, program);
+        } else {
+            errmsg(Output(), program, "FILE argument required");
+            ret_code = FAILURE;
+        }
     }
+
+    FreeDosObject(DOS_RDARGS, rdargs);
+    free(cmd_string);
+    return ret_code;
 }
 
-/**
- * @brief Parse arguments using getopt (POSIX style)
- * @param argc Argument count
- * @param argv Argument vector
- * @param access_flag Flag to update access time
- * @param modify_flag Flag to update modification time
- * @param create_flag Flag to create files
- * @param file_start Index where files start in argv
- * @param program Program name for error messages
- */
-void parse_getopt_args(int argc, char **argv, int *access_flag, int *modify_flag, int *create_flag, int *file_start, const char *program) {
+static void errmsg(BPTR out, const char *program, const char *msg)
+{
+    FPuts(out, program);
+    FPuts(out, ": ");
+    FPuts(out, msg);
+    FPuts(out, "\n");
+}
+
+int parse_getopt_args(int argc, char **argv, int *access_flag, int *modify_flag, int *create_flag, int *file_start, const char *program)
+{
     int c;
-    
+    int ret = 0;
+
     reset_getopt();
-    
     while ((c = getopt(argc, argv, "acmhV")) != -1) {
         switch (c) {
-            case 'a':
-                *access_flag = TRUE;
-                break;
-            case 'c':
-                *create_flag = FALSE;
-                break;
-            case 'm':
-                *modify_flag = TRUE;
-                break;
-            case 'h':
-            case 'V':
-                usage(program);
-                break;
-            case '?':
-                exit(FAILURE);
-                break;
+        case 'a':
+            *access_flag = TRUE;
+            break;
+        case 'c':
+            *create_flag = FALSE;
+            break;
+        case 'm':
+            *modify_flag = TRUE;
+            break;
+        case 'h':
+        case 'V':
+            usage(program);
+            return 1;
+        case '?':
+            return 2;
+        default:
+            break;
         }
     }
-    
     *file_start = optind;
-    
-    /* If no specific time flags, update both access and modification */
     if (!*access_flag && !*modify_flag) {
         *access_flag = TRUE;
         *modify_flag = TRUE;
     }
+    return ret;
 }
 
-/**
- * @brief Core touch logic separated from argument parsing
- * @param access_flag Flag to update access time
- * @param modify_flag Flag to update modification time
- * @param create_flag Flag to create files
- * @param file_count Number of files to process
- * @param files Array of file names
- * @param program Program name for error messages
- * @return Exit code
- */
-int run_touch_logic(int access_flag, int modify_flag, int create_flag, int file_count, char **files, const char *program) {
+int run_touch_logic(int access_flag, int modify_flag, int create_flag, int file_count, char **files, const char *program)
+{
+    BPTR out;
+    struct DateStamp ds;
+    char *main_buf = NULL;
+    char *fileName = NULL;
+    char *pattern = NULL;
+    char *touchName = NULL;
+    struct ExAllData *eab = NULL;
+    struct ExAllControl *eac = NULL;
     int i;
-    
+    LONG fileNameType;
+    BPTR dirLock;
+    LONG goOn;
+    BOOL doneOnce;
+    struct ExAllData *ead;
+    ULONG mySig;
+    BOOL breaked = FALSE;
+    size_t pathBufSize;
+
+    out = Output();
     if (file_count == 0) {
-        fprintf(stderr, "%s: FILE argument required\n", program);
+        errmsg(out, program, "FILE argument required");
         return FAILURE;
     }
 
-    /* Process files */
-    for (i = 0; i < file_count; i++) {
-        touch_file(files[i], access_flag, modify_flag, create_flag);
+    pathBufSize = (PATH_BUFFER_SIZE + PATTERN_SIZE + PATH_BUFFER_SIZE);
+    main_buf = (char *)AllocVec((ULONG)pathBufSize, MEMF_CLEAR);
+    if (!main_buf) {
+        errmsg(out, program, "out of memory for path buffer");
+        return FAILURE;
     }
-    
+    fileName = main_buf;
+    pattern = main_buf + PATH_BUFFER_SIZE;
+    touchName = main_buf + PATH_BUFFER_SIZE + PATTERN_SIZE;
+
+    eab = (struct ExAllData *)AllocVec((ULONG)(sizeof(struct ExAllData) * EXALL_ENTRIES), MEMF_CLEAR);
+    if (!eab) {
+        errmsg(out, program, "out of memory for directory scan");
+        FreeVec(main_buf);
+        return FAILURE;
+    }
+    eac = (struct ExAllControl *)AllocDosObject(DOS_EXALLCONTROL, NULL);
+    if (!eac) {
+        errmsg(out, program, "out of memory for ExAll control");
+        FreeVec(eab);
+        FreeVec(main_buf);
+        return FAILURE;
+    }
+
+    DateStamp(&ds);
+
+    for (i = 0; i < file_count && !breaked; i++) {
+        mySig = CheckSignal(SIGBREAKF_CTRL_C);
+        if (mySig & SIGBREAKF_CTRL_C) {
+            breaked = TRUE;
+            break;
+        }
+
+        strcpy(fileName, files[i]);
+        fileNameType = ParsePatternNoCase(FilePart(fileName), pattern, PATTERN_SIZE);
+
+        if (fileNameType == 0) {
+            touch_file(files[i], access_flag, modify_flag, create_flag, out);
+        } else {
+            *(PathPart(fileName)) = '\0';
+            dirLock = Lock(fileName, ACCESS_READ);
+            if (dirLock) {
+                doneOnce = FALSE;
+                goOn = TRUE;
+                eac->eac_LastKey = 0;
+                eac->eac_MatchString = pattern;
+                eac->eac_MatchFunc = NULL;
+
+                do {
+                    mySig = CheckSignal(SIGBREAKF_CTRL_C);
+                    if (mySig & SIGBREAKF_CTRL_C) {
+                        breaked = TRUE;
+                        goOn = FALSE;
+                    } else {
+                        goOn = ExAll(dirLock, eab, (LONG)(sizeof(struct ExAllData) * EXALL_ENTRIES), ED_NAME, eac);
+                        if (!goOn && IoErr() != ERROR_NO_MORE_ENTRIES) {
+                            PrintFault(IoErr(), program);
+                        }
+                        if (eac->eac_Entries == 0) {
+                            if (!doneOnce) {
+                                FPuts(out, program);
+                                FPuts(out, ": No pattern match for ");
+                                FPuts(out, files[i]);
+                                FPuts(out, "\n");
+                            }
+                            goOn = FALSE;
+                        } else {
+                            doneOnce = TRUE;
+                            ead = eab;
+                            while (ead && !breaked) {
+                                mySig = CheckSignal(SIGBREAKF_CTRL_C);
+                                if (mySig & SIGBREAKF_CTRL_C) {
+                                    breaked = TRUE;
+                                } else {
+                                    touchName[0] = '\0';
+                                    AddPart(touchName, fileName, PATH_BUFFER_SIZE);
+                                    AddPart(touchName, ead->ed_Name, PATH_BUFFER_SIZE);
+                                    SetFileDate(touchName, &ds);
+                                    ead = ead->ed_Next;
+                                }
+                            }
+                        }
+                    }
+                } while (goOn && !breaked);
+
+                UnLock(dirLock);
+            }
+        }
+    }
+
+    FreeDosObject(DOS_EXALLCONTROL, eac);
+    FreeVec(eab);
+    FreeVec(main_buf);
+
+    if (breaked) {
+        FPuts(out, program);
+        FPuts(out, ": ^C\n");
+        return FAILURE;
+    }
     return SUCCESS;
 }
 
-/*
- * Touch a single file
- * Updates timestamps and creates file if needed
- */
-void touch_file(char *filename, int access_flag, int modify_flag, int create_flag)
+void touch_file(char *filename, int access_flag, int modify_flag, int create_flag, BPTR out)
 {
-	BPTR file;
-	struct DateStamp currentDate;
-	BPTR origDir;
-	char temp[514];
+    BPTR file;
+    struct DateStamp currentDate;
+    BPTR origDir;
+    char temp[514];
 
-	/* Try to open existing file for timestamp update */
-	file = Open(filename, MODE_READWRITE);
-	if (file != NULL) {
-		/* File exists - update timestamps */
-		origDir = CurrentDir(file);
-		DateStamp(&currentDate);
-		
-		if (access_flag) {
-			/* Update access time */
-			SetFileDate(filename, &currentDate);
-		}
-		
-		if (modify_flag) {
-			/* Update modification time */
-			SetFileDate(filename, &currentDate);
-		}
-		
-		CurrentDir(origDir);
-		Close(file);
-	} else {
-		/* File doesn't exist */
-		if (create_flag) {
-			/* Check if it's a valid filename (not a pattern) */
-			if (ParsePatternNoCase(filename, temp, sizeof(temp)) == 0) {
-				/* Create empty file */
-				file = Open(filename, MODE_NEWFILE);
-				if (file != NULL) {
-					Close(file);
-				} else {
-					fprintf(stderr, "touch: cannot create %s\n", filename);
-				}
-			} else {
-				fprintf(stderr, "touch: cannot create %s (pattern)\n", filename);
-			}
-		} else {
-			fprintf(stderr, "touch: cannot touch %s (no such file)\n", filename);
-		}
-	}
+    file = Open(filename, MODE_READWRITE);
+    if (file != (BPTR)NULL) {
+        origDir = CurrentDir(file);
+        DateStamp(&currentDate);
+        if (access_flag) {
+            SetFileDate(filename, &currentDate);
+        }
+        if (modify_flag) {
+            SetFileDate(filename, &currentDate);
+        }
+        CurrentDir(origDir);
+        Close(file);
+    } else {
+        if (create_flag) {
+            if (ParsePatternNoCase(filename, temp, (LONG)sizeof(temp)) == 0) {
+                file = Open(filename, MODE_NEWFILE);
+                if (file != (BPTR)NULL) {
+                    Close(file);
+                } else {
+                    FPuts(out, "touch: cannot create ");
+                    FPuts(out, filename);
+                    FPuts(out, "\n");
+                }
+            } else {
+                FPuts(out, "touch: cannot create ");
+                FPuts(out, filename);
+                FPuts(out, " (pattern)\n");
+            }
+        } else {
+            FPuts(out, "touch: cannot touch ");
+            FPuts(out, filename);
+            FPuts(out, " (no such file)\n");
+        }
+    }
 }
 
-/*
- * Display usage information
- */
 void usage(const char *program)
 {
-    fprintf(stderr, "Version: %s\n", &verstag[6]);
-    fprintf(stderr, "Usage (POSIX): %s [OPTIONS] FILE...\n", program);
-    fprintf(stderr, "Usage (Amiga): %s FILE/M [ACCESS/S] [MODIFY/S] [CREATE/S]\n", program);
-    fprintf(stderr, "               %s ? for template\n", program);
-    fprintf(stderr, "OPTIONS:\n");
-    fprintf(stderr, "  -a          change only the access time\n");
-    fprintf(stderr, "  -c          do not create any files\n");
-    fprintf(stderr, "  -m          change only the modification time\n");
-    fprintf(stderr, "  -h, -V      display this help and version\n");
-    fprintf(stderr, "DESCRIPTION:\n");
-    fprintf(stderr, "  Update the access and modification times of each FILE to the current time.\n");
-    fprintf(stderr, "  A FILE argument that does not exist is created empty.\n");
-	exit(FAILURE);
+    BPTR out = Output();
+
+    FPuts(out, "Version: ");
+    FPuts(out, &verstag[6]);
+    FPuts(out, "\n");
+    FPuts(out, "Usage (POSIX): ");
+    FPuts(out, program);
+    FPuts(out, " [OPTIONS] FILE...\n");
+    FPuts(out, "Usage (Amiga): ");
+    FPuts(out, program);
+    FPuts(out, " FILE/M [ACCESS/S] [MODIFY/S] [CREATE/S]\n");
+    FPuts(out, "               ");
+    FPuts(out, program);
+    FPuts(out, " ? for template\n");
+    FPuts(out, "OPTIONS:\n");
+    FPuts(out, "  -a          change only the access time\n");
+    FPuts(out, "  -c          do not create any files\n");
+    FPuts(out, "  -m          change only the modification time\n");
+    FPuts(out, "  -h, -V      display this help and version\n");
+    FPuts(out, "DESCRIPTION:\n");
+    FPuts(out, "  Update the access and modification times of each FILE to the current time.\n");
+    FPuts(out, "  A FILE argument that does not exist is created empty. Patterns (e.g. #?.c) touch all matches.\n");
 }
