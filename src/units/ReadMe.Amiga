@@ -1,0 +1,71 @@
+Units: modified and compiled by Ron Charlton for Amiga using SAS/C v6.51.
+It compiles with no complaints.
+
+You must put the units.lib file someplace so `units' can find it.
+
+From CLI/Shell:
+
+    There will be no problem if `units.lib' is in the current directory
+    (the one you are CD'd to).  Otherwise you can use an alias in your
+    s:shell-startup file.  Use PROGDIR: as shown below if you plan to
+    keep `units.lib' in the same directory as `units':
+
+	alias units units -f PROGDIR:units.lib
+
+    If you want, you can provide an exact location for `units.lib':
+
+	alias units units -f work:MyFavoriteDir/units.lib
+
+    Or you can specify the location on the command line when you 
+    run the command.
+
+	Work:> units -f work:MyFavoriteDir/units.lib
+
+
+From Workbench:
+
+    Drag the `units' icon and the `units.lib' icon together to any drawer
+    you like.  You can put the documentation anywhere.
+    
+    If you really want to put `units.lib' in a drawer other than with
+    `units', you may do so.  You must describe where it is by adding
+    a tooltype to the `units' icon.  The tooltype must look like 
+    
+    	-f Work:MyFavoriteDir/units.lib
+    
+    See your workbench manual for help with editing tooltypes.
+
+----
+	
+Type `quit' OR Ctrl-\ (Ctrl key and \ key together) to end the program.
+
+You may want to read `units.lib' to see what sort of units may be converted.
+
+Some interesting conversions:
+
+    You have: megatons-tnt
+    You want: joules
+        * 4.1730498e+15
+        / 2.3963289e-16
+        
+    You have: furlongs/fortnight
+    You want: meters/second
+        * 0.0001663
+        / 6012.8848
+
+I found the source on: usc.edu in
+
+    /archive/usenet/sources/comp.sources.misc/volume38/units/part01.gz
+
+I made the following changes:
+
+    I added a version string that can be found by Amiga's VERSION command.
+    I corrected the entry for nmile in units.lib (it was missing a space).
+    I generated and #included *_protos.h files to keep SAS/C happy.
+    I added the ability to type `quit' to quit the program.
+    I added Workbench support.
+
+
+Happy computing,
+Ron Charlton (charlton@cs.utk.edu or charltoncr@ornl.gov)
+01-Aug-1994

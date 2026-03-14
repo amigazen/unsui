@@ -1,0 +1,6 @@
+This is a program which I wrote as a clone of the UNIX 'units'
+command.  I threw it together in a couple days, but it seems to work,
+with some restrictions.  I have tested it under DOS with Borland C and
+Ultrix 4.2.
+
+Adrian Mariano (adrian@u.washington.edu or mariano@geom.umn.edu)

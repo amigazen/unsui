@@ -1,0 +1,13 @@
+CC=bccx
+
+units.exe: units.obj getopt.obj
+	$(CC) units.obj getopt.obj
+
+units.obj: units.c 
+	$(CC) -c units.c
+
+getopt.obj: getopt.c
+	$(CC) -c getopt.c
+
+
+

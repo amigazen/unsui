@@ -1,0 +1,5 @@
+CC=gcc
+CFLAGS= -DUNITSFILE=\"units.lib\"
+
+units:	units.o
+	$(CC) -o units units.o
