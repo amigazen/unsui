@@ -154,7 +154,7 @@ int main(int argc, char **argv)
 	size_t combined_len;
 
 	if (argc < 1) {
-		exit(1);
+		exit(EXIT_FAILURE);
 	}
 	
 	Program = my_basename(argv[0]);
@@ -392,7 +392,7 @@ char **argv;
 
 		case 'V':
 			printf("%s", verstag);
-			exit(0);
+			exit(EXIT_SUCCESS);
 			break;
 
 		case '?':
@@ -523,7 +523,7 @@ char **files;
 			flags = REG_EXTENDED | (Monocase ? REG_ICASE : 0);
 			if (regcomp(&regex_expressions[Curpat], Pattern[Curpat], flags) != 0) {
 				fprintf(stderr, "%s: bad regular expression: %s\n", Program, Pattern[Curpat]);
-				exit(2);
+				exit(EXIT_FAILURE+1);
 			}
 		}
 	}
@@ -695,7 +695,7 @@ void usage()
 	fprintf(stderr, "  Search for PATTERN in each FILE or standard input.\n");
 	fprintf(stderr, "  PATTERN is, by default, a basic regular expression (BRE).\n");
 	fprintf(stderr, "  Example: %s -i 'hello world' menu.h main.c\n", Program);
-	exit(2);
+	exit(EXIT_FAILURE+1);
 }
 
 /* Index function for compatibility */
@@ -723,7 +723,7 @@ char *infile;
 		if (!Silent) {
 			perror(infile);	/* Be like standard grep */
 		}
-		exit(2);
+		exit(EXIT_FAILURE+1);
 	}
 	else
 		ungetc(c, fp);
@@ -734,7 +734,7 @@ char *infile;
 		{
 			fprintf(stderr, "%s: Only %d strings allowed\n",
 				Program, MAXPATS);
-			exit(2);
+			exit(EXIT_FAILURE+1);
 		}
 		j = strlen(Pattern[i]);
 		if (Pattern[i][j - 1] == '\n')
